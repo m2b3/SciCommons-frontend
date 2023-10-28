@@ -1,0 +1,10 @@
+.sidenav {
+    height: 100%;
+    width: 300px;
+    position:fixed;
+    z-index: 100 !important;
+    background-color: #ffffff;
+    top: 0;
+    margin:0px;
+    box-shadow: 2px 2px 12px #cacac8;
+  }
