@@ -65,7 +65,7 @@ const AdminArticlePage = ({community}) => {
 
         try {
             const response = await axios.get(
-                `https://scicommons-backend.onrender.com/api/community/${community.Community_name}/articles/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/community/${community.Community_name}/articles/`,
                 config
             );
             await loadData(response.data.success);
@@ -225,7 +225,7 @@ const CommunityPage = () => {
                         }
                     }
                 }
-                const res = await axios.get(`https://scicommons-backend.onrender.com/api/community/${communityName}/`, config )
+                const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/${communityName}/`, config )
                 await loadCommunity(res.data.success)
                 setSubscribed(res.data.success.isSubscribed)
             } catch (error) {
@@ -265,7 +265,7 @@ const CommunityPage = () => {
             };
             if(subscribed === false){
                 const response = await axios.post(
-                    `https://scicommons-backend.onrender.com/api/community/${community.Community_name}/subscribe/`,{
+                    `https://scicommons-backend-vkyc.onrender.com/api/community/${community.Community_name}/subscribe/`,{
                         "user": user.id
                     },
                     config
@@ -275,7 +275,7 @@ const CommunityPage = () => {
                     
                 }
             } else {
-                const response = await axios.post(`https://scicommons-backend.onrender.com/api/community/${community.Community_name}/unsubscribe/`,
+                const response = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${community.Community_name}/unsubscribe/`,
                 {
                     "user": user.id
                 },config);

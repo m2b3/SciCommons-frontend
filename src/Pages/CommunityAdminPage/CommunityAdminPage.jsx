@@ -30,7 +30,7 @@ useEffect(() => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.get('https://scicommons-backend.onrender.com/api/community/mycommunity',config)
+            const res = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/community/mycommunity',config)
             await loadData(res.data.success)
     
         } catch (error) {

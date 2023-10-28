@@ -80,7 +80,7 @@ const PostModal = ({setIsAccordionOpen}) => {
         },
     };
     try{
-        const res = await axios.post("https://scicommons-backend.onrender.com/api/feed/", form_data, config);
+        const res = await axios.post("https://scicommons-backend-vkyc.onrender.com/api/feed/", form_data, config);
         ToastMaker('Post created successfully!!!', 3500,{
           valign: 'top',
             styles : {
@@ -161,7 +161,7 @@ const Timeline = () => {
         },
     }
     try{
-        const res = await axios.get("https://scicommons-backend.onrender.com/api/feed/timeline/", config)
+        const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/feed/timeline/", config)
 
         if(res.data.success.length === 0){
             await loadData([])

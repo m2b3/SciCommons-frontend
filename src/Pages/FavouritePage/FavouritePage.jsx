@@ -33,7 +33,7 @@ const FavouritePage = () => {
         };
         try {
             const response = await axios.get(
-                `https://scicommons-backend.onrender.com/api/article/favourites/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/article/favourites/`,
                 config
             );
             await loadData(response.data.success);

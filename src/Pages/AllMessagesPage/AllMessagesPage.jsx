@@ -60,7 +60,7 @@ const AllMessagesPage = () => {
         }
         try{
 
-            const res = await axios.get("https://scicommons-backend.onrender.com/api/user/messages/", config)
+            const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/user/messages/", config)
 
             if(res.data.success.length === 0){
                 await loadData([])
@@ -113,7 +113,7 @@ const AllMessagesPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
             }
-            const response = await axios.get("https://scicommons-backend.onrender.com/api/user/",{params:{search:e.target.value}}, config);
+            const response = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/user/",{params:{search:e.target.value}}, config);
             await loadSuggestions(response.data.success.results);
         } catch(err) {
             console.log(err)

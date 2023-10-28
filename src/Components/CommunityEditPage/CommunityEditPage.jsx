@@ -47,7 +47,7 @@ const CommunityEditPage = () => {
                         Authorization: `Bearer ${token}`
                     }
                 }
-                const res = await axios.get('https://scicommons-backend.onrender.com/api/community/mycommunity',config)
+                const res = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/community/mycommunity',config)
 
                 await loadData(res.data.success)
         
@@ -133,7 +133,7 @@ const CommunityEditPage = () => {
         }
 
         try {
-          const response = await axios.put(`https://scicommons-backend.onrender.com/api/community/${community.Community_name}/`, form_data, {
+          const response = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/community/${community.Community_name}/`, form_data, {
             headers: {
               "Content-type": "multipart/form-data",
               Authorization: `Bearer ${token}`,

@@ -25,7 +25,7 @@ const Verify = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                `https://scicommons-backend.onrender.com/api/user/verifyrequest/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/verifyrequest/`,
                 {email:email}
             );
             ToastMaker("Otp sent to email!!", 3000, {
@@ -78,7 +78,7 @@ const Verify = () => {
         }
         try {
             const response = await axios.post(
-                `https://scicommons-backend.onrender.com/api/user/verify_email/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/verify_email/`,
                 {email:email, otp:otp}
             );
             ToastMaker("Email Verified Successfully!!!", 3000, {

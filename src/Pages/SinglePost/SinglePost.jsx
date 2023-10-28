@@ -92,7 +92,7 @@ const SinglePost = () => {
     }
     try {
       const res = await axios.get(
-        `https://scicommons-backend.onrender.com/api/feedcomment/?limit=20&offset=${comments.length}`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/?limit=20&offset=${comments.length}`,
         config
       );
       await loadCommentsData([...comments, ...res.data.success.results]);
@@ -122,7 +122,7 @@ const SinglePost = () => {
     
     try {
       const res = await axios.get(
-        `https://scicommons-backend.onrender.com/api/feed/${postId}/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feed/${postId}/`,
         config
       );
       await loadData(res.data.success);
@@ -171,7 +171,7 @@ const SinglePost = () => {
     };
     try {
       const res = await axios.post(
-        `https://scicommons-backend.onrender.com/api/feedcomment/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/`,
         { post: postId, comment: comment },
         config
       );

@@ -10,7 +10,7 @@ import {useGlobalContext} from '../../Context/StateContext'
 
 const CreateCommunity = () => {
 
-  const baseURL = 'https://scicommons-backend.onrender.com/api/community/'; 
+  const baseURL = 'https://scicommons-backend-vkyc.onrender.com/api/community/'; 
   const {token} = useGlobalContext()
 
   const navigate = useNavigate();

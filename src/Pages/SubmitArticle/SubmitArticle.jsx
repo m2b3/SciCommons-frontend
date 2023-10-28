@@ -72,7 +72,7 @@ const PubMedSearch = () => {
 }
 
   const handleSubmit = async (article) => {
-    const baseURL = 'https://scicommons-backend.onrender.com/api/article/';
+    const baseURL = 'https://scicommons-backend-vkyc.onrender.com/api/article/';
     setLoading(true);
     try {
       const abstractResponse = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=${article.uid}&retmode=xml`);
@@ -156,7 +156,7 @@ const PubMedSearch = () => {
 
 const SubmitArticle = () => {
 
-  const baseURL = 'https://scicommons-backend.onrender.com/api/article/';
+  const baseURL = 'https://scicommons-backend-vkyc.onrender.com/api/article/';
   const {token} = useGlobalContext()
 
   const [currentState, setCurrentState] = useState(1);
@@ -329,7 +329,7 @@ const SubmitArticle = () => {
       }
       else{
         try{
-          const response = await axios.get(`https://scicommons-backend.onrender.com/api/user/`, {
+          const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/user/`, {
             params: {
               search: authors[i].username,
             },

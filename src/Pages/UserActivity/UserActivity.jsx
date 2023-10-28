@@ -16,7 +16,7 @@ const UserActivity = () => {
     const fetchActivity = async () => {
       setLoading(true);
       try {
-            const response = await axios.get('https://scicommons-backend.onrender.com/api/user/myactivity/', {
+            const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/user/myactivity/', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = response.data.success;

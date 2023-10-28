@@ -51,7 +51,7 @@ const BookMarks = () => {
     };
     try {
       const res = await axios.get(
-        "https://scicommons-backend.onrender.com/api/feed/bookmarks/",
+        "https://scicommons-backend-vkyc.onrender.com/api/feed/bookmarks/",
         config
       );
       if (res.data.success.length === 0) {
@@ -75,7 +75,7 @@ const BookMarks = () => {
     };
     try {
       const res = await axios.get(
-        `https://scicommons-backend.onrender.com/api/feed/bookmarks/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feed/bookmarks/`,
         config
       );
       if (res.data.success.length === 0) {

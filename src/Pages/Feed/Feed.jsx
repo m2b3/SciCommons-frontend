@@ -81,7 +81,7 @@ const PostModal = ({setIsAccordionOpen}) => {
         },
     };
     try{
-        const res = await axios.post("https://scicommons-backend.onrender.com/api/feed/", form_data, config);
+        const res = await axios.post("https://scicommons-backend-vkyc.onrender.com/api/feed/", form_data, config);
         ToastMaker('Post created successfully!!!', 3500,{
           valign: 'top',
             styles : {
@@ -177,7 +177,7 @@ const Feed = () => {
       }
     }
     try{
-        const res = await axios.get("https://scicommons-backend.onrender.com/api/feed/",{
+        const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/feed/",{
           params: {
             order: selectedOption.current,
           }
@@ -214,7 +214,7 @@ const Feed = () => {
       }
     }
     try{
-        const res = await axios.get(`https://scicommons-backend.onrender.com/api/feed/?limit=20&offset=${posts.length}`,{
+        const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/feed/?limit=20&offset=${posts.length}`,{
           params: {
             order: selectedOption.current,
           }

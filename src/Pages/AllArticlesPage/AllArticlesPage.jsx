@@ -48,7 +48,7 @@ const AllArticlesPage = () => {
         }
         try {
             const response = await axios.get(
-                `https://scicommons-backend.onrender.com/api/article/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/article/`,
                 config
             );
             await loadData(response.data.success.results);
@@ -93,7 +93,7 @@ const AllArticlesPage = () => {
         }
         console.log(filter);
         try{
-            const response = await axios.get(`https://scicommons-backend.onrender.com/api/article/?search=${searchTerm}`,{
+            const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}`,{
                 params:{
                     order: filter
                 },
@@ -122,7 +122,7 @@ const AllArticlesPage = () => {
                 },
             };
         }
-          const response = await axios.get(`https://scicommons-backend.onrender.com/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,{
+          const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,{
             params: {
                 order: filter
             }

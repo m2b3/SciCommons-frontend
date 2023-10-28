@@ -31,7 +31,7 @@ const JoinRequest = () => {
                         Authorization: `Bearer ${token}`
                     }
                 }
-                const res = await axios.get(`https://scicommons-backend.onrender.com/api/community/${communityName}/`, config )
+                const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/${communityName}/`, config )
                 await loadCommunity(res.data.success)
             } catch (error) {
                 console.log(error)
@@ -82,7 +82,7 @@ const JoinRequest = () => {
             return;
         }
       try {
-        const response = await axios.post(`https://scicommons-backend.onrender.com/api/community/${communityName}/join_request/`, form_data, {
+        const response = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${communityName}/join_request/`, form_data, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

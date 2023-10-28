@@ -109,7 +109,7 @@ const Register = () => {
         }
         try {
             const response = await axios.post(
-              'https://scicommons-backend.onrender.com/api/user/',
+              'https://scicommons-backend-vkyc.onrender.com/api/user/',
               data,
               {
                 headers: {

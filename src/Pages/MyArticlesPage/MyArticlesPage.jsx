@@ -177,7 +177,7 @@ const MyArticlesPage = () => {
         };
         try {
             const response = await axios.get(
-                `https://scicommons-backend.onrender.com/api/user/articles/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/articles/`,
                 config
             );
             await loadData(response.data.success);

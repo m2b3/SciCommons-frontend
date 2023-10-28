@@ -34,7 +34,7 @@ const Communities = () => {
         }
         try {
             const response = await axios.get(
-                `https://scicommons-backend.onrender.com/api/community?search=${searchTerm}`,
+                `https://scicommons-backend-vkyc.onrender.com/api/community?search=${searchTerm}`,
                 config
             );
             setCommunities(response.data.success.results);
@@ -65,7 +65,7 @@ const Communities = () => {
                     },
                 };
             }
-          const response = await axios.get(`https://scicommons-backend.onrender.com/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`, config);
+          const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`, config);
           const data = response.data.success.results;
           if(response.data.success.count === communities.length) {
             ToastMaker("No more communities to load", 3000, {

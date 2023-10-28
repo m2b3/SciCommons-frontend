@@ -20,7 +20,7 @@ const AppProvider = ({ children }) => {
       try {
           const token = localStorage.getItem('token'); 
     
-          const response = await axios.get('https://scicommons-backend.onrender.com/api/user/get_current_user/', {
+          const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/', {
               headers: {
                   Authorization: `Bearer ${token}`,
               },

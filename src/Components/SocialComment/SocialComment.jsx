@@ -49,7 +49,7 @@ const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
     };
     try {
       const res = await axios.post(
-        `https://scicommons-backend.onrender.com/api/feedcomment/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/`,
         { post: postId, comment: body, parent_comment: comment.id },
         config
       );
@@ -157,7 +157,7 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
     }
     try {
       const res = await axios.put(
-        `https://scicommons-backend.onrender.com/api/feedcomment/${comment.id}/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/${comment.id}/`,
         { post: comment.post, comment: body },
         config
       );
@@ -251,7 +251,7 @@ const SocialComment = ({ comment, post,setPost }) => {
     if (liked) {
       try {
         const res = await axios.post(
-          `https://scicommons-backend.onrender.com/api/feedcomment/unlike/`,
+          `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/unlike/`,
           { comment: comment.id },
           config
         );
@@ -263,7 +263,7 @@ const SocialComment = ({ comment, post,setPost }) => {
     } else {
       try {
         const res = await axios.post(
-          `https://scicommons-backend.onrender.com/api/feedcomment/like/`,
+          `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/like/`,
           { comment: comment.id },
           config
         );
@@ -313,7 +313,7 @@ const SocialComment = ({ comment, post,setPost }) => {
     }
     try {
       const res = await axios.get(
-        `https://scicommons-backend.onrender.com/api/feedcomment/?limit=20&offset=${repliesData.length}`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/?limit=20&offset=${repliesData.length}`,
         config
       );
       let temp = {...post};

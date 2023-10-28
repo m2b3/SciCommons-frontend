@@ -113,7 +113,7 @@ const ForgotPassword = () => {
         setLaoding(true);
         try {
             const response = await axios.post(
-                `https://scicommons-backend.onrender.com/api/user/forgot_password/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/forgot_password/`,
                 {email:email}
             );
             ToastMaker("Otp sent to email!!", 3000, {
@@ -147,7 +147,7 @@ const ForgotPassword = () => {
 
         try {
             const response = await axios.post(
-                `https://scicommons-backend.onrender.com/api/user/reset_password/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/reset_password/`,
                 {email:email,otp:otp,password:password1,password2:password2}
             );
 

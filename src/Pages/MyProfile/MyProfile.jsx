@@ -47,7 +47,7 @@ const MyProfile = () => {
         };
         try {
             const response = await axios.get(
-                `https://scicommons-backend.onrender.com/api/user/get_current_user/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/`,
                 config
             );
             await loadProfile(response.data.success);
@@ -67,7 +67,7 @@ const MyProfile = () => {
             },
         };
         try {
-            const response = await axios.put(`https://scicommons-backend.onrender.com/api/user/${user.id}/`,form_data,config);
+            const response = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/user/${user.id}/`,form_data,config);
             await loadProfile(response.data.success);
         } catch (error) {
             console.error(error);
