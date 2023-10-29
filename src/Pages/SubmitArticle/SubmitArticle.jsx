@@ -90,7 +90,7 @@ const PubMedSearch = () => {
         video: "",
         Code: "",
         status: "public",
-        article_file: "",
+        article_file: undefined,
         authors: [JSON.stringify(0)],
         communities: [JSON.stringify(0)],
       },{
