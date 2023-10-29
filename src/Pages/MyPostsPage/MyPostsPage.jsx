@@ -178,11 +178,11 @@ const MyPostsPage = () => {
         await loadData(updatedPosts);
       }
       
-      const handleEditChange = async(postId,body,image_url) => {
+      const handleEditChange = async(postId,body,image) => {
         const updatedPosts = [...posts];
         const index = updatedPosts.findIndex(post => post.id === postId);
         updatedPosts[index].body = body;
-        updatedPosts[index].image_url = image_url;
+        updatedPosts[index].image = image;
         await loadData(updatedPosts);
       }
 

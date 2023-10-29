@@ -208,7 +208,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
             modules={{toolbar: false}}
           />
         </div>
-        {!post.image_url.includes("None") && <img src={post.image_url} alt={post.caption} className="w-full my-4" />}
+        {!post.image.includes("None") && <img src={post.image} alt={post.caption} className="w-full my-4" />}
 
         <Link to={`/post/${post.id}`}>
         <div className="w-full">
