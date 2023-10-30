@@ -365,6 +365,9 @@ const SocialComment = ({ comment, post,setPost }) => {
   };
 
   const changeComment = async (body) => {
+    const newComment = { ...comment, comment: body };
+    setEditData(newComment);
+    console.log(newComment);
     setValue(body);
   };
 

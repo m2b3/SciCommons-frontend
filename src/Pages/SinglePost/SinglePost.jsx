@@ -50,6 +50,7 @@ const SinglePost = () => {
   const [comment, setComment] = useState("");
 
   const { postId } = useParams();
+
   const loadData = async (res) => {
     setLiked(res.liked);
     setBookmark(res.isbookmarked);
@@ -59,8 +60,9 @@ const SinglePost = () => {
     setComments(res.comments);
   };
 
+
   const loadCommentsData = async (res) => {
-    setComments(res);
+    await setComments(res);
   };
 
   const modifyComments = async () => {
@@ -181,9 +183,9 @@ const SinglePost = () => {
       res.data.comment.commentlikes = 0;
       res.data.comment.personal = true;
       setComment("");
+      const newComments = [res.data.comment, ...comments]
+      await loadCommentsData(newComments);
       await modifyComments();
-      console.log("swaroop");
-      await loadCommentsData([res.data.comment, ...comments]);
       ToastMaker("Comment added successfully!!!!", 3000, {
         valign: "top",
         styles: {
@@ -191,11 +193,13 @@ const SinglePost = () => {
           fontSize: "20px",
         },
       });
+      console.log(comments);
       setLoadSubmit(false);
     } catch (err) {
       console.log(err);
     }
     setLoadSubmit(false);
+
   };
 
 

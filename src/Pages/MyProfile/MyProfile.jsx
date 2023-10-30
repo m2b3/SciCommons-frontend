@@ -114,7 +114,7 @@ const MyProfile = () => {
                 <div className="flex flex-col mr-3 mt-3 items-center md:mr-10">
                     <form className="flex flex-col items-center" onSubmit={(e)=>handleSubmit(e)} encType="multipart/form-data">
                         {profile_pic_url.includes("None")?<SlUser className="w-[200px] h-[200px]" />:<img className="w-[200px] h-[200px]" src={profile_pic_url} alt="Profile Picture"/>}
-                        <input style={{"border": "2px solid #cbd5e0"}} className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3" name="profile_picture" type="file"/>
+                        <input style={{"border": "2px solid #cbd5e0"}} className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3" name="profile_pic_url" type="file"/>
                         <button className="bg-green-500 text-white rounded-md w-1/2 h-10 mt-3" type="submit">Upload</button>
                     </form>
                 </div>

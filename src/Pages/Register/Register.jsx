@@ -156,7 +156,7 @@ const Register = () => {
         <>
             {loading && <Loader />}
             {!loading && (
-                <main className="w-full h-screen flex flex-col items-center justify-center bg-green-50 sm:px-4">
+                <main className="w-full flex flex-col items-center justify-center bg-green-50 py-3 sm:px-4">
                     <div className="w-full space-y-6 text-gray-600 sm:max-w-md">
                         <div className="text-center" style={{cursor:"pointer"}} onClick={(e)=>{e.preventDefault();navigate("/")}}>
                             <img src={process.env.PUBLIC_URL + "./logo.png"} width={150} className="mx-auto" alt="logo" />

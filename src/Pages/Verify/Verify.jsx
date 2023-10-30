@@ -7,22 +7,39 @@ import {useGlobalContext} from '../../Context/StateContext'
 
 const Verify = () => {
 
-    const navigate = useNavigate()
-    const [email,setEmail] = useState('')
+    const navigate = useNavigate();
+
+    const [email,setEmail] = useState("")
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [otp,setOtp] = useState('');
     const {token} = useGlobalContext();
 
+    const isValidEmail = (email) => {
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        return emailPattern.test(email);
+    }
+
     useEffect(()=> {
         if(token){ 
             navigate('/')
         }
+        const currentUrl = window.location.href;
+        const url = new URL(currentUrl);
+        console.log(url.searchParams.get('email'));
+        isValidEmail(email);
+        setEmail(url.searchParams.get('email'));
+        if(email!==""){
+            handleSubmit({preventDefault:()=>{}});
+            setDisabled(true);
+        }
     },[])
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        isValidEmail(email);
         try {
             const response = await axios.post(
                 `https://scicommons-backend-vkyc.onrender.com/api/user/verifyrequest/`,
@@ -36,8 +53,6 @@ const Verify = () => {
                 },
             });
             setDisabled(true);
-            
-
         } catch (error) {
             ToastMaker(error.response.data.error, 3000, {
                 valign: "top",
@@ -46,7 +61,7 @@ const Verify = () => {
                   fontSize: "20px",
                 },
             });
-            console.error(error);
+            console.log(error);
         }
         setLoading(false);
     }

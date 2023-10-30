@@ -606,7 +606,7 @@ const  ArticlePage = () => {
     }
 
     const handleFile = () => {
-        window.open(article.article_file_url);
+        window.open(article.article_file);
     }
 
     const findTime = (date) => {
@@ -892,7 +892,7 @@ const  ArticlePage = () => {
                     </div>
 
                     <div className="flex flex-row justify-center bg-white">
-                        {!article.article_file_url.includes("None") && <button className="flex items-center space-x-2 p-2 bg-red-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-red-600" style={{cursor:"pointer"}} onClick={()=>{handleFile()}}>
+                        {!article.article_file.includes("None") && <button className="flex items-center space-x-2 p-2 bg-red-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-red-600" style={{cursor:"pointer"}} onClick={()=>{handleFile()}}>
                             <AiOutlineFilePdf className="w-5 h-5" />
                             <span className="text-md">Pdf</span>
                         </button>}

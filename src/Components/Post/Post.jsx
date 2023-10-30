@@ -356,16 +356,11 @@ const Dropdown = ({post, onDeletePost, handleEditChange}) => {
 
 const PostEditModal = ({post, setShowEdit, handleEditChange}) => {
 
-    const [updatedImage, setUpdatedImage] = useState(null);
     const [updatedBody, setUpdatedBody] = useState(post.body);
     const [loading, setLoading] = useState(false);
     const {token} = useGlobalContext();
     const navigate = useNavigate();
-  
-    const handleImageChange = (event) => {
-      const imageFile = event.target.files[0];
-      setUpdatedImage(imageFile);
-    };
+
   
     const handleBodyChange = (event) => {
       setUpdatedBody(event);
@@ -417,7 +412,7 @@ const PostEditModal = ({post, setShowEdit, handleEditChange}) => {
           },
       };
       try{
-        if(updatedImage === null) {
+        if(form_data.get('image') === null) {
           form_data.delete('image');
         }
           const res = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/feed/${post.id}/`, form_data, config);
@@ -460,8 +455,6 @@ const PostEditModal = ({post, setShowEdit, handleEditChange}) => {
                       accept="image/*"
                       className="mb-4 rounded-xl"
                       name="image"
-                      value={updatedImage}
-                      onChange={(e)=>{e.preventDefault(); handleImageChange(e)}}
                       />
                       <div className="flex flex-row">
                         <button
