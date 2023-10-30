@@ -133,12 +133,12 @@ const PubMedSearch = () => {
         {loading && <Loader/>}
         {!loading && results.length > 0 && results.map(article => (
           <div key={article.url} className="shadow-xl bg-gray-50 rounded-lg p-2 my-2 w-full md:w-5/6 mx-auto">
-            <h2 className="text-3xl text-gray-600 font-bold">{article.title}</h2>
+            <h2 className="text-2xl text-gray-600 font-bold uppercase">{article.title}</h2>
             <br/>
             <p className="text-sm"><span className="text-green-600 font-bold">Author(s) : </span>{article.authors.map((author)=>{
               return author.name+" , "
             })}</p>
-            <p className="text-lg"><span className="text-green-600 font-bold">Journal : </span>{article.journal}</p>
+            <p className="text-sm"><span className="text-green-600 font-bold">Journal : </span>{article.journal}</p>
             <div className="flex flex-row justify-between">
               <a href={article.url} className="text-blue-600 font-semibold" target="_blank" rel="noopener noreferrer">Read more</a>
               <button className="bg-green-600 text-white font-semibold p-1 m-1 rounded-lg" onClick={()=>{handleSubmit(article)}}>Add Article</button>
