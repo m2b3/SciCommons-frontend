@@ -2,7 +2,7 @@
 
 The changing landscape of academic publishing requires robust, transparent, and faster review systems. The Sci-commons portal, developed during Google Summer of Code 2023, addresses these challenges by combining traditional peer review mechanisms with community-driven open-review systems. Additionally, the platform champions anonymous reviews to ensure ethical and unbiased feedback.
 
-## Features and Implementation:
+# Features and Implementation:
 * **Multi-community Submission:**
 Enables scholars to reach diverse audiences by submitting to various communities.
 Parallel reviews provide a plethora of feedback.
@@ -22,36 +22,36 @@ Encourages quality feedback and separates users based on review reliability.
 A dedicated space for informal discussions around submitted articles.
 Ensures that the review section remains focused and clutter-free.
 
-## Tech Stack
+# Tech Stack
 
 **Client:** React, JavaScript, TailwindCSS
 
-## Live Site
+# Live Site
 
 [Live Site Link](https://www.scicommons.org/)
 
-## Run Locally
+# Run Locally
 
-# Clone the project
+## Clone the project
 
 ```bash 
     git clone https://github.com/m2b3/SciCommons-frontend
     cd SciCommons-frontend
 ```
 
-# Install dependencies
+## Install dependencies
 
 ```bash
     npm install
 ```
 
-# Run the frontend
+## Run the frontend
 
 ```bash
-    npm run server
+    npm run start
 ```
 
-# Run tests
+## Run tests
 
 ```bash
     npm test
@@ -59,7 +59,7 @@ Ensures that the review section remains focused and clutter-free.
 
 
 
-## Screenshots
+# Screenshots
 
 * **Login Page:** Used for User Login
 ![LoginPage](https://user-images.githubusercontent.com/107217455/274799626-2c1b5fa4-90df-4d97-9d24-fe044fa5eba9.png)
