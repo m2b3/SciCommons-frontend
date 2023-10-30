@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   AiOutlineLike,
   AiFillLike,
@@ -275,6 +275,13 @@ const SocialComment = ({ comment, post,setPost }) => {
     }
   };
 
+  useEffect(()=>{
+    setValue(comment.comment);
+    setLikes(comment.commentliked);
+    setLikes(comment.commentlikes);
+    setRepliesData([]);
+  },[comment.id])
+
   const formatCount = (count) => {
     if (count < 1000) {
       return count.toString();
@@ -367,7 +374,6 @@ const SocialComment = ({ comment, post,setPost }) => {
   const changeComment = async (body) => {
     const newComment = { ...comment, comment: body };
     setEditData(newComment);
-    console.log(newComment);
     setValue(body);
   };
 
@@ -448,7 +454,8 @@ const SocialComment = ({ comment, post,setPost }) => {
                   navigate("/login");
                 }
                 setShowEdit(true);
-                setEditData(comment);
+                const newComment = {...comment,comment:value};
+                setEditData(newComment);
               }}
             >
               <AiOutlineEdit className="w-5 h-5 text-zinc-500" />

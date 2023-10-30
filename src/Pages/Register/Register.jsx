@@ -124,7 +124,7 @@ const Register = () => {
             // Handle register error
             if (error.response && error.response.data && error.response.data.username && error.response.data.username[0]) {
                 // Handle specific username error
-                console.error('Username error:', error.response.data.username[0]);
+                console.log('Username error:', error.response.data.username[0]);
                 ToastMaker(error.response.data.username[0], 3500,{
                     valign: 'top',
                     styles : {
@@ -134,7 +134,7 @@ const Register = () => {
                 })
               } else if (error.response && error.response.data) {
                 // Handle general error
-                console.error('General error:', error.response.data);
+                console.log('General error:', error.response.data);
                 ToastMaker(error.response.data, 3500,{
                     valign: 'top',
                     styles : {
@@ -145,7 +145,7 @@ const Register = () => {
 
               } else {
                 // Handle other errors
-                console.error(error);
+                console.log(error);
               }
           } finally {
             setLoading(false); // Hide the loader after the register request completes, whether it succeeded or failed

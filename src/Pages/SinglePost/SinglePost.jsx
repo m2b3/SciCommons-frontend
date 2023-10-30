@@ -193,7 +193,6 @@ const SinglePost = () => {
           fontSize: "20px",
         },
       });
-      console.log(comments);
       setLoadSubmit(false);
     } catch (err) {
       console.log(err);

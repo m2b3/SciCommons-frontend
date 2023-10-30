@@ -53,7 +53,7 @@ const ChatPage = () => {
             setMessages(response.data.success.results);
         })
         .catch((error) => {
-            console.error('Error fetching chat messages:', error);
+            console.log('Error fetching chat messages:', error);
         });
     }
 

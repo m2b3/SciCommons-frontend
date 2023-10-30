@@ -132,7 +132,7 @@ const ForgotPassword = () => {
                   fontSize: "20px",
                 },
             });
-            console.error(error);
+            console.log(error);
         }
         setLaoding(false);
     }
@@ -167,7 +167,7 @@ const ForgotPassword = () => {
                   fontSize: "20px",
                 },
             });
-            console.error(error);
+            console.log(error);
         }
         setLaoding(false);
     }

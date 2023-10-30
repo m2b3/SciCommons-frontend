@@ -64,7 +64,7 @@ const DisplayCommunity = ({article}) => {
             );
             await loadData(response.data.success);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         } finally {
             setLoading(false)
         }   
@@ -102,10 +102,9 @@ const DisplayCommunity = ({article}) => {
                 {published: communityName, status: "published"},
                 config
             );
-            console.log(response);
             fetchArticles();
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
         setLoading(false);
     }
@@ -124,10 +123,9 @@ const DisplayCommunity = ({article}) => {
                 {published: communityName, status: "rejected by user"},
                 config
             );
-            console.log(response);
             fetchArticles();
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
         setLoading(false);
     }

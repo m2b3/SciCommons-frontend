@@ -482,7 +482,6 @@ const ArticleDecisionModal = ({setShowDecisionModal, article, handleComment}) =>
 
 const  ArticlePage = () => {
 
-
     const {articleId} = useParams();
     const [currentState, setcurrentState] = useState(1);
     const navigate = useNavigate();
@@ -577,7 +576,6 @@ const  ArticlePage = () => {
         }
         try {
             const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/${articleId}`,config);
-
             await loadArticleData(res.data.success);
         } catch(err){
             console.log(err);

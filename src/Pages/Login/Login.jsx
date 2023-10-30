@@ -43,7 +43,7 @@ const Login = () => {
             const user = response.data.success;
             await loadUserData(user);
         } catch (error) {
-          console.error(error);
+          console.log(error);
         }
     };
 
@@ -86,7 +86,7 @@ const Login = () => {
             await getCurrentUser();
             navigate('/');
           } catch (error) {
-            console.error(error);
+            console.log(error);
             if(error.response.data.error){
                 ToastMaker(error.response.data.error[0], 3500,{
                     valign: 'top',

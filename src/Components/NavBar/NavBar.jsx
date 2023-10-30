@@ -50,7 +50,7 @@ const NavBar = () => {
           await loadUserData(user);
       } catch (error) {
         setIsAuth(false);
-        console.error(error);
+        console.log(error);
       }
   };
 

@@ -182,7 +182,7 @@ const MyArticlesPage = () => {
             );
             await loadData(response.data.success);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         } finally {
             setLoading(false)
         }   

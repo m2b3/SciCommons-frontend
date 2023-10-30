@@ -466,7 +466,7 @@ const Profile = () => {
         );
         await loadArticleData(response.data.success);
     } catch (error) {
-        console.error(error);
+        console.log(error);
     } 
     setLoading(false);
 };

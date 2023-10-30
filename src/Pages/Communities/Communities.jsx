@@ -39,7 +39,7 @@ const Communities = () => {
             );
             setCommunities(response.data.success.results);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         } finally {
             setLoading(false)
         }   

@@ -26,7 +26,7 @@ const PubMedSearch = () => {
     try{
         const response = await axios.get(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${query}&retmode=json`);
         const data = response.data;
-        let ids = data.esearchresult.idlist;
+        let ids = data.esearchresult.idlist.slice(0,10);
         if(ids === undefined || ids === null) {
           setResults([]);
           setLoading(false);

@@ -668,7 +668,6 @@ const Dropdown = ({ article,comment,color}) => {
       try{
       const response = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/${comment.id}/block_user/`,config);
       setBlock(!block);
-      console.log(response);
       } catch(error){
         console.log(error);
       }
@@ -684,7 +683,6 @@ const Dropdown = ({ article,comment,color}) => {
     };
     try{
     const response = await axios.delete(`https://scicommons-backend-vkyc.onrender.com/api/comment/${comment.id}/`,config);
-    console.log(response);
     window.location.reload();
     } catch(error){
       console.log(error);

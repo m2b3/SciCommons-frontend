@@ -51,12 +51,6 @@ Ensures that the review section remains focused and clutter-free.
     npm run start
 ```
 
-## Run tests
-
-```bash
-    npm test
-```
-
 
 
 # Screenshots

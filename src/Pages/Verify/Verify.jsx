@@ -26,7 +26,6 @@ const Verify = () => {
         }
         const currentUrl = window.location.href;
         const url = new URL(currentUrl);
-        console.log(url.searchParams.get('email'));
         isValidEmail(email);
         setEmail(url.searchParams.get('email'));
         if(email!==""){
@@ -112,7 +111,7 @@ const Verify = () => {
                   fontSize: "20px",
                 },
             });
-            console.error(error);
+            console.log(error);
         }
         setLoading(false);
     }

@@ -52,7 +52,7 @@ const MyProfile = () => {
             );
             await loadProfile(response.data.success);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
     }
 
@@ -70,7 +70,7 @@ const MyProfile = () => {
             const response = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/user/${user.id}/`,form_data,config);
             await loadProfile(response.data.success);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
         setLoading(false);
     }

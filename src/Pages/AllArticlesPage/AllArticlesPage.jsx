@@ -53,7 +53,7 @@ const AllArticlesPage = () => {
             );
             await loadData(response.data.success.results);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         } finally {
             setLoading(false)
         }   
@@ -91,7 +91,6 @@ const AllArticlesPage = () => {
         } else {
             filter = "most_"+filter;
         }
-        console.log(filter);
         try{
             const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}`,{
                 params:{
