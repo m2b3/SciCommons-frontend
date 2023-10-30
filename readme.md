@@ -26,6 +26,41 @@ Ensures that the review section remains focused and clutter-free.
 
 **Client:** React, JavaScript, TailwindCSS
 
+## Live Site
+
+[Live Site Link](https://www.scicommons.org/)
+
+## Run Locally
+
+# Clone the project
+
+```bash 
+    git clone https://github.com/m2b3/SciCommons-frontend
+    cd SciCommons-frontend
+```
+
+# Install dependencies
+
+```bash
+    npm install
+```
+
+# Run the frontend
+
+```bash
+    npm run server
+```
+
+# Run tests
+
+```bash
+    npm test
+```
+
+
+
+## Screenshots
+
 * **Login Page:** Used for User Login
 ![LoginPage](https://user-images.githubusercontent.com/107217455/274799626-2c1b5fa4-90df-4d97-9d24-fe044fa5eba9.png)
 
@@ -110,14 +145,7 @@ Ensures that the review section remains focused and clutter-free.
 * **Comment Form:** Used to post a comment to review or decision
 ![CommentForm](https://user-images.githubusercontent.com/107217455/274803300-7a427a7d-df48-4366-8bd1-d9245822e519.png)
 
-	
-[Live Site Link](https://www.scicommons.org/)
 
 
 
-## Run Locally
 
-Clone the project
-
-```bash
-  git clone https://github.com/your-username/your-project-name
