@@ -50,7 +50,7 @@ Ensures that the review section remains focused and clutter-free.
 ```bash
     npm run start
 ```
-# [GSOC REPORT](https://gist.github.com/JyothiSwaroopReddy07/89c56164a48a833e2bfdc8a5256c46d1)
+## [GSOC REPORT](https://gist.github.com/JyothiSwaroopReddy07/89c56164a48a833e2bfdc8a5256c46d1)
 
 
 # Screenshots
