@@ -79,7 +79,10 @@ const PubMedSearch = () => {
       const abstractData = await abstractResponse.text();
       const parser = new DOMParser();
       const xml = parser.parseFromString(abstractData, 'text/xml');
-      const abstract = xml.querySelector('AbstractText').textContent;
+      let abstract = "";
+      if(xml.querySelector('AbstractText')!==null){
+        abstract = xml.querySelector('AbstractText').textContent;
+      }
 
       const response = await axios.post(baseURL, {
         article_name: article.title,
@@ -100,6 +103,7 @@ const PubMedSearch = () => {
         },
       });
     } catch (error) {
+      console.log(error);
       ToastMaker(error.response.data.error, 3500,{
         valign: 'top',
           styles : {
@@ -108,7 +112,6 @@ const PubMedSearch = () => {
           }
       })
       setLoading(false);
-      console.log(error);
       return;
     }
     setLoading(false);
