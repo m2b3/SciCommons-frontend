@@ -1,4 +1,4 @@
-# SciCommons
+# SciCommons  
 
 The changing landscape of academic publishing requires robust, transparent, and faster review systems. The Sci-commons portal, developed during Google Summer of Code 2023, addresses these challenges by combining traditional peer review mechanisms with community-driven open-review systems. Additionally, the platform champions anonymous reviews to ensure ethical and unbiased feedback.
 
@@ -50,7 +50,7 @@ Ensures that the review section remains focused and clutter-free.
 ```bash
     npm run start
 ```
-
+# [GSOC REPORT](https://gist.github.com/JyothiSwaroopReddy07/89c56164a48a833e2bfdc8a5256c46d1)
 
 
 # Screenshots
