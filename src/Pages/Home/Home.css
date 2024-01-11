@@ -9769,11 +9769,6 @@ select.text-input {
     text-align: center
 }
 
-@media (max-width: 600px) {
-    .tabs-03__buttons_list {
-        display:none
-    }
-}
 
 .tabs-03__item_list {
     padding: 0;
@@ -16572,6 +16567,10 @@ main .text--04__big_text * {
     stroke: #303030
 }
 
+.js-faq-item{
+    display:block;
+}
+
 .faq-01__answer {
     display: none;
     margin-top: 20px;
@@ -16751,7 +16750,28 @@ html .bg-mature-color .faq-02__question_heading {
     color: #303030
 }
 
+.faq-02__answer {
+    display: none;
+    margin-top: 20px;
+    color: #303030;
+    font-weight: 400
+}
+
 .faq-03__answer {
+    display: none;
+    margin-top: 20px;
+    color: #303030;
+    font-weight: 400
+}
+
+.faq-04__answer {
+    display: none;
+    margin-top: 20px;
+    color: #303030;
+    font-weight: 400
+}
+
+.faq-05__answer {
     display: none;
     margin-top: 20px;
     color: #303030;

@@ -1,8 +1,45 @@
-import React from "react";
+import React,{useState} from "react";
 import "./Home.css";
 import NavBar from "../../Components/NavBar/NavBar";
 
 const Home = () => {
+
+  const [idx,setIdx] = useState(0);
+  const [displayData, setDisplayData] = useState([
+    {
+      "title": "Submit your Article",
+      "image": "./ux-indonesia-8mikJ83LmSQ-unsplash.jpg",
+      "description": "We highly encourage you to share your research findings with a broader audience.One of the best platforms for this is SciCommons. By submitting your work to SciCommons, you can gain valuable feedback and visibility within the scientific community. It's a great step towards collaborative knowledge and advancement in your field."
+    },
+    {
+      "title": "Get it reviewed",
+      "image": "./kaleidico-3V8xo5Gbusk-unsplash.jpg",
+      "description": "It's imperative to ensure the credibility and quality of your research work. One of the most effective ways to achieve this is by getting it reviewed by fellow users or peers in the field. These users, equipped with their expertise and experience, can offer constructive feedback, highlight potential areas of improvement, and validate the significance of your findings. Such a peer-review process not only enhances the reliability of your research but also fosters a collaborative environment for academic and professional growth. Engaging with your peers and incorporating their insights can significantly elevate the impact and acceptance of your work within the community."
+    },
+    {
+      "title": "Improve your Article",
+      "image": "./alessandro-bianchi-_kdTyfnUFAc-unsplash.jpg",
+      "description": "Enhancing the quality of your article is paramount to effectively convey your message and engage readers. Start by revisiting the structure, ensuring a logical flow of ideas that's easy to follow. Ensure that your arguments are supported with robust evidence and data. Employ a clear and concise writing style, eliminating any redundant or repetitive content. Paying close attention to grammar and punctuation is crucial for maintaining professionalism. Lastly, seek feedback from peers or experts in the field; their insights can offer invaluable perspectives to elevate your content further. Remember, a well-crafted article not only informs but also inspires its readers."
+    },
+  ]);
+
+  const show = (i)=>{
+    let str = ".faq-0"+(i);
+    str+="__answer";
+    const faqAnswer = document.querySelector(str);
+    console.log(str);
+    if (faqAnswer) {
+      const currentDisplay = window.getComputedStyle(faqAnswer).getPropertyValue('display');
+
+      if (currentDisplay === 'none') {
+        faqAnswer.style.display = 'block';
+      } else {
+        faqAnswer.style.display = 'none';
+      }
+    }
+
+  }
+
   return (
     <>
       <NavBar />
@@ -94,6 +131,8 @@ const Home = () => {
                         type="button"
                         data-index="tab-0"
                         data-group="my-images-group-tabs-03-581951"
+                        onClick={()=>{setIdx(0)}}
+                        style={{ backgroundColor: idx===0 ? 'green' : 'white', color: idx===0?'white':'green' }}
                       >
                         Submit
                       </button>
@@ -105,6 +144,8 @@ const Home = () => {
                         style={{border:"2px solid #10b981"}}
                         data-index="tab-1"
                         data-group="my-images-group-tabs-03-581951"
+                        onClick={()=>{setIdx(1)}}
+                        style={{ backgroundColor: idx===1 ? 'green' : 'white', color: idx===1?'white':'green' }}
                       >
                         Review
                       </button>
@@ -116,6 +157,8 @@ const Home = () => {
                         style={{border:"2px solid #10b981"}}
                         data-index="tab-2"
                         data-group="my-images-group-tabs-03-581951"
+                        onClick={()=>{setIdx(2)}}
+                        style={{ backgroundColor: idx===2 ? 'green' : 'white', color: idx===2?'white':'green' }}
                       >
                         Improve
                       </button>
@@ -134,71 +177,13 @@ const Home = () => {
                         >
                           <div  className="tabs-03__video-container">
                           <div className="flex-1 text-center mt-7 lg:mt-0 lg:ml-3">
-                            <img src={process.env.PUBLIC_URL + "./ux-indonesia-8mikJ83LmSQ-unsplash.jpg"} alt="submit"/>
+                            <img src={`${process.env.PUBLIC_URL}/${displayData[idx].image}`} style={{ width: '50rem', height: '25rem' }} alt="submit"/>
                           </div>
                           </div>
                           <div  className="tabs-03__text">
-                            <h2  className="text-2xl text-green-800 font-bold">Submit Your Article</h2>
+                            <h2  className="text-2xl text-green-800 font-bold">{displayData[idx].title}</h2>
                             <div  className="content_box ">
-                            We highly encourage you to share your research findings with a broader audience. 
-                            One of the best platforms for this is SciCommons. 
-                            By submitting your work to SciCommons, you can gain valuable feedback and visibility within the scientific community. 
-                            It's a great step towards collaborative knowledge and advancement in your field.
-                            </div>
-                            <div  className="tabs-03__cta" />
-                          </div>
-                        </div>
-                      </li>
-                      <li
-                         className="tabs-03__item_box js-tab-content "
-                        data-index="tab-1"
-                        data-group="my-images-group-tabs-03-581951"
-                      >
-                        <div
-                           className="tabs-03__item js-tab-content-item"
-                          data-height=""
-                        >
-                          <div  className="tabs-03__video-container">
-                          <div className="flex-1 text-center mt-7 lg:mt-0 lg:ml-3">
-                            <img src={process.env.PUBLIC_URL + "./kaleidico-3V8xo5Gbusk-unsplash.jpg"} alt="review"/>
-                          </div>
-                          </div>
-                          <div  className="tabs-03__text">
-                            <h2  className="text-2xl text-green-800 font-bold">Get It Reviewed</h2>
-                            <div  className="content_box ">
-                            It's imperative to ensure the credibility and quality of your research work. 
-                            One of the most effective ways to achieve this is by getting it reviewed by fellow users or peers in the field. 
-                            These users, equipped with their expertise and experience, can offer constructive feedback, highlight potential areas of improvement, and validate the significance of your findings. 
-                            Such a peer-review process not only enhances the reliability of your research but also fosters a collaborative environment for academic and professional growth. 
-                            Engaging with your peers and incorporating their insights can significantly elevate the impact and acceptance of your work within the community.
-                            </div>
-                            <div  className="tabs-03__cta" />
-                          </div>
-                        </div>
-                      </li>
-                      <li
-                         className="tabs-03__item_box js-tab-content "
-                        data-index="tab-2"
-                        data-group="my-images-group-tabs-03-581951"
-                      >
-                        <div
-                           className="tabs-03__item js-tab-content-item"
-                          data-height=""
-                        >
-                          <div  className="tabs-03__video-container">
-                          <div className="flex-1 text-center mt-7 lg:mt-0 lg:ml-3">
-                            <img className="h-[600px]" src={process.env.PUBLIC_URL + "./alessandro-bianchi-_kdTyfnUFAc-unsplash.jpg"} alt="improve"/>
-                          </div>
-                          </div>
-                          <div  className="tabs-03__text">
-                            <h2  className="text-2xl text-green-800 font-bold">Improve Your Article</h2>
-                            <div  className="content_box ">
-                            Enhancing the quality of your article is paramount to effectively convey your message and engage readers. 
-                            Start by revisiting the structure, ensuring a logical flow of ideas that's easy to follow. Ensure that your arguments are supported with robust evidence and data. 
-                            Employ a clear and concise writing style, eliminating any redundant or repetitive content. 
-                            Paying close attention to grammar and punctuation is crucial for maintaining professionalism. 
-                            Lastly, seek feedback from peers or experts in the field; their insights can offer invaluable perspectives to elevate your content further. 
-                            Remember, a well-crafted article not only informs but also inspires its readers.
+                              {displayData[idx].description}
                             </div>
                             <div  className="tabs-03__cta" />
                           </div>
@@ -515,6 +500,7 @@ const Home = () => {
                        className="faq-01__question js-open-faq color-main border-2 border-green-500"
                        style={{"border":"2px solid #10b981"}}
                       type="button"
+                      onClick={()=>{show(1)}}
                     >
                       <div  className="faq-01__question_text text-green-500">
                         How are reviewers picked by the system?
@@ -569,7 +555,7 @@ const Home = () => {
                           </span>
                         </div>
                       </div>
-                      <div  className="faq-01__answer js-faq-item">
+                      <div  className="faq-01__answer">
                         <div  className="content_box">
                           <div  className="faq-01__answer_text">
                           Reviewers are chosen randomly to guarantee impartial assessments. By employing this method, the system aims to prevent any potential biases that could influence the review process. This random selection ensures that each submission receives a fair evaluation, upholding the integrity and credibility of the reviewing mechanism. It's a critical step in maintaining objectivity and trust in the review process.
@@ -583,6 +569,7 @@ const Home = () => {
                        className="faq-01__question js-open-faq color-main border-2 border-green-500"
                        style={{"border":"2px solid #10b981"}}
                       type="button"
+                      onClick={()=>{show(2)}}
                     >
                       <div  className="faq-01__question_text text-green-500">
                         Are users assigned a random handle name for each article?
@@ -637,7 +624,7 @@ const Home = () => {
                           </span>
                         </div>
                       </div>
-                      <div  className="faq-01__answer js-faq-item">
+                      <div  className="faq-02__answer">
                         <div  className="content_box">
                           <div  className="faq-01__answer_text">
                           Indeed, users are provided with a random handle name for each article to ensure anonymity. This system promotes unbiased interactions and feedback, as the identity of the contributor remains concealed, allowing the content to be the primary focus.
@@ -651,6 +638,7 @@ const Home = () => {
                        className="faq-01__question js-open-faq color-main border-2 border-green-500"
                        style={{"border":"2px solid #10b981"}}
                       type="button"
+                      onClick={()=>{show(3)}}
                     >
                       <div  className="faq-01__question_text text-green-500">
                       Are users rated based on the reaction scores they receive for a review?
@@ -705,7 +693,7 @@ const Home = () => {
                           </span>
                         </div>
                       </div>
-                      <div  className="faq-01__answer js-faq-item">
+                      <div  className="faq-03__answer">
                         <div  className="content_box">
                           <div  className="faq-01__answer_text">
                           Indeed, users are evaluated based on the reaction scores they garner for their reviews. This scoring system is instrumental in upholding the quality of reviews on our platform. By providing a metric for feedback, we can encourage constructive criticism and ensure that reviewers are motivated to offer insightful and valuable feedback. Such measures are vital to foster a credible and trustworthy review environment.
@@ -719,6 +707,7 @@ const Home = () => {
                        className="faq-01__question js-open-faq color-main border-2 border-green-500"
                        style={{"border":"2px solid #10b981"}}
                       type="button"
+                      onClick={()=>{show(4)}}
                     >
                       <div  className="faq-01__question_text text-green-500">
                       Can I submit more than one review for an article?
@@ -773,7 +762,7 @@ const Home = () => {
                           </span>
                         </div>
                       </div>
-                      <div  className="faq-01__answer js-faq-item">
+                      <div  className="faq-04__answer">
                         <div  className="content_box">
                           <div  className="faq-01__answer_text">
                           No, each user is allowed only one review for an article to ensure diverse feedback. However, if you wish to modify or update your thoughts, you have the flexibility to edit your existing review. This ensures that you can refine your feedback while still adhering to the platform's guidelines.
@@ -787,8 +776,9 @@ const Home = () => {
                        className="faq-01__question js-open-faq color-main border-2 border-green-500"
                        style={{"border":"2px solid #10b981"}}
                       type="button"
+                      onClick={()=>{show(5)}}
                     >
-                      <div  className="faq-01__question_text text-green-500">
+                      <div  className="faq-01__question_text text-green-500" >
                       Is the review process still open after the article has been published?
                         <div  className="faq-01__arrow_icon">
                           <span  className="icon">
@@ -841,7 +831,7 @@ const Home = () => {
                           </span>
                         </div>
                       </div>
-                      <div  className="faq-01__answer js-faq-item">
+                      <div  className="faq-05__answer">
                         <div  className="content_box">
                           <div  className="faq-01__answer_text">
                           Yes, the review process continues even after the article has been published. By keeping it open, we encourage ongoing dialogue and ensure that authors receive continuous feedback. This approach facilitates iterative improvement and adapts to the evolving perspectives of readers and experts.
