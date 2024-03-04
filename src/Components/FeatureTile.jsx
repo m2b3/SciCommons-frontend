@@ -1,7 +1,6 @@
 import React from "react";
 
 function FeatureTile({ item, key }) {
-  console.log(item);
   return (
     <li className="links-06__article bg-white" key={key}>
       <div className="links-06__logo">{item.icon}</div>
