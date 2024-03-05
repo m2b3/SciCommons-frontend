@@ -1,6 +1,5 @@
 // src/Profile.js
 import React, {useState, useEffect} from 'react';
-import NavBar from '../../Components/NavBar/NavBar';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {SlUser} from "react-icons/sl";
@@ -536,7 +535,6 @@ const loadUserData = async(res) => {
 
   return (
     <>
-        <NavBar/>
         {!loading && User!==null && <div className="container mx-auto px-4 w-full md:w-1/2">
           <div className="flex items-center mt-8 flex-col">
               {User.profile_pic_url.includes("None")?<SlUser className="w-12 h-12 text-black-800 mr-4"/>: 

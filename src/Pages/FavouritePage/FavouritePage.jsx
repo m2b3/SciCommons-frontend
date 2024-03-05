@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import NavBar from "../../Components/NavBar/NavBar";
 import axios from "axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
@@ -96,7 +95,6 @@ const FavouritePage = () => {
 
     return (
         <>
-            <NavBar />
             <div className="flex flex-col items-center justify-start w-full bg-gray-50 min-h-screen">
                 <h1 className="text-3xl font-bold text-gray-700 mt-2">Favourite Articles</h1>
                 <form className="w-5/6 px-4 mt-2 md:w-2/3" onSubmit={handleSearch}>

@@ -1,7 +1,6 @@
 // src/Feed.js
 import React, { useState, useEffect } from 'react';
 import { IoHeartOutline, IoHeart, IoChatbubbleOutline, IoBookmarkOutline,IoBookmark, IoPaperPlaneOutline } from 'react-icons/io5';
-import NavBar from '../../Components/NavBar/NavBar';
 import { Link, useNavigate } from 'react-router-dom';
 import 'react-toggle/style.css';
 import axios from 'axios';
@@ -183,7 +182,6 @@ const Timeline = () => {
 
   return (
     <>
-      <NavBar />
       { !loading &&
           <div className="bg-white mt-[-10px] w-full min-h-screen"> 
             <div className="container mx-auto px-4 w-full md:w-1/2 mt-4 pt-3">

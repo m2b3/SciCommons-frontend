@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import { MdAddBox,MdRemoveCircle } from "react-icons/md";
 import "./SubmitArticle.css";
-import NavBar from "../../Components/NavBar/NavBar";
 import Footer from "../../Components/Footer/Footer";
 import Loader from "../../Components/Loader/Loader";
 import axios from "axios";
@@ -476,7 +475,6 @@ const SubmitArticle = () => {
 
   return (
     <>
-    <NavBar/>
     <div className="w-full mt-4">
       <div className="flex flex-row justify-center">
         <button className={currentState === 1 ? 'mb-2 text-sm md:text-xl text-green-600 px-2 font-bold md:px-5 py-2 border-b-2 border-green-600' : 'mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200 py-2'} 

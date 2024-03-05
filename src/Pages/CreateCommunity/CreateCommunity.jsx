@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import "./CreateCommunity.css";
-import NavBar from "../../Components/NavBar/NavBar";
 import Footer from "../../Components/Footer/Footer";
 import axios from "axios";
 import ToastMaker from 'toastmaker';
@@ -138,7 +137,6 @@ const CreateCommunity = () => {
 
   return (
     <>
-    <NavBar/>
     <div className="flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-4 mt-4 text-center text-gray-500">
         Create a Community

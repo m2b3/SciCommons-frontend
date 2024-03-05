@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios';
 import Post from '../../Components/Post/Post';
 import Loader from '../../Components/Loader/Loader';
-import NavBar from '../../Components/NavBar/NavBar';
 import { useNavigate } from 'react-router-dom';
 import 'react-toggle/style.css';
 import ReactQuill from 'react-quill';
@@ -189,7 +188,6 @@ const MyPostsPage = () => {
 
   return (
     <>
-     <NavBar />
      {(loading || posts===null) && <Loader/>}
     { !loading && posts!==null && 
         <> 

@@ -5,7 +5,6 @@ import folder from './folder.png'
 import eye from './eye-open.png'
 import dublicate from './duplicate.png'
 import bookmark from './bookmark.png'
-import Navbar from '../../Components/NavBar/NavBar'
 import {useParams, useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../../Components/Loader/Loader'
@@ -815,7 +814,6 @@ const  CommunityArticlePage = () => {
 
     return (
         <div className="bg-white min-h-screen min-w-[800px]">
-        <Navbar/>
         {(loading || article===null || comments ===null ) && <Loader/>}
         {!loading && article && comments && (
             <div className="bg-white">

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import NavBar from "../../Components/NavBar/NavBar";
 import axios from "axios";
 import Loader from "../../Components/Loader/Loader";
 import Footer from "../../Components/Footer/Footer";
@@ -239,7 +238,6 @@ const MyArticlesPage = () => {
 
     return (
         <>
-            <NavBar />
             <div className="flex flex-col items-center justify-center w-full bg-gray-50">
                 <h1 className="text-3xl font-bold text-gray-700 mt-10">My Articles</h1>
                 <form className="w-5/6 px-4 mt-3 md:w-2/3" onSubmit={handleSearch}>

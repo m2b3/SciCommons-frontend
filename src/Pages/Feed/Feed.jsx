@@ -1,7 +1,6 @@
 // src/Feed.js
 import React, { useState, useEffect, useRef } from 'react';
 import { IoHeartOutline, IoHeart, IoChatbubbleOutline, IoBookmarkOutline,IoBookmark, IoPaperPlaneOutline } from 'react-icons/io5';
-import NavBar from '../../Components/NavBar/NavBar';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {AiOutlinePlus, AiOutlineMinus} from 'react-icons/ai';
 import Toggle from 'react-toggle';
@@ -263,7 +262,6 @@ const Feed = () => {
 
   return (
     <>
-    <NavBar />
         <div className="bg-green-50 md:bg-white min-h-screen"> 
         <div className="p-2 w-full md:w-1/2 mx-auto">
           <div className="flex flex-row justify-between items-center mt-2">

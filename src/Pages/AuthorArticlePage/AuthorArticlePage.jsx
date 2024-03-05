@@ -4,7 +4,6 @@ import cal from "./calendar.png";
 import folder from "./folder.png";
 import eye from "./eye-open.png";
 import dublicate from "./duplicate.png";
-import Navbar from "../../Components/NavBar/NavBar";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../Components/Loader/Loader";
@@ -656,7 +655,6 @@ const AuthorArticlePage = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <Navbar />
       {(loading|| article===null) && <Loader />}
       {!loading && article!==null && (
         <div className="bg-white">

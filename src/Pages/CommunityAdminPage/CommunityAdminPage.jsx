@@ -1,6 +1,5 @@
 import React,{useEffect} from 'react';
 import { useState } from 'react'; 
-import NavBar from '../../Components/NavBar/NavBar';
 import CommunityEditPage from '../../Components/CommunityEditPage/CommunityEditPage';
 import JoinRequests from '../../Components/JoinRequests/JoinRequests'
 import axios from "axios"
@@ -48,7 +47,6 @@ const onclickFuntion = (indext)=>{
 
   return(
     <div className="w-full">
-        <NavBar/>
         {loading && <Loader/>}
 
         {!loading && 

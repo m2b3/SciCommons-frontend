@@ -3,7 +3,6 @@ import {useParams, useNavigate} from 'react-router-dom'
 import axios from 'axios';
 import ArticleCard from '../../Components/ArticleCard/ArticleCard';
 import Loader from '../../Components/Loader/Loader';
-import NavBar from '../../Components/NavBar/NavBar';
 import {MdLocationPin, MdSubscriptions} from 'react-icons/md';
 import {BsGithub} from 'react-icons/bs';
 import {BiLogoGmail} from 'react-icons/bi';
@@ -317,7 +316,6 @@ const CommunityPage = () => {
 
     return (
         <>
-        <NavBar />
         { loading && community===null && (<Loader/>)}
         { !loading && community!==null &&    (
             <>

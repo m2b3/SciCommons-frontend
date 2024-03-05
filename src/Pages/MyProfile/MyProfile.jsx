@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import NavBar from '../../Components/NavBar/NavBar';
 import Loader from '../../Components/Loader/Loader';
 import {useGlobalContext} from '../../Context/StateContext';
 import {SlUser} from "react-icons/sl";
@@ -105,7 +104,6 @@ const MyProfile = () => {
 
     return (
         <div>
-            <NavBar />
             {(loading||user===null) && <Loader/>}
             {!loading && user!==null && 
             <div className="flex flex-col items-center h-full mb-5">

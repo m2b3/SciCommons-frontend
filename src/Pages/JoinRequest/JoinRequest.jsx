@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
 import axios from 'axios'
-import NavBar from '../../Components/NavBar/NavBar'
 import ToastMaker from 'toastmaker';
 import "toastmaker/dist/toastmaker.css";
 import {useGlobalContext} from '../../Context/StateContext';
@@ -125,7 +124,6 @@ const JoinRequest = () => {
 
   return (
     <>
-          <NavBar/>
             <div className="flex flex-col items-center justify-center">
             <h1 className="text-4xl font-bold mb-4 mt-4 text-center text-gray-500">
                 {communityName} Join Request Form

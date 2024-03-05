@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "./Home.css";
-import NavBar from "../../Components/NavBar/NavBar";
-import { HomeCarousalData, HomeFeaturesTileData, faqs } from "../../Utils/Constants/Home";
+import {
+  HomeCarousalData,
+  HomeFeaturesTileData,
+  faqs,
+} from "../../Utils/Constants/Home";
 import FeatureTile from "./Components/FeatureTile";
 import FaqAccordian from "./Components/FaqAccordian";
 
@@ -29,7 +32,6 @@ const Home = () => {
 
   return (
     <>
-      <NavBar />
       <div className="custom-google-fonts-enabled comps" id="107237-212152">
         <div
           className="page-component__bg_image_box bg-medium-color"
@@ -225,9 +227,7 @@ const Home = () => {
               <div className="container links-06__container">
                 <ul className="links-06__list links-06__list--bigger">
                   {HomeFeaturesTileData.map((item, index) => {
-                    return (
-                      <FeatureTile item={item} key={index} />
-                    );
+                    return <FeatureTile item={item} key={index} />;
                   })}
                 </ul>
                 <div className="bottom_cta" />
@@ -254,9 +254,7 @@ const Home = () => {
               </div>
               <div className="container container--small">
                 {faqs.map((faq, index) => {
-                  return (
-                    <FaqAccordian faq={faq} index={index} />
-                  );
+                  return <FaqAccordian faq={faq} index={index} />;
                 })}
                 <div className="bottom_cta" />
               </div>

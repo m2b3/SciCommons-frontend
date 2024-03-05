@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import NavBar from "../../Components/NavBar/NavBar";
 import { useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
 import {
@@ -214,7 +213,6 @@ const SinglePost = () => {
 
   return (
     <>
-      <NavBar />
       <div className="overflow-hidden bg-green-50 min-h-screen">
         {(loading || post === null) && <Loader />}
         {!loading && post !== null && (

@@ -7,7 +7,6 @@ import {
   IoBookmark,
   IoPaperPlaneOutline,
 } from "react-icons/io5";
-import NavBar from "../../Components/NavBar/NavBar";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import Toggle from "react-toggle";
@@ -100,7 +99,6 @@ const BookMarks = () => {
 
   return (
     <>
-      <NavBar />
       {!loading && (
         <>
           <div className="flex flex-row justify-center items-center mx-auto px-4 w-full md:w-1/2 mt-2">

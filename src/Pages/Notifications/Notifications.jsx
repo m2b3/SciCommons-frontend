@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import NavBar from '../../Components/NavBar/NavBar';
 import './Notifications.css';
 import axios from 'axios';
 import Loader from "../../Components/Loader/Loader";
@@ -134,7 +133,6 @@ const Notifications = () => {
 
   return (
     <div>
-        <NavBar />
         <div className="flex flex-col items-center justify-center">
             <h1 className="text-4xl font-bold mt-4 text-center text-green-500">
                 Notifications
