@@ -140,6 +140,6 @@ Ensures that the review section remains focused and clutter-free.
 ![CommentForm](https://user-images.githubusercontent.com/107217455/274803300-7a427a7d-df48-4366-8bd1-d9245822e519.png)
 
 
-
-
-
+**
+CHAT CORNER**
+![Screenshot (74)](https://github.com/adarshjha7/SciCommons-frontend/assets/98156564/58b023ab-232e-4d25-b77f-0d0ff3cf864f)
