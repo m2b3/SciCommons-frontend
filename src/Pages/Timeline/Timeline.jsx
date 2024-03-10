@@ -4,7 +4,7 @@ import { IoHeartOutline, IoHeart, IoChatbubbleOutline, IoBookmarkOutline,IoBookm
 import NavBar from '../../Components/NavBar/NavBar';
 import { Link, useNavigate } from 'react-router-dom';
 import 'react-toggle/style.css';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import ToastMaker from 'toastmaker';
 import "toastmaker/dist/toastmaker.css";
 import Loader from '../../Components/Loader/Loader';
@@ -80,7 +80,7 @@ const PostModal = ({setIsAccordionOpen}) => {
         },
     };
     try{
-        const res = await axios.post("/api/feed/", form_data, config);
+        const res = await axios.post("https://scicommons-backend-vkyc.onrender.com/api/feed/", form_data, config);
         ToastMaker('Post created successfully!!!', 3500,{
           valign: 'top',
             styles : {
@@ -161,7 +161,7 @@ const Timeline = () => {
         },
     }
     try{
-        const res = await axios.get("/api/feed/timeline/", config)
+        const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/feed/timeline/", config)
 
         if(res.data.success.length === 0){
             await loadData([])

@@ -7,7 +7,7 @@ import dublicate from './duplicate.png'
 import bookmark from './bookmark.png'
 import Navbar from '../../Components/NavBar/NavBar'
 import {useParams, useNavigate} from 'react-router-dom'
-import axios from '../../utils/axios'
+import axios from 'axios'
 import Loader from '../../Components/Loader/Loader'
 import Comments from '../../Components/Comments/Comments'
 import {AiFillHeart, AiTwotoneStar, AiOutlineHeart} from 'react-icons/ai'
@@ -72,7 +72,7 @@ const ArticleCommentModal = ({setShowCommentModal, article, handleComment }) => 
         };
         const comment_Type = (article.isArticleModerator || article.isArticleReviewer || article.isAuthor)?"officialcomment":"publiccomment";
         try {
-            const res = await axios.post(`/api/comment/`,
+            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/`,
             {Title: title,Comment: comment, article: article.id, Type: 'comment', comment_Type:comment_Type, tag: communityName, parent_comment:null,version:null}, 
             config);
             setLoading(false);
@@ -210,7 +210,7 @@ const ArticleReviewModal = ({setShowReviewModal, article, handleComment}) => {
             }
         };
         try {
-            const res = await axios.post(`/api/comment/`,
+            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/`,
             {Title: title,Comment: comment, article: article.id, rating: rating, confidence: confidence, Type: 'review',comment_Type: comment_Type, tag:communityName, parent_comment:null,version:null}, 
             config);
             setLoading(false);
@@ -394,7 +394,7 @@ const ArticleDecisionModal = ({setShowDecisionModal, article, handleComment}) =>
 
         const comment_Type = (article.isArticleModerator || article.isArticleReviewer || article.isAuthor)?"officialcomment":"publiccomment";
         try {
-            const res = await axios.post(`/api/comment/`,
+            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/`,
             {Title: title,Comment: comment, article: article.id,decision: decision, Type: 'decision',comment_Type: comment_Type, tag:communityName,parent_comment:null,version:null}, 
             config);
             setLoading(false);
@@ -540,7 +540,7 @@ const  CommunityArticlePage = () => {
             }
         };
         try{
-            const res = await axios.put(`/api/article/${articleId}/updateviews/`,config);
+            const res = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/article/${articleId}/updateviews/`,config);
         }   catch(err){
             console.log(err);
         }
@@ -557,7 +557,7 @@ const  CommunityArticlePage = () => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.get(`/api/community/${communityName}/`, config )
+            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/${communityName}/`, config )
             await loadCommunity(res.data.success);
             if(!res.data.success.isMember) {
                 ToastMaker(`You are not member of ${res.data.success.Community_name}`, 3000, {
@@ -592,7 +592,7 @@ const  CommunityArticlePage = () => {
             }
         };
         try {
-            const res = await axios.get(`/api/article/${articleId}`,config);
+            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/${articleId}`,config);
             await loadArticleData(res.data.success);
         } catch(err){
             console.log(err);
@@ -631,7 +631,7 @@ const  CommunityArticlePage = () => {
                 }
         };
         try {
-            const res = await axios.get(`/api/comment/`, config);
+            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/comment/`, config);
             await loadCommentData(res.data.success.results);
         } catch(err){
             console.log(err);
@@ -696,7 +696,7 @@ const  CommunityArticlePage = () => {
         };
         if(article.isFavourite === false) {
             try {
-                const res = await axios.post(`/api/article/favourite/`,{article:articleId}, config);
+                const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/article/favourite/`,{article:articleId}, config);
                 const newArticle = {...article, isFavourite: true, favourites: article.favourites+1};
                 await loadArticleData(newArticle);
             } catch(err){
@@ -704,7 +704,7 @@ const  CommunityArticlePage = () => {
             }
         } else {
             try {
-                const res = await axios.post(`/api/article/unfavourite/`,{article:articleId}, config);
+                const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/article/unfavourite/`,{article:articleId}, config);
                 const newArticle = {...article, isFavourite: false, favourites: article.favourites-1};
                 await loadArticleData(newArticle);
             } catch(err){
@@ -761,7 +761,7 @@ const  CommunityArticlePage = () => {
           },
         };
         try {
-          const res = await axios.get(`/api/comment/?limit=20&offset=${comments.length}`, config);
+          const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/comment/?limit=20&offset=${comments.length}`, config);
           await loadCommentData([...comments, ...res.data.success.results]);
         } catch (err) {
           console.log(err);

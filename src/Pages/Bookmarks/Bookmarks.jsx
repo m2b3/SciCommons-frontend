@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import Toggle from "react-toggle";
 import "react-toggle/style.css";
-import axios from '../../utils/axios';
+import axios from "axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../../Components/Loader/Loader";
@@ -51,7 +51,7 @@ const BookMarks = () => {
     };
     try {
       const res = await axios.get(
-        "/api/feed/bookmarks/",
+        "https://scicommons-backend-vkyc.onrender.com/api/feed/bookmarks/",
         config
       );
       if (res.data.success.length === 0) {
@@ -75,7 +75,7 @@ const BookMarks = () => {
     };
     try {
       const res = await axios.get(
-        `/api/feed/bookmarks/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feed/bookmarks/`,
         config
       );
       if (res.data.success.length === 0) {

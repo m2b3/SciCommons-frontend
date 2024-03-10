@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import NavBar from '../../Components/NavBar/NavBar';
 import './UserActivity.css';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -16,7 +16,7 @@ const UserActivity = () => {
     const fetchActivity = async () => {
       setLoading(true);
       try {
-            const response = await axios.get('/api/user/myactivity/', {
+            const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/user/myactivity/', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = response.data.success;

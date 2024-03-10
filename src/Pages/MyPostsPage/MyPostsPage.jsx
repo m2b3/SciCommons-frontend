@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import axios from '../../utils/axios';
+import axios from 'axios';
 import Post from '../../Components/Post/Post';
 import Loader from '../../Components/Loader/Loader';
 import NavBar from '../../Components/NavBar/NavBar';
@@ -76,7 +76,7 @@ const PostModal = ({setIsAccordionOpen, getPosts}) => {
         },
     };
     try{
-        const res = await axios.post("/api/feed/", form_data, config);
+        const res = await axios.post("https://scicommons-backend-vkyc.onrender.com/api/feed/", form_data, config);
         await getPosts();
         ToastMaker('Post created successfully!!!', 3500,{
           valign: 'top',
@@ -161,7 +161,7 @@ const MyPostsPage = () => {
             }
         };
         try{
-            const res = await axios.get(`/api/user/myposts/`, config);
+            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/user/myposts/`, config);
             await loadData(res.data.success);
         } catch(err) {
             console.log(err);

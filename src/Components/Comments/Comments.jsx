@@ -4,7 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
-import axios from '../../utils/axios';
+import axios from "axios";
 import {IoIosArrowBack,IoIosArrowForward} from "react-icons/io";
 import { useGlobalContext} from '../../Context/StateContext';
 import Box from '@mui/material/Box';
@@ -58,7 +58,7 @@ const ArticleCommentModal = ({setShowCommentModal, article, Comment, handleComme
       };
       const comment_Type = (article.isArticleModerator || article.isArticleReviewer || article.isAuthor)?"officialcomment":"publiccomment";
       try {
-          const res = await axios.post(`/api/comment/`,
+          const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/`,
           {Title: title,Comment: comment, article: article.id, Type: 'comment', comment_Type:comment_Type, tag: "public", parent_comment:Comment.id}, 
           config);
           setLoading(false);
@@ -185,7 +185,7 @@ const ArticleCommentEditModal = ({setShowEditModal, article, Comment, version, h
       };
       const comment_Type = (article.isArticleModerator || article.isArticleReviewer || article.isAuthor)?"officialcomment":"publiccomment";
       try {
-          const res = await axios.post(`/api/comment/`,
+          const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/`,
           {Title: title,Comment: comment, article: article.id, Type: 'comment', comment_Type:comment_Type, tag: "public",parent_comment:null, version:Comment.id}, 
           config);
           setLoading(false);
@@ -390,7 +390,7 @@ const Comments = ({ comment, article, colour }) => {
       }
     };
     try {
-      const res = await axios.post(`/api/comment/like/`,
+      const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/like/`,
       {post:comment.id, value:event.target.value}, 
       config);
       ToastMaker("Comment Rated Successfully!!!", 3000, {
@@ -434,7 +434,7 @@ const Comments = ({ comment, article, colour }) => {
     }
     try {
       const res = await axios.get(
-        `/api/comment/?limit=20&offset=${repliesData.length}`,
+        `https://scicommons-backend-vkyc.onrender.com/api/comment/?limit=20&offset=${repliesData.length}`,
         config
       );
       await loadData(res.data.success.results);
@@ -666,7 +666,7 @@ const Dropdown = ({ article,comment,color}) => {
           }
       };
       try{
-      const response = await axios.post(`/api/comment/${comment.id}/block_user/`,config);
+      const response = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/comment/${comment.id}/block_user/`,config);
       setBlock(!block);
       } catch(error){
         console.log(error);
@@ -682,7 +682,7 @@ const Dropdown = ({ article,comment,color}) => {
         }
     };
     try{
-    const response = await axios.delete(`/api/comment/${comment.id}/`,config);
+    const response = await axios.delete(`https://scicommons-backend-vkyc.onrender.com/api/comment/${comment.id}/`,config);
     window.location.reload();
     } catch(error){
       console.log(error);

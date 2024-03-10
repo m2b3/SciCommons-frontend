@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from 'react';
 import NavBar from '../../Components/NavBar/NavBar';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import {SlUser} from "react-icons/sl";
 import Post from '../../Components/Post/Post';
 import Loader from '../../Components/Loader/Loader';
@@ -59,7 +59,7 @@ const Following = ({setFollowingModal, User}) => {
     if(!followers[index].isFollowing){
       try {
         const res = await axios.post(
-          `/api/user/follow/`,{followed_user:followers[index].user},config)
+          `https://scicommons-backend-vkyc.onrender.com/api/user/follow/`,{followed_user:followers[index].user},config)
         let updatedFollowers = [...followers];
         updatedFollowers[index].isFollowing = !updatedFollowers[index].isFollowing;
         await loadData(updatedFollowers);
@@ -70,7 +70,7 @@ const Following = ({setFollowingModal, User}) => {
     }else{
       try {
         const res = await axios.post(
-          `/api/user/unfollow/`,{followed_user:followers[index].user},config)
+          `https://scicommons-backend-vkyc.onrender.com/api/user/unfollow/`,{followed_user:followers[index].user},config)
           let updatedFollowers = [...followers];
           updatedFollowers[index].isFollowing = !updatedFollowers[index].isFollowing;
           await loadData(updatedFollowers);
@@ -112,7 +112,7 @@ const Following = ({setFollowingModal, User}) => {
       }
     }
     try{
-        const res = await axios.get("/api/user/following/", config);
+        const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/user/following/", config);
           await loadData(res.data.success)
     }
     catch(err){
@@ -207,7 +207,7 @@ const Followers = ({setFollowersModal, User}) => {
     if(!followers[index].isFollowing){
       try {
         const res = await axios.post(
-          `/api/user/follow/`,{followed_user:followers[index].user},config)
+          `https://scicommons-backend-vkyc.onrender.com/api/user/follow/`,{followed_user:followers[index].user},config)
         let updatedFollowers = [...followers];
         updatedFollowers[index].isFollowing = !updatedFollowers[index].isFollowing;
         await loadData(updatedFollowers);
@@ -218,7 +218,7 @@ const Followers = ({setFollowersModal, User}) => {
     }else{
       try {
         const res = await axios.post(
-          `/api/user/unfollow/`,{followed_user:followers[index].user},config)
+          `https://scicommons-backend-vkyc.onrender.com/api/user/unfollow/`,{followed_user:followers[index].user},config)
           let updatedFollowers = [...followers];
           updatedFollowers[index].isFollowing = !updatedFollowers[index].isFollowing;
           await loadData(updatedFollowers);
@@ -260,7 +260,7 @@ const Followers = ({setFollowersModal, User}) => {
       }
     }
     try{
-        const res = await axios.get("/api/user/followers/", config);
+        const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/user/followers/", config);
           await loadData(res.data.success)
     }
     catch(err){
@@ -356,7 +356,7 @@ const Profile = () => {
     if(!User.isFollowing){
       try {
         const res = await axios.post(
-          `/api/user/follow/`,{followed_user:User.id},config)
+          `https://scicommons-backend-vkyc.onrender.com/api/user/follow/`,{followed_user:User.id},config)
         let updatedUser = {...User};
         updatedUser.isFollowing = !updatedUser.isFollowing;
         updatedUser.followers = updatedUser.followers + 1;
@@ -368,7 +368,7 @@ const Profile = () => {
     }else{
       try {
         const res = await axios.post(
-          `/api/user/unfollow/`,{followed_user:User.id},config)
+          `https://scicommons-backend-vkyc.onrender.com/api/user/unfollow/`,{followed_user:User.id},config)
         let updatedUser = {...User};
         updatedUser.isFollowing = !updatedUser.isFollowing;
         updatedUser.followers = updatedUser.followers - 1;
@@ -433,7 +433,7 @@ const Profile = () => {
     }
 
     try{
-        const res = await axios.get(`/api/user/${username}/posts/`, config)
+        const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/user/${username}/posts/`, config)
         await loadData(res.data.success)
     } catch(err) {
         console.log(err)
@@ -461,7 +461,7 @@ const Profile = () => {
 
     try {
         const response = await axios.get(
-            `/api/user/${username}/articles/`,
+            `https://scicommons-backend-vkyc.onrender.com/api/user/${username}/articles/`,
             config
         );
         await loadArticleData(response.data.success);
@@ -495,7 +495,7 @@ const loadUserData = async(res) => {
 
     try {
       const res = await axios.get(
-        `/api/user?search=${username}`,config)
+        `https://scicommons-backend-vkyc.onrender.com/api/user?search=${username}`,config)
         if(res.data.success.results.length === 0) {
           ToastMaker("User not found", 3000, {
             valign: "top",

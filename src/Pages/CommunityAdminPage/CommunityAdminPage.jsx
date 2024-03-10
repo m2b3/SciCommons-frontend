@@ -3,7 +3,7 @@ import { useState } from 'react';
 import NavBar from '../../Components/NavBar/NavBar';
 import CommunityEditPage from '../../Components/CommunityEditPage/CommunityEditPage';
 import JoinRequests from '../../Components/JoinRequests/JoinRequests'
-import axios from '../../utils/axios'
+import axios from "axios"
 import Loader from '../../Components/Loader/Loader';
 import MembersTable from '../../Components/MembersTable/MembersTable';
 import AdminArticlePage from '../AdminArticlePage/AdminArticlePage';
@@ -30,7 +30,7 @@ useEffect(() => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.get('/api/community/mycommunity',config)
+            const res = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/community/mycommunity',config)
             await loadData(res.data.success)
     
         } catch (error) {

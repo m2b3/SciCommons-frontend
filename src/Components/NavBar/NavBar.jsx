@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './NavBar.css'
 import {SlUser} from 'react-icons/sl';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import Popper from "popper.js";
 import {useNavigate} from 'react-router-dom';
 import {CiMenuFries} from 'react-icons/ci';
@@ -41,7 +41,7 @@ const NavBar = () => {
 
   const getCurrentUser = async () => {
       try {
-          const response = await axios.get('/api/user/get_current_user/', {
+          const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/', {
               headers: {
                   Authorization: `Bearer ${token}`,
               },

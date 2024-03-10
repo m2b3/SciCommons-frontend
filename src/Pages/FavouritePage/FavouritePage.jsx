@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import NavBar from "../../Components/NavBar/NavBar";
-import axios from '../../utils/axios';
+import axios from "axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
 import Footer from "../../Components/Footer/Footer";
@@ -33,7 +33,7 @@ const FavouritePage = () => {
         };
         try {
             const response = await axios.get(
-                `/api/article/favourites/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/article/favourites/`,
                 config
             );
             await loadData(response.data.success);

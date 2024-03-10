@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import NavBar from '../../Components/NavBar/NavBar';
 import './Notifications.css';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -24,7 +24,7 @@ const NotificationCard = ({ notification, handleMarked }) => {
         },
       }
       try{
-        const response = axios.put(`/api/notification/${notification.id}/`,{is_read:true},config);
+        const response = axios.put(`https://scicommons-backend-vkyc.onrender.com/api/notification/${notification.id}/`,{is_read:true},config);
         setIsRead(true);
         await handleMarked(notification.id);
       } catch(err) {
@@ -76,7 +76,7 @@ const Notifications = () => {
     const fetchNotifications = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('/api/notification/', {
+        const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/notification/', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = response.data.success;
@@ -102,7 +102,7 @@ const Notifications = () => {
     const handleLoadMore = async() => {
       setLoadingMore(true);
       try{
-        const response = await axios.get(`/api/notification/?limit=20&offset=${notifications.length}`, {
+        const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/notification/?limit=20&offset=${notifications.length}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = response.data.success.results;

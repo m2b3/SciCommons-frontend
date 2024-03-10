@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
 import Loader from '../../Components/Loader/Loader';
 import {useGlobalContext} from '../../Context/StateContext';
@@ -47,7 +47,7 @@ const MyProfile = () => {
         };
         try {
             const response = await axios.get(
-                `/api/user/get_current_user/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/`,
                 config
             );
             await loadProfile(response.data.success);
@@ -67,7 +67,7 @@ const MyProfile = () => {
             },
         };
         try {
-            const response = await axios.put(`/api/user/${user.id}/`,form_data,config);
+            const response = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/user/${user.id}/`,form_data,config);
             await loadProfile(response.data.success);
         } catch (error) {
             console.log(error);

@@ -7,7 +7,7 @@ import Send from "@mui/icons-material/Send";
 import Box from "@mui/material/Box";
 import {useEffect, useState} from "react";
 import ListItemText from '@mui/material/ListItemText';
-import axios from '../../utils/axios';
+import axios from "axios";
 import { useGlobalContext } from "../../Context/StateContext";
 import { ChatItem, MessageBox, Input, ChatList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
@@ -48,7 +48,7 @@ const ChatPage = () => {
                 article: id,
             }
         }
-        axios.get(`/api/article_chat/`,config)
+        axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article_chat/`,config)
         .then((response) => {
             setMessages(response.data.success.results);
         })
@@ -72,7 +72,7 @@ const ChatPage = () => {
             };
         }
         try {
-            const res = await axios.get(`/api/article/${id}`,config);
+            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/${id}`,config);
 
             await loadArticleData(res.data.success);
         } catch(err){
@@ -155,7 +155,7 @@ const ChatPage = () => {
                     Authorization: `Bearer ${token}`,
                 }
             }
-            const response = await axios.post(`/api/article_chat/`,{
+            const response = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/article_chat/`,{
                 article: id,
                 body: Message,
             }, config );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Home.css";
 import NavBar from "../../Components/NavBar/NavBar";
-import { HomeCarousalData, HomeFeaturesTileData, faqs } from "../../utils/Constants/Home";
+import { HomeCarousalData, HomeFeaturesTileData, faqs } from "../../Utils/Constants/Home";
 import FeatureTile from "./Components/FeatureTile";
 import FaqAccordian from "./Components/FaqAccordian";
 

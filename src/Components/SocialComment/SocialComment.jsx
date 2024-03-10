@@ -11,7 +11,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
-import axios from '../../utils/axios';
+import axios from "axios";
 import "./SocialComment.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
@@ -49,7 +49,7 @@ const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
     };
     try {
       const res = await axios.post(
-        `/api/feedcomment/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/`,
         { post: postId, comment: body, parent_comment: comment.id },
         config
       );
@@ -157,7 +157,7 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
     }
     try {
       const res = await axios.put(
-        `/api/feedcomment/${comment.id}/`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/${comment.id}/`,
         { post: comment.post, comment: body },
         config
       );
@@ -251,7 +251,7 @@ const SocialComment = ({ comment, post,setPost }) => {
     if (liked) {
       try {
         const res = await axios.post(
-          `/api/feedcomment/unlike/`,
+          `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/unlike/`,
           { comment: comment.id },
           config
         );
@@ -263,7 +263,7 @@ const SocialComment = ({ comment, post,setPost }) => {
     } else {
       try {
         const res = await axios.post(
-          `/api/feedcomment/like/`,
+          `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/like/`,
           { comment: comment.id },
           config
         );
@@ -320,7 +320,7 @@ const SocialComment = ({ comment, post,setPost }) => {
     }
     try {
       const res = await axios.get(
-        `/api/feedcomment/?limit=20&offset=${repliesData.length}`,
+        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/?limit=20&offset=${repliesData.length}`,
         config
       );
       let temp = {...post};

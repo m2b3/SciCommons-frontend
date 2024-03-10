@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import NavBar from "../../Components/NavBar/NavBar";
-import axios from '../../utils/axios';
+import axios from "axios";
 import Loader from "../../Components/Loader/Loader";
 import Footer from "../../Components/Footer/Footer";
 import {AiFillEye} from "react-icons/ai";
@@ -177,7 +177,7 @@ const MyArticlesPage = () => {
         };
         try {
             const response = await axios.get(
-                `/api/user/articles/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/user/articles/`,
                 config
             );
             await loadData(response.data.success);

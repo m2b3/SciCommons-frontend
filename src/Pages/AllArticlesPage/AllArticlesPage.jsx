@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import NavBar from "../../Components/NavBar/NavBar";
-import axios from '../../utils/axios';
+import axios from "axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
 import Footer from "../../Components/Footer/Footer";
@@ -48,7 +48,7 @@ const AllArticlesPage = () => {
         }
         try {
             const response = await axios.get(
-                `/api/article/`,
+                `https://scicommons-backend-vkyc.onrender.com/api/article/`,
                 config
             );
             await loadData(response.data.success.results);
@@ -92,7 +92,7 @@ const AllArticlesPage = () => {
             filter = "most_"+filter;
         }
         try{
-            const response = await axios.get(`/api/article/?search=${searchTerm}`,{
+            const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}`,{
                 params:{
                     order: filter
                 },
@@ -121,7 +121,7 @@ const AllArticlesPage = () => {
                 },
             };
         }
-          const response = await axios.get(`/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,{
+          const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,{
             params: {
                 order: filter
             }

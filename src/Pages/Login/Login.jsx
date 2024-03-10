@@ -1,6 +1,6 @@
 import React, {useState, useRef, Fragment, useEffect} from 'react'
 import './Login.css'
-import axios from '../../utils/axios'
+import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../Components/Loader/Loader';
 import ToastMaker from 'toastmaker';
@@ -35,7 +35,7 @@ const Login = () => {
         try {
             const token = localStorage.getItem('token'); 
       
-            const response = await axios.get('/api/user/get_current_user/', {
+            const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -72,7 +72,7 @@ const Login = () => {
 
         try {
             const response = await axios.post(
-              '/api/user/login/',
+              'https://scicommons-backend-vkyc.onrender.com/api/user/login/',
               data,
               {
                 headers: {

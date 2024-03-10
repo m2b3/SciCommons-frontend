@@ -6,7 +6,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {AiOutlinePlus, AiOutlineMinus} from 'react-icons/ai';
 import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
-import axios from '../../utils/axios';
+import axios from 'axios';
 import ToastMaker from 'toastmaker';
 import "toastmaker/dist/toastmaker.css";
 import Loader from '../../Components/Loader/Loader';
@@ -81,7 +81,7 @@ const PostModal = ({setIsAccordionOpen}) => {
         },
     };
     try{
-        const res = await axios.post("/api/feed/", form_data, config);
+        const res = await axios.post("https://scicommons-backend-vkyc.onrender.com/api/feed/", form_data, config);
         ToastMaker('Post created successfully!!!', 3500,{
           valign: 'top',
             styles : {
@@ -177,7 +177,7 @@ const Feed = () => {
       }
     }
     try{
-        const res = await axios.get("/api/feed/",{
+        const res = await axios.get("https://scicommons-backend-vkyc.onrender.com/api/feed/",{
           params: {
             order: selectedOption.current,
           }
@@ -214,7 +214,7 @@ const Feed = () => {
       }
     }
     try{
-        const res = await axios.get(`/api/feed/?limit=20&offset=${posts.length}`,{
+        const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/feed/?limit=20&offset=${posts.length}`,{
           params: {
             order: selectedOption.current,
           }

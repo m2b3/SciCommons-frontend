@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useRef} from 'react'
-import axios from '../../utils/axios'
+import axios from 'axios'
 import Loader from "../Loader/Loader"
 import {AiOutlineEdit,AiOutlineDelete,AiOutlineUserAdd} from 'react-icons/ai'
 import ToastMaker from 'toastmaker';
@@ -34,7 +34,7 @@ const MembersTable = ({community}) => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.get(`/api/community/${community}/members/`,config)
+            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/members/`,config)
             await loadData(res.data.success)
     
         } catch (error) {
@@ -208,7 +208,7 @@ const DeleteModal = ({username,community, onDelete, userId,index, setShowDeleteM
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.delete(`/api/community/${community}/remove_member/${userId}`, config)
+            const res = await axios.delete(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/remove_member/${userId}`, config)
             if(res.status === 200){
                 await onDelete(index)
                 ToastMaker(res.data.success, 3500,{
@@ -266,7 +266,7 @@ const EditModal = ({community, setShowEditModal, member, index, onEdit, handleRo
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.post(`/api/community/${community}/promote_member/`,{
+            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/promote_member/`,{
                 username: member.username,
                 role: role.current.toLowerCase()
 
@@ -355,7 +355,7 @@ const AddModal = ({community, setShowAddModal, loading, setLoading, onAdd}) => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.post(`/api/community/${community}/promote_member/`,{
+            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/promote_member/`,{
                 username: username.current,
                 role: "member",
             }, config);
