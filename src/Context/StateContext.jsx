@@ -1,60 +1,63 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import axios from "../utils/axios";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import axios from "../Utils/axios";
 
-
-const AppContext = React.createContext()
-
-
+const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
-
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(false);
 
   const loadUserData = async (res) => {
     setUser(res);
-  }
+  };
 
   const getCurrentUser = async () => {
-      try {
-          const token = localStorage.getItem('token');
+    try {
+      const token = localStorage.getItem("token");
 
-          const response = await axios.get('/api/user/get_current_user/', {
-              headers: {
-                  Authorization: `Bearer ${token}`,
-              },
-          });
-          const user = response.data.success;
-          await loadUserData(user);
-      } catch (error) {
-        setUser(null);
-        setToken(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        console.log(error);
-      }
-    };
-
-  useEffect(()=> {
-    setLoading(true);
-    const fetchData = async() => {
-       getCurrentUser();
+      const response = await axios.get(
+        `/api/user/get_current_user/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const user = response.data.success;
+      await loadUserData(user);
+    } catch (error) {
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      console.log(error);
     }
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchData = async () => {
+      getCurrentUser();
+    };
     fetchData();
     setLoading(false);
-  },[])
-
+  }, []);
 
   return (
-    <AppContext.Provider value={{
-      user, token, setToken, setUser
-    }}>
+    <AppContext.Provider
+      value={{
+        user,
+        token,
+        setToken,
+        setUser,
+      }}
+    >
       {children}
     </AppContext.Provider>
-  )
-}
+  );
+};
 export const useGlobalContext = () => {
   return useContext(AppContext);
-}
-export { AppContext, AppProvider }
+};
+export { AppContext, AppProvider };

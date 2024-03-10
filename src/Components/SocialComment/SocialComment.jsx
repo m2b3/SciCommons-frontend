@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AiOutlineLike,
   AiFillLike,
@@ -11,14 +11,14 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
-import axios from '../../utils/axios';
+import axios from "../../Utils/axios";
 import "./SocialComment.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
-import {useGlobalContext} from '../../Context/StateContext';
+import { useGlobalContext } from "../../Context/StateContext";
 
 const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
-  const {user, token} = useGlobalContext();
+  const { user, token } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const { postId } = useParams();
   const [body, setBody] = useState("");
@@ -30,7 +30,7 @@ const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
   const handleComment = async (e) => {
     e.preventDefault();
     setLoading(true);
-    if(body.length>200) {
+    if (body.length > 200) {
       ToastMaker("Comment should be less than 200 characters", 3000, {
         valign: "top",
         styles: {
@@ -94,7 +94,9 @@ const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
                 value={body}
                 onChange={handleBodyChange}
               />
-              <span className="text-xs font-semibold">Number of characters: {body.length}/200</span>
+              <span className="text-xs font-semibold">
+                Number of characters: {body.length}/200
+              </span>
             </div>
             <div className="flex flex-row justify-center">
               <button
@@ -123,7 +125,7 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
   const [editedComment, setEditedComment] = useState(comment.comment);
   const [loading, setLoading] = useState(false);
   const [body, setBody] = useState(comment.comment);
-  const {token} = useGlobalContext()
+  const { token } = useGlobalContext();
 
   const handleBodyChange = (event) => {
     setBody(event);
@@ -144,7 +146,7 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
       },
     };
 
-    if(body.length>200){
+    if (body.length > 200) {
       ToastMaker("Comment should be less than 200 characters", 3000, {
         valign: "top",
         styles: {
@@ -187,7 +189,9 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
           value={body}
           onChange={handleBodyChange}
         />
-        <span className="text-xs my-2 font-semibold">Number of characters: {body.length}/200</span>
+        <span className="text-xs my-2 font-semibold">
+          Number of characters: {body.length}/200
+        </span>
         <div className="flex justify-end">
           <button
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded mr-2"
@@ -211,9 +215,9 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
   );
 };
 
-const SocialComment = ({ comment, post,setPost }) => {
+const SocialComment = ({ comment, post, setPost }) => {
   const navigate = useNavigate();
- const {token,user} = useGlobalContext();
+  const { token, user } = useGlobalContext();
   const [value, setValue] = useState(comment.comment);
   const [liked, setLiked] = useState(comment.commentliked);
   const [likes, setLikes] = useState(
@@ -238,7 +242,7 @@ const SocialComment = ({ comment, post,setPost }) => {
   };
 
   const handleLike = async (e) => {
-    if(token === null) {
+    if (token === null) {
       navigate("/login");
     }
     e.preventDefault();
@@ -275,12 +279,12 @@ const SocialComment = ({ comment, post,setPost }) => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setValue(comment.comment);
     setLikes(comment.commentliked);
     setLikes(comment.commentlikes);
     setRepliesData([]);
-  },[comment.id])
+  }, [comment.id]);
 
   const formatCount = (count) => {
     if (count < 1000) {
@@ -295,8 +299,8 @@ const SocialComment = ({ comment, post,setPost }) => {
   const handleReply = async (e) => {
     e.preventDefault();
     setLoading(true);
-    let config=null;
-    if(token === null) {
+    let config = null;
+    if (token === null) {
       config = {
         headers: {
           "Content-Type": "application/json",
@@ -305,7 +309,7 @@ const SocialComment = ({ comment, post,setPost }) => {
           comment: comment.id,
           post: comment.post,
         },
-      }
+      };
     } else {
       config = {
         headers: {
@@ -323,11 +327,10 @@ const SocialComment = ({ comment, post,setPost }) => {
         `/api/feedcomment/?limit=20&offset=${repliesData.length}`,
         config
       );
-      let temp = {...post};
-      temp.comments_count+=1;
+      let temp = { ...post };
+      temp.comments_count += 1;
       setPost(temp);
       await loadData(res.data.success.results);
-      
     } catch (err) {
       console.log(err);
     }
@@ -397,7 +400,10 @@ const SocialComment = ({ comment, post,setPost }) => {
 
   return (
     <>
-      <div key={comment.id} className="rounded-lg pl-2 mt-2 bg-white border-l-2 border-green-600">
+      <div
+        key={comment.id}
+        className="rounded-lg pl-2 mt-2 bg-white border-l-2 border-green-600"
+      >
         <div className="flex mb-2">
           <div className="flex flex-row items-center">
             {comment.commentavatar.includes("None") ? (
@@ -450,11 +456,11 @@ const SocialComment = ({ comment, post,setPost }) => {
               className="text-xs ml-4"
               style={{ cursor: "pointer" }}
               onClick={() => {
-                if(token===null){
+                if (token === null) {
                   navigate("/login");
                 }
                 setShowEdit(true);
-                const newComment = {...comment,comment:value};
+                const newComment = { ...comment, comment: value };
                 setEditData(newComment);
               }}
             >
@@ -465,7 +471,7 @@ const SocialComment = ({ comment, post,setPost }) => {
             className="text-xs ml-4"
             style={{ cursor: "pointer" }}
             onClick={() => {
-              if(token === null) {
+              if (token === null) {
                 navigate("/login");
               }
               setShowReply(true);
@@ -493,7 +499,12 @@ const SocialComment = ({ comment, post,setPost }) => {
         <div className="ml-1">
           {repliesData.length > 0 &&
             repliesData.map((reply) => (
-              <SocialComment key={reply.id} comment={reply} post={post} setPost={post} />
+              <SocialComment
+                key={reply.id}
+                comment={reply}
+                post={post}
+                setPost={post}
+              />
             ))}
         </div>
         {comment.replies > 0 && (

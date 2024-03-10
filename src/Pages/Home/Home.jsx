@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import "./Home.css";
-import NavBar from "../../Components/NavBar/NavBar";
-import { HomeCarousalData, HomeFeaturesTileData, faqs } from "../../utils/Constants/Home";
+import {
+  HomeCarousalData,
+  HomeFeaturesTileData,
+  faqs,
+} from "../../Utils/Constants/Home";
 import FeatureTile from "./Components/FeatureTile";
 import FaqAccordian from "./Components/FaqAccordian";
 
 const Home = () => {
   const [idx, setIdx] = useState(0);
   const [displayData, setDisplayData] = useState(HomeCarousalData);
-
   const show = (i) => {
     let str = ".faq-0" + i;
     str += "__answer";
@@ -29,8 +31,10 @@ const Home = () => {
 
   return (
     <>
-      <NavBar />
-      <div className="custom-google-fonts-enabled comps" id="107237-212152">
+      <div
+        className="custom-google-fonts-enabled comps"
+        id="107237-212152"
+      >
         <div
           className="page-component__bg_image_box bg-medium-color"
           id="header-23-256551"
@@ -43,7 +47,10 @@ const Home = () => {
             <header className="header-23 graphics-image default-graphics-image">
               <div className="container container--large header-23__container">
                 <div className="header-23__left">
-                  <div className="header-23__left_content">
+                  <div
+                    className="header-23__left_content"
+                    style={{ marginLeft: "50px" }}
+                  >
                     <h1 className="heading heading--accent header-23__heading ">
                       Welcome to SciCommons
                     </h1>
@@ -77,7 +84,7 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-                <div className="header-23__right">
+                <div className="header-23__right" style={{ width: "400px" }}>
                   <img
                     className="header-23__img"
                     alt="Lime illustration"
@@ -225,9 +232,7 @@ const Home = () => {
               <div className="container links-06__container">
                 <ul className="links-06__list links-06__list--bigger">
                   {HomeFeaturesTileData.map((item, index) => {
-                    return (
-                      <FeatureTile item={item} key={index} />
-                    );
+                    return <FeatureTile item={item} key={index} />;
                   })}
                 </ul>
                 <div className="bottom_cta" />
@@ -254,9 +259,7 @@ const Home = () => {
               </div>
               <div className="container container--small">
                 {faqs.map((faq, index) => {
-                  return (
-                    <FaqAccordian faq={faq} index={index} />
-                  );
+                  return <FaqAccordian faq={faq} index={index} />;
                 })}
                 <div className="bottom_cta" />
               </div>
