@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
+import axios from '../../utils/axios';
 import {useNavigate} from 'react-router-dom';
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
@@ -20,7 +20,7 @@ const AcceptModal = ({setShowAccept,article,community, handleModified}) => {
                     "Content-Type": "application/json",
                 }
             }
-            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/article/${article}/approve_for_review/`,{community: community}, config)
+            const res = await axios.post(`/api/article/${article}/approve_for_review/`,{community: community}, config)
             await handleModified(article);
             if(res.status === 200){
                 ToastMaker(res.data.success, 3500,{
@@ -68,7 +68,7 @@ const RejectModal = ({setShowReject,article,community, handleReject}) => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/article/${article}/reject_article/`,{community:community}, config)
+            const res = await axios.post(`/api/article/${article}/reject_article/`,{community:community}, config)
             await handleReject(article)
             if(res.status === 200){
                 ToastMaker(res.data.success, 3500,{
@@ -139,7 +139,7 @@ const PublishModal = ({setShowPublish,article,community}) => {
                 }
             }
 
-            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/article/${article}/publish/`,form_data, config)
+            const res = await axios.post(`/api/community/${community}/article/${article}/publish/`,form_data, config)
             if(res.status === 200){
                 ToastMaker(res.data.success, 3500,{
                     valign: 'top',
@@ -261,7 +261,7 @@ const AdminArticlePage = ({community}) => {
         };
         try {
             const response = await axios.get(
-                `https://scicommons-backend-vkyc.onrender.com/api/community/${community}/articles/`,
+                `/api/community/${community}/articles/`,
                 config
             );
             await loadData(response.data.success);

@@ -3,14 +3,14 @@ import {useNavigate} from 'react-router-dom';
 import "./CreateCommunity.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import Footer from "../../Components/Footer/Footer";
-import axios from "axios";
+import axios from '../../utils/axios';
 import ToastMaker from 'toastmaker';
 import "toastmaker/dist/toastmaker.css";
 import {useGlobalContext} from '../../Context/StateContext'
 
 const CreateCommunity = () => {
 
-  const baseURL = 'https://scicommons-backend-vkyc.onrender.com/api/community/'; 
+  const baseURL = '/api/community/'; 
   const {token} = useGlobalContext()
 
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ import eye from "./eye-open.png";
 import dublicate from "./duplicate.png";
 import Navbar from "../../Components/NavBar/NavBar";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from '../../utils/axios';
 import Loader from "../../Components/Loader/Loader";
 import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from "react-icons/ai";
 import { MdOutlineViewSidebar } from "react-icons/md";
@@ -59,7 +59,7 @@ const DisplayCommunity = ({article}) => {
         };
         try {
             const response = await axios.get(
-                `https://scicommons-backend-vkyc.onrender.com/api/article/${article}/isapproved/`,
+                `/api/article/${article}/isapproved/`,
                 config
             );
             await loadData(response.data.success);
@@ -98,7 +98,7 @@ const DisplayCommunity = ({article}) => {
         };
         try {
             const response = await axios.post(
-                `https://scicommons-backend-vkyc.onrender.com/api/article/${article}/publish/`,
+                `/api/article/${article}/publish/`,
                 {published: communityName, status: "published"},
                 config
             );
@@ -119,7 +119,7 @@ const DisplayCommunity = ({article}) => {
         };
         try {
             const response = await axios.post(
-                `https://scicommons-backend-vkyc.onrender.com/api/article/${article}/publish/`,
+                `/api/article/${article}/publish/`,
                 {published: communityName, status: "rejected by user"},
                 config
             );
@@ -250,7 +250,7 @@ const SubmitCommunity = ({article, setShow}) => {
             },
         }
         try{
-            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/?search=${community.toLowerCase()}`,config);
+            const res = await axios.get(`/api/community/?search=${community.toLowerCase()}`,config);
             const ans = await verify(res.data.success.results)
             if(ans){
                 return ans;
@@ -289,7 +289,7 @@ const SubmitCommunity = ({article, setShow}) => {
         const val = await handleCommunityName();
         if(val) {
             try {
-                    const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/article/${article.id}/submit_article/`,{
+                    const res = await axios.post(`/api/article/${article.id}/submit_article/`,{
                         communities:[val],
                     },config);
                     setLoading(false);
@@ -378,7 +378,7 @@ const ArticleEditPage = ({setArticleEdit, article, handleArticleEdit}) => {
 
     setLoading(true);
     try {
-      const response = await axios.put(`https://scicommons-backend-vkyc.onrender.com/api/article/${article.id}/`, form_data, {
+      const response = await axios.put(`/api/article/${article.id}/`, form_data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -527,7 +527,7 @@ const AuthorArticlePage = () => {
       };
       try {
         const res = await axios.get(
-          `https://scicommons-backend-vkyc.onrender.com/api/user/articles/${articleId}/`,
+          `/api/user/articles/${articleId}/`,
           config
         );
         if(res.data.success.length===0){
@@ -595,7 +595,7 @@ const AuthorArticlePage = () => {
     if (article.isFavourite === false) {
       try {
         const res = await axios.post(
-          `https://scicommons-backend-vkyc.onrender.com/api/article/favourite/`,
+          `/api/article/favourite/`,
           { article: articleId },
           config
         );
@@ -611,7 +611,7 @@ const AuthorArticlePage = () => {
     } else {
       try {
         const res = await axios.post(
-          `https://scicommons-backend-vkyc.onrender.com/api/article/unfavourite/`,
+          `/api/article/unfavourite/`,
           { article: articleId },
           config
         );

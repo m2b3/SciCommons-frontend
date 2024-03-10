@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import {useNavigate} from 'react-router-dom'
@@ -113,7 +113,7 @@ const ForgotPassword = () => {
         setLaoding(true);
         try {
             const response = await axios.post(
-                `https://scicommons-backend-vkyc.onrender.com/api/user/forgot_password/`,
+                `/api/user/forgot_password/`,
                 {email:email}
             );
             ToastMaker("Otp sent to email!!", 3000, {
@@ -147,7 +147,7 @@ const ForgotPassword = () => {
 
         try {
             const response = await axios.post(
-                `https://scicommons-backend-vkyc.onrender.com/api/user/reset_password/`,
+                `/api/user/reset_password/`,
                 {email:email,otp:otp,password:password1,password2:password2}
             );
 

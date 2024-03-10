@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import NavBar from '../../Components/NavBar/NavBar'
 import ToastMaker from 'toastmaker';
 import "toastmaker/dist/toastmaker.css";
@@ -31,7 +31,7 @@ const JoinRequest = () => {
                         Authorization: `Bearer ${token}`
                     }
                 }
-                const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/${communityName}/`, config )
+                const res = await axios.get(`/api/community/${communityName}/`, config )
                 await loadCommunity(res.data.success)
             } catch (error) {
                 console.log(error)
@@ -82,7 +82,7 @@ const JoinRequest = () => {
             return;
         }
       try {
-        const response = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${communityName}/join_request/`, form_data, {
+        const response = await axios.post(`/api/community/${communityName}/join_request/`, form_data, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

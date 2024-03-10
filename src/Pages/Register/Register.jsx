@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import './Register.css'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../Components/Loader/Loader';
 import ToastMaker from 'toastmaker';
@@ -109,7 +109,7 @@ const Register = () => {
         }
         try {
             const response = await axios.post(
-              'https://scicommons-backend-vkyc.onrender.com/api/user/',
+              '/api/user/',
               data,
               {
                 headers: {

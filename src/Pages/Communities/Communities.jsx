@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import NavBar from '../../Components/NavBar/NavBar';
-import axios from 'axios';
+import axios from '../../utils/axios';
 import CommunityCard from '../../Components/CommunityCard/CommunityCard';
 import Loader from '../../Components/Loader/Loader';
 import './Communities.css';
@@ -34,7 +34,7 @@ const Communities = () => {
         }
         try {
             const response = await axios.get(
-                `https://scicommons-backend-vkyc.onrender.com/api/community?search=${searchTerm}`,
+                `/api/community?search=${searchTerm}`,
                 config
             );
             setCommunities(response.data.success.results);
@@ -65,7 +65,7 @@ const Communities = () => {
                     },
                 };
             }
-          const response = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`, config);
+          const response = await axios.get(`/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`, config);
           const data = response.data.success.results;
           if(response.data.success.count === communities.length) {
             ToastMaker("No more communities to load", 3000, {

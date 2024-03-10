@@ -16,7 +16,7 @@ import {
   AiOutlineLike,
   AiOutlineClose,
 } from "react-icons/ai";
-import axios from "axios";
+import axios from '../../utils/axios';
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -94,7 +94,7 @@ const SinglePost = () => {
     }
     try {
       const res = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/?limit=20&offset=${comments.length}`,
+        `/api/feedcomment/?limit=20&offset=${comments.length}`,
         config
       );
       await loadCommentsData([...comments, ...res.data.success.results]);
@@ -124,7 +124,7 @@ const SinglePost = () => {
     
     try {
       const res = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/feed/${postId}/`,
+        `/api/feed/${postId}/`,
         config
       );
       await loadData(res.data.success);
@@ -173,7 +173,7 @@ const SinglePost = () => {
     };
     try {
       const res = await axios.post(
-        `https://scicommons-backend-vkyc.onrender.com/api/feedcomment/`,
+        `/api/feedcomment/`,
         { post: postId, comment: comment },
         config
       );

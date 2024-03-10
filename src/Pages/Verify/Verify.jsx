@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import {useNavigate} from 'react-router-dom'
@@ -41,7 +41,7 @@ const Verify = () => {
         isValidEmail(email);
         try {
             const response = await axios.post(
-                `https://scicommons-backend-vkyc.onrender.com/api/user/verifyrequest/`,
+                `/api/user/verifyrequest/`,
                 {email:email}
             );
             ToastMaker("Otp sent to email!!", 3000, {
@@ -92,7 +92,7 @@ const Verify = () => {
         }
         try {
             const response = await axios.post(
-                `https://scicommons-backend-vkyc.onrender.com/api/user/verify_email/`,
+                `/api/user/verify_email/`,
                 {email:email, otp:otp}
             );
             ToastMaker("Email Verified Successfully!!!", 3000, {
