@@ -7,6 +7,8 @@ import Footer from "../../Components/Footer/Footer";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
+import { getContainerStyles } from "../../Utils/Constants/Globals";
+import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
 const Communities = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,6 +16,7 @@ const Communities = () => {
   const [loading, setLoading] = useState(false);
   const [loadingmore, setLoadingMore] = useState(false);
   const { token } = useGlobalContext();
+  const windowSize = useWindowSize();
 
   const loadMoreData = async (res) => {
     const newCommunities = [...communities, ...res];
@@ -32,7 +35,7 @@ const Communities = () => {
     }
     try {
       const response = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/community?search=${searchTerm}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/community?search=${searchTerm}`,
         config
       );
       setCommunities(response.data.success.results);
@@ -64,7 +67,7 @@ const Communities = () => {
         };
       }
       const response = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`,
         config
       );
       const data = response.data.success.results;
@@ -86,7 +89,10 @@ const Communities = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center w-full bg-gray-50">
+      <div
+        className="flex flex-col items-center justify-center bg-gray-50"
+        style={getContainerStyles(windowSize.width)}
+      >
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Communities</h1>
         <form
           className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row"

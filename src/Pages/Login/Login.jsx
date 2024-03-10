@@ -36,7 +36,7 @@ const Login = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        "https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/",
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/get_current_user/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +73,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://scicommons-backend-vkyc.onrender.com/api/user/login/",
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/login/`,
         data,
         {
           headers: {

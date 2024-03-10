@@ -11,7 +11,6 @@ import FaqAccordian from "./Components/FaqAccordian";
 const Home = () => {
   const [idx, setIdx] = useState(0);
   const [displayData, setDisplayData] = useState(HomeCarousalData);
-
   const show = (i) => {
     let str = ".faq-0" + i;
     str += "__answer";
@@ -32,7 +31,10 @@ const Home = () => {
 
   return (
     <>
-      <div className="custom-google-fonts-enabled comps" id="107237-212152">
+      <div
+        className="custom-google-fonts-enabled comps"
+        id="107237-212152"
+      >
         <div
           className="page-component__bg_image_box bg-medium-color"
           id="header-23-256551"
@@ -45,7 +47,10 @@ const Home = () => {
             <header className="header-23 graphics-image default-graphics-image">
               <div className="container container--large header-23__container">
                 <div className="header-23__left">
-                  <div className="header-23__left_content">
+                  <div
+                    className="header-23__left_content"
+                    style={{ marginLeft: "50px" }}
+                  >
                     <h1 className="heading heading--accent header-23__heading ">
                       Welcome to SciCommons
                     </h1>
@@ -79,7 +84,7 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-                <div className="header-23__right">
+                <div className="header-23__right" style={{ width: "400px" }}>
                   <img
                     className="header-23__img"
                     alt="Lime illustration"

@@ -1,29 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./SideNav.css";
-import { Sidebar } from "flowbite-react";
 import { HiUserGroup } from "react-icons/hi";
 import { AiOutlineUsergroupAdd, AiOutlineHeart } from "react-icons/ai";
 import { CgFeed } from "react-icons/cg";
-import { RxCross2 } from "react-icons/rx";
 import { MdExplore } from "react-icons/md";
-import { TbMessageCircle2 } from "react-icons/tb";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { MdPostAdd } from "react-icons/md";
 import { GrArticle } from "react-icons/gr";
-
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import {
+  sidenavLargeWidth,
+  sidenavSmallWidth,
+} from "../../Utils/Constants/Globals";
+import { closeIcon, hamburgerIcon } from "../../Utils/Constants/Navbar";
+import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
-const SideNav = ({ isMenuOpen, onMenuChange }) => {
-  const [isOpen, setIsMenuOpen] = useState(isMenuOpen);
+const SideNav = () => {
+  //const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const windowWidth = useWindowSize().width;
+  const [sidenavWidth, setSidenavWidth] = useState();
+  const [isSidenavOpen, setIsSidenavOpen] = useState(false);
+  useEffect(() => {
+    setSidenavWidth(windowWidth > 768 ? sidenavLargeWidth : sidenavSmallWidth);
+    if (windowWidth <= 500) {
+      setIsSidenavOpen(false);
+      setSidenavWidth(0);
+    }
+  }, [windowWidth]);
   const tabs = [
     {
       text: "My TimeLine",
@@ -72,15 +82,92 @@ const SideNav = ({ isMenuOpen, onMenuChange }) => {
   }, */
   ];
 
+  /* useEffect(() => {
+    window.addEventListener("resize", () => {
+      setWindowWidth(window.innerWidth);
+    });
+  }, [window]); */
+
   return (
-    <Drawer open={isOpen} onClose={() => onMenuChange(false)}>
-      <Link to="/" className="text-3xl font-bold text-green-600 m-6">
-        Scicommons
+    windowWidth > 500 && <Drawer
+      sx={{
+        width: sidenavWidth,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: sidenavWidth,
+          boxSizing: "border-box",
+          transition: "width 0.2s ease",
+        },
+      }}
+      variant="permanent"
+      anchor="left"
+      onMouseOver={() => {
+        setIsSidenavOpen(true);
+        windowWidth <= 768 && setSidenavWidth(sidenavLargeWidth);
+      }}
+      onMouseOut={() => {
+        setIsSidenavOpen(false);
+        windowWidth <= 768 && setSidenavWidth(sidenavSmallWidth);
+      }}
+    >
+      <Link
+        to="/"
+        className="font-bold text-green-600 md:py-4 py-2.5 flex flex-row items-center"
+        style={{ textDecoration: "none", justifyContent: "center" }}
+      >
+        {
+          windowWidth > 768 ? (
+            <>
+              <img
+                src={process.env.PUBLIC_URL + "/logo.png"}
+                width={40}
+                height={20}
+                alt="logo"
+                className="mr-2"
+              />
+              <span className="text-2xl">SciCommons</span>
+            </>
+          ) : null /* (
+          <img
+            src={process.env.PUBLIC_URL + "/logo.png"}
+            width={40}
+            height={20}
+            alt="logo"
+          />
+        ) */
+        }
       </Link>
-      <Box sx={{ width: 250 }} role="presentation">
+      {windowWidth <= 768 && (
+        <div className="flex flex-row items-center justify-end">
+          <div className="px-4">
+            {isSidenavOpen ? (
+              <button
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setSidenavWidth(sidenavSmallWidth);
+                  setIsSidenavOpen(false);
+                }}
+              >
+                {closeIcon()}
+              </button>
+            ) : (
+              <button
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setSidenavWidth(sidenavLargeWidth);
+                  setIsSidenavOpen(true);
+                }}
+              >
+                {hamburgerIcon()}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      <Box sx={{ width: 240, marginTop: 1 }} role="presentation">
         <List>
           {tabs.map((tab, index) => (
-            <ListItem key={index} disablePadding>
+            <ListItem key={index} disablePadding sx={{ marginTop: 1 }}>
               <ListItemButton component={Link} to={tab.href}>
                 <ListItemIcon>
                   {tab.icon && <tab.icon style={{ fontSize: "25px" }} />}

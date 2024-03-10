@@ -45,7 +45,7 @@ const AllArticlesPage = () => {
     }
     try {
       const response = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/article/`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/article/`,
         config
       );
       await loadData(response.data.success.results);
@@ -90,7 +90,7 @@ const AllArticlesPage = () => {
     }
     try {
       const response = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/article/?search=${searchTerm}`,
         {
           params: {
             order: filter,
@@ -123,7 +123,7 @@ const AllArticlesPage = () => {
         };
       }
       const response = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,
         {
           params: {
             order: filter,
@@ -150,7 +150,9 @@ const AllArticlesPage = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-start w-full bg-gray-50 min-h-screen">
+      <div
+        className="flex flex-col items-center justify-start bg-gray-50 min-h-screen"
+      >
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Articles</h1>
         <form
           className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row"

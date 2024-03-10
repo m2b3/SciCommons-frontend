@@ -15,20 +15,18 @@ import axios from "axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../../Components/Loader/Loader";
-import {SlUser} from "react-icons/sl";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import './Bookmarks.css';
+import { SlUser } from "react-icons/sl";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "./Bookmarks.css";
 import Post from "../../Components/Post/Post";
 import { useGlobalContext } from "../../Context/StateContext";
 
-
 const BookMarks = () => {
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const {token} = useGlobalContext();
+  const { token } = useGlobalContext();
 
   const loadData = async (res) => {
     setPosts(res);
@@ -38,7 +36,6 @@ const BookMarks = () => {
     const newPosts = posts.filter((post) => post.id !== id);
     setPosts(newPosts);
   };
-
 
   const getPosts = async () => {
     setLoading(true);
@@ -50,7 +47,7 @@ const BookMarks = () => {
     };
     try {
       const res = await axios.get(
-        "https://scicommons-backend-vkyc.onrender.com/api/feed/bookmarks/",
+        `${process.env.REACT_APP_BACKEND_URL}/api/feed/bookmarks/`,
         config
       );
       if (res.data.success.length === 0) {
@@ -74,7 +71,7 @@ const BookMarks = () => {
     };
     try {
       const res = await axios.get(
-        `https://scicommons-backend-vkyc.onrender.com/api/feed/bookmarks/`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/feed/bookmarks/`,
         config
       );
       if (res.data.success.length === 0) {
@@ -102,11 +99,15 @@ const BookMarks = () => {
       {!loading && (
         <>
           <div className="flex flex-row justify-center items-center mx-auto px-4 w-full md:w-1/2 mt-2">
-            <h1 className="text-3xl text-gray-600 font-semibold">My Bookmarks</h1>
+            <h1 className="text-3xl text-gray-600 font-semibold">
+              My Bookmarks
+            </h1>
           </div>
           <div className="container mx-auto px-4 w-full md:w-1/2 mt-2">
             {posts.length > 0 &&
-              posts.map((post) => <Post key={post.id} post={post} onDeletePost={removePosts}/>)}
+              posts.map((post) => (
+                <Post key={post.id} post={post} onDeletePost={removePosts} />
+              ))}
             {posts.length === 0 && (
               <div className="flex flex-col justify-center items-center h-screen">
                 <p className="text-2xl font-semibold">

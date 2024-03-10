@@ -1,191 +1,240 @@
+import React, { useState, useEffect } from "react";
 import "./App.css";
-import Home from "./Pages/Home/Home";
-import Login from "./Pages/Login/Login";
-import Register from "./Pages/Register/Register";
-import ErrorPage from "./Pages/ErrorPage/ErrorPage";
-import AllArticlesPage from "./Pages/AllArticlesPage/AllArticlesPage";
-import Communities from "./Pages/Communities/Communities";
-import SubmitArticle from "./Pages/SubmitArticle/SubmitArticle";
-import SuccessfulSubmission from "./Components/SuccessfulSubmission";
-import SuccessfulRegistration from "./Components/SuccessfulRegistration";
-import CommunityCreation from "./Components/CommunityCreation";
-import CreateCommunity from "./Pages/CreateCommunity/CreateCommunity";
-import Notifications from "./Pages/Notifications/Notifications";
-import Feed from "./Pages/Feed/Feed";
-import CommunityPage from "./Pages/CommunityPage/CommunityPage";
-import JoinRequest from "./Pages/JoinRequest/JoinRequest";
-import SinglePost from "./Pages/SinglePost/SinglePost";
-import CommunityAdminPage from "./Pages/CommunityAdminPage/CommunityAdminPage";
-import Profile from "./Pages/Profile/Profile";
-import Timeline from "./Pages/Timeline/Timeline";
-import BookMarks from "./Pages/Bookmarks/Bookmarks";
-import ArticlePage from "./Pages/ArticlePage/ArticlePage";
-import FavouritePage from "./Pages/FavouritePage/FavouritePage";
-import MyPostsPage from "./Pages/MyPostsPage/MyPostsPage";
-import MyArticlesPage from "./Pages/MyArticlesPage/MyArticlesPage";
-import AuthorArticlePage from "./Pages/AuthorArticlePage/AuthorArticlePage";
-import CommunityArticlePage from "./Pages/CommunityArticlePage/CommunityArticlePage";
-import MyProfile from "./Pages/MyProfile/MyProfile";
-import ForgotPassword from "./Pages/ForgotPassword/ForgotPassword";
-import Verify from "./Pages/Verify/Verify";
-import PrivateRoute from "./Pages/PrivateRoute/PrivateRoute";
+
 // import AllMessages from './Pages/AllMessagesPage/AllMessagesPage';
-import ChatPage from "./Pages/ChatPage/ChatPage";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./Components/NavBar/NavBar";
 import { useLocation } from "react-router-dom";
+import SideNav from "./Components/SideNav/SideNav";
+import useWindowSize from "./Utils/Hooks/useWindowSize";
+import { useNavigate } from "react-router-dom";
+
+import Box from "@mui/material/Box";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+//
+import { styled } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
+import Typography from "@mui/material/Typography";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+
+// Bottom Navigation Icons
+import { MdExplore } from "react-icons/md";
+import { HiUserGroup } from "react-icons/hi";
+import { AiOutlineUsergroupAdd, AiOutlineHeart } from "react-icons/ai";
+import { MdPostAdd } from "react-icons/md";
+import {
+  IoIosArrowDropupCircle,
+  IoIosArrowDropdownCircle,
+} from "react-icons/io";
+import { BsBookmarkCheck } from "react-icons/bs";
+import { CgFeed } from "react-icons/cg";
+import { GrArticle } from "react-icons/gr";
+import RoutesContainer from "./RoutesContainer";
+import { getContainerStyles } from "./Utils/Constants/Globals";
 
 function App() {
   const location = useLocation();
-  const showNavBar =
-    location.pathname !== "/login" && location.pathname !== "/register";
+  const navigate = useNavigate();
+  const showNavBar = location.pathname !== "/login" && location.pathname !== "/register";
+  //const showNavBar = true;
+  const [value, setValue] = useState();
+  const [activeBottomNavTab, setActiveBottomNavTab] = useState();
+  const [activeBottomSheetTab, setActiveBottomSheetTab] = useState();
+  const windowSize = useWindowSize();
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const bottomNavRoutes = [
+    {
+      text: "Explore",
+      icon: MdExplore,
+      route: "/explore",
+    },
+    {
+      text: "Community",
+      icon: HiUserGroup,
+      route: "/mycommunity",
+    },
+    {
+      text: "",
+      icon: IoIosArrowDropupCircle,
+      route: "",
+    },
+    {
+      text: "My Posts",
+      icon: MdPostAdd,
+      route: "/myposts",
+    },
+    {
+      text: "Favourites",
+      icon: AiOutlineHeart,
+      route: "/favourites",
+    },
+  ];
+
+  const bottomSheetRoutes = [
+    {
+      text: "My Timeline",
+      icon: CgFeed,
+      route: "/mytimeline",
+    },
+    {
+      text: "Create Community",
+      icon: AiOutlineUsergroupAdd,
+      route: "/createcommunity",
+    },
+    {
+      text: "My Articles",
+      icon: GrArticle,
+      route: "/myarticles",
+    },
+    {
+      text: "Bookmarks",
+      icon: BsBookmarkCheck,
+      route: "/bookmarks",
+    },
+  ];
+
+  const container =
+    window !== undefined ? () => window.document.body : undefined;
+  const drawerBleeding = 0;
+  const Puller = styled("div")(({ theme }) => ({
+    width: 30,
+    height: 6,
+    backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
+    borderRadius: 3,
+    position: "absolute",
+    top: 8,
+    left: "calc(50% - 15px)",
+  }));
+
   return (
-    <>
+    <div className="relative">
       {showNavBar && <NavBar />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/articles" element={<AllArticlesPage />} />
-        <Route path="/communities" element={<Communities />} />
-        <Route
-          path="/submitarticle"
-          element={
-            <PrivateRoute redirectTo="/login" component={<SubmitArticle />} />
-          }
-        />
-        <Route
-          path="/articlesuccessfulsubmission"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<SuccessfulSubmission />}
-            />
-          }
-        />
-        <Route
-          path="/registersuccessful"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<SuccessfulRegistration />}
-            />
-          }
-        />
-        <Route
-          path="/createcommunity"
-          element={
-            <PrivateRoute redirectTo="/login" component={<CreateCommunity />} />
-          }
-        />
-        <Route
-          path="/communitysuccessfulcreated"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<CommunityCreation />}
-            />
-          }
-        />
-        <Route
-          path="/notifications"
-          element={
-            <PrivateRoute redirectTo="/login" component={<Notifications />} />
-          }
-        />
-        <Route path="/explore" element={<Feed />} />
-        <Route
-          path="/mytimeline"
-          element={
-            <PrivateRoute redirectTo="/login" component={<Timeline />} />
-          }
-        />
-        <Route
-          path="/bookmarks"
-          element={
-            <PrivateRoute redirectTo="/login" component={<BookMarks />} />
-          }
-        />
-        <Route path="/community/:communityName" element={<CommunityPage />} />
-        <Route
-          path="/join-community/:communityName"
-          element={
-            <PrivateRoute redirectTo="/login" component={<JoinRequest />} />
-          }
-        />
-        <Route
-          path="/mycommunity"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<CommunityAdminPage />}
-            />
-          }
-        />
-        <Route path="/post/:postId" element={<SinglePost />} />
-        <Route path="/profile/:username" element={<Profile />} />
-        <Route path="/article/:articleId" element={<ArticlePage />} />
-        <Route
-          path="/favourites"
-          element={
-            <PrivateRoute redirectTo="/login" component={<FavouritePage />} />
-          }
-        />
-        <Route
-          path="/myposts"
-          element={
-            <PrivateRoute redirectTo="/login" component={<MyPostsPage />} />
-          }
-        />
-        <Route
-          path="/myarticles"
-          element={
-            <PrivateRoute redirectTo="/login" component={<MyArticlesPage />} />
-          }
-        />
-        <Route
-          path="/myarticles/:articleId"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<AuthorArticlePage />}
-            />
-          }
-        />
-        {/* <Route path="/myactivity" element={<PrivateRoute redirectTo="/login" component={<UserActivity/>}/>}/> */}
-        <Route
-          path="/community/:communityName/:articleId"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<CommunityArticlePage />}
-            />
-          }
-        />
-        <Route
-          path="/chat/:id"
-          element={
-            <PrivateRoute redirectTo="/login" component={<ChatPage />} />
-          }
-        />
-        {/* <Route path="/messages" element={<PrivateRoute redirectTo="/login" component={<AllMessages/>}/>}/> */}
-        <Route
-          path="/myprofile"
-          element={
-            <PrivateRoute redirectTo="/login" component={<MyProfile />} />
-          }
-        />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/verify" element={<Verify />} />
-        <Route path="*" element={<ErrorPage />} />
-      </Routes>
-    </>
+      {showNavBar && <SideNav />}
+      <RoutesContainer />
+      {windowSize.width < 500 && showNavBar && (
+        <Box
+          sx={{
+            width: "100%",
+            position: "fixed",
+            zIndex: 60,
+            bottom: 0,
+            right: 0,
+            borderTop: "1px solid rgb(228,231,235)",
+          }}
+        >
+          <BottomNavigation
+            showLabels
+            value={activeBottomNavTab}
+            onChange={(event, newValue) => {
+              setActiveBottomNavTab(newValue);
+            }}
+          >
+            {bottomNavRoutes.map((route, index) =>
+              route.text === "" ? (
+                <BottomNavigationAction
+                  label={route.text}
+                  icon={<route.icon style={{ fontSize: "48px" }} />}
+                  onClick={() => setIsBottomSheetOpen(prev => !prev)}
+                />
+              ) : (
+                <BottomNavigationAction
+                  label={route.text}
+                  icon={<route.icon style={{ fontSize: "24px" }} />}
+                  onClick={() => navigate(route.route)}
+                />
+              )
+            )}
+          </BottomNavigation>
+        </Box>
+      )}
+      <SwipeableDrawer
+        container={container}
+        anchor="bottom"
+        open={isBottomSheetOpen}
+        onClose={() => {
+          setIsBottomSheetOpen(false);
+        }}
+        onOpen={() => setIsBottomSheetOpen(true)}
+        swipeAreaWidth={drawerBleeding}
+        disableSwipeToOpen={true}
+        ModalProps={{
+          keepMounted: true,
+        }}
+      >
+        <div
+          sx={{
+            position: "absolute",
+            top: -drawerBleeding,
+            /* borderTopLeftRadius: 8,
+            borderTopRightRadius: 8, */
+            visibility: "visible",
+            right: 0,
+            left: 0,
+          }}
+        >
+          <Puller />
+          <Typography sx={{ p: 2, color: "text.secondary" }}>
+          </Typography>
+          <div>
+            <BottomNavigation
+              showLabels
+              value={activeBottomSheetTab}
+              onChange={(event, newValue) => {
+                setActiveBottomSheetTab(newValue);
+                setActiveBottomNavTab(null);
+              }}
+              style={{
+                marginBottom: "20px",
+              }}
+            >
+              {bottomSheetRoutes.map((route, index) => (
+                <BottomNavigationAction
+                  label={route.text}
+                  icon={<route.icon style={{ fontSize: "24px" }} />}
+                  onClick={() => navigate(route.route)}
+                />
+              ))}
+            </BottomNavigation>
+            <BottomNavigation
+              showLabels
+              value={activeBottomNavTab}
+              onChange={(event, newValue) => {
+                setActiveBottomNavTab(newValue);
+                setActiveBottomSheetTab(null);
+              }}
+            >
+              {bottomNavRoutes.map((route, index) =>
+                route.text === "" ? (
+                  <BottomNavigationAction
+                    key={index}
+                    label={route.text}
+                    icon={
+                      isBottomSheetOpen ? (
+                        <IoIosArrowDropdownCircle style={{ fontSize: "48px" }} />
+                      ) : (
+                        <IoIosArrowDropupCircle style={{ fontSize: "48px" }} />
+                      )
+                    }
+                    onClick={() => setIsBottomSheetOpen(prev => !prev)}
+                  />
+                ) : (
+                  <BottomNavigationAction
+                    key={index}
+                    label={route.text}
+                    icon={
+                      route.icon && <route.icon style={{ fontSize: "24px" }} />
+                    }
+                    onClick={() => navigate(route.route)}
+                  />
+                )
+              )}
+            </BottomNavigation>
+          </div>
+        </div>
+      </SwipeableDrawer>
+    </div>
   );
 }
 

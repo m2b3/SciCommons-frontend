@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./NavBar.css";
 import { SlUser } from "react-icons/sl";
+import { IoMdMore } from "react-icons/io";
 import axios from "axios";
 import Popper from "popper.js";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +10,16 @@ import { CiMenuFries } from "react-icons/ci";
 import SideNav from "../SideNav/SideNav";
 import { FiLogOut } from "react-icons/fi";
 import { useGlobalContext } from "../../Context/StateContext";
-import { navbarNavigationRoutes, closeIcon, hamburgerIcon, arrowHeadNextIcon } from "../../Utils/Constants/Navbar";
+import {
+  navbarNavigationRoutes,
+  closeIcon,
+  hamburgerIcon,
+  arrowHeadNextIcon,
+} from "../../Utils/Constants/Navbar";
+import { getContainerStyles } from "../../Utils/Constants/Globals";
+import useWindowSize from "../../Utils/Hooks/useWindowSize";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const Spinner = () => {
   return (
@@ -22,14 +32,26 @@ const Spinner = () => {
 const NavBar = () => {
   const { setToken, token } = useGlobalContext();
   const navigate = useNavigate();
+  const windowSize = useWindowSize();
   const [state, setState] = useState(false);
-  const [Menu, setMenu] = useState(false);
+  //const [Menu, setMenu] = useState(false);
   const [isAuth, setIsAuth] = useState(null);
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  let open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setIsMenuOpen(true);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+    setIsMenuOpen(false);
+  };
 
-  const navigation = navbarNavigationRoutes;
+  //const navigation = navbarNavigationRoutes;
 
   const loadUserData = async (res) => {
     setUser(res);
@@ -39,7 +61,7 @@ const NavBar = () => {
   const getCurrentUser = async () => {
     try {
       const response = await axios.get(
-        "https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/",
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/get_current_user/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,49 +92,101 @@ const NavBar = () => {
     localStorage.removeItem("Menu");
     setToken(null);
     setIsOpen(false);
-    navigate("/");
+    navigate("/", { replace: true });
+    window.location.reload();
   };
 
-  const handleChange = () => {
+  /* const handleChange = () => {
     setMenu(!Menu);
-  };
+  }; */
 
   return (
     <>
-      <nav className="sticky top-0 bg-white md:text-sm z-50 shadow-lg">
-        <div className="gap-x-7 items-center px-4 md:flex md:px-8">
-          <div className="flex items-center justify-between py-5 md:block">
-            <div className="flex flex-row items-center  justify-between">
-              <button style={{ cursor: "pointer" }} onClick={handleChange}>
-                <CiMenuFries
-                  id="menu"
-                  className="h-5 w-5 mx-2 active:shadow-none"
-                />
-              </button>
-              <Link to="/">
-                <img
-                  src={process.env.PUBLIC_URL + "/logo.png"}
-                  width={40}
-                  height={20}
-                  alt="logo"
-                />
-              </Link>
-            </div>
-            <div className="md:hidden">
-              <button
-                className="menu-btn text-gray-500 hover:text-gray-800"
-                style={{ cursor: "pointer" }}
-                onClick={() => setState(!state)}
-              >
-                {state ? (
-                  closeIcon()
-                ) : (
-                  hamburgerIcon()
-                )}
-              </button>
+      <nav
+        className="sticky top-0 bg-white md:text-sm z-50 border-b-2 py-3"
+        style={getContainerStyles(windowSize.width)}
+      >
+        <div
+          className="gap-x-7 items-center pl-4 pr-2 md:pr-6 flex flex-row"
+          style={{ justifyContent: "space-between" }}
+        >
+          <div className="flex items-center justify-between py-1 md:hidden">
+            <div className="flex flex-row items-center justify-between">
+              {windowSize.width < 768 && (
+                <Link
+                  to="/"
+                  className="font-bold text-green-600 flex flex-row items-center"
+                  style={{ textDecoration: "none", justifyContent: "center" }}
+                >
+                  <img
+                    src={process.env.PUBLIC_URL + "/logo.png"}
+                    width={40}
+                    height={20}
+                    alt="logo"
+                    className="mr-2"
+                  />
+                </Link>
+              )}
             </div>
           </div>
+          <div className="flex flex-row hidden md:block">
+            {navbarNavigationRoutes.map((link, index) => {
+              return (
+                <Link
+                  to={link.path}
+                  className="text-sm text-green-600 font-semibold p-2"
+                  key={index}
+                >
+                  {link.title}
+                </Link>
+              );
+            })}
+          </div>
           <div
+            className="flex flex-row items-center justify-end md:gap-x-6"
+            style={{ justifySelf: "flex-end" }}
+          >
+            {(loading || isAuth === null) && <Spinner />}
+            {!loading && isAuth && (
+              <div className=" flex items-center">
+                <Dropdown
+                  color="orange"
+                  onLogout={handleLogout}
+                  User={
+                    user.profile_pic_url.includes("None")
+                      ? null
+                      : user.profile_pic_url
+                  }
+                />
+              </div>
+            )}
+
+            {!loading && isAuth !== null && !isAuth && (
+              <div className="gap-x-4 flex flex-row items-center">
+                <Link
+                  to="/login"
+                  className="block text-sm text-base text-green-500 font-semibold hover:text-green-700"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/register"
+                  className="flex text-sm items-center bottom-2 justify-center gap-x-1 py-2 px-4 text-white font-medium bg-green-600 hover:bg-green-700 active:bg-green-900 rounded-full md:inline-flex"
+                >
+                  Register
+                  {arrowHeadNextIcon()}
+                </Link>
+              </div>
+            )}
+            <div
+              className="flex flex-row items-center justify-between md:hidden text-2xl ml-2"
+              onClick={(e) => handleClick(e)}
+            >
+              <IoMdMore />
+            </div>
+          </div>
+
+          {/* <div
             className={`flex-1 items-center mt-8 md:mt-0 md:flex ${
               state ? "block" : "hidden"
             } `}
@@ -165,10 +239,52 @@ const NavBar = () => {
                 </>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
+        {isMenuOpen && (
+          <Menu
+            id="demo-positioned-menu"
+            aria-labelledby="demo-positioned-button"
+            anchorEl={anchorEl}
+            open={isMenuOpen}
+            onClose={() => handleClose()}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <Link to="/submitarticle" className="block">
+              <MenuItem
+                onClick={() => handleClose()}
+                sx={{ padding: "8px 28px" }}
+              >
+                Submit Article
+              </MenuItem>
+            </Link>
+            <Link to="/communities" className="block">
+              <MenuItem
+                onClick={() => handleClose()}
+                sx={{ padding: "8px 28px" }}
+              >
+                Communities
+              </MenuItem>
+            </Link>
+            <Link to="/articles" className="block">
+              <MenuItem
+                onClick={() => handleClose()}
+                sx={{ padding: "8px 28px" }}
+              >
+                Articles
+              </MenuItem>
+            </Link>
+          </Menu>
+        )}
       </nav>
-      {Menu && <SideNav isMenuOpen={Menu} onMenuChange={handleChange} />}
+      {/* {Menu && <SideNav isMenuOpen={Menu} onMenuChange={handleChange} />} */}
     </>
   );
 };
@@ -187,27 +303,36 @@ const Dropdown = ({ color, onLogout, User }) => {
     setDropdownPopoverShow(false);
   };
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleOpen = (event) => {
+    //console.log(event);
+    setAnchorEl(event.currentTarget);
+    setDropdownPopoverShow(true);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setDropdownPopoverShow(false);
+  };
+
   return (
     <>
-      <div className="flex flex-wrap">
-        <div className="w-full sm:w-6/12 md:w-4/12 px-4">
+      <div className="flex flex-wrap relative">
+        <div className="w-full sm:w-6/12 md:w-4/12">
           <div className="relative inline-flex align-middle w-full">
             <button
               className={
-                "text-white font-bold uppercase text-sm px-6 rounded outline-none focus:outline-none bg-white"
+                "text-white font-bold uppercase text-sm rounded-full outline-none focus:outline-none bg-slate-200"
               }
               style={{ transition: "all .15s ease", cursor: "pointer" }}
               type="button"
               ref={btnDropdownRef}
-              onClick={() => {
-                dropdownPopoverShow
-                  ? closeDropdownPopover()
-                  : openDropdownPopover();
-              }}
+              onClick={(e) => handleOpen(e)}
             >
-              <span className="w-8 h-8 inline-block ml-1">
+              <span className="p-2 inline-block flex items-center justify-items-center">
                 {User === null ? (
-                  <SlUser className="text-black w-6 h-6 inline-block ml-1" />
+                  <SlUser className="text-black w-4 h-4 inline-block" />
                 ) : (
                   <img
                     className="object-cover w-6 h-6 rounded-full ring ring-gray-300 mt-1"
@@ -217,13 +342,61 @@ const Dropdown = ({ color, onLogout, User }) => {
                 )}
               </span>
             </button>
-            <div
+
+            {dropdownPopoverShow && (
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={dropdownPopoverShow}
+                onClose={() => handleClose()}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <Link to="/myprofile" className="block">
+                  <MenuItem
+                    onClick={() => handleClose()}
+                    sx={{ padding: "8px 28px" }}
+                  >
+                    Your Profile
+                  </MenuItem>
+                </Link>
+                <Link to="/notifications" className="block">
+                  <MenuItem
+                    onClick={() => handleClose()}
+                    sx={{ padding: "8px 28px" }}
+                  >
+                    Notifications
+                  </MenuItem>
+                </Link>
+                <Link to="" className="block">
+                  <MenuItem
+                    onClick={(e) => {
+                      handleClose();
+                      onLogout(e);
+                    }}
+                    sx={{ padding: "8px 28px" }}
+                  >
+                    <FiLogOut className="w-4 h-4 mr-1" />
+                    Log Out
+                  </MenuItem>
+                </Link>
+              </Menu>
+            )}
+
+            {/* <div
               ref={popoverDropdownRef}
               className={
                 (dropdownPopoverShow ? "block " : "hidden ") +
                 "text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1 bg-white"
               }
-              style={{ minWidth: "8rem" }}
+              style={{ minWidth: "8rem", zIndex: 70 }}
             >
               <Link
                 to="/myprofile"
@@ -249,7 +422,7 @@ const Dropdown = ({ color, onLogout, User }) => {
                 <FiLogOut className="w-4 h-4 mr-1" />
                 Log Out
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
