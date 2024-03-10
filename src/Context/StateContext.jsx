@@ -1,5 +1,5 @@
-import axios from 'axios';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import axios from "../utils/axios";
 
 
 const AppContext = React.createContext()
@@ -18,13 +18,13 @@ const AppProvider = ({ children }) => {
 
   const getCurrentUser = async () => {
       try {
-          const token = localStorage.getItem('token'); 
-    
-          const response = await axios.get('https://scicommons-backend-vkyc.onrender.com/api/user/get_current_user/', {
+          const token = localStorage.getItem('token');
+
+          const response = await axios.get('/api/user/get_current_user/', {
               headers: {
                   Authorization: `Bearer ${token}`,
               },
-          }); 
+          });
           const user = response.data.success;
           await loadUserData(user);
       } catch (error) {

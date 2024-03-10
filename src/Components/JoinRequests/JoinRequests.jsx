@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import Loader from '../Loader/Loader'
 import { TECollapse } from "tw-elements-react"
 import {SlUser} from "react-icons/sl";
@@ -39,7 +39,7 @@ const JoinRequests = ({community}) => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.get(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/get_requests/`, config)
+            const res = await axios.get(`/api/community/${community}/get_requests/`, config)
             await loadData(res.data.success)
             setLoading(false)
         } catch (error) {
@@ -204,7 +204,7 @@ const AcceptModal = ({setShow, request, community,index, onDelete, loading, setL
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/approve_request/`, {user: request.user_id, status: "approved"}, config)
+            const res = await axios.post(`/api/community/${community}/approve_request/`, {user: request.user_id, status: "approved"}, config)
 
             await onDelete(index)
             setLoading(false)
@@ -245,7 +245,7 @@ const RejectModal = ({setReject, request, community,index, onDelete, loading, se
                     Authorization: `Bearer ${token}`
                 }
             }
-            const res = await axios.post(`https://scicommons-backend-vkyc.onrender.com/api/community/${community}/approve_request/`, {user: request.user_id, status: "rejected"}, config)
+            const res = await axios.post(`/api/community/${community}/approve_request/`, {user: request.user_id, status: "rejected"}, config)
 
             await onDelete(index)
             setLoading(false)
