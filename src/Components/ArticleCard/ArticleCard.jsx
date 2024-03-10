@@ -2,7 +2,7 @@ import React from "react";
 import { AiFillEye } from "react-icons/ai";
 import dayjs from "dayjs";
 import "./ArticleCard.css";
-import {AiFillHeart} from "react-icons/ai";
+import { AiFillHeart } from "react-icons/ai";
 
 const ArticleCard = ({ articles }) => {
   const formatCount = (count) => {
@@ -136,7 +136,9 @@ const ArticleCard = ({ articles }) => {
           </li>
         ))
       ) : (
-        <h1 className="text-2xl font-bold text-center w-full text-gray-500">No Articles Found</h1>
+        <h1 className="text-2xl font-bold text-center w-full text-gray-500">
+          No Articles Found
+        </h1>
       )}
     </ul>
   );
