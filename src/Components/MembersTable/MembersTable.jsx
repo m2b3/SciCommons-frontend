@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../Loader/Loader";
 import {
   AiOutlineEdit,
@@ -37,7 +37,7 @@ const MembersTable = ({ community }) => {
         },
       };
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/members/`,
+        `/api/community/${community}/members/`,
         config
       );
       await loadData(res.data.success);
@@ -299,7 +299,7 @@ const DeleteModal = ({
         },
       };
       const res = await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/remove_member/${userId}`,
+        `/api/community/${community}/remove_member/${userId}`,
         config
       );
       if (res.status === 200) {
@@ -384,7 +384,7 @@ const EditModal = ({
         },
       };
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/promote_member/`,
+        `/api/community/${community}/promote_member/`,
         {
           username: member.username,
           role: role.current.toLowerCase(),
@@ -515,7 +515,7 @@ const AddModal = ({
         },
       };
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/promote_member/`,
+        `/api/community/${community}/promote_member/`,
         {
           username: username.current,
           role: "member",

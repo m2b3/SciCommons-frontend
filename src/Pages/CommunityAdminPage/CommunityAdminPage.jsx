@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import CommunityEditPage from "../../Components/CommunityEditPage/CommunityEditPage";
 import JoinRequests from "../../Components/JoinRequests/JoinRequests";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import MembersTable from "../../Components/MembersTable/MembersTable";
 import AdminArticlePage from "../AdminArticlePage/AdminArticlePage";
@@ -27,13 +27,10 @@ const CommunityAdminPage = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const res = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/community/mycommunity`,
-          config
-        );
+        const res = await axios.get(`/api/community/mycommunity`, config);
         await loadData(res.data.success);
       } catch (error) {
-        console.error('Network error:', error);
+        console.error("Network error:", error);
       }
     };
     getCommunity();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
@@ -28,7 +28,7 @@ const JoinRequest = () => {
           },
         };
         const res = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/community/${communityName}/`,
+          `/api/community/${communityName}/`,
           config
         );
         await loadCommunity(res.data.success);
@@ -82,7 +82,7 @@ const JoinRequest = () => {
     }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${communityName}/join_request/`,
+        `/api/community/${communityName}/join_request/`,
         form_data,
         {
           headers: {

@@ -6,7 +6,7 @@ import eye from "./eye-open.png";
 import dublicate from "./duplicate.png";
 import bookmark from "./bookmark.png";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import Comments from "../../Components/Comments/Comments";
 import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from "react-icons/ai";
@@ -73,7 +73,7 @@ const ArticleCommentModal = ({
         : "publiccomment";
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/`,
+        `/api/comment/`,
         {
           Title: title,
           Comment: comment,
@@ -223,7 +223,7 @@ const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
     };
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/`,
+        `/api/comment/`,
         {
           Title: title,
           Comment: comment,
@@ -444,7 +444,7 @@ const ArticleDecisionModal = ({
         : "publiccomment";
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/`,
+        `/api/comment/`,
         {
           Title: title,
           Comment: comment,
@@ -605,7 +605,7 @@ const ArticlePage = () => {
     };
     try {
       const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${articleId}/updateviews/`,
+        `/api/article/${articleId}/updateviews/`,
         config
       );
     } catch (err) {
@@ -646,10 +646,7 @@ const ArticlePage = () => {
       };
     }
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/`,
-        config
-      );
+      const res = await axios.get(`/api/comment/`, config);
       await loadCommentData(res.data.success.results);
     } catch (err) {
       console.log(err);
@@ -668,10 +665,7 @@ const ArticlePage = () => {
       };
     }
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${articleId}`,
-        config
-      );
+      const res = await axios.get(`/api/article/${articleId}`, config);
       await loadArticleData(res.data.success);
     } catch (err) {
       console.log(err);
@@ -743,7 +737,7 @@ const ArticlePage = () => {
     if (article.isFavourite === false) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/article/favourite/`,
+          `/api/article/favourite/`,
           { article: articleId },
           config
         );
@@ -759,7 +753,7 @@ const ArticlePage = () => {
     } else {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/article/unfavourite/`,
+          `/api/article/unfavourite/`,
           { article: articleId },
           config
         );
@@ -830,7 +824,7 @@ const ArticlePage = () => {
     }
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/?limit=20&offset=${comments.length}`,
+        `/api/comment/?limit=20&offset=${comments.length}`,
         config
       );
       await loadCommentData([...comments, ...res.data.success.results]);

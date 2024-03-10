@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import NavBar from "../../Components/NavBar/NavBar";
 import "./UserActivity.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -16,12 +16,9 @@ const UserActivity = () => {
   const fetchActivity = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/myactivity/`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`/api/user/myactivity/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = response.data.success;
       await loadData(data);
     } catch (err) {

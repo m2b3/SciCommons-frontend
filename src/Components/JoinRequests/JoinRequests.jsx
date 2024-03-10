@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../Loader/Loader";
 import { TECollapse } from "tw-elements-react";
 import { SlUser } from "react-icons/sl";
@@ -38,7 +38,7 @@ const JoinRequests = ({ community }) => {
         },
       };
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/get_requests/`,
+        `/api/community/${community}/get_requests/`,
         config
       );
       await loadData(res.data.success);
@@ -315,7 +315,7 @@ const AcceptModal = ({
         },
       };
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/approve_request/`,
+        `/api/community/${community}/approve_request/`,
         { user: request.user_id, status: "approved" },
         config
       );
@@ -383,7 +383,7 @@ const RejectModal = ({
         },
       };
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/approve_request/`,
+        `/api/community/${community}/approve_request/`,
         { user: request.user_id, status: "rejected" },
         config
       );

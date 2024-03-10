@@ -4,7 +4,7 @@ import { MdAddBox, MdRemoveCircle } from "react-icons/md";
 import "./SubmitArticle.css";
 import Footer from "../../Components/Footer/Footer";
 import Loader from "../../Components/Loader/Loader";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
@@ -76,7 +76,7 @@ const PubMedSearch = () => {
   };
 
   const handleSubmit = async (article) => {
-    const baseURL = `${process.env.REACT_APP_BACKEND_URL}/api/article/`;
+    const baseURL = `/api/article/`;
     setLoading(true);
     try {
       const abstractResponse = await fetch(
@@ -215,7 +215,7 @@ const PubMedSearch = () => {
 };
 
 const SubmitArticle = () => {
-  const baseURL = `${process.env.REACT_APP_BACKEND_URL}/api/article/`;
+  const baseURL = `/api/article/`;
   const { token } = useGlobalContext();
 
   const [currentState, setCurrentState] = useState(1);
@@ -398,18 +398,15 @@ const SubmitArticle = () => {
         return;
       } else {
         try {
-          const response = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/user/`,
-            {
-              params: {
-                search: authors[i].username,
-              },
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await axios.get(`/api/user/`, {
+            params: {
+              search: authors[i].username,
+            },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
           if (
             response.data.success.results.length === 0 ||
             response.data.success.results[0].username !== authors[i].username

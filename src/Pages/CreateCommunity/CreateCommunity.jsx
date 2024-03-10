@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateCommunity.css";
 import Footer from "../../Components/Footer/Footer";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
@@ -10,7 +10,7 @@ import { getContainerStyles } from "../../Utils/Constants/Globals";
 import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
 const CreateCommunity = () => {
-  const baseURL = `${process.env.REACT_APP_BACKEND_URL}/api/community/`;
+  const baseURL = `/api/community/`;
   const { token } = useGlobalContext();
   const windowSize = useWindowSize();
   const navigate = useNavigate();
@@ -135,7 +135,7 @@ const CreateCommunity = () => {
   };
 
   return (
-    <div style={{paddingBottom: '40px'}}>
+    <div style={{ paddingBottom: "40px" }}>
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold mb-4 mt-4 text-center text-gray-500">
           Create a Community

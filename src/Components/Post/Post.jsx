@@ -15,7 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Popper from "popper.js";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -46,7 +46,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     if (liked) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/feed/unlike/`,
+          `/api/feed/unlike/`,
           { post: post.id },
           config
         );
@@ -58,7 +58,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     } else {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/feed/like/`,
+          `/api/feed/like/`,
           { post: post.id },
           config
         );
@@ -89,7 +89,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     if (bookmark) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/feed/unbookmark/`,
+          `/api/feed/unbookmark/`,
           { post: post.id },
           config
         );
@@ -101,7 +101,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     } else {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/feed/bookmark/`,
+          `/api/feed/bookmark/`,
           { post: post.id },
           config
         );
@@ -138,9 +138,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
       },
     });
     e.stopPropagation();
-    navigator.clipboard.writeText(
-      `${process.env.REACT_APP_BACKEND_URL}/post/${post.id}`
-    );
+    navigator.clipboard.writeText(`/post/${post.id}`);
   };
 
   const findTime = (date) => {
@@ -321,10 +319,7 @@ const Dropdown = ({ post, onDeletePost, handleEditChange }) => {
       },
     };
     try {
-      const res = await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/${post.id}/`,
-        config
-      );
+      const res = await axios.delete(`/api/feed/${post.id}/`, config);
       await onDeletePost(post.id);
       ToastMaker("Post Deleted Successfully", "success");
     } catch (err) {
@@ -459,11 +454,7 @@ const PostEditModal = ({ post, setShowEdit, handleEditChange }) => {
       if (form_data.get("image") === null) {
         form_data.delete("image");
       }
-      const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/${post.id}/`,
-        form_data,
-        config
-      );
+      const res = await axios.put(`/api/feed/${post.id}/`, form_data, config);
       ToastMaker("Post Edited Successfully", 3500, {
         valign: "top",
         styles: {

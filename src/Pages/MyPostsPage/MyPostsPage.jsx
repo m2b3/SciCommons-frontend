@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Post from "../../Components/Post/Post";
 import Loader from "../../Components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
@@ -77,11 +77,7 @@ const PostModal = ({ setIsAccordionOpen, getPosts }) => {
       },
     };
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/`,
-        form_data,
-        config
-      );
+      const res = await axios.post(`/api/feed/`, form_data, config);
       await getPosts();
       ToastMaker("Post created successfully!!!", 3500, {
         valign: "top",
@@ -170,10 +166,7 @@ const MyPostsPage = () => {
       },
     };
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/myposts/`,
-        config
-      );
+      const res = await axios.get(`/api/user/myposts/`, config);
       await loadData(res.data.success);
     } catch (err) {
       console.log(err);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import "./Notifications.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -23,7 +23,7 @@ const NotificationCard = ({ notification, handleMarked }) => {
     };
     try {
       const response = axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/notification/${notification.id}/`,
+        `/api/notification/${notification.id}/`,
         { is_read: true },
         config
       );
@@ -83,12 +83,9 @@ const Notifications = () => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/notification/`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`/api/notification/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = response.data.success;
       setNotifications(data.results);
     } catch (err) {
@@ -113,7 +110,7 @@ const Notifications = () => {
     setLoadingMore(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/notification/?limit=20&offset=${notifications.length}`,
+        `/api/notification/?limit=20&offset=${notifications.length}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

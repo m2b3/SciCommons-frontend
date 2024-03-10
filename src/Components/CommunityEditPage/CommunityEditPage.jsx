@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../Loader/Loader";
@@ -9,6 +8,7 @@ import { BiLogoGmail } from "react-icons/bi";
 import { CgWebsite } from "react-icons/cg";
 import { FaUsers, FaBook, FaPencilAlt } from "react-icons/fa";
 import { useGlobalContext } from "../../Context/StateContext";
+import axios from "../../Utils/axios";
 
 const CommunityEditPage = () => {
   const [community, setCommunity] = useState(null);
@@ -46,10 +46,7 @@ const CommunityEditPage = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const res = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/community/mycommunity`,
-          config
-        );
+        const res = await axios.get(`/api/community/mycommunity`, config);
 
         await loadData(res.data.success);
       } catch (error) {
@@ -135,7 +132,7 @@ const CommunityEditPage = () => {
 
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community.Community_name}/`,
+        `/api/community/${community.Community_name}/`,
         form_data,
         {
           headers: {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
 import Footer from "../../Components/Footer/Footer";
@@ -29,10 +29,7 @@ const FavouritePage = () => {
       },
     };
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/favourites/`,
-        config
-      );
+      const response = await axios.get(`/api/article/favourites/`, config);
       await loadData(response.data.success);
     } catch (error) {
       console.log(error);

@@ -4,7 +4,6 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
-import axios from "axios";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useGlobalContext } from "../../Context/StateContext";
 import Box from "@mui/material/Box";
@@ -12,6 +11,7 @@ import Slider from "@mui/material/Slider";
 import { useNavigate } from "react-router-dom";
 import Popper from "popper.js";
 import { BiDotsVertical } from "react-icons/bi";
+import axios from "../../Utils/axios";
 
 const ArticleCommentModal = ({
   setShowCommentModal,
@@ -67,7 +67,7 @@ const ArticleCommentModal = ({
         : "publiccomment";
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/`,
+        `/api/comment/`,
         {
           Title: title,
           Comment: comment,
@@ -225,7 +225,7 @@ const ArticleCommentEditModal = ({
         : "publiccomment";
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/`,
+        `/api/comment/`,
         {
           Title: title,
           Comment: comment,
@@ -474,7 +474,7 @@ const Comments = ({ comment, article, colour }) => {
     };
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/like/`,
+        `/api/comment/like/`,
         { post: comment.id, value: event.target.value },
         config
       );
@@ -519,7 +519,7 @@ const Comments = ({ comment, article, colour }) => {
     }
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/?limit=20&offset=${repliesData.length}`,
+        `/api/comment/?limit=20&offset=${repliesData.length}`,
         config
       );
       await loadData(res.data.success.results);
@@ -851,7 +851,7 @@ const Dropdown = ({ article, comment, color }) => {
     };
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/${comment.id}/block_user/`,
+        `/api/comment/${comment.id}/block_user/`,
         config
       );
       setBlock(!block);
@@ -870,7 +870,7 @@ const Dropdown = ({ article, comment, color }) => {
     };
     try {
       const response = await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/api/comment/${comment.id}/`,
+        `/api/comment/${comment.id}/`,
         config
       );
       window.location.reload();

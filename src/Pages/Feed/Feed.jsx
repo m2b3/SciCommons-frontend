@@ -12,7 +12,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import Toggle from "react-toggle";
 import "react-toggle/style.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../../Components/Loader/Loader";
@@ -87,11 +87,7 @@ const PostModal = ({ setIsAccordionOpen }) => {
       },
     };
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/`,
-        form_data,
-        config
-      );
+      const res = await axios.post(`/api/feed/`, form_data, config);
       ToastMaker("Post created successfully!!!", 3500, {
         valign: "top",
         styles: {
@@ -192,7 +188,7 @@ const Feed = () => {
     }
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/`,
+        `/api/feed/`,
         {
           params: {
             order: selectedOption.current,
@@ -230,7 +226,7 @@ const Feed = () => {
     }
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/?limit=20&offset=${posts.length}`,
+        `/api/feed/?limit=20&offset=${posts.length}`,
         {
           params: {
             order: selectedOption.current,

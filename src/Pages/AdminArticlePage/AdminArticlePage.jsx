@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
@@ -20,7 +20,7 @@ const AcceptModal = ({ setShowAccept, article, community, handleModified }) => {
         },
       };
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${article}/approve_for_review/`,
+        `/api/article/${article}/approve_for_review/`,
         { community: community },
         config
       );
@@ -87,7 +87,7 @@ const RejectModal = ({ setShowReject, article, community, handleReject }) => {
         },
       };
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${article}/reject_article/`,
+        `/api/article/${article}/reject_article/`,
         { community: community },
         config
       );
@@ -177,7 +177,7 @@ const PublishModal = ({ setShowPublish, article, community }) => {
       };
 
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/article/${article}/publish/`,
+        `/api/community/${community}/article/${article}/publish/`,
         form_data,
         config
       );
@@ -348,7 +348,7 @@ const AdminArticlePage = ({ community }) => {
     };
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community}/articles/`,
+        `/api/community/${community}/articles/`,
         config
       );
       await loadData(response.data.success);

@@ -7,7 +7,7 @@ import Send from "@mui/icons-material/Send";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
 import ListItemText from "@mui/material/ListItemText";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import { useGlobalContext } from "../../Context/StateContext";
 import { ChatItem, MessageBox, Input, ChatList } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
@@ -48,7 +48,7 @@ const ChatPage = () => {
       },
     };
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/api/article_chat/`, config)
+      .get(`/api/article_chat/`, config)
       .then((response) => {
         setMessages(response.data.success.results);
       })
@@ -72,10 +72,7 @@ const ChatPage = () => {
       };
     }
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${id}`,
-        config
-      );
+      const res = await axios.get(`/api/article/${id}`, config);
 
       await loadArticleData(res.data.success);
     } catch (err) {
@@ -156,7 +153,7 @@ const ChatPage = () => {
         },
       };
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article_chat/`,
+        `/api/article_chat/`,
         {
           article: id,
           body: Message,

@@ -10,7 +10,7 @@ import {
 } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import "react-toggle/style.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../../Components/Loader/Loader";
@@ -89,11 +89,7 @@ const PostModal = ({ setIsAccordionOpen }) => {
       },
     };
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/`,
-        form_data,
-        config
-      );
+      const res = await axios.post(`/api/feed/`, form_data, config);
       ToastMaker("Post created successfully!!!", 3500, {
         valign: "top",
         styles: {
@@ -184,10 +180,7 @@ const Timeline = () => {
       },
     };
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/timeline/`,
-        config
-      );
+      const res = await axios.get(`/api/feed/timeline/`, config);
 
       if (res.data.success.length === 0) {
         await loadData([]);

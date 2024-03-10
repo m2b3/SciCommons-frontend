@@ -11,7 +11,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import "./SocialComment.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
@@ -49,7 +49,7 @@ const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
     };
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feedcomment/`,
+        `/api/feedcomment/`,
         { post: postId, comment: body, parent_comment: comment.id },
         config
       );
@@ -159,7 +159,7 @@ const EditModal = ({ comment, setShowEdit, changeComment }) => {
     }
     try {
       const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feedcomment/${comment.id}/`,
+        `/api/feedcomment/${comment.id}/`,
         { post: comment.post, comment: body },
         config
       );
@@ -255,7 +255,7 @@ const SocialComment = ({ comment, post, setPost }) => {
     if (liked) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/feedcomment/unlike/`,
+          `/api/feedcomment/unlike/`,
           { comment: comment.id },
           config
         );
@@ -267,7 +267,7 @@ const SocialComment = ({ comment, post, setPost }) => {
     } else {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/feedcomment/like/`,
+          `/api/feedcomment/like/`,
           { comment: comment.id },
           config
         );
@@ -324,7 +324,7 @@ const SocialComment = ({ comment, post, setPost }) => {
     }
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feedcomment/?limit=20&offset=${repliesData.length}`,
+        `/api/feedcomment/?limit=20&offset=${repliesData.length}`,
         config
       );
       let temp = { ...post };

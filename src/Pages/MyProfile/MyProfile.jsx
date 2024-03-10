@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import { useGlobalContext } from "../../Context/StateContext";
 import { SlUser } from "react-icons/sl";
@@ -42,10 +42,7 @@ const MyProfile = () => {
       },
     };
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/get_current_user/`,
-        config
-      );
+      const response = await axios.get(`/api/user/get_current_user/`, config);
       await loadProfile(response.data.success);
     } catch (error) {
       console.log(error);
@@ -64,7 +61,7 @@ const MyProfile = () => {
     };
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/`,
+        `/api/user/${user.id}/`,
         form_data,
         config
       );

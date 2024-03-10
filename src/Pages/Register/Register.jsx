@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Register.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
@@ -120,15 +120,11 @@ const Register = () => {
       return;
     }
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`/api/user/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       // Perform any additional actions after successful register, e.g., navigate to the home page
       navigate("/registersuccessful");

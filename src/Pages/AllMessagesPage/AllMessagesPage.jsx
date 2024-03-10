@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChatList, MessageList } from "react-chat-elements";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import { useGlobalContext } from "../../Context/StateContext";
 import { useNavigate } from "react-router-dom";
 import "./AllMessagesPage.css";
@@ -69,10 +69,7 @@ const AllMessagesPage = () => {
       },
     };
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/messages/`,
-        config
-      );
+      const res = await axios.get(`/api/user/messages/`, config);
 
       if (res.data.success.length === 0) {
         await loadData([]);
@@ -123,7 +120,7 @@ const AllMessagesPage = () => {
           },
         };
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/user/`,
+          `/api/user/`,
           { params: { search: e.target.value } },
           config
         );

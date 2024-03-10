@@ -1,6 +1,6 @@
 import React, { useState, useRef, Fragment, useEffect } from "react";
 import "./Login.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
@@ -35,14 +35,11 @@ const Login = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/get_current_user/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`/api/user/get_current_user/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const user = response.data.success;
       await loadUserData(user);
     } catch (error) {
@@ -72,15 +69,11 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/login/`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`/api/user/login/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       localStorage.setItem("token", response.data.success.access);
       await loadTokenData(response.data.success.access);

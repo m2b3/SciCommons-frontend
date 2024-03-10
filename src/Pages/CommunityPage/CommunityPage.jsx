@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
 import { MdLocationPin, MdSubscriptions } from "react-icons/md";
@@ -62,7 +62,7 @@ const AdminArticlePage = ({ community }) => {
 
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/${community.Community_name}/articles/`,
+        `/api/community/${community.Community_name}/articles/`,
         config
       );
       await loadData(response.data.success);
@@ -249,10 +249,7 @@ const CommunityPage = () => {
             },
           };
         }
-        const res = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/community/${communityName}/`,
-          config
-        );
+        const res = await axios.get(`/api/community/${communityName}/`, config);
         await loadCommunity(res.data.success);
         setSubscribed(res.data.success.isSubscribed);
       } catch (error) {
@@ -292,7 +289,7 @@ const CommunityPage = () => {
       };
       if (subscribed === false) {
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/community/${community.Community_name}/subscribe/`,
+          `/api/community/${community.Community_name}/subscribe/`,
           {
             user: user.id,
           },
@@ -303,7 +300,7 @@ const CommunityPage = () => {
         }
       } else {
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/community/${community.Community_name}/unsubscribe/`,
+          `/api/community/${community.Community_name}/unsubscribe/`,
           {
             user: user.id,
           },

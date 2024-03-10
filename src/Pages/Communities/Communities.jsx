@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import CommunityCard from "../../Components/CommunityCard/CommunityCard";
 import Loader from "../../Components/Loader/Loader";
 import "./Communities.css";
@@ -35,7 +35,7 @@ const Communities = () => {
     }
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community?search=${searchTerm}`,
+        `/api/community?search=${searchTerm}`,
         config
       );
       setCommunities(response.data.success.results);
@@ -67,7 +67,7 @@ const Communities = () => {
         };
       }
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`,
+        `/api/community/?search=${searchTerm}&limit=20&offset=${communities.length}`,
         config
       );
       const data = response.data.success.results;

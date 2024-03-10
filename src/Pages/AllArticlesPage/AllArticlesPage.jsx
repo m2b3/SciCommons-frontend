@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
 import Footer from "../../Components/Footer/Footer";
@@ -44,10 +44,7 @@ const AllArticlesPage = () => {
       };
     }
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/`,
-        config
-      );
+      const response = await axios.get(`/api/article/`, config);
       await loadData(response.data.success.results);
     } catch (error) {
       console.log(error);
@@ -90,7 +87,7 @@ const AllArticlesPage = () => {
     }
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/?search=${searchTerm}`,
+        `/api/article/?search=${searchTerm}`,
         {
           params: {
             order: filter,
@@ -123,7 +120,7 @@ const AllArticlesPage = () => {
         };
       }
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,
+        `/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,
         {
           params: {
             order: filter,
@@ -150,9 +147,7 @@ const AllArticlesPage = () => {
 
   return (
     <>
-      <div
-        className="flex flex-col items-center justify-start bg-gray-50 min-h-screen"
-      >
+      <div className="flex flex-col items-center justify-start bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Articles</h1>
         <form
           className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row"

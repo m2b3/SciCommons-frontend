@@ -5,7 +5,7 @@ import folder from "./folder.png";
 import eye from "./eye-open.png";
 import dublicate from "./duplicate.png";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from "react-icons/ai";
 import { MdOutlineViewSidebar } from "react-icons/md";
@@ -56,7 +56,7 @@ const DisplayCommunity = ({ article }) => {
     };
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${article}/isapproved/`,
+        `/api/article/${article}/isapproved/`,
         config
       );
       await loadData(response.data.success);
@@ -97,7 +97,7 @@ const DisplayCommunity = ({ article }) => {
     };
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${article}/publish/`,
+        `/api/article/${article}/publish/`,
         { published: communityName, status: "published" },
         config
       );
@@ -118,7 +118,7 @@ const DisplayCommunity = ({ article }) => {
     };
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${article}/publish/`,
+        `/api/article/${article}/publish/`,
         { published: communityName, status: "rejected by user" },
         config
       );
@@ -320,7 +320,7 @@ const SubmitCommunity = ({ article, setShow }) => {
     if (val) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/article/${article.id}/submit_article/`,
+          `/api/article/${article.id}/submit_article/`,
           {
             communities: [val],
           },
@@ -413,7 +413,7 @@ const ArticleEditPage = ({ setArticleEdit, article, handleArticleEdit }) => {
     setLoading(true);
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/article/${article.id}/`,
+        `/api/article/${article.id}/`,
         form_data,
         {
           headers: {
@@ -571,10 +571,7 @@ const AuthorArticlePage = () => {
         },
       };
       try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/user/articles/${articleId}/`,
-          config
-        );
+        const res = await axios.get(`/api/user/articles/${articleId}/`, config);
         if (res.data.success.length === 0) {
           navigate("/");
         }
@@ -640,7 +637,7 @@ const AuthorArticlePage = () => {
     if (article.isFavourite === false) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/article/favourite/`,
+          `/api/article/favourite/`,
           { article: articleId },
           config
         );
@@ -656,7 +653,7 @@ const AuthorArticlePage = () => {
     } else {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/article/unfavourite/`,
+          `/api/article/unfavourite/`,
           { article: articleId },
           config
         );

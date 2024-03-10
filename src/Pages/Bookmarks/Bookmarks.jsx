@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import Toggle from "react-toggle";
 import "react-toggle/style.css";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../../Components/Loader/Loader";
@@ -46,10 +46,7 @@ const BookMarks = () => {
       },
     };
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/bookmarks/`,
-        config
-      );
+      const res = await axios.get(`/api/feed/bookmarks/`, config);
       if (res.data.success.length === 0) {
         await loadData([]);
       } else {
@@ -70,10 +67,7 @@ const BookMarks = () => {
       },
     };
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/feed/bookmarks/`,
-        config
-      );
+      const res = await axios.get(`/api/feed/bookmarks/`, config);
       if (res.data.success.length === 0) {
         setLoadingMore(false);
         ToastMaker("No more posts to load", 3500, {

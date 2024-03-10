@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./NavBar.css";
 import { SlUser } from "react-icons/sl";
 import { IoMdMore } from "react-icons/io";
-import axios from "axios";
+import axios from "../../Utils/axios";
 import Popper from "popper.js";
 import { useNavigate } from "react-router-dom";
 import { CiMenuFries } from "react-icons/ci";
@@ -60,14 +60,11 @@ const NavBar = () => {
 
   const getCurrentUser = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/get_current_user/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`/api/user/get_current_user/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const user = response.data.success;
       await loadUserData(user);
     } catch (error) {
