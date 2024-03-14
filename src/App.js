@@ -109,7 +109,7 @@ function App() {
   }));
 
   return (
-    <div className="relative">
+    <div className="relative min-h-screen flex flex-col">
       {showNavBar && <NavBar />}
       {showNavBar && <SideNav />}
       <RoutesContainer />
