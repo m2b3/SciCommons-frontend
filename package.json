@@ -47,7 +47,7 @@
     "toastmaker": "^1.0.9",
     "tw-elements": "^1.0.0-beta3",
     "tw-elements-react": "^1.0.0-alpha1",
-    "web-vitals": "^2.1.4",
+    "web-vitals": "^3.5.2",
     "websocket": "^1.0.34"
   },
   "scripts": {
