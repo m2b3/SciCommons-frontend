@@ -23,7 +23,6 @@ import { closeIcon, hamburgerIcon } from "../../Utils/Constants/Navbar";
 import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
 const SideNav = () => {
-  //const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const windowWidth = useWindowSize().width;
   const [sidenavWidth, setSidenavWidth] = useState();
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
@@ -82,41 +81,36 @@ const SideNav = () => {
   }, */
   ];
 
-  /* useEffect(() => {
-    window.addEventListener("resize", () => {
-      setWindowWidth(window.innerWidth);
-    });
-  }, [window]); */
-
   return (
-    windowWidth > 500 && <Drawer
-      sx={{
-        width: sidenavWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
+    windowWidth > 500 && (
+      <Drawer
+        sx={{
           width: sidenavWidth,
-          boxSizing: "border-box",
-          transition: "width 0.2s ease",
-        },
-      }}
-      variant="permanent"
-      anchor="left"
-      onMouseOver={() => {
-        setIsSidenavOpen(true);
-        windowWidth <= 768 && setSidenavWidth(sidenavLargeWidth);
-      }}
-      onMouseOut={() => {
-        setIsSidenavOpen(false);
-        windowWidth <= 768 && setSidenavWidth(sidenavSmallWidth);
-      }}
-    >
-      <Link
-        to="/"
-        className="font-bold text-green-600 md:py-4 py-2.5 flex flex-row items-center"
-        style={{ textDecoration: "none", justifyContent: "center" }}
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: sidenavWidth,
+            boxSizing: "border-box",
+            transition: "width 0.2s ease",
+            zIndex: 50,
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+        onMouseOver={() => {
+          setIsSidenavOpen(true);
+          windowWidth <= 768 && setSidenavWidth(sidenavLargeWidth);
+        }}
+        onMouseOut={() => {
+          setIsSidenavOpen(false);
+          windowWidth <= 768 && setSidenavWidth(sidenavSmallWidth);
+        }}
       >
-        {
-          windowWidth > 768 ? (
+        <Link
+          to="/"
+          className="font-bold text-green-600 md:py-4 py-2.5 flex flex-row items-center"
+          style={{ textDecoration: "none", justifyContent: "center" }}
+        >
+          {windowWidth > 768 ? (
             <>
               <img
                 src={process.env.PUBLIC_URL + "/logo.png"}
@@ -127,105 +121,52 @@ const SideNav = () => {
               />
               <span className="text-2xl">SciCommons</span>
             </>
-          ) : null /* (
-          <img
-            src={process.env.PUBLIC_URL + "/logo.png"}
-            width={40}
-            height={20}
-            alt="logo"
-          />
-        ) */
-        }
-      </Link>
-      {windowWidth <= 768 && (
-        <div className="flex flex-row items-center justify-end">
-          <div className="px-4">
-            {isSidenavOpen ? (
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setSidenavWidth(sidenavSmallWidth);
-                  setIsSidenavOpen(false);
-                }}
-              >
-                {closeIcon()}
-              </button>
-            ) : (
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setSidenavWidth(sidenavLargeWidth);
-                  setIsSidenavOpen(true);
-                }}
-              >
-                {hamburgerIcon()}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-      <Box sx={{ width: 240, marginTop: 1 }} role="presentation">
-        <List>
-          {tabs.map((tab, index) => (
-            <ListItem key={index} disablePadding sx={{ marginTop: 1 }}>
-              <ListItemButton component={Link} to={tab.href}>
-                <ListItemIcon>
-                  {tab.icon && <tab.icon style={{ fontSize: "25px" }} />}
-                </ListItemIcon>
-                <ListItemText primary={tab.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </Drawer>
-  );
-
-  /* return (
-    <div className="sidenav">
-      <Sidebar
-        aria-label="Sidebar with logo branding example"
-        className="w-full h-full bg-white"
-      >
-        <Sidebar.Items>
-          <Sidebar.ItemGroup>
-            <div className="flex flex-row items-center justify-between">
-              <Sidebar.Item href="/">
-                <p className="text-3xl font-bold text-green-600">Scicommons</p>
-              </Sidebar.Item>
-              <button style={{ cursor: "pointer" }} onClick={onMenuChange}>
-                <RxCross2 className="h-5 w-5 mt-2 mr-3 active:shadow-none text-gray-500" />
-              </button>
+          ) : null}
+        </Link>
+        {windowWidth <= 768 && (
+          <div className="flex flex-row items-center justify-end">
+            <div className="px-4">
+              {isSidenavOpen ? (
+                <button
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setSidenavWidth(sidenavSmallWidth);
+                    setIsSidenavOpen(false);
+                  }}
+                >
+                  {closeIcon()}
+                </button>
+              ) : (
+                <button
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setSidenavWidth(sidenavLargeWidth);
+                    setIsSidenavOpen(true);
+                  }}
+                >
+                  {hamburgerIcon()}
+                </button>
+              )}
             </div>
-            <Sidebar.Item href="/mytimeline" icon={CgFeed} className="mt-5">
-              <p className="font-semibold">My TimeLine</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/explore" icon={MdExplore}>
-              <p className="font-semibold">Explore</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/createcommunity" icon={AiOutlineUsergroupAdd}>
-              <p className="font-semibold">Create Community</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/mycommunity" icon={HiUserGroup}>
-              <p className="font-semibold">My Community</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/myarticles" icon={GrArticle}>
-              <p className="font-semibold">My Articles</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/favourites" icon={AiOutlineHeart}>
-              <p className="font-semibold">Favourites</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/myposts" icon={MdPostAdd}>
-              <p className="font-semibold">My Posts</p>
-            </Sidebar.Item>
-            <Sidebar.Item href="/bookmarks" icon={BsBookmarkCheck}>
-              <p className="font-semibold">Bookmarks</p>
-            </Sidebar.Item>
-          </Sidebar.ItemGroup>
-        </Sidebar.Items>
-      </Sidebar>
-    </div>
-  ); */
+          </div>
+        )}
+        <Box sx={{ width: 240, marginTop: 1 }} role="presentation">
+          <List>
+            {tabs.map((tab, index) => (
+              <ListItem key={index} disablePadding sx={{ marginTop: 1 }}>
+                <ListItemButton component={Link} to={tab.href}>
+                  <ListItemIcon>
+                    {tab.icon && <tab.icon style={{ fontSize: "25px" }} />}
+                  </ListItemIcon>
+                  <ListItemText primary={tab.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+    )
+  );
 };
 
 export default SideNav;

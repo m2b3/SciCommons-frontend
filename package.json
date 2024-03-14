@@ -31,7 +31,7 @@
     "mdb-react-ui-kit": "^6.1.0",
     "popper.js": "^1.16.1",
     "react": "^18.2.0",
-    "react-chat-elements": "^12.0.10",
+    "react-chat-elements": "^12.0.14",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
     "react-icons": "^4.10.1",
