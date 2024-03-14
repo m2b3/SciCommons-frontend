@@ -15,7 +15,7 @@
     "@mui/material": "^5.14.10",
     "@mui/styled-engine-sc": "^5.14.10",
     "@react-icons/all-files": "^4.1.0",
-    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.5.2",
     "axios": "^1.4.0",
