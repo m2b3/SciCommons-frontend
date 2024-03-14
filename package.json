@@ -34,7 +34,7 @@
     "react-chat-elements": "^12.0.14",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
-    "react-icons": "^4.10.1",
+    "react-icons": "^5.0.1",
     "react-loader-spinner": "^5.3.4",
     "react-markdown": "^8.0.7",
     "react-quill": "^2.0.0",
