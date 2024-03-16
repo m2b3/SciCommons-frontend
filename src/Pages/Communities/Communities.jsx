@@ -8,7 +8,6 @@ import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 import { getContainerStyles } from "../../Utils/Constants/Globals";
-import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
 const Communities = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,7 +15,6 @@ const Communities = () => {
   const [loading, setLoading] = useState(false);
   const [loadingmore, setLoadingMore] = useState(false);
   const { token } = useGlobalContext();
-  const windowSize = useWindowSize();
 
   const loadMoreData = async (res) => {
     const newCommunities = [...communities, ...res];
@@ -91,7 +89,6 @@ const Communities = () => {
     <>
       <div
         className="flex flex-col items-center justify-center bg-gray-50"
-        style={getContainerStyles(windowSize.width)}
       >
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Communities</h1>
         <form

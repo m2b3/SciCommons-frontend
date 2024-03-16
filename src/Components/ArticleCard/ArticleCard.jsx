@@ -3,6 +3,7 @@ import { AiFillEye } from "react-icons/ai";
 import dayjs from "dayjs";
 import "./ArticleCard.css";
 import { AiFillHeart } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 const ArticleCard = ({ articles }) => {
   const formatCount = (count) => {
@@ -20,7 +21,7 @@ const ArticleCard = ({ articles }) => {
       {articles.length > 0 ? (
         articles.map((item) => (
           <li key={item.id} className="p-5 bg-white rounded-md m-2 shadow-md">
-            <a href={"/article/" + `${item.id}`}>
+            <Link to={`/article/${item.id}`}>
               <div>
                 <div className="justify-between sm:flex">
                   <div className="flex-1">
@@ -132,7 +133,7 @@ const ArticleCard = ({ articles }) => {
                   </div>
                 </div>
               </div>
-            </a>
+            </Link>
           </li>
         ))
       ) : (

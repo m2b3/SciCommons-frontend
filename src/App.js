@@ -33,6 +33,7 @@ import { CgFeed } from "react-icons/cg";
 import { GrArticle } from "react-icons/gr";
 import RoutesContainer from "./RoutesContainer";
 import { getContainerStyles } from "./Utils/Constants/Globals";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const location = useLocation();
@@ -110,6 +111,7 @@ function App() {
 
   return (
     <div className="relative">
+      <Toaster />
       {showNavBar && <NavBar />}
       {showSideNavBar && <SideNav />}
       <RoutesContainer />
