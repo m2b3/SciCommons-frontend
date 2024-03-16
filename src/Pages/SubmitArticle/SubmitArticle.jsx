@@ -192,7 +192,7 @@ const PubMedSearch = () => {
               <div className="flex flex-row justify-between">
                 <a
                   href={article.url}
-                  className="text-blue-600 font-semibold"
+                  className="text-green-600 font-semibold"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -262,20 +262,32 @@ const ArticleFetcher = () => {
     switch (articleType) {
       case "doi":
         return (
-          <div>
-            <h2 className="text-lg font-bold">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-2">
               {articleData.message.title[0]}
             </h2>
             <p>
-              Authors:{" "}
+              <b className="font-semibold">Authors:</b>
               {articleData.message.author.map((a) => a.family).join(", ")}
             </p>
             <p>
-              Published:{" "}
+              <b className="font-semibold">Published: </b>
               {articleData.message["published-print"]["date-parts"][0].join(
                 "-"
               )}
             </p>
+            <p>
+              <b className="text-bold">Abstract: </b>
+              {articleData.message.abstract || "Abstract not available"}
+            </p>
+            <a
+              href={articleData.message.URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-500 underline"
+            >
+              View Full Article
+            </a>
           </div>
         );
       case "arxiv":
@@ -286,19 +298,56 @@ const ArticleFetcher = () => {
         const authors = Array.from(xmlDoc.getElementsByTagName("author"))
           .map((author) => author.childNodes[1].textContent)
           .join(", ");
+        const abstract =
+          xmlDoc.getElementsByTagName("summary")[0].childNodes[0].nodeValue;
+        const link =
+          xmlDoc.getElementsByTagName("id")[0].childNodes[0].nodeValue;
         return (
-          <div>
-            <h2 className="text-lg font-bold">{title}</h2>
-            <p>Authors: {authors}</p>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-2">{title}</h2>
+            <p>
+              <b className="font-semibold">Authors: </b>
+              {authors}
+            </p>
+            <p>
+              {" "}
+              <b className="font-semibold">Abstract: </b>{" "}
+              {abstract || "Abstract not available"}
+            </p>
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-500 underline"
+            >
+              View Full Article
+            </a>
           </div>
         );
       case "pubmed":
         const article = articleData.result[inputValue];
         return (
-          <div>
-            <h2 className="text-lg font-bold">{article.title}</h2>
-            <p>Authors: {article.authors.map((a) => a.name).join(", ")}</p>
-            <p>Published: {article.pubdate}</p>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-2">{article.title}</h2>
+            <p>
+              <b className="font-semibold">Authors: </b>
+              {article.authors.map((a) => a.name).join(", ")}
+            </p>
+            <p>
+              <b className="font-semibold">Published: </b> {article.pubdate}
+            </p>
+            <p>
+              <b className="font-semibold">Abstract: </b>{" "}
+              {article.abstracttext || "Abstract not available"}
+            </p>
+            <a
+              href={`https://pubmed.ncbi.nlm.nih.gov/${inputValue}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-500 underline"
+            >
+              View Full Article
+            </a>
           </div>
         );
       default:
@@ -307,26 +356,64 @@ const ArticleFetcher = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-10">
-      <div className="flex items-center border-b-2 border-gray-300 py-2">
-        <input
-          className="appearance-none bg-transparent w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none focus:border-blue-500"
-          type="text"
-          placeholder="Enter DOI, arXiv ID, or PubMed ID"
-          value={inputValue}
-          onChange={handleInputChange}
-        />
-        <button
-          className="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out"
-          type="button"
-          onClick={fetchArticle}
+    <div className="my-10 mx-10 mx-auto">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchArticle();
+        }}
+        // class="max-w-md mx-auto"
+      >
+        <label
+          for="default-search"
+          class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
         >
-          Fetch Article
-        </button>
-      </div>
+          Search
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+            <svg
+              class="w-4 h-4 text-gray-500 dark:text-gray-400"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+              />
+            </svg>
+          </div>
+          <input
+            type="search"
+            id="default-search"
+            class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
+            placeholder="Enter DOI, arXiv ID, or PubMed ID"
+            value={inputValue}
+            onChange={handleInputChange}
+            required
+          />
+          <button
+            type="submit"
+            class="text-white absolute end-2.5 bottom-2.5 bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          >
+            Search
+          </button>
+        </div>
+      </form>
 
-      {fetchError && <div className="text-red-500 mt-2">{fetchError}</div>}
-      {articleData && <div className="mt-4">{renderArticleDetails()}</div>}
+      {fetchError && (
+        <div className="text-red-500 mt-2 text-center">{fetchError}</div>
+      )}
+      {articleData && (
+        <div className="mt-4 bg-white border-2 border-gray-300 rounded-lg p-4 shadow-sm">
+          {renderArticleDetails()}
+        </div>
+      )}
     </div>
   );
 };
@@ -887,7 +974,7 @@ const SubmitArticle = () => {
                   required
                   accept="application/pdf"
                   name="article_file"
-                  className="block w-full px-5 py-2 mt-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg file:bg-gray-200 file:text-gray-700 file:text-sm file:px-4 file:py-1 file:border-none file:rounded-full  placeholder-gray-400/70  focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+                  className="block w-full px-5 py-2 mt-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg file:bg-gray-200 file:text-gray-700 file:text-sm file:px-4 file:py-1 file:border-none file:rounded-full  placeholder-gray-400/70  focus:border-green-400 focus:outline-none focus:ring focus:ring-green-300 focus:ring-opacity-40"
                 />
               </div>
 
