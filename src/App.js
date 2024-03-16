@@ -38,7 +38,7 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const showNavBar = location.pathname !== "/login" && location.pathname !== "/register";
-  //const showNavBar = true;
+  const showSideNavBar = location.pathname !== "/login" && location.pathname !== "/register";
   const [value, setValue] = useState();
   const [activeBottomNavTab, setActiveBottomNavTab] = useState();
   const [activeBottomSheetTab, setActiveBottomSheetTab] = useState();
@@ -109,9 +109,9 @@ function App() {
   }));
 
   return (
-    <div className="relative">
+    <div className="relative min-h-screen flex flex-col">
       {showNavBar && <NavBar />}
-      {showNavBar && <SideNav />}
+      {showSideNavBar && <SideNav />}
       <RoutesContainer />
       {windowSize.width < 500 && showNavBar && (
         <Box
