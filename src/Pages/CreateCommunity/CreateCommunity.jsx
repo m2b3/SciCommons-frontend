@@ -8,6 +8,15 @@ import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 import { getContainerStyles } from "../../Utils/Constants/Globals";
 import useWindowSize from "../../Utils/Hooks/useWindowSize";
+import Select from "react-tailwindcss-select";
+import countries from "../../Utils/Constants/Countries";
+import InputField from "../../Components/InputField/InputField";
+import TextareaField from "../../Components/TextArea/TextAreaField";
+
+const options = countries.map((country) => ({
+  value: country.code,
+  label: `${country.map} ${country.value}`,
+}));
 
 const CreateCommunity = () => {
   const baseURL = `/api/community/`;
@@ -27,6 +36,11 @@ const CreateCommunity = () => {
   const [errors, setErrors] = useState({
     Community_name: "",
   });
+
+  const handleChange = (value) => {
+    console.log("value:", value);
+    setLocation(value);
+  };
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -147,84 +161,37 @@ const CreateCommunity = () => {
           encType="multipart/form-data"
           className="w-full md:w-2/3"
         >
-          <div className="grid gap-6 mb-6">
-            <div>
-              <label
-                htmlFor="Community_name"
-                className="block mb-4 text-sm font-medium text-gray-900"
-              >
-                Community Name
-              </label>
-              <input
-                style={{ border: "2px solid #cbd5e0" }}
-                type="text"
-                id="Community_name"
-                name="Community_name"
-                value={Community_name}
-                onChange={(e) => {
-                  setCommunity_name(e.target.value);
-                }}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                required
-              />
-              {errors.Community_name && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.Community_name}
-                </p>
-              )}
-              <span className="text-xs font-semibold">
-                Number of characters: {Community_name.length}/300
-              </span>
-            </div>
-          </div>
+          <InputField
+            id="Community_name"
+            name="Community_name"
+            type="text"
+            value={Community_name}
+            onChange={(e) => setCommunity_name(e.target.value)}
+            label="Community Name"
+            error={errors.Community_name}
+            characterCount={true}
+            maxLength={300}
+          />
 
-          <div className="mb-6">
-            <label
-              htmlFor="subtitle"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Subtitle
-            </label>
-            <input
-              style={{ border: "2px solid #cbd5e0" }}
-              type="text"
-              id="subtitle"
-              name="subtitle"
-              value={subtitle}
-              onChange={(e) => {
-                setSubtitle(e.target.value);
-              }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-              required
-            />
-            <span className="text-xs font-semibold">
-              Number of characters: {subtitle.length}/300
-            </span>
-          </div>
+          <InputField
+            id="subtitle"
+            name="subtitle"
+            type="text"
+            value={subtitle}
+            onChange={(e) => setSubtitle(e.target.value)}
+            label="Subtitle"
+            characterCount={true}
+            maxLength={300}
+          />
+          <TextareaField
+            id="description"
+            name="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            label="Description"
+            characterCount={true}
+          />
 
-          <div className="mb-6">
-            <label
-              htmlFor="description"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={8}
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-              placeholder=""
-              required
-            />
-            <span className="text-xs font-semibold">
-              Number of characters: {description.length}
-            </span>
-          </div>
           <div className="mb-6">
             <label
               htmlFor="location"
@@ -232,91 +199,48 @@ const CreateCommunity = () => {
             >
               Location
             </label>
-            <input
-              style={{ border: "2px solid #cbd5e0" }}
-              type="test"
-              id="location"
-              name="location"
+            {/* Add a location picker */}
+            <Select
               value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-              }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-              required
+              onChange={handleChange}
+              options={options}
+              isSearchable
             />
-            <span className="text-xs font-semibold">
-              Number of characters: {location.length}/100
-            </span>
           </div>
 
-          <div className="mb-6">
-            <label
-              htmlFor="github"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Github Link (if any)
-            </label>
-            <input
-              style={{ border: "2px solid #cbd5e0" }}
-              type="url"
-              id="github"
-              name="github"
-              value={github}
-              onChange={(e) => {
-                setGithub(e.target.value);
-              }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-            />
-            <span className="text-xs font-semibold">
-              Number of characters: {github.length}/200
-            </span>
-          </div>
+          <InputField
+            id="github"
+            name="github"
+            type="url"
+            value={github}
+            onChange={(e) => setGithub(e.target.value)}
+            label="Github Link (if any)"
+            characterCount={true}
+            maxLength={200}
+            required={false}
+          />
 
-          <div className="mb-6">
-            <label
-              htmlFor="website"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Website Link
-            </label>
-            <input
-              style={{ border: "2px solid #cbd5e0" }}
-              type="url"
-              id="website"
-              name="website"
-              value={website}
-              onChange={(e) => {
-                setWebsite(e.target.value);
-              }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-              required
-            />
-            <span className="text-xs font-semibold">
-              Number of characters: {website.length}/300
-            </span>
-          </div>
+          <InputField
+            id="website"
+            name="website"
+            type="url"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            label="Website Link"
+            characterCount={true}
+            maxLength={300}
+          />
 
-          <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Email (of the Community)
-            </label>
-            <input
-              style={{ border: "2px solid #cbd5e0" }}
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-              required
-            />
-            <span className="text-xs font-semibold">
-              Number of characters: {email.length}/100
-            </span>
-          </div>
+          <InputField
+            id="email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            label="Email (of the Community)"
+            characterCount={true}
+            maxLength={100}
+          />
 
           <div className="flex items-start mb-6 mt-3">
             <div className="flex items-center h-5">

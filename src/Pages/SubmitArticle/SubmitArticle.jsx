@@ -8,6 +8,9 @@ import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
+import InputField from "../../Components/InputField/InputField";
+import TextareaField from "../../Components/TextArea/TextAreaField";
+// import axios from 'axios';
 
 const PubMedSearch = () => {
   const [query, setQuery] = useState("");
@@ -210,6 +213,120 @@ const PubMedSearch = () => {
           <h1 className="text-xl font-bold text-gray-600">No Articles Found</h1>
         )}
       </div>
+    </div>
+  );
+};
+
+const ArticleFetcher = () => {
+  const [inputValue, setInputValue] = useState("");
+  const [articleData, setArticleData] = useState(null);
+  const [fetchError, setFetchError] = useState(null);
+  const [articleType, setArticleType] = useState("");
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const fetchArticle = async () => {
+    let apiUrl = "";
+    if (inputValue.startsWith("10.")) {
+      // DOI
+      apiUrl = `https://api.crossref.org/works/${inputValue}`;
+      setArticleType("doi");
+    } else if (inputValue.startsWith("arXiv:")) {
+      // arXiv ID
+      const arxivId = inputValue.split(":")[1];
+      apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
+      setArticleType("arxiv");
+    } else if (/^\d+$/.test(inputValue)) {
+      // PubMed ID
+      apiUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${inputValue}&retmode=json`;
+      setArticleType("pubmed");
+    } else {
+      setFetchError(
+        "Invalid input. Please enter a valid DOI, arXiv ID, or PubMed ID."
+      );
+      return;
+    }
+
+    try {
+      const response = await axios.get(apiUrl);
+      setArticleData(response.data);
+      setFetchError(null);
+    } catch (error) {
+      setFetchError("Failed to fetch article. Please try again.");
+    }
+  };
+
+  const renderArticleDetails = () => {
+    switch (articleType) {
+      case "doi":
+        return (
+          <div>
+            <h2 className="text-lg font-bold">
+              {articleData.message.title[0]}
+            </h2>
+            <p>
+              Authors:{" "}
+              {articleData.message.author.map((a) => a.family).join(", ")}
+            </p>
+            <p>
+              Published:{" "}
+              {articleData.message["published-print"]["date-parts"][0].join(
+                "-"
+              )}
+            </p>
+          </div>
+        );
+      case "arxiv":
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(articleData, "text/xml");
+        const title =
+          xmlDoc.getElementsByTagName("title")[1].childNodes[0].nodeValue;
+        const authors = Array.from(xmlDoc.getElementsByTagName("author"))
+          .map((author) => author.childNodes[1].textContent)
+          .join(", ");
+        return (
+          <div>
+            <h2 className="text-lg font-bold">{title}</h2>
+            <p>Authors: {authors}</p>
+          </div>
+        );
+      case "pubmed":
+        const article = articleData.result[inputValue];
+        return (
+          <div>
+            <h2 className="text-lg font-bold">{article.title}</h2>
+            <p>Authors: {article.authors.map((a) => a.name).join(", ")}</p>
+            <p>Published: {article.pubdate}</p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto my-10">
+      <div className="flex items-center border-b-2 border-gray-300 py-2">
+        <input
+          className="appearance-none bg-transparent w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none focus:border-blue-500"
+          type="text"
+          placeholder="Enter DOI, arXiv ID, or PubMed ID"
+          value={inputValue}
+          onChange={handleInputChange}
+        />
+        <button
+          className="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+          type="button"
+          onClick={fetchArticle}
+        >
+          Fetch Article
+        </button>
+      </div>
+
+      {fetchError && <div className="text-red-500 mt-2">{fetchError}</div>}
+      {articleData && <div className="mt-4">{renderArticleDetails()}</div>}
     </div>
   );
 };
@@ -580,6 +697,21 @@ const SubmitArticle = () => {
           >
             Existing Article
           </button>
+          <button
+            className={
+              currentState === 3
+                ? "mb-2 text-sm md:text-xl text-green-600 px-2 font-bold md:px-5 py-2 border-b-2 border-green-600"
+                : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2"
+            }
+            style={{
+              borderBottom:
+                currentState === 3 ? "2px solid #68D391" : "2px solid #000",
+              cursor: "pointer",
+            }}
+            onClick={() => onclickFuntion(3)}
+          >
+            Fetch Article
+          </button>
         </div>
       </div>
       {currentState === 1 && (
@@ -595,27 +727,16 @@ const SubmitArticle = () => {
           <div className="m-10 flex justify-center">
             <form onSubmit={(e) => submitForm(e)} encType="multipart/form-data">
               <div className="grid gap-6 mb-6 ">
-                <div>
-                  <label
-                    htmlFor="article_name"
-                    className="block mb-4 text-sm font-medium text-gray-900"
-                  >
-                    Title
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    type="text"
-                    id="article_name"
-                    name="article_name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                    required
-                  />
-                  <span className="text-xs font-semibold">
-                    Number of characters: {name.length}/300
-                  </span>
-                </div>
+                <InputField
+                  id="article_name"
+                  name="article_name"
+                  label="Title"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  characterCount={true}
+                  maxLength={300}
+                  required={true}
+                />
                 <div>
                   <label
                     htmlFor="id"
@@ -709,90 +830,50 @@ const SubmitArticle = () => {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label
-                  htmlFor="keywords"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Keywords(separated with {'","'})
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="text"
-                  id="keywords"
-                  name="keywords"
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                  required
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {keywords.length}/255
-                </span>
-              </div>
-              <div className="mb-6">
-                <label
-                  htmlFor="link"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  URL to article (Add the Url only if it is already published,
-                  else leave it empty)
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="url"
-                  id="link"
-                  name="link"
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {link.length}/255
-                </span>
-              </div>
+              <InputField
+                id="keywords"
+                name="keywords"
+                label="Keywords(separated with ',' )"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                characterCount={true}
+                maxLength={255}
+                required={true}
+              />
 
-              <div className="mb-6">
-                <label
-                  htmlFor="video"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Video Link (if any)
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="url"
-                  id="video"
-                  name="video"
-                  value={video}
-                  onChange={(e) => setVideo(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {video.length}/255
-                </span>
-              </div>
+              <InputField
+                id="link"
+                name="link"
+                type="url"
+                label="URL to article (Add the Url only if it is already published, else leave it empty)"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                characterCount={true}
+                maxLength={255}
+              />
 
-              <div className="mb-6">
-                <label
-                  htmlFor="Code"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Code Link (if any)
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="url"
-                  id="Code"
-                  value={Code}
-                  onChange={(e) => setCode(e.target.value)}
-                  name="Code"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {Code.length}/100
-                </span>
-              </div>
+              <InputField
+                id="video"
+                name="video"
+                type="url"
+                label="Video Link (if any)"
+                value={video}
+                onChange={(e) => setVideo(e.target.value)}
+                characterCount={true}
+                maxLength={255}
+              />
+
+              <InputField
+                id="Code"
+                name="Code"
+                type="url"
+                label="Code Link (if any)"
+                value={Code}
+                onChange={(e) => setCode(e.target.value)}
+                characterCount={true}
+                maxLength={100}
+              />
+
               <div className="mb-6">
                 <label
                   htmlFor="file"
@@ -809,6 +890,7 @@ const SubmitArticle = () => {
                   className="block w-full px-5 py-2 mt-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg file:bg-gray-200 file:text-gray-700 file:text-sm file:px-4 file:py-1 file:border-none file:rounded-full  placeholder-gray-400/70  focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
                 />
               </div>
+
               <div className="mb-6">
                 <label
                   htmlFor="Abstract"
@@ -890,6 +972,7 @@ const SubmitArticle = () => {
           <PubMedSearch />
         </>
       )}
+      {currentState === 3 && <ArticleFetcher />}
     </>
   );
 };
