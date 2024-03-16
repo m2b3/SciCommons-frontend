@@ -372,7 +372,7 @@ const EditModal = ({
   loading,
   setLoading,
 }) => {
-  const role = useRef(handleRole(member));
+  const [role, setRole] = useState(handleRole(member));
   const { token } = useGlobalContext();
 
   const handleEdit = async () => {
@@ -387,10 +387,11 @@ const EditModal = ({
         `/api/community/${community}/promote_member/`,
         {
           username: member.username,
-          role: role.current.toLowerCase(),
+          role: role.toLowerCase(),
         },
         config
       );
+      console.log(res);
       if (res.status === 200) {
         await onEdit(index, role.current);
         ToastMaker(res.data.success, 3500, {
@@ -416,7 +417,7 @@ const EditModal = ({
   };
 
   const handleChange = async (e) => {
-    role.current = e.target.value;
+    setRole(e.target.value);
   };
 
   return (

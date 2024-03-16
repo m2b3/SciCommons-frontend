@@ -50,8 +50,8 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
           { post: post.id },
           config
         );
-        setLiked((prevLiked) => !prevLiked);
-        setLikes((prevLikes) => prevLikes - 1);
+        setLiked(!liked);
+        setLikes(likes - 1);
       } catch (err) {
         console.log(err);
       }
@@ -62,8 +62,8 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
           { post: post.id },
           config
         );
-        setLiked((prevLiked) => !prevLiked);
-        setLikes((prevLikes) => prevLikes + 1);
+        setLiked(!liked);
+        setLikes(likes + 1);
       } catch (err) {
         console.log(err);
       }
@@ -105,8 +105,8 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
           { post: post.id },
           config
         );
-        setBookmark((prevBookmark) => !prevBookmark);
-        setBookmarks((prevBookmarks) => prevBookmarks + 1);
+        setBookmark(!bookmark);
+        setBookmarks(bookmarks + 1);
       } catch (err) {
         console.log(err);
       }
@@ -138,7 +138,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
       },
     });
     e.stopPropagation();
-    navigator.clipboard.writeText(`/post/${post.id}`);
+    navigator.clipboard.writeText(`https://scicommons.org/post/${post.id}`);
   };
 
   const findTime = (date) => {
