@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Home from "./Pages/Home/Home";
 import Login from "./Pages/Login/Login";
@@ -39,11 +39,10 @@ import useWindowSize from "./Utils/Hooks/useWindowSize";
 
 function RoutesContainer() {
   const location = useLocation();
-  const navigate = useNavigate();
   const windowSize = useWindowSize();
   const loadContainerStyles = location.pathname !== "/login" && location.pathname !== "/register";
   return (
-    <div style={loadContainerStyles ? getContainerStyles(windowSize.width) : {}}>
+    <div className="flex-grow" style={loadContainerStyles ? getContainerStyles(windowSize.width) : {}}>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
