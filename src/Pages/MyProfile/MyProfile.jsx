@@ -212,11 +212,12 @@ const MyProfile = () => {
                 <span className="text-3xl font-bold">My Profile</span>
                 <div className="flex flex-row items-center gap-x-2">
                   <div
-                    className={`flex flex-row items-center justify-end p-2 rounded bg-blue-600 cursor-pointer hover:bg-blue-500 ${
-                      !edit &&
-                      "bg-blue-300 hover:bg-blue-300 cursor-not-allowed"
+                    className={`flex flex-row items-center justify-end p-2 rounded ${
+                      edit
+                        ? "bg-blue-600 cursor-pointer hover:bg-blue-500"
+                        : "bg-blue-300 hover:bg-blue-300 cursor-not-allowed"
                     }`}
-                    onClick={() => handleSave()}
+                    onClick={() => edit && handleSave()}
                   >
                     <span className="text-sm text-white px-3">Save</span>
                   </div>
@@ -225,7 +226,7 @@ const MyProfile = () => {
                       edit && "bg-red-600 hover:bg-red-500"
                     }`}
                     onClick={() => {
-                      edit ? handleEditCancel() : setEdit(() => setEdit(true));
+                      edit ? handleEditCancel() : setEdit(true);
                     }}
                   >
                     <span className="text-sm text-white px-3">
