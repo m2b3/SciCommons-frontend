@@ -259,8 +259,8 @@ const SocialComment = ({ comment, post, setPost }) => {
           { comment: comment.id },
           config
         );
-        setLiked((prevLiked) => !prevLiked);
-        setLikes((prevLikes) => prevLikes - 1);
+        setLiked(!liked);
+        setLikes(likes-1);
       } catch (err) {
         console.log(err);
       }
@@ -271,8 +271,8 @@ const SocialComment = ({ comment, post, setPost }) => {
           { comment: comment.id },
           config
         );
-        setLiked((prevLiked) => !prevLiked);
-        setLikes((prevLikes) => prevLikes + 1);
+        setLiked(!liked);
+        setLikes(liked+1);
       } catch (err) {
         console.log(err);
       }

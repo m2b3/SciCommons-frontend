@@ -931,7 +931,7 @@ const CommunityArticlePage = () => {
     });
     e.stopPropagation();
     navigator.clipboard.writeText(
-      `https://scicommons.onrender.com/article/${article.id}`
+      `https://scicommons.org/article/${article.id}`
     );
   };
 

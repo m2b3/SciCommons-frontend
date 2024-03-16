@@ -6,7 +6,7 @@ const CommunityCreation = () => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-          window.location.href = '/CommunityDashboard';
+          window.location.href = '/mycommunity';
         }, 5000);
     
         return () => clearTimeout(timer);
