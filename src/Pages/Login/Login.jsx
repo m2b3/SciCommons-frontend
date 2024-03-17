@@ -216,7 +216,7 @@ const Login = () => {
                 <br />
                 <hr className="my-6 border-gray-200 w-full" />
                 <p className="text-center">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
                     to="/register"
                     className="font-medium text-green-600 hover:text-green-500"

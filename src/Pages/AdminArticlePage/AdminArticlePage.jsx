@@ -235,7 +235,6 @@ const PublishModal = ({ setShowPublish, article, community }) => {
                   style={{ border: "2px solid #cbd5e0" }}
                   className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
                   name="license"
-                  on
                   type="text"
                   value={license}
                   onChange={(e) => {

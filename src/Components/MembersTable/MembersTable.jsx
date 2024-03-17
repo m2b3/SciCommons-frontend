@@ -553,7 +553,7 @@ const AddModal = ({
                     onChange={(e) => {
                       username.current = e.target.value;
                     }}
-                    placeHolder="enter the username"
+                    placeholder="enter the username"
                     className="w-full rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                   />
                 </div>
