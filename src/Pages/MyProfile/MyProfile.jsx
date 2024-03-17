@@ -1,38 +1,100 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import { useGlobalContext } from "../../Context/StateContext";
-import { SlUser } from "react-icons/sl";
+import EmptyProfileImage from "./assets/profile-img.png";
+import toast from "react-hot-toast";
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const MyProfile = () => {
-  const [email, setEmail] = useState("");
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
-  const [institute, setInstitute] = useState("");
-  const [google_scholar, setGoogleScholar] = useState("");
-  const [pubmed, setPubmed] = useState("");
-  const [profile_pic_url, setProfilePicUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [edit, setEdit] = useState(false);
   const [user, setUser] = useState(null);
+  const [isComponentLoad, setIsComponentLoad] = useState(false);
+  const [showLoadingProgress, setShowLoadingProgress] = useState(false);
+  const [edit, setEdit] = useState(false);
   const { token } = useGlobalContext();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [userInfo, setUserInfo] = useState({
+    id: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    institute: "",
+    googleScholar: "",
+    pubmed: "",
+    profilePicUrl: "",
+    rank: "",
+    followers: "",
+    following: "",
+    posts: "",
+  });
+  /* const [userArticles, setUserArticles] = useState([]); */
+  const imageRef = useRef();
 
   useEffect(() => {
-    setLoading(true);
+    setIsComponentLoad(true);
     fetchProfile();
-    setLoading(false);
+    /* fetchArticles(); */
   }, []);
 
   const loadProfile = async (res) => {
     setUser(res);
-    setEmail(res.email);
-    setFirstName(res.first_name === null ? "" : res.first_name);
-    setLastName(res.last_name === null ? "" : res.last_name);
-    setInstitute(res.institute === null ? "" : res.institute);
-    setGoogleScholar(res.google_scholar === null ? "" : res.google_scholar);
-    setPubmed(res.pubmed === null ? "" : res.pubmed);
-    setProfilePicUrl(res.profile_pic_url === null ? "" : res.profile_pic_url);
+    const profileUrl =
+      res?.profile_pic_url?.includes("None") || !res.profile_pic_url
+        ? ""
+        : res?.profile_pic_url;
+    setUserInfo((prevUserInfo) => ({
+      email: res?.email ?? "",
+      firstName: res?.first_name ?? "",
+      lastName: res?.last_name ?? "",
+      institute: res?.institute ?? "",
+      googleScholar: res?.google_scholar ?? "",
+      pubmed: res?.pubmed ?? "",
+      profilePicUrl: profileUrl,
+      rank: res?.rank !== undefined ? res.rank : prevUserInfo.rank,
+      followers:
+        res?.followers !== undefined ? res.followers : prevUserInfo.followers,
+      following:
+        res?.following !== undefined ? res.following : prevUserInfo.following,
+      posts: res?.posts !== undefined ? res.posts : prevUserInfo.posts,
+    }));
     setEdit(false);
+  };
+
+  const handleEdit = (e) => {
+    setUserInfo({
+      ...userInfo,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleEditCancel = () => {
+    setUserInfo((prevUserInfo) => ({
+      ...prevUserInfo,
+      email: user?.email ?? "",
+      firstName: user?.first_name ?? "",
+      lastName: user?.last_name ?? "",
+      institute: user?.institute ?? "",
+      googleScholar: user?.google_scholar ?? "",
+      pubmed: user?.pubmed ?? "",
+      profilePicUrl: user?.profile_pic_url?.includes("None")
+        ? ""
+        : user?.profile_pic_url,
+    }));
+    setEdit(false);
+  };
+
+  const handleProfilePicChange = (e) => {
+    if (e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      console.log(imageUrl);
+      setUserInfo({
+        ...userInfo,
+        profilePicUrl: imageUrl,
+      });
+      setSelectedImage(file);
+    }
   };
 
   const fetchProfile = async () => {
@@ -46,13 +108,53 @@ const MyProfile = () => {
       await loadProfile(response.data.success);
     } catch (error) {
       console.log(error);
+      toast.error("Profile Fetch Failed");
+    } finally {
+      setIsComponentLoad(false);
+      setShowLoadingProgress(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setShowLoadingProgress(true);
+    const updatedUserInfo = {
+      email: userInfo?.email ?? "",
+      first_name: userInfo?.firstName ?? "",
+      last_name: userInfo?.lastName ?? "",
+      institute: userInfo?.institute ?? "",
+      google_scholar: userInfo?.googleScholar ?? "",
+      pubmed: userInfo?.pubmed ?? "",
+      //profile_pic_url: userInfo?.profilePicUrl ?? "",
+    };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axios.put(
+        `/api/user/${user.id}/`,
+        updatedUserInfo,
+        config
+      );
+      await loadProfile(response.data.success);
+      toast.success("Profile Updated Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Profile Update Failed");
+    } finally {
+      setShowLoadingProgress(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (imageRef.current.value === "") {
+      toast.error("Please select an image to upload");
+      return;
+    }
+    setShowLoadingProgress(true);
     const form_data = new FormData(e.target);
-    setLoading(true);
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -68,209 +170,273 @@ const MyProfile = () => {
       await loadProfile(response.data.success);
     } catch (error) {
       console.log(error);
+      toast.error("Image Update Failed");
+      setUserInfo({
+        ...userInfo,
+        profilePicUrl: "",
+      });
+    } finally {
+      setShowLoadingProgress(false);
     }
-    setLoading(false);
+    imageRef.current.value = null;
   };
 
-  const handleEdit = async () => {
-    if (!edit) {
-      const forminputs = document.querySelectorAll('input[type="text"]');
-      forminputs.forEach((input) => {
-        input.removeAttribute("disabled");
-      });
-    } else {
-      const forminputs = document.querySelectorAll('input[type="text"]');
-      forminputs.forEach((input) => {
-        input.setAttribute("disabled", true);
-      });
+  /* const fetchArticles = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axios.get(`/api/user/articles/`, config);
+      setUserArticles(response.data.success);
+      console.log("articles: ", response.data.success);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      //setLoading(false);
     }
-    setEdit(!edit);
-  };
-
-  const handleShow = () => {
-    if (!edit) {
-      return "Edit";
-    } else {
-      return "Cancel";
-    }
-  };
+  }; */
 
   return (
     <div>
-      {(loading || user === null) && <Loader />}
-      {!loading && user !== null && (
-        <div className="flex flex-col items-center h-full mb-5">
-          <h1 className="text-3xl font-bold mt-5 mb-5">My Profile</h1>
-          <div className="flex flex-col justify-center md:flex-row md:items-center">
-            <div className="flex flex-col mr-3 mt-3 items-center md:mr-10">
-              <form
-                className="flex flex-col items-center"
-                onSubmit={(e) => handleSubmit(e)}
-                encType="multipart/form-data"
-              >
-                {profile_pic_url.includes("None") ? (
-                  <SlUser className="w-[200px] h-[200px]" />
-                ) : (
-                  <img
-                    className="w-[200px] h-[200px]"
-                    src={profile_pic_url}
-                    alt="Profile Picture"
-                  />
-                )}
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
-                  name="profile_pic_url"
-                  type="file"
-                />
-                <button
-                  className="bg-green-500 text-white rounded-md w-1/2 h-10 mt-3"
-                  type="submit"
-                >
-                  Upload
-                </button>
-              </form>
-            </div>
-            <form
-              onSubmit={(e) => handleSubmit(e)}
-              className="flex flex-col justify-start"
-              encType="multipart/form-data"
-            >
-              <div className="flex flex-col justify-start">
-                <div className="flex flex-row mt-3">
-                  <label className="text-lg font-bold mr-2 text-green-500">
-                    Email{" "}
-                  </label>
-                  <p className="text-md">{email}</p>
-                </div>
-                <div className="flex flex-row mt-3">
-                  <label
-                    className="text-lg font-bold mr-2 text-green-500"
-                    htmlFor="first_name"
+      {isComponentLoad && <Loader />}
+      {!isComponentLoad && userInfo && (
+        <Box
+          sx={{
+            width: "100%",
+            opacity: showLoadingProgress ? 0.3 : 1,
+            pointerEvents: showLoadingProgress ? "none" : "auto",
+            marginBottom: "70px",
+          }}
+        >
+          {showLoadingProgress && <LinearProgress color="success" />}
+          <div className="flex flex-col items-center h-full mb-5 px-2 mt-5">
+            <div className="w-[95%] bg-slate-50 shadow-md rounded-md p-5 m-2">
+              <div className="border-b border-b-gray-200 pb-2 flex flex-row items-center justify-between w-full">
+                <span className="text-3xl font-bold">My Profile</span>
+                <div className="flex flex-row items-center gap-x-2">
+                  <div
+                    className={`flex flex-row items-center justify-end p-2 rounded ${
+                      edit
+                        ? "bg-blue-600 cursor-pointer hover:bg-blue-500"
+                        : "bg-blue-300 hover:bg-blue-300 cursor-not-allowed"
+                    }`}
+                    onClick={() => edit && handleSave()}
                   >
-                    FirstName
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    className={`border-2 border-gray-400 rounded-md w-4/5 ${
-                      edit ? "bg-white" : "bg-gray-200"
-                    } h-7 px-2`}
-                    name="first_name"
-                    type="text"
-                    value={first_name}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                    }}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-row mt-3">
-                  <label
-                    className="text-lg font-bold mr-2 text-green-500"
-                    htmlFor="last_name"
-                  >
-                    LastName
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    className={`border-2 border-gray-400 ${
-                      edit ? "bg-white" : "bg-gray-200"
-                    } rounded-md w-4/5 h-7 px-2`}
-                    name="last_name"
-                    type="text"
-                    value={last_name}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                    }}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-row mt-3">
-                  <label
-                    className="text-lg font-bold mr-2 text-green-500"
-                    htmlFor="institute"
-                  >
-                    Institute
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    className={`border-2 border-gray-400 rounded-md ${
-                      edit ? "bg-white" : "bg-gray-200"
-                    } w-4/5 h-7 px-2`}
-                    name="institute"
-                    type="text"
-                    value={institute}
-                    onChange={(e) => {
-                      setInstitute(e.target.value);
-                    }}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-row mt-3">
-                  <label
-                    className="text-lg font-bold mr-2 text-green-500"
-                    htmlFor="google_scholar"
-                  >
-                    GoogleScholar
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    className={`border-2 border-gray-400 rounded-md ${
-                      edit ? "bg-white" : "bg-gray-200"
-                    } w-4/5 h-7 px-2`}
-                    name="google_scholar"
-                    type="text"
-                    value={google_scholar}
-                    onChange={(e) => {
-                      setGoogleScholar(e.target.value);
-                    }}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-row mt-3">
-                  <label
-                    className="text-lg font-bold mr-2 text-green-500"
-                    htmlFor="pubmed"
-                  >
-                    Pubmed
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    className={`border-2 border-gray-400 rounded-md ${
-                      edit ? "bg-white" : "bg-gray-200"
-                    } w-4/5 h-7 px-2`}
-                    name="pubmed"
-                    type="text"
-                    value={pubmed}
-                    onChange={(e) => {
-                      setPubmed(e.target.value);
-                    }}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-row justify-around">
-                  <button
-                    className="bg-green-600 text-white rounded-md w-[50px] h-10 mt-3"
-                    type="submit"
-                  >
-                    Save
-                  </button>
-                  <button
-                    className={`${
-                      !edit ? "bg-gray-600" : "bg-red-600"
-                    } text-white rounded-md w-[50px] h-10 mt-3`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleEdit();
+                    <span className="text-sm text-white px-3">Save</span>
+                  </div>
+                  <div
+                    className={`flex flex-row items-center justify-end p-2 rounded bg-green-600 cursor-pointer hover:bg-green-500 ${
+                      edit && "bg-red-600 hover:bg-red-500"
+                    }`}
+                    onClick={() => {
+                      edit ? handleEditCancel() : setEdit(true);
                     }}
                   >
-                    {handleShow()}
-                  </button>
+                    <span className="text-sm text-white px-3">
+                      {edit ? "Cancel" : "Edit"}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </form>
+              <div className="flex md:flex-row flex-col items-center mt-5">
+                <div className="flex flex-col items-center p-5">
+                  <div className="relative md:size-56 size-40 rounded-full overflow-hidden">
+                    <img
+                      src={
+                        userInfo?.profilePicUrl
+                          ? userInfo?.profilePicUrl
+                          : EmptyProfileImage
+                      }
+                      alt="Profile Image"
+                    />
+                  </div>
+                  <form
+                    className="flex flex-col items-center"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }}
+                    encType="multipart/form-data"
+                  >
+                    <input
+                      style={{ border: "2px solid #cbd5e0" }}
+                      className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
+                      name="profile_pic_url"
+                      type="file"
+                      ref={imageRef}
+                      onChange={(e) => handleProfilePicChange(e)}
+                    />
+                    <button
+                      className="bg-green-500 text-white rounded-md w-1/2 h-10 mt-3"
+                      type="submit"
+                    >
+                      Upload
+                    </button>
+                  </form>
+                </div>
+                <div className="w-full pl-5 md:border-l md:border-l-gray-200">
+                  <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
+                    <span className="md:text-lg text-base">First Name:</span>
+                    <input
+                      type="text"
+                      name="firstName"
+                      placeholder=""
+                      value={userInfo?.firstName}
+                      disabled={!edit}
+                      className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
+                        !edit && "bg-slate-300"
+                      }`}
+                      onChange={(e) => handleEdit(e)}
+                    />
+                  </div>
+                  <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
+                    <span className="md:text-lg text-base">Last Name:</span>
+                    <input
+                      type="text"
+                      name="lastName"
+                      placeholder=""
+                      value={userInfo?.lastName}
+                      disabled={!edit}
+                      className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
+                        !edit && "bg-slate-300"
+                      }`}
+                      onChange={handleEdit}
+                    />
+                  </div>
+                  <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
+                    <span className="md:text-lg text-base">Email:</span>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder=""
+                      value={userInfo?.email}
+                      disabled={!edit}
+                      className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
+                        !edit && "bg-slate-300"
+                      }`}
+                      onChange={handleEdit}
+                    />
+                  </div>
+                  <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
+                    <span className="md:text-lg text-base">Institute:</span>
+                    <input
+                      type="text"
+                      name="institute"
+                      placeholder=""
+                      value={userInfo?.institute}
+                      disabled={!edit}
+                      className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
+                        !edit && "bg-slate-300"
+                      }`}
+                      onChange={handleEdit}
+                    />
+                  </div>
+                  <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
+                    <span className="md:text-lg text-base">
+                      Google Scholar:
+                    </span>
+                    <input
+                      type="text"
+                      name="googleScholar"
+                      placeholder=""
+                      value={userInfo?.googleScholar}
+                      disabled={!edit}
+                      className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
+                        !edit && "bg-slate-300"
+                      }`}
+                      onChange={handleEdit}
+                    />
+                  </div>
+                  <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
+                    <span className="md:text-lg text-base">Pubmed:</span>
+                    <input
+                      type="text"
+                      name="pubmed"
+                      placeholder=""
+                      value={userInfo?.pubmed}
+                      disabled={!edit}
+                      className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
+                        !edit && "bg-slate-300"
+                      }`}
+                      onChange={handleEdit}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-[95%] bg-slate-50 shadow-md rounded-md p-5 m-2 grid md:grid-cols-4 grid-cols-2 gap-4">
+              <div className="bg-white rounded-md px-4 py-2 flex flex-row items-center justify-center">
+                <span className="text-lg font-semibold mr-2">Rank:</span>
+                <span>{userInfo?.rank}</span>
+              </div>
+              <div className="bg-white rounded-md px-4 py-2 flex flex-row items-center justify-center">
+                <span className="text-lg font-semibold mr-2">Followers:</span>
+                <span>{userInfo?.followers}</span>
+              </div>
+              <div className="bg-white rounded-md px-4 py-2 flex flex-row items-center justify-center">
+                <span className="text-lg font-semibold mr-2">Following:</span>
+                <span>{userInfo.following}</span>
+              </div>
+              <div className="bg-white rounded-md px-4 py-2 flex flex-row items-center justify-center">
+                <span className="text-lg font-semibold mr-2">Posts:</span>
+                <span>{userInfo.posts}</span>
+              </div>
+            </div>
+            {/* {userArticles && (
+              <div className="w-[95%] bg-slate-50 shadow-md rounded-md p-5 m-2">
+                <div className="border-b border-b-gray-200 pb-2 mb-2 flex flex-row items-center justify-between w-full">
+                  <span className="text-3xl font-bold">My Articles</span>
+                </div>
+                {userArticles?.map((article) => {
+                  return (
+                    <div
+                      className="flex flex-col gap-x-2 w-full bg-white rounded-md p-3 mb-3"
+                      key={article.id}
+                    >
+                      <p
+                        className="text-base mb-2 font-semibold text-green-600 overflow-hidden"
+                        style={{ textOverflow: "ellipsis" }}
+                      >
+                        {article.article_name}
+                      </p>
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="flex flex-row">
+                          <div className="mr-3">
+                            <span className="text-green-500 text-sm mr-1">
+                              Authors:
+                            </span>
+                            {article?.authors?.map((author) => (
+                              <span className="text-slate-500 text-sm font-bold" key={author}>
+                                {author}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="mr-3">
+                            <span className="text-green-500 text-sm mr-1">
+                              Keywords:
+                            </span>
+                            <span className="text-slate-500 text-sm font-bold">
+                              {article?.keywords}
+                            </span>
+                          </div>
+                          <div className="mr-3">
+                            <span className="text-green-500 text-sm mr-1">
+                              Added on:
+                            </span>
+                            <span className="text-slate-500 text-sm font-bold">
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )} */}
           </div>
-        </div>
+        </Box>
       )}
     </div>
   );

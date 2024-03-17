@@ -150,7 +150,7 @@ const ArticleCommentModal = ({
               </div>
               <button
                 type="submit"
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-white rounded mr-2 font-semibold"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2 font-semibold"
               >
                 {fillLoad()}
               </button>
@@ -320,7 +320,7 @@ const ArticleCommentEditModal = ({
               </div>
               <button
                 type="submit"
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-white rounded mr-2 font-semibold"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2 font-semibold"
               >
                 {fillLoad()}
               </button>

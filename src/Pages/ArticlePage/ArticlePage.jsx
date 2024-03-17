@@ -89,7 +89,7 @@ const ArticleCommentModal = ({
       setLoading(false);
       setTitle("");
       setComment("");
-      await handleComment(res.data.comment);
+      await handleComment(res?.data?.comment);
       setShowCommentModal(false);
       ToastMaker("Comment Posted Successfully!!!", 3000, {
         valign: "top",
@@ -100,8 +100,8 @@ const ArticleCommentModal = ({
       });
     } catch (err) {
       setLoading(false);
-      if (err.response.data.error) {
-        ToastMaker(err.response.data.error, 3000, {
+      if (err?.response?.data?.error) {
+        ToastMaker(err?.response?.data?.error, 3000, {
           valign: "top",
           styles: {
             backgroundColor: "red",
@@ -242,7 +242,7 @@ const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
       setTitle("");
       setComment("");
       setRating(0);
-      await handleComment(res.data.comment);
+      await handleComment(res?.data?.comment);
       setShowReviewModal(false);
       ToastMaker("Review Posted Successfully!!!", 3000, {
         valign: "top",
@@ -253,8 +253,8 @@ const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
       });
     } catch (err) {
       setLoading(false);
-      if (err.response.data.error) {
-        ToastMaker(err.response.data.error, 3000, {
+      if (err?.response?.data?.error) {
+        ToastMaker(err?.response?.data?.error, 3000, {
           valign: "top",
           styles: {
             backgroundColor: "red",
@@ -462,7 +462,7 @@ const ArticleDecisionModal = ({
       setTitle("");
       setComment("");
       setDecision("");
-      await handleComment(res.data.comment);
+      await handleComment(res?.data?.comment);
       setShowDecisionModal(false);
       ToastMaker("Decision Posted Successfully!!!", 3000, {
         valign: "top",
@@ -473,8 +473,8 @@ const ArticleDecisionModal = ({
       });
     } catch (err) {
       setLoading(false);
-      if (err.response.data.error) {
-        ToastMaker(err.response.data.error, 3000, {
+      if (err?.response?.data?.error) {
+        ToastMaker(err?.response?.data?.error, 3000, {
           valign: "top",
           styles: {
             backgroundColor: "red",
@@ -647,7 +647,7 @@ const ArticlePage = () => {
     }
     try {
       const res = await axios.get(`/api/comment/`, config);
-      await loadCommentData(res.data.success.results);
+      await loadCommentData(res?.data?.success?.results);
     } catch (err) {
       console.log(err);
     }
@@ -665,11 +665,11 @@ const ArticlePage = () => {
       };
     }
     try {
-      const res = await axios.get(`/api/article/${articleId}`, config);
-      await loadArticleData(res.data.success);
+      const res = await axios.get(`/api/article/${articleId}/`, config);
+      await loadArticleData(res?.data?.success);
     } catch (err) {
       console.log(err);
-      if (err.response.data.detail === "Not found.") {
+      if (err?.response?.data?.detail === "Not found.") {
         ToastMaker("Article doesn't exists!!!", 3000, {
           valign: "top",
           styles: {
@@ -827,7 +827,7 @@ const ArticlePage = () => {
         `/api/comment/?limit=20&offset=${comments.length}`,
         config
       );
-      await loadCommentData([...comments, ...res.data.success.results]);
+      await loadCommentData([...comments, ...res?.data?.success?.results]);
     } catch (err) {
       console.log(err);
     }
@@ -881,7 +881,7 @@ const ArticlePage = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen min-w-[800px]">
+    <div className="bg-white min-h-screen w-full">
       {(loading || article === null || comments === null) && <Loader />}
       {!loading && article && comments && (
         <div className="bg-white">
@@ -940,7 +940,7 @@ const ArticlePage = () => {
                         {article.unregistered_authors.map((data, i) => {
                           return (
                             <span key={i} style={{ cursor: "pointer" }}>
-                              {data.fullName}
+                              {data?.fullName}
                               <span> , </span>
                             </span>
                           );
