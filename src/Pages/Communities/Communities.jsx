@@ -7,7 +7,11 @@ import Footer from "../../Components/Footer/Footer";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
+import { useNavigate } from "react-router-dom";
 import { getContainerStyles } from "../../Utils/Constants/Globals";
+import { MdSubscriptions } from 'react-icons/md';
+import { FaBook, FaPencilAlt, FaUsers } from 'react-icons/fa';
+import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
 const Communities = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,6 +19,8 @@ const Communities = () => {
   const [loading, setLoading] = useState(false);
   const [loadingmore, setLoadingMore] = useState(false);
   const { token } = useGlobalContext();
+  const windowSize = useWindowSize();
+  const navigate = useNavigate();
 
   const loadMoreData = async (res) => {
     const newCommunities = [...communities, ...res];
@@ -88,7 +94,7 @@ const Communities = () => {
   return (
     <>
       <div
-        className="flex flex-col items-center justify-center bg-gray-50"
+        className="flex flex-col items-center justify-center bg-gray-50 w-full"
       >
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Communities</h1>
         <form
@@ -131,23 +137,44 @@ const Communities = () => {
             <Loader />
           ) : (
             <>
-              <ul className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-12 min-h-screen w-full md:w-4/5">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-12 w-full">
                 {communities.length !== 0 ? (
                   communities.map((item, index) => (
-                    <li key={item.id}>
-                      <CommunityCard
-                        key={item.id}
-                        index={index}
-                        community={item}
-                      />
-                    </li>
+                    <div key={item.id} >
+                      <div key={item.id} className="p-4 bg-white shadow-md rounded-lg hover:shadow-xl" style={{cursor:"pointer"}} onClick={()=> {navigate(`/community/${item.Community_name}`)}}>
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 className="text-xl text-green-600 font-bold mb-4">{item.Community_name.replace(/_/g, " ")}</h2>
+                            </div>
+                            <div className="flex items-center mb-2">
+                                <FaUsers className="w-5 h-5 mr-2 text-gray-500" />
+                                <span className="text-gray-600">{item.membercount}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                            <div>
+                                <div className="flex items-center mb-2">
+                                    <FaPencilAlt className="w-5 h-5 mr-2 text-gray-500" />
+                                    <span className="text-gray-600">Evaluated : {item.evaluatedcount}</span>
+                                </div>
+                                <div className="flex items-center mb-2">
+                                    <FaBook className="w-5 h-5 mr-2 text-gray-500" />
+                                    <span className="text-gray-600">Published : {item.publishedcount}</span>
+                                </div>
+                            </div>
+                            <div className="flex">
+                                <MdSubscriptions className="text-xl text-green-700 mr-3" /> <span className="text-md text-left text-gray-500">{item?.subscribed}</span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
                   ))
                 ) : (
                   <h1 className="text-2xl font-bold text-gray-500">
                     No Communities Found
                   </h1>
                 )}
-              </ul>
+              </div>
               {communities.length !== 0 && (
                 <div className="flex flex-row justify-center">
                   <button
