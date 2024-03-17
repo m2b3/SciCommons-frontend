@@ -332,7 +332,7 @@ const Dropdown = ({ color, onLogout, User }) => {
                   <SlUser className="text-black w-4 h-4 inline-block" />
                 ) : (
                   <img
-                    className="object-cover w-6 h-6 rounded-full ring ring-gray-300 mt-1"
+                    className="object-cover w-10 h-4 mt-1"
                     src={User}
                     alt="avatar"
                   />

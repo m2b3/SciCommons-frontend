@@ -322,7 +322,7 @@ const MyArticlesPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center w-full bg-gray-50 mb-5">
+      <div className="flex flex-col items-center justify-center w-full bg-gray-50 mb-5 p-3">
         {loading ? <Loader /> : <ArticleCard articles={sortedArticles} />}
       </div>
     </>
