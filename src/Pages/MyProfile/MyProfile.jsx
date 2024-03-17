@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import { useGlobalContext } from "../../Context/StateContext";
@@ -29,6 +29,7 @@ const MyProfile = () => {
     posts: "",
   });
   /* const [userArticles, setUserArticles] = useState([]); */
+  const imageRef = useRef();
 
   useEffect(() => {
     setIsComponentLoad(true);
@@ -37,7 +38,6 @@ const MyProfile = () => {
   }, []);
 
   const loadProfile = async (res) => {
-    console.log("load profile: ", res);
     setUser(res);
     const profileUrl =
       res?.profile_pic_url?.includes("None") || !res.profile_pic_url
@@ -69,7 +69,8 @@ const MyProfile = () => {
   };
 
   const handleEditCancel = () => {
-    setUserInfo({
+    setUserInfo((prevUserInfo) => ({
+      ...prevUserInfo,
       email: user?.email ?? "",
       firstName: user?.first_name ?? "",
       lastName: user?.last_name ?? "",
@@ -79,12 +80,11 @@ const MyProfile = () => {
       profilePicUrl: user?.profile_pic_url?.includes("None")
         ? ""
         : user?.profile_pic_url,
-    });
+    }));
     setEdit(false);
   };
 
   const handleProfilePicChange = (e) => {
-    console.log(e.target.files[0]);
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
@@ -149,6 +149,10 @@ const MyProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (imageRef.current.value === "") {
+      toast.error("Please select an image to upload");
+      return;
+    }
     setShowLoadingProgress(true);
     const form_data = new FormData(e.target);
     const config = {
@@ -174,6 +178,7 @@ const MyProfile = () => {
     } finally {
       setShowLoadingProgress(false);
     }
+    imageRef.current.value = null;
   };
 
   /* const fetchArticles = async () => {
@@ -260,6 +265,7 @@ const MyProfile = () => {
                       className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
                       name="profile_pic_url"
                       type="file"
+                      ref={imageRef}
                       onChange={(e) => handleProfilePicChange(e)}
                     />
                     <button

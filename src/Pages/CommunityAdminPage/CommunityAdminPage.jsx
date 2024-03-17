@@ -27,7 +27,7 @@ const CommunityAdminPage = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const res = await axios.get(`/api/community/mycommunity`, config);
+        const res = await axios.get(`/api/community/mycommunity/`, config);
         await loadData(res.data.success);
       } catch (error) {
         console.error("Network error:", error);
