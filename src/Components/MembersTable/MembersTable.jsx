@@ -166,7 +166,6 @@ const MembersTable = ({ community }) => {
                     <th className="text-left p-1 px-1 md:p-3 md:px-5 ">
                       Username
                     </th>
-                    <th className="text-left p-1 px-1 md:p-3 md:px-5">Email</th>
                     <th className="text-left p-1 px-1 md:p-3 md:px-5">Role</th>
                     <th></th>
                   </tr>
@@ -188,9 +187,6 @@ const MembersTable = ({ community }) => {
                           <a href={`/profile/${member.username}`}>
                             {member.username}
                           </a>
-                        </td>
-                        <td className="p-1 text-sm md:text-md px-1 md:p-3 md:px-5">
-                          {member.email}
                         </td>
                         <td className="p-1 text-sm md:text-md px-1 md:p-3 md:px-5">
                           {handleRole(member)}
@@ -393,7 +389,7 @@ const EditModal = ({
       );
       console.log(res);
       if (res.status === 200) {
-        await onEdit(index, role.current);
+        await onEdit(index, role);
         ToastMaker(res.data.success, 3500, {
           valign: "top",
           styles: {
@@ -440,18 +436,6 @@ const EditModal = ({
                     type="text"
                     disabled
                     value={member.username}
-                    className="w-full p-2 rounded-lg bg-gray-300 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
-                  />
-                </div>
-                <div className="flex flex-row mt-4">
-                  <span className="text-sm md:text-lg font-semibold text-gray-800 mr-5 mt-1">
-                    Email:{" "}
-                  </span>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    type="text"
-                    disabled
-                    value={member.email}
                     className="w-full p-2 rounded-lg bg-gray-300 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                   />
                 </div>
