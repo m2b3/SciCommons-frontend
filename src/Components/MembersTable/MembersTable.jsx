@@ -386,7 +386,7 @@ const EditModal = ({
       const res = await axios.post(
         `/api/community/${community}/promote_member/`,
         {
-          username: member.username,
+          user_id: member.user_id,
           role: role.toLowerCase(),
         },
         config
