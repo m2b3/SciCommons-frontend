@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./Register.css";
 import axios from "../../Utils/axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../Components/Loader/Loader";

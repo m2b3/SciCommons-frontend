@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../Utils/axios";
-import CommunityCard from "../../Components/CommunityCard/CommunityCard";
 import Loader from "../../Components/Loader/Loader";
-import "./Communities.css";
-import Footer from "../../Components/Footer/Footer";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 import { useNavigate } from "react-router-dom";
-import { getContainerStyles } from "../../Utils/Constants/Globals";
 import { MdSubscriptions } from 'react-icons/md';
 import { FaBook, FaPencilAlt, FaUsers } from 'react-icons/fa';
-import useWindowSize from "../../Utils/Hooks/useWindowSize";
+
 
 const Communities = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +15,6 @@ const Communities = () => {
   const [loading, setLoading] = useState(false);
   const [loadingmore, setLoadingMore] = useState(false);
   const { token } = useGlobalContext();
-  const windowSize = useWindowSize();
   const navigate = useNavigate();
 
   const loadMoreData = async (res) => {
