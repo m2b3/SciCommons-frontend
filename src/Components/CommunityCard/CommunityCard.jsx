@@ -1,5 +1,4 @@
-import React from 'react'
-import './CommunityCard.css'
+import React from 'react';
 import { FaBook, FaPencilAlt, FaUsers } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import { MdSubscriptions } from 'react-icons/md';

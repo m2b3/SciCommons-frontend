@@ -1,5 +1,4 @@
 import React, { useState, useRef, Fragment, useEffect } from "react";
-import "./Login.css";
 import axios from "../../Utils/axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../Components/Loader/Loader";
@@ -72,7 +71,7 @@ const Login = () => {
           "Content-Type": "application/json",
         },
       });
-
+      console.log(response);
       localStorage.setItem("token", response.data.success.access);
       await loadTokenData(response.data.success.access);
       await getCurrentUser();

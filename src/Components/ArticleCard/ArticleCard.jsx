@@ -1,7 +1,6 @@
 import React from "react";
 import { AiFillEye } from "react-icons/ai";
 import dayjs from "dayjs";
-import "./ArticleCard.css";
 import { AiFillHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 

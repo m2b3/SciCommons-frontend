@@ -1,24 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  IoHeartOutline,
-  IoHeart,
-  IoChatbubbleOutline,
-  IoBookmarkOutline,
-  IoBookmark,
-  IoPaperPlaneOutline,
-} from "react-icons/io5";
-import { Link, useNavigate } from "react-router-dom";
-import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
-import Toggle from "react-toggle";
 import "react-toggle/style.css";
 import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../../Components/Loader/Loader";
-import { SlUser } from "react-icons/sl";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "./Bookmarks.css";
 import Post from "../../Components/Post/Post";
 import { useGlobalContext } from "../../Context/StateContext";
 

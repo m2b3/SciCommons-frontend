@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import Loader from "../Loader/Loader";
-import { MdLocationPin, MdSubscriptions } from "react-icons/md";
-import { BsFillCloudArrowDownFill, BsGithub } from "react-icons/bs";
+import { MdLocationPin } from "react-icons/md";
+import { BsGithub } from "react-icons/bs";
 import { BiLogoGmail } from "react-icons/bi";
 import { CgWebsite } from "react-icons/cg";
-import { FaUsers, FaBook, FaPencilAlt } from "react-icons/fa";
 import { useGlobalContext } from "../../Context/StateContext";
 import axios from "../../Utils/axios";
 
