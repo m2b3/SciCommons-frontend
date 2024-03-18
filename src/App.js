@@ -130,12 +130,14 @@ function App() {
             {bottomNavRoutes.map((route, index) =>
               route.text === "" ? (
                 <BottomNavigationAction
+                key={index}
                   label={route.text}
                   icon={<route.icon style={{ fontSize: "48px" }} />}
                   onClick={() => setIsBottomSheetOpen(prev => !prev)}
                 />
               ) : (
                 <BottomNavigationAction
+                key={index}
                   label={route.text}
                   icon={<route.icon style={{ fontSize: "24px" }} />}
                   onClick={() => navigate(route.route)}
@@ -160,6 +162,7 @@ function App() {
         }}
       >
         <div
+        /*eslint-disable */
           sx={{
             position: "absolute",
             top: -drawerBleeding,

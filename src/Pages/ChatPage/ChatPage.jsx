@@ -221,8 +221,9 @@ const ChatPage = () => {
               </span>
             </div>
             <div className="bg-green-50 rounded-lg shadow-md p-1 md:p-4 h-full overflow-y-scroll">
-              {Messages.map((message) => (
+              {Messages.map((message,index) => (
                 <MessageBox
+                key={index}
                   position={message.personal ? "right" : "left"}
                   type={"text"}
                   text={message.body}

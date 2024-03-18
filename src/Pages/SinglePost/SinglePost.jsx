@@ -243,8 +243,9 @@ const SinglePost = () => {
                   `(${formatCount(post.comments_count)})`}
               </div>
               {comments.length > 0 &&
-                comments.map((comment) => (
+                comments.map((comment,index) => (
                   <SocialComment
+                  key = {index}
                     comment={comment}
                     post={post}
                     setPost={setPost}
