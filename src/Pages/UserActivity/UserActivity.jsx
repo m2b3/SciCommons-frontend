@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import dayjs from "dayjs";
 import NavBar from "../../Components/NavBar/NavBar";
 import "./UserActivity.css";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
-import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 

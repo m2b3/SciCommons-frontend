@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
-
+import React, { useState } from "react";
 // import AllMessages from './Pages/AllMessagesPage/AllMessagesPage';
-
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./Components/NavBar/NavBar";
 import { useLocation } from "react-router-dom";
 import SideNav from "./Components/SideNav/SideNav";
 import useWindowSize from "./Utils/Hooks/useWindowSize";
 import { useNavigate } from "react-router-dom";
-
+import "./App.css";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
@@ -32,14 +28,13 @@ import { BsBookmarkCheck } from "react-icons/bs";
 import { CgFeed } from "react-icons/cg";
 import { GrArticle } from "react-icons/gr";
 import RoutesContainer from "./RoutesContainer";
-import { getContainerStyles } from "./Utils/Constants/Globals";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const showNavBar = location.pathname !== "/login" && location.pathname !== "/register";
   const showSideNavBar = location.pathname !== "/login" && location.pathname !== "/register";
-  const [value, setValue] = useState();
   const [activeBottomNavTab, setActiveBottomNavTab] = useState();
   const [activeBottomSheetTab, setActiveBottomSheetTab] = useState();
   const windowSize = useWindowSize();
@@ -109,7 +104,8 @@ function App() {
   }));
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative">
+      <Toaster />
       {showNavBar && <NavBar />}
       {showSideNavBar && <SideNav />}
       <RoutesContainer />

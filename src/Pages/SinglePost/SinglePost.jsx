@@ -1,32 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
 import {
-  IoHeartOutline,
-  IoHeart,
-  IoBookmarkOutline,
-  IoBookmark,
-  IoPaperPlaneOutline,
-} from "react-icons/io5";
-import {
   AiOutlineSend,
-  AiFillLike,
-  AiOutlineLike,
-  AiOutlineClose,
 } from "react-icons/ai";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
-import { CSpinner } from "@coreui/react";
-import { BsReplyAll } from "react-icons/bs";
-import { AiOutlineEdit } from "react-icons/ai";
-import { BiDotsHorizontal } from "react-icons/bi";
-import Popper from "popper.js";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "./SinglePost.css";
 import Post from "../../Components/Post/Post";
 import SocialComment from "../../Components/SocialComment/SocialComment";
 import { useGlobalContext } from "../../Context/StateContext";
