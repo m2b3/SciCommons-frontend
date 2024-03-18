@@ -1,24 +1,23 @@
-import React, { useState, useEffect} from "react";
-import cal from "./calendar.png";
-import folder from "./folder.png";
-import eye from "./eye-open.png";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "../../Utils/axios";
-import Loader from "../../Components/Loader/Loader";
-import Comments from "../../Components/Comments/Comments";
-import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from "react-icons/ai";
-import { MdOutlineViewSidebar } from "react-icons/md";
-import "./ArticlePage.css";
-import "react-quill/dist/quill.snow.css";
-import ToastMaker from "toastmaker";
-import "toastmaker/dist/toastmaker.css";
-import { useGlobalContext } from "../../Context/StateContext";
-import { AiOutlineFilePdf, AiOutlineShareAlt } from "react-icons/ai";
-import { BsChatLeftText } from "react-icons/bs";
-import ArticleCommentModal from "./ArticleCommentModal";
-import ArticleReviewModal from "./ArticleReviewModal";
-import ArticleDecisionModal from "./ArticleDecisionModal";
-
+import React, { useState, useEffect } from 'react';
+import cal from './calendar.png';
+import folder from './folder.png';
+import eye from './eye-open.png';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '../../Utils/axios';
+import Loader from '../../Components/Loader/Loader';
+import Comments from '../../Components/Comments/Comments';
+import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from 'react-icons/ai';
+import { MdOutlineViewSidebar } from 'react-icons/md';
+import './ArticlePage.css';
+import 'react-quill/dist/quill.snow.css';
+import ToastMaker from 'toastmaker';
+import 'toastmaker/dist/toastmaker.css';
+import { useGlobalContext } from '../../Context/StateContext';
+import { AiOutlineFilePdf, AiOutlineShareAlt } from 'react-icons/ai';
+import { BsChatLeftText } from 'react-icons/bs';
+import ArticleCommentModal from './ArticleCommentModal';
+import ArticleReviewModal from './ArticleReviewModal';
+import ArticleDecisionModal from './ArticleDecisionModal';
 
 const ArticlePage = () => {
   const { articleId } = useParams();
@@ -32,10 +31,10 @@ const ArticlePage = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [loadComments, setLoadComments] = useState(false);
   const { token } = useGlobalContext();
-  const [Type, setType] = useState("null");
-  const [comment_type, setCommentType] = useState("null");
-  const [order, setOrder] = useState("recent");
-  const [orderOption, setOrderOption] = useState("Ascending");
+  const [Type, setType] = useState('null');
+  const [comment_type, setCommentType] = useState('null');
+  const [order, setOrder] = useState('recent');
+  const [orderOption, setOrderOption] = useState('Ascending');
   const [loadingComment, setLoadingComment] = useState(false);
 
   const loadArticleData = async (res) => {
@@ -50,15 +49,12 @@ const ArticlePage = () => {
   const updateViews = async () => {
     const config = {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
-      const res = await axios.put(
-        `/api/article/${articleId}/updateviews/`,
-        config
-      );
+      const res = await axios.put(`/api/article/${articleId}/updateviews/`, config);
     } catch (err) {
       console.log(err);
     }
@@ -68,32 +64,32 @@ const ArticlePage = () => {
     setLoadingComment(true);
     let config = null;
     let filter = null;
-    if (orderOption === "Descending") {
-      filter = "most_" + order;
+    if (orderOption === 'Descending') {
+      filter = 'most_' + order;
     } else {
-      filter = "least_" + order;
+      filter = 'least_' + order;
     }
     if (token !== null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     } else {
       config = {
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     }
     try {
@@ -111,8 +107,8 @@ const ArticlePage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     try {
@@ -120,16 +116,16 @@ const ArticlePage = () => {
       await loadArticleData(res?.data?.success);
     } catch (err) {
       console.log(err);
-      if (err?.response?.data?.detail === "Not found.") {
+      if (err?.response?.data?.detail === 'Not found.') {
         ToastMaker("Article doesn't exists!!!", 3000, {
-          valign: "top",
+          valign: 'top',
           styles: {
-            backgroundColor: "red",
-            fontSize: "20px",
-          },
+            backgroundColor: 'red',
+            fontSize: '20px'
+          }
         });
       }
-      navigate("/404");
+      navigate('/404');
     }
     setLoading(false);
   };
@@ -177,25 +173,21 @@ const ArticlePage = () => {
 
   const handleFavourites = async () => {
     if (token === null) {
-      navigate("/login");
+      navigate('/login');
     }
     const config = {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
     };
     if (article.isFavourite === false) {
       try {
-        const res = await axios.post(
-          `/api/article/favourite/`,
-          { article: articleId },
-          config
-        );
+        const res = await axios.post(`/api/article/favourite/`, { article: articleId }, config);
         const newArticle = {
           ...article,
           isFavourite: true,
-          favourites: article.favourites + 1,
+          favourites: article.favourites + 1
         };
         await loadArticleData(newArticle);
       } catch (err) {
@@ -203,15 +195,11 @@ const ArticlePage = () => {
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/article/unfavourite/`,
-          { article: articleId },
-          config
-        );
+        const res = await axios.post(`/api/article/unfavourite/`, { article: articleId }, config);
         const newArticle = {
           ...article,
           isFavourite: false,
-          favourites: article.favourites - 1,
+          favourites: article.favourites - 1
         };
         await loadArticleData(newArticle);
       } catch (err) {
@@ -222,7 +210,7 @@ const ArticlePage = () => {
 
   const handleShow = () => {
     if (token === null) {
-      navigate("/login");
+      navigate('/login');
     }
     if (currentState === 1) {
       setShowReviewModal(true);
@@ -237,48 +225,45 @@ const ArticlePage = () => {
     } else if (article.commentcount > comments.length) {
       return `Load ${article.commentcount - comments.length} more comments`;
     } else {
-      return "";
+      return '';
     }
   };
 
   const loadMore = async () => {
     setLoadComments(true);
     let filter = null;
-    if (orderOption === "Descending") {
-      filter = "most_" + order;
+    if (orderOption === 'Descending') {
+      filter = 'most_' + order;
     } else {
-      filter = "least_" + order;
+      filter = 'least_' + order;
     }
     let config = null;
     if (token !== null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     } else {
       config = {
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     }
     try {
-      const res = await axios.get(
-        `/api/comment/?limit=20&offset=${comments.length}`,
-        config
-      );
-      await loadCommentData([...comments, ...res?.data?.success?.results]);
+      const res = await axios.get(`/api/comment/?limit=20&offset=${comments.length}`, config);
+      await loadCommentData([...comments, ...(res?.data?.success?.results ?? [])]);
     } catch (err) {
       console.log(err);
     }
@@ -294,9 +279,9 @@ const ArticlePage = () => {
     if (count < 1000) {
       return count.toString();
     } else if (count < 1000000) {
-      return (count / 1000).toFixed(1) + "K";
+      return (count / 1000).toFixed(1) + 'K';
     } else {
-      return (count / 1000000).toFixed(1) + "M";
+      return (count / 1000000).toFixed(1) + 'M';
     }
   };
 
@@ -318,17 +303,15 @@ const ArticlePage = () => {
 
   const handleShare = (e) => {
     e.preventDefault();
-    ToastMaker("Link Copied to Clipboard", 3500, {
-      valign: "top",
+    ToastMaker('Link Copied to Clipboard', 3500, {
+      valign: 'top',
       styles: {
-        backgroundColor: "green",
-        fontSize: "20px",
-      },
+        backgroundColor: 'green',
+        fontSize: '20px'
+      }
     });
     e.stopPropagation();
-    navigator.clipboard.writeText(
-      `https://scicommons.org/article/${article.id}`
-    );
+    navigator.clipboard.writeText(`https://scicommons.org/article/${article.id}`);
   };
 
   return (
@@ -341,14 +324,10 @@ const ArticlePage = () => {
               <div className="py-5 ">
                 <div className="flex bg-white flex-row justify-between">
                   <div className="text-lg md:text-3xl font-[700] text-gray-600 bg-white uppercase">
-                    {article.article_name.replace(/_/g, " ")}
+                    {article.article_name.replace(/_/g, ' ')}
                   </div>
                   <div className="flex flex-row">
-                    <div
-                      className="icon"
-                      style={{ cursor: "pointer" }}
-                      onClick={handleFavourites}
-                    >
+                    <div className="icon" style={{ cursor: 'pointer' }} onClick={handleFavourites}>
                       {article.isFavourite === true ? (
                         <AiFillHeart className="w-[2rem] h-[2rem]" />
                       ) : (
@@ -360,20 +339,17 @@ const ArticlePage = () => {
                 <div className="py-1 bg-white">
                   <span className="italic font-sans text-md md:text-lg leading-[1.5rem] ">
                     {article.link && (
-                      <span className="text-green-800 font-semibold">
-                        Added by:{" "}
-                      </span>
+                      <span className="text-green-800 font-semibold">Added by: </span>
                     )}
                     {article.authors.map((data, i) => {
                       return (
                         <span
                           key={i}
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: 'pointer' }}
                           onClick={(e) => {
                             e.preventDefault();
                             handleProfile(data);
-                          }}
-                        >
+                          }}>
                           {data}
                           <span> </span>
                         </span>
@@ -385,12 +361,12 @@ const ArticlePage = () => {
                   {article.unregistered_authors.length > 0 && (
                     <>
                       <span className="text-[0.75rem] font-bold text-green-800">
-                        UnRegistered Author(s) :{" "}
+                        UnRegistered Author(s) :{' '}
                       </span>
                       <span className="italic font-sans text-[0.75rem] leading-[1.5rem] ">
                         {article.unregistered_authors.map((data, i) => {
                           return (
-                            <span key={i} style={{ cursor: "pointer" }}>
+                            <span key={i} style={{ cursor: 'pointer' }}>
                               {data?.fullName}
                               <span> , </span>
                             </span>
@@ -404,87 +380,67 @@ const ArticlePage = () => {
                   <span className="text-[.75rem] p-0">
                     {!article.link && (
                       <>
-                        <img
-                          className="w-[.875rem] inline mb-1"
-                          src={cal}
-                          alt=""
-                        ></img>
+                        <img className="w-[.875rem] inline mb-1" src={cal} alt=""></img>
                         <span className="pl-1">Published:</span>
                         {article.published_date === null
-                          ? " Not Published"
+                          ? ' Not Published'
                           : findTime(article.published_date)}
                         <img
                           className="w-[.875rem] inline mb-1 mr-1 ml-4"
                           src={folder}
-                          alt=""
-                        ></img>
+                          alt=""></img>
 
                         {article.published === null
-                          ? " Not Yet"
+                          ? ' Not Yet'
                           : `Accepted by ${article.published}`}
                       </>
                     )}
-                    <img
-                      className="w-[.875rem] inline mb-1 mr-1 ml-4"
-                      src={eye}
-                      alt=""
-                    ></img>
+                    <img className="w-[.875rem] inline mb-1 mr-1 ml-4" src={eye} alt=""></img>
 
-                    {article.status === "public" ? "Everyone" : "Private"}
+                    {article.status === 'public' ? 'Everyone' : 'Private'}
                     <AiFillHeart className="w-[.875rem] inline mb-1 mr-1 ml-4" />
                     {formatCount(article.favourites)}
                     <MdOutlineViewSidebar className="w-[.875rem] inline mb-1 mr-1 ml-4" />
                     {formatCount(article.views)}
                     <AiTwotoneStar className="w-[.875rem] inline mb-1 mr-1 ml-4" />
-                    {article.rating === null ? "0" : article.rating}
+                    {article.rating === null ? '0' : article.rating}
                   </span>
                 </div>
               </div>
               <div className="text-[.75rem] leading-[1.125rem] mt-[-0.875rem] bg-white">
-                {article.Abstract !== null && article.Abstract !== "" && (
+                {article.Abstract !== null && article.Abstract !== '' && (
                   <span className="block">
                     <strong className="text-green-700"> Abstract : </strong>
                     <span className="italic">{article.Abstract}</span>
                   </span>
                 )}
-                {article.license !== null && article.license !== "" && (
+                {article.license !== null && article.license !== '' && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      License :{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> License : </strong>
                     <span>{article.license}</span>
                   </div>
                 )}
-                {article.Code !== null && article.Code !== "" && (
+                {article.Code !== null && article.Code !== '' && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      Code :{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]">Code : </strong>
                     <a href={article.Code} className="text-[#337ab7]">
-                      {" "}
+                      {' '}
                       {article.Code}
                     </a>
                   </div>
                 )}
-                {article.video !== null && article.Code !== "" && (
+                {article.video !== null && article.Code !== '' && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      Video Link:{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> Video Link: </strong>
                     <a href={article.video} className="text-[#337ab7]">
-                      {" "}
+                      {' '}
                       {article.video}
                     </a>
                   </div>
                 )}
-                {article.doi !== null && article.doi !== "" && (
+                {article.doi !== null && article.doi !== '' && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      DOI:{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> DOI: </strong>
                     <a href={article.doi} className="text-[#337ab7]">
                       {article.doi}
                     </a>
@@ -492,55 +448,46 @@ const ArticlePage = () => {
                 )}
                 {article.link && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      Article Link:{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> Article Link: </strong>
                     <a href={article.link} className="text-[#337ab7]">
-                      {" "}
+                      {' '}
                       {article.link}
                     </a>
                   </div>
                 )}
                 <div className="block">
-                  <strong className="text-green-700 font-[700]">
-                    {" "}
-                    Submission Date :{" "}
-                  </strong>
+                  <strong className="text-green-700 font-[700]"> Submission Date : </strong>
                   <span> {findTime(article.Public_date)} </span>
                 </div>
               </div>
 
               <div className="flex flex-row justify-center bg-white">
-                {!article.article_file.includes("None") && (
+                {!article.article_file.includes('None') && (
                   <button
                     className="flex items-center space-x-2 p-2 bg-red-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-red-600"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                       handleFile();
-                    }}
-                  >
+                    }}>
                     <AiOutlineFilePdf className="w-5 h-5" />
                     <span className="text-md">Pdf</span>
                   </button>
                 )}
                 <button
                   className="flex items-center space-x-2 p-2 bg-green-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-green-600"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     navigate(`/chat/${articleId}`);
-                  }}
-                >
+                  }}>
                   <BsChatLeftText className="w-5 h-5" />
                   <span className="text-md">Chat</span>
                 </button>
                 <button
                   className="flex items-center space-x-2 p-2 bg-blue-500 text-white text-md shadow-lg rounded-md hover:bg-blue-600"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={(e) => {
                     handleShare(e);
-                  }}
-                >
+                  }}>
                   <AiOutlineShareAlt className="w-5 h-5" />
                   <span className="text-md">Share</span>
                 </button>
@@ -552,11 +499,10 @@ const ArticlePage = () => {
                     <span className="text-[0.75rem] text-gray-600">Add:</span>
                     <span
                       className="box-content text-white bg-[#4d8093] text-[0.55 rem] border-solid ml-2 md:font-bold p-2 pt-0 rounded"
-                      style={{ cursor: "pointer" }}
-                      onClick={handleShow}
-                    >
-                      {currentState === 1 && "add review"}
-                      {currentState !== 1 && "add comment"}
+                      style={{ cursor: 'pointer' }}
+                      onClick={handleShow}>
+                      {currentState === 1 && 'add review'}
+                      {currentState !== 1 && 'add comment'}
                     </span>
                   </div>
                 </div>
@@ -587,8 +533,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={Type}
-                    onChange={(e) => handleTypeChange(e)}
-                  >
+                    onChange={(e) => handleTypeChange(e)}>
                     <option value="null">All</option>
                     <option value="review">Review</option>
                     <option value="decision">Decision</option>
@@ -598,8 +543,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={comment_type}
-                    onChange={(e) => handleCommentTypeChange(e)}
-                  >
+                    onChange={(e) => handleCommentTypeChange(e)}>
                     <option value="null">All</option>
                     <option value="OfficialComment">Official Comment</option>
                     <option value="PublicComment">Public Comment</option>
@@ -609,8 +553,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={order}
-                    onChange={(e) => handleOrderChange(e)}
-                  >
+                    onChange={(e) => handleOrderChange(e)}>
                     <option value="recent">Date</option>
                     <option value="rated">Comment Rating</option>
                     <option value="reputated">User Reputation</option>
@@ -620,8 +563,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={orderOption}
-                    onChange={(e) => handleOrderOptionChange(e)}
-                  >
+                    onChange={(e) => handleOrderOptionChange(e)}>
                     <option value="Descending">Descending</option>
                     <option value="Ascending">Ascending</option>
                   </select>
@@ -629,8 +571,7 @@ const ArticlePage = () => {
                 <div className="relative inline-flex mr-2">
                   <button
                     className="text-sm md:text-md bg-green-500 rounded-lg p-1 text-white font-semibold"
-                    onClick={getComments}
-                  >
+                    onClick={getComments}>
                     Apply Filters
                   </button>
                 </div>
@@ -639,22 +580,16 @@ const ArticlePage = () => {
                 {!loadingComment &&
                   comments.length > 0 &&
                   comments.map((comment) => (
-                    <Comments
-                      key={comment.id}
-                      comment={comment}
-                      article={article}
-                      colour={1}
-                    />
+                    <Comments key={comment.id} comment={comment} article={article} colour={1} />
                   ))}
                 {loadingComment && <Loader />}
                 {!loadingComment && comments.length === 0 && (
                   <div className="w-full flex flex-row justify-center items-center">
                     <button
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={loadMore}
-                      className="p-2 text-green-500 text-2xl text-center font-bold mt-2"
-                    >
-                      {loadComments ? "Loading..." : fillLoad()}
+                      className="p-2 text-green-500 text-2xl text-center font-bold mt-2">
+                      {loadComments ? 'Loading...' : fillLoad()}
                     </button>
                   </div>
                 )}
