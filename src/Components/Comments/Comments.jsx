@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import Popper from "popper.js";
 import { BiDotsVertical } from "react-icons/bi";
 import axios from "../../Utils/axios";
+import { FaLink } from "react-icons/fa6";
+import { Tooltip } from "flowbite-react";
 
 const ArticleCommentModal = ({
   setShowCommentModal,
@@ -560,6 +562,7 @@ const Comments = ({ comment, article, colour }) => {
       <div
         className={`mb-2 w-full ${colorClasses[colour]} shadow-lg min-w-[200px] rounded px-4 py-2 overflow-x-auto`}
         data-commentid={comment.id}
+        id={`comment-${comment.id}`} // This is the id of the comment
       >
         <div className="flex flex-row items-center justify-between">
           <div
@@ -646,7 +649,7 @@ const Comments = ({ comment, article, colour }) => {
               </div>
             )}
           </div>
-          <div className="flex">
+          <div className="flex space-x-2 items-center">
             <button
               onClick={async (e) => {
                 e.preventDefault();
@@ -679,6 +682,28 @@ const Comments = ({ comment, article, colour }) => {
                 color={colorClasses[colour]}
               />
             )}
+            {/* Url Link for comment */}
+            <div
+              className="text-blue-500 underline text-xl cursor-pointer"
+              // copy to clipboard
+              onClick={(e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/article/${article.id}/comment/${comment.id}`
+                );
+                ToastMaker("Link Copied!!!", 3000, {
+                  valign: "top",
+                  styles: {
+                    backgroundColor: "green",
+                    fontSize: "20px",
+                  },
+                });
+              }}
+            >
+              <Tooltip content="Copy Link" position="top">
+                <FaLink />
+              </Tooltip>
+            </div>
           </div>
         </div>
         {show && (

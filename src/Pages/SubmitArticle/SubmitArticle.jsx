@@ -10,6 +10,7 @@ import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 import InputField from "../../Components/InputField/InputField";
 import TextareaField from "../../Components/TextArea/TextAreaField";
+import toast, { Toaster } from "react-hot-toast";
 // import axios from 'axios';
 
 const PubMedSearch = () => {
@@ -22,14 +23,17 @@ const PubMedSearch = () => {
     setResults(res);
   };
 
+  // `handleSearch` fetches article's id, title, authors, journal, pubdate, and url from the pubmed api
   const handleSearch = async () => {
     setLoading(true);
     try {
+      // send a request to the pubmed api and get the results
       const response = await axios.get(
         `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${query}&retmode=json`
       );
       const data = response.data;
       let ids = data.esearchresult.idlist.slice(0, 10);
+      // if no articles are found, set the results to an empty array
       if (ids === undefined || ids === null) {
         setResults([]);
         setLoading(false);
@@ -37,6 +41,7 @@ const PubMedSearch = () => {
       }
       let articles = [];
 
+      // send a request to the pubmed api to get the summary of the articles
       const summaryResponse = await axios.get(
         `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${ids.join(
           ","
@@ -78,10 +83,12 @@ const PubMedSearch = () => {
     setLoading(false);
   };
 
+  // `handleSubmit` fetches the abstract of the article and posts the article to the backend
   const handleSubmit = async (article) => {
     const baseURL = `/api/article/`;
     setLoading(true);
     try {
+      // Get the abstract of the article by scraping the pubmed page
       const abstractResponse = await fetch(
         `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=${article.uid}&retmode=xml`
       );
@@ -93,6 +100,7 @@ const PubMedSearch = () => {
         abstract = xml.querySelector("AbstractText").textContent;
       }
 
+      // post the article to the backend
       const response = await axios.post(
         baseURL,
         {
@@ -223,11 +231,16 @@ const ArticleFetcher = () => {
   const [fetchError, setFetchError] = useState(null);
   const [articleType, setArticleType] = useState("");
 
+  const navigate = useNavigate();
+
+  const { token } = useGlobalContext();
+
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
   const fetchArticle = async () => {
+    setArticleData(null); // Reset article data before fetching new article
     let apiUrl = "";
     if (inputValue.startsWith("10.")) {
       // DOI
@@ -238,14 +251,8 @@ const ArticleFetcher = () => {
       const arxivId = inputValue.split(":")[1];
       apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
       setArticleType("arxiv");
-    } else if (/^\d+$/.test(inputValue)) {
-      // PubMed ID
-      apiUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${inputValue}&retmode=json`;
-      setArticleType("pubmed");
     } else {
-      setFetchError(
-        "Invalid input. Please enter a valid DOI, arXiv ID, or PubMed ID."
-      );
+      setFetchError("Invalid input. Please enter a valid DOI or arXiv ID.");
       return;
     }
 
@@ -262,29 +269,20 @@ const ArticleFetcher = () => {
     switch (articleType) {
       case "doi":
         return (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-2">
+          <div>
+            <h2 className="text-lg font-bold">
               {articleData.message.title[0]}
             </h2>
             <p>
-              <b className="font-semibold">Authors:</b>
+              Authors:{" "}
               {articleData.message.author.map((a) => a.family).join(", ")}
             </p>
-            <p>
-              <b className="font-semibold">Published: </b>
-              {articleData.message["published-print"]["date-parts"][0].join(
-                "-"
-              )}
-            </p>
-            <p>
-              <b className="text-bold">Abstract: </b>
-              {articleData.message.abstract || "Abstract not available"}
-            </p>
+            <p>Abstract: {articleData.message.abstract}</p>
             <a
               href={articleData.message.URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-green-500 underline"
+              className="text-blue-500 underline"
             >
               View Full Article
             </a>
@@ -300,51 +298,18 @@ const ArticleFetcher = () => {
           .join(", ");
         const abstract =
           xmlDoc.getElementsByTagName("summary")[0].childNodes[0].nodeValue;
-        const link =
-          xmlDoc.getElementsByTagName("id")[0].childNodes[0].nodeValue;
+        const arxivId = inputValue.split(":")[1];
+        const arxivLink = `https://arxiv.org/abs/${arxivId}`;
         return (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-2">{title}</h2>
-            <p>
-              <b className="font-semibold">Authors: </b>
-              {authors}
-            </p>
-            <p>
-              {" "}
-              <b className="font-semibold">Abstract: </b>{" "}
-              {abstract || "Abstract not available"}
-            </p>
+          <div>
+            <h2 className="text-lg font-bold">{title}</h2>
+            <p>Authors: {authors}</p>
+            <p>Abstract: {abstract}</p>
             <a
-              href={link}
+              href={arxivLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-green-500 underline"
-            >
-              View Full Article
-            </a>
-          </div>
-        );
-      case "pubmed":
-        const article = articleData.result[inputValue];
-        return (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-2">{article.title}</h2>
-            <p>
-              <b className="font-semibold">Authors: </b>
-              {article.authors.map((a) => a.name).join(", ")}
-            </p>
-            <p>
-              <b className="font-semibold">Published: </b> {article.pubdate}
-            </p>
-            <p>
-              <b className="font-semibold">Abstract: </b>{" "}
-              {article.abstracttext || "Abstract not available"}
-            </p>
-            <a
-              href={`https://pubmed.ncbi.nlm.nih.gov/${inputValue}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-green-500 underline"
+              className="text-blue-500 underline"
             >
               View Full Article
             </a>
@@ -355,66 +320,144 @@ const ArticleFetcher = () => {
     }
   };
 
+  const addArticleToBackend = async () => {
+    const baseURL = `/api/article/`;
+    let articleDetails = {};
+    if (articleType === "doi") {
+      articleDetails = {
+        article_name: articleData.message.title[0],
+        unregistered_authors: articleData.message.author.map((author) => {
+          return JSON.stringify({ fullName: author.family, email: "" });
+        }),
+        keywords: "doi",
+        Abstract: articleData.message.abstract,
+        link: articleData.message.URL,
+        video: "",
+        Code: "",
+        status: "public",
+        article_file: undefined,
+        authors: [JSON.stringify(0)],
+        communities: [JSON.stringify(0)],
+      };
+    } else if (articleType === "arxiv") {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(articleData, "text/xml");
+      const title =
+        xmlDoc.getElementsByTagName("title")[1].childNodes[0].nodeValue;
+      const authors = Array.from(xmlDoc.getElementsByTagName("author")).map(
+        (author) => author.childNodes[1].textContent
+      );
+      const abstract =
+        xmlDoc.getElementsByTagName("summary")[0].childNodes[0].nodeValue;
+      const arxivId = inputValue.split(":")[1];
+      const arxivLink = `https://arxiv.org/abs/${arxivId}`;
+      articleDetails = {
+        article_name: title,
+        unregistered_authors: authors.map((author) => {
+          return JSON.stringify({ fullName: author, email: "" });
+        }),
+        keywords: "arxiv",
+        Abstract: abstract,
+        link: arxivLink,
+        video: "",
+        Code: "",
+        status: "public",
+        article_file: undefined,
+        authors: [JSON.stringify(0)],
+        communities: [JSON.stringify(0)],
+      };
+    }
+
+    try {
+      const response = await axios.post(baseURL, articleDetails, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Todo: Use toast.promise later
+      toast.success("Article added successfully. Redirecting to the article page.");
+
+      if (response.data.success.id) {
+        // redirect the user to the article page
+        navigate("/article/" + response.data.success.id);
+      }
+    } catch (error) {
+      toast.error(error.response.data.error);
+      console.error("Error adding article:", error);
+    }
+  };
+
   return (
-    <div className="my-10 mx-10 mx-auto">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          fetchArticle();
-        }}
-        // class="max-w-md mx-auto"
-      >
-        <label
-          for="default-search"
-          class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+    <>
+      <div className="my-10 mx-10">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            fetchArticle();
+          }}
+          // class="max-w-md mx-auto"
         >
-          Search
-        </label>
-        <div class="relative">
-          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg
-              class="w-4 h-4 text-gray-500 dark:text-gray-400"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="search"
-            id="default-search"
-            class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
-            placeholder="Enter DOI, arXiv ID, or PubMed ID"
-            value={inputValue}
-            onChange={handleInputChange}
-            required
-          />
-          <button
-            type="submit"
-            class="text-white absolute end-2.5 bottom-2.5 bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          <label
+            for="default-search"
+            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
           >
             Search
-          </button>
-        </div>
-      </form>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg
+                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                />
+              </svg>
+            </div>
+            <input
+              type="search"
+              id="default-search"
+              class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
+              placeholder="Enter DOI, arXiv ID, or PubMed ID"
+              value={inputValue}
+              onChange={handleInputChange}
+              required
+            />
+            <button
+              type="submit"
+              class="text-white absolute end-2.5 bottom-2.5 bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            >
+              Search
+            </button>
+          </div>
+        </form>
 
-      {fetchError && (
-        <div className="text-red-500 mt-2 text-center">{fetchError}</div>
-      )}
-      {articleData && (
-        <div className="mt-4 bg-white border-2 border-gray-300 rounded-lg p-4 shadow-sm">
-          {renderArticleDetails()}
-        </div>
-      )}
-    </div>
+        {fetchError && (
+          <div className="text-red-500 mt-2 text-center">{fetchError}</div>
+        )}
+        {articleData && (
+          <div className="mt-4 bg-white border-2 border-gray-300 rounded-lg p-4 shadow-sm">
+            {renderArticleDetails()}
+            <button
+              className="mt-4 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+              type="button"
+              onClick={addArticleToBackend}
+            >
+              Add Article
+            </button>
+          </div>
+        )}
+      </div>
+      {/* <Toaster /> */}
+    </>
   );
 };
 
