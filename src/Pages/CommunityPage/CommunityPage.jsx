@@ -17,6 +17,7 @@ const CommunityPage = () => {
   const navigate = useNavigate();
   const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isAdminCommunity, setIsAdminCommunity] = useState(0);
   const [subscribed, setSubscribed] = useState(null);
   const { user, token } = useGlobalContext();
 
@@ -50,6 +51,8 @@ const CommunityPage = () => {
           };
         }
         const res = await axios.get(`/api/community/${communityName}/`, config);
+        const checkIsAdmin = res.data.success.isAdmin
+        setIsAdminCommunity(checkIsAdmin);
         await loadCommunity(res.data.success);
         setSubscribed(res.data.success.isSubscribed);
       } catch (error) {
@@ -238,7 +241,7 @@ const CommunityPage = () => {
               </div>
             </div>
             <div className="mt-8 flex flex-row justify-end">
-              <button
+              {!isAdminCommunity && <button
                 className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
                 style={{ cursor: "pointer" }}
                 onClick={() => {
@@ -250,7 +253,7 @@ const CommunityPage = () => {
                 }}
               >
                 Join Community
-              </button>
+              </button> }
               {/* <button
                                         className={`${
                                             subscribed
