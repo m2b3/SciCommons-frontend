@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useGlobalContext } from '../../Context/StateContext'
 
 const PrivateRoute = ({ redirectTo, component}) => {

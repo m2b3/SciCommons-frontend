@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./NavBar.css";
 import { SlUser } from "react-icons/sl";
 import { IoMdMore } from "react-icons/io";
 import axios from "../../Utils/axios";
 import Popper from "popper.js";
 import { useNavigate } from "react-router-dom";
-import { CiMenuFries } from "react-icons/ci";
-import SideNav from "../SideNav/SideNav";
 import { FiLogOut } from "react-icons/fi";
 import { useGlobalContext } from "../../Context/StateContext";
 import {
   navbarNavigationRoutes,
-  closeIcon,
-  hamburgerIcon,
   arrowHeadNextIcon,
 } from "../../Utils/Constants/Navbar";
 import { getContainerStyles } from "../../Utils/Constants/Globals";

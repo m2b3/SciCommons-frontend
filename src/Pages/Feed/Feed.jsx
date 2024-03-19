@@ -5,7 +5,7 @@ import Loader from "../../Components/Loader/Loader";
 import Post from "../../Components/Post/Post";
 import PageHeader from "../../Components/PageHeader";
 import NewPostModal from "../MyPostsPage/NewPostModal";
-import './Feed.css';
+
 const Feed = () => {
 
   const { token } = useGlobalContext();
