@@ -20,7 +20,7 @@ const CreateCommunity = () => {
   const [website, setWebsite] = useState("");
 
   const [errors, setErrors] = useState({
-    Community_name: "",
+    Community_name: ""
   });
 
   const submitForm = async (e) => {
@@ -32,8 +32,8 @@ const CreateCommunity = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -43,8 +43,8 @@ const CreateCommunity = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -54,8 +54,8 @@ const CreateCommunity = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -65,8 +65,8 @@ const CreateCommunity = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -76,8 +76,8 @@ const CreateCommunity = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -87,8 +87,8 @@ const CreateCommunity = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -97,8 +97,8 @@ const CreateCommunity = () => {
       const response = await axios.post(baseURL, form_data, {
         headers: {
           "Content-type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
       if (response.data.success) {
         setLoading(false);
@@ -111,8 +111,8 @@ const CreateCommunity = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
         return;
       }
@@ -163,9 +163,7 @@ const CreateCommunity = () => {
                 required
               />
               {errors.Community_name && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.Community_name}
-                </p>
+                <p className="text-red-500 text-xs italic">{errors.Community_name}</p>
               )}
               <span className="text-xs font-semibold">
                 Number of characters: {Community_name.length}/300
@@ -174,10 +172,7 @@ const CreateCommunity = () => {
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="subtitle"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="subtitle" className="block mb-2 text-sm font-medium text-gray-900">
               Subtitle
             </label>
             <input
@@ -198,10 +193,7 @@ const CreateCommunity = () => {
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="description"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900">
               Description
             </label>
             <textarea
@@ -221,10 +213,7 @@ const CreateCommunity = () => {
             </span>
           </div>
           <div className="mb-6">
-            <label
-              htmlFor="location"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="location" className="block mb-2 text-sm font-medium text-gray-900">
               Location
             </label>
             <input
@@ -245,10 +234,7 @@ const CreateCommunity = () => {
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="github"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="github" className="block mb-2 text-sm font-medium text-gray-900">
               Github Link (if any)
             </label>
             <input
@@ -262,16 +248,11 @@ const CreateCommunity = () => {
               }}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
             />
-            <span className="text-xs font-semibold">
-              Number of characters: {github.length}/200
-            </span>
+            <span className="text-xs font-semibold">Number of characters: {github.length}/200</span>
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="website"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="website" className="block mb-2 text-sm font-medium text-gray-900">
               Website Link
             </label>
             <input
@@ -292,10 +273,7 @@ const CreateCommunity = () => {
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
               Email (of the Community)
             </label>
             <input
@@ -308,9 +286,7 @@ const CreateCommunity = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
               required
             />
-            <span className="text-xs font-semibold">
-              Number of characters: {email.length}/100
-            </span>
+            <span className="text-xs font-semibold">Number of characters: {email.length}/100</span>
           </div>
 
           <div className="flex items-start mb-6 mt-3">
@@ -324,15 +300,9 @@ const CreateCommunity = () => {
                 required
               />
             </div>
-            <label
-              htmlFor="remember"
-              className="ml-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="remember" className="ml-2 text-sm font-medium text-gray-900">
               I agree with the{" "}
-              <a
-                href="/terms-and-conditions"
-                className="text-green-600 hover:underline"
-              >
+              <a href="/terms-and-conditions" className="text-green-600 hover:underline">
                 terms and conditions
               </a>
               .

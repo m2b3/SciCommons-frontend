@@ -39,14 +39,14 @@ const Verify = () => {
     isValidEmail(email);
     try {
       const response = await axios.post(`/api/user/verifyrequest/`, {
-        email: email,
+        email: email
       });
       ToastMaker("Otp sent to email!!", 3000, {
         valign: "top",
         styles: {
           backgroundColor: "green",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setDisabled(true);
     } catch (error) {
@@ -54,8 +54,8 @@ const Verify = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       console.log(error);
     }
@@ -70,8 +70,8 @@ const Verify = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -81,8 +81,8 @@ const Verify = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -90,14 +90,14 @@ const Verify = () => {
     try {
       const response = await axios.post(`/api/user/verify_email/`, {
         email: email,
-        otp: otp,
+        otp: otp
       });
       ToastMaker("Email Verified Successfully!!!", 3000, {
         valign: "top",
         styles: {
           backgroundColor: "green",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       navigate("/login");
     } catch (error) {
@@ -105,8 +105,8 @@ const Verify = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       console.log(error);
     }
@@ -135,14 +135,10 @@ const Verify = () => {
       </div>
       <br />
       <div className="w-full md:w-1/2 mx-auto bg-white rounded-lg shadow-xl p-4">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">
-          Verify your account
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-800 text-center">Verify your account</h1>
         <div className="w-full mx-auto">
           <div className="flex items-center text-gray-700 border rounded-md m-2">
-            <div className="px-3 py-2.5 rounded-l-md bg-gray-50 border-r">
-              @
-            </div>
+            <div className="px-3 py-2.5 rounded-l-md bg-gray-50 border-r">@</div>
             <input
               style={{ border: "2px solid #cbd5e0" }}
               type="email"

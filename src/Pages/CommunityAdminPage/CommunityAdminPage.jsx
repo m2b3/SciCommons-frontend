@@ -24,8 +24,8 @@ const CommunityAdminPage = () => {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
         const res = await axios.get(`/api/community/mycommunity/`, config);
         await loadData(res.data.success);
@@ -51,9 +51,8 @@ const CommunityAdminPage = () => {
           <div className="w-full md:w-4/5 flex mx-auto mt-4">
             <button
               style={{
-                borderBottom:
-                  currentState === 1 ? "2px solid #68D391" : "2px solid #000",
-                cursor: "pointer",
+                borderBottom: currentState === 1 ? "2px solid #68D391" : "2px solid #000",
+                cursor: "pointer"
               }}
               className={
                 currentState === 1
@@ -71,9 +70,8 @@ const CommunityAdminPage = () => {
                   : "mb-2 text-sm md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2"
               }
               style={{
-                borderBottom:
-                  currentState === 2 ? "2px solid #68D391" : "2px solid #000",
-                cursor: "pointer",
+                borderBottom: currentState === 2 ? "2px solid #68D391" : "2px solid #000",
+                cursor: "pointer"
               }}
               onClick={() => onclickFuntion(2)}
             >
@@ -86,9 +84,8 @@ const CommunityAdminPage = () => {
                   : "mb-2 text-sm md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200 py-2"
               }
               style={{
-                borderBottom:
-                  currentState === 3 ? "2px solid #68D391" : "2px solid #000",
-                cursor: "pointer",
+                borderBottom: currentState === 3 ? "2px solid #68D391" : "2px solid #000",
+                cursor: "pointer"
               }}
               onClick={() => onclickFuntion(3)}
             >
@@ -101,9 +98,8 @@ const CommunityAdminPage = () => {
                   : "mb-2 text-sm md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200 py-2"
               }
               style={{
-                borderBottom:
-                  currentState === 4 ? "2px solid #68D391" : "2px solid #000",
-                cursor: "pointer",
+                borderBottom: currentState === 4 ? "2px solid #68D391" : "2px solid #000",
+                cursor: "pointer"
               }}
               onClick={() => onclickFuntion(4)}
             >
@@ -111,40 +107,16 @@ const CommunityAdminPage = () => {
             </button>
           </div>
           <div>
-            <div
-              className={
-                currentState === 1
-                  ? " p-3 w-full md:w-4/5 mx-auto"
-                  : " p-3 hidden"
-              }
-            >
+            <div className={currentState === 1 ? " p-3 w-full md:w-4/5 mx-auto" : " p-3 hidden"}>
               <CommunityEditPage />
             </div>
-            <div
-              className={
-                currentState === 2
-                  ? " p-3 w-full md:w-4/5 mx-auto"
-                  : " p-3 hidden"
-              }
-            >
+            <div className={currentState === 2 ? " p-3 w-full md:w-4/5 mx-auto" : " p-3 hidden"}>
               <AdminArticlePage community={community.Community_name} />
             </div>
-            <div
-              className={
-                currentState === 3
-                  ? " p-3 w-full md:w-4/5 mx-auto"
-                  : " p-3 hidden"
-              }
-            >
+            <div className={currentState === 3 ? " p-3 w-full md:w-4/5 mx-auto" : " p-3 hidden"}>
               <MembersTable community={community?.Community_name} />
             </div>
-            <div
-              className={
-                currentState === 4
-                  ? " p-3 w-full md:w-4/5 mx-auto"
-                  : " p-3 hidden"
-              }
-            >
+            <div className={currentState === 4 ? " p-3 w-full md:w-4/5 mx-auto" : " p-3 hidden"}>
               <JoinRequests community={community?.Community_name} />
             </div>
           </div>

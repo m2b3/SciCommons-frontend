@@ -37,13 +37,7 @@ const ForgotPassword = () => {
     const hasDigit = digitRegex.test(password);
     const isLengthValid = password.length >= 8;
 
-    return (
-      hasSpecialChar &&
-      hasUppercase &&
-      hasLowercase &&
-      hasDigit &&
-      isLengthValid
-    );
+    return hasSpecialChar && hasUppercase && hasLowercase && hasDigit && isLengthValid;
   };
 
   const validations = (data) => {
@@ -52,8 +46,8 @@ const ForgotPassword = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       return false;
     }
@@ -66,8 +60,8 @@ const ForgotPassword = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         }
       );
       return false;
@@ -81,8 +75,8 @@ const ForgotPassword = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         }
       );
       return false;
@@ -92,8 +86,8 @@ const ForgotPassword = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       return false;
     }
@@ -102,8 +96,8 @@ const ForgotPassword = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       return false;
     }
@@ -112,8 +106,8 @@ const ForgotPassword = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       return false;
     }
@@ -125,14 +119,14 @@ const ForgotPassword = () => {
     setLaoding(true);
     try {
       const response = await axios.post(`/api/user/forgot_password/`, {
-        email: email,
+        email: email
       });
       ToastMaker("Otp sent to email!!", 3000, {
         valign: "top",
         styles: {
           backgroundColor: "green",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setDisabled(true);
     } catch (error) {
@@ -140,8 +134,8 @@ const ForgotPassword = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       console.log(error);
     }
@@ -161,15 +155,15 @@ const ForgotPassword = () => {
         email: email,
         otp: otp,
         password: password1,
-        password2: password2,
+        password2: password2
       });
 
       ToastMaker("Password Changed Successfully!!!", 3000, {
         valign: "top",
         styles: {
           backgroundColor: "green",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       navigate("/login");
     } catch (error) {
@@ -177,8 +171,8 @@ const ForgotPassword = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       console.log(error);
     }
@@ -206,14 +200,10 @@ const ForgotPassword = () => {
           </div>
           <br />
           <div className="w-full md:w-1/2 flex flex-col p-3 shadow-2xl rounded-lg justify-center bg-white">
-            <h1 className="text-3xl font-bold text-gray-600 m-5 text-center">
-              Forgot Password
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-600 m-5 text-center">Forgot Password</h1>
             <div className="w-full mx-auto">
               <div className="flex items-center text-gray-700 border rounded-md m-2">
-                <div className="px-3 py-2.5 rounded-l-md bg-gray-50 border-r">
-                  @
-                </div>
+                <div className="px-3 py-2.5 rounded-l-md bg-gray-50 border-r">@</div>
                 <input
                   style={{ border: "2px solid #cbd5e0" }}
                   type="email"
@@ -237,9 +227,7 @@ const ForgotPassword = () => {
               </div>
             </div>
             <div className="w-full mx-auto m-4">
-              <h1 className="text-3xl font-bold text-gray-600 m-5 text-center">
-                Reset Password
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-600 m-5 text-center">Reset Password</h1>
               <div className="relative max-w-screen m-2">
                 <input
                   style={{ border: "2px solid #cbd5e0" }}
@@ -369,13 +357,10 @@ const ForgotPassword = () => {
                 />
               </div>
               <div className="relative max-w-screen mt-2">
-                <span className="text-green-600 text-sm font-bold">
-                  Note :{" "}
-                </span>
+                <span className="text-green-600 text-sm font-bold">Note : </span>
                 <span className="text-xs text-gray-500 font-semibold">
-                  Passwords must be at least 8 characters long, contain at least
-                  one uppercase, one lowercase, one digit and one special
-                  character
+                  Passwords must be at least 8 characters long, contain at least one uppercase, one
+                  lowercase, one digit and one special character
                 </span>
               </div>
               <div className="m-2">

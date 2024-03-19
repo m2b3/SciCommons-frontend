@@ -16,7 +16,7 @@ const Notifications = () => {
     setLoading(true);
     try {
       const response = await axios.get(`/api/notification/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = response.data.success;
       setNotifications(data.results);
@@ -44,7 +44,7 @@ const Notifications = () => {
       const response = await axios.get(
         `/api/notification/?limit=20&offset=${notifications.length}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
       const data = response.data.success.results;
@@ -53,8 +53,8 @@ const Notifications = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
       await loadMore(data);
@@ -78,9 +78,7 @@ const Notifications = () => {
   return (
     <div>
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-4xl font-bold mt-4 text-center text-green-500">
-          Notifications
-        </h1>
+        <h1 className="text-4xl font-bold mt-4 text-center text-green-500">Notifications</h1>
       </div>
       <div className="container mx-auto mt-2 w-full md:w-1/2">
         {loading && <Loader />}
@@ -88,10 +86,7 @@ const Notifications = () => {
           <>
             <div className="flex items-center justify-center">
               <div className="w-1/3 h-1/3 block">
-                <img
-                  src={process.env.PUBLIC_URL + "/nonotifications.jpg"}
-                  alt="No notifications"
-                />
+                <img src={process.env.PUBLIC_URL + "/nonotifications.jpg"} alt="No notifications" />
               </div>
             </div>
             <h1 className="text-2xl font-bold mb-4 mt-4 text-center text-green-500">

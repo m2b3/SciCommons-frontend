@@ -24,8 +24,8 @@ const FavouritePage = () => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-      },
+        Authorization: `Bearer ${token}` // Include the token in the Authorization header
+      }
     };
     try {
       const response = await axios.get(`/api/article/favourites/`, config);
@@ -47,10 +47,7 @@ const FavouritePage = () => {
     const newArticles = [...articles].filter((article) => {
       return (
         article.article_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.authors
-          .join(" ")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+        article.authors.join(" ").toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.keywords.toLowerCase().includes(searchTerm.toLowerCase())
       );
     });
@@ -68,9 +65,7 @@ const FavouritePage = () => {
   const sortFavourite = (e) => {
     e.preventDefault();
     setLoading(true);
-    const sortedByFavourite = [...articles].sort(
-      (a, b) => b.favourites - a.favourites
-    );
+    const sortedByFavourite = [...articles].sort((a, b) => b.favourites - a.favourites);
     setSortedArticles(sortedByFavourite);
 
     setLoading(false);
@@ -98,9 +93,7 @@ const FavouritePage = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-start w-full bg-gray-50 min-h-screen">
-        <h1 className="text-3xl font-bold text-gray-700 mt-2">
-          Favourite Articles
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-700 mt-2">Favourite Articles</h1>
         <form className="w-5/6 px-4 mt-2 md:w-2/3" onSubmit={handleSearch}>
           <div className="relative">
             <div>

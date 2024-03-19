@@ -14,8 +14,8 @@ const SubmitArticle = () => {
   const [currentState, setCurrentState] = useState(1);
   const [authors, setAuthors] = useState([
     {
-      username: "",
-    },
+      username: ""
+    }
   ]);
   const [keywords, setKeywords] = useState("");
   const [Abstract, setAbstract] = useState("");
@@ -27,14 +27,14 @@ const SubmitArticle = () => {
   const [unregistered_authors, setUnRegistredAuthors] = useState([
     {
       fullName: "",
-      email: "",
-    },
+      email: ""
+    }
   ]);
 
   const [communities, setCommunities] = useState([
     {
-      name: "",
-    },
+      name: ""
+    }
   ]);
 
   const [status, setStatus] = useState("public");
@@ -50,8 +50,8 @@ const SubmitArticle = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       return false;
     }
@@ -71,10 +71,7 @@ const SubmitArticle = () => {
     var communityIds = [];
     var unregistered = [];
     for (let i = 0; i < unregistered_authors.length; i++) {
-      if (
-        unregistered_authors[i].fullName === "" ||
-        unregistered_authors[i].email === ""
-      ) {
+      if (unregistered_authors[i].fullName === "" || unregistered_authors[i].email === "") {
         continue;
       } else {
         if (
@@ -85,8 +82,8 @@ const SubmitArticle = () => {
             valign: "top",
             styles: {
               backgroundColor: "red",
-              fontSize: "20px",
-            },
+              fontSize: "20px"
+            }
           });
           setLoading(false);
           return;
@@ -96,8 +93,8 @@ const SubmitArticle = () => {
             valign: "top",
             styles: {
               backgroundColor: "red",
-              fontSize: "20px",
-            },
+              fontSize: "20px"
+            }
           });
           setLoading(false);
           return;
@@ -107,8 +104,8 @@ const SubmitArticle = () => {
             valign: "top",
             styles: {
               backgroundColor: "red",
-              fontSize: "20px",
-            },
+              fontSize: "20px"
+            }
           });
           setLoading(false);
           return;
@@ -121,8 +118,8 @@ const SubmitArticle = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -132,8 +129,8 @@ const SubmitArticle = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -143,8 +140,8 @@ const SubmitArticle = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -154,8 +151,8 @@ const SubmitArticle = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -165,24 +162,20 @@ const SubmitArticle = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
     }
     if (validateKeywords(form_data.get("keywords")) === false) {
-      ToastMaker(
-        "Please enter the correct keywords following the format specified",
-        3500,
-        {
-          valign: "top",
-          styles: {
-            backgroundColor: "red",
-            fontSize: "20px",
-          },
+      ToastMaker("Please enter the correct keywords following the format specified", 3500, {
+        valign: "top",
+        styles: {
+          backgroundColor: "red",
+          fontSize: "20px"
         }
-      );
+      });
       setLoading(false);
       return;
     }
@@ -193,12 +186,12 @@ const SubmitArticle = () => {
         try {
           const response = await axios.get(`/api/user/`, {
             params: {
-              search: authors[i].username,
+              search: authors[i].username
             },
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           });
           if (
             response.data.success.results.length === 0 ||
@@ -209,8 +202,8 @@ const SubmitArticle = () => {
               valign: "top",
               styles: {
                 backgroundColor: "red",
-                fontSize: "20px",
-              },
+                fontSize: "20px"
+              }
             });
             return;
           } else {
@@ -222,8 +215,8 @@ const SubmitArticle = () => {
             valign: "top",
             styles: {
               backgroundColor: "red",
-              fontSize: "20px",
-            },
+              fontSize: "20px"
+            }
           });
           setLoading(false);
           return;
@@ -237,20 +230,14 @@ const SubmitArticle = () => {
     form_data.delete("unregistered_authors");
 
     form_data.append("authors[0]", JSON.stringify(0));
-    form_data.append(
-      "unregistered_authors[0]",
-      JSON.stringify({ fullName: "", email: "" })
-    );
+    form_data.append("unregistered_authors[0]", JSON.stringify({ fullName: "", email: "" }));
 
     for (let i = 0; i < authorIds.length; i++) {
       form_data.append(`authors[${i + 1}]`, JSON.stringify(authorIds[i]));
     }
 
     for (let i = 0; i < unregistered.length; i++) {
-      form_data.append(
-        `unregistered_authors[${i + 1}]`,
-        JSON.stringify(unregistered[i])
-      );
+      form_data.append(`unregistered_authors[${i + 1}]`, JSON.stringify(unregistered[i]));
     }
 
     form_data.append("communities[0]", JSON.stringify(0));
@@ -260,16 +247,16 @@ const SubmitArticle = () => {
       const response = await axios.post(baseURL, form_data, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
     } catch (error) {
       ToastMaker(error.response.data.error, 3500, {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       console.log(error);
       setLoading(false);
@@ -284,8 +271,8 @@ const SubmitArticle = () => {
     setAuthors([
       ...authors,
       {
-        username: "",
-      },
+        username: ""
+      }
     ]);
   };
 
@@ -294,8 +281,8 @@ const SubmitArticle = () => {
       ...unregistered_authors,
       {
         fullName: "",
-        email: "",
-      },
+        email: ""
+      }
     ]);
   };
 
@@ -350,9 +337,8 @@ const SubmitArticle = () => {
                 : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200 py-2"
             }
             style={{
-              borderBottom:
-                currentState === 1 ? "2px solid #68D391" : "2px solid #000",
-              cursor: "pointer",
+              borderBottom: currentState === 1 ? "2px solid #68D391" : "2px solid #000",
+              cursor: "pointer"
             }}
             onClick={() => onclickFuntion(1)}
           >
@@ -365,9 +351,8 @@ const SubmitArticle = () => {
                 : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2"
             }
             style={{
-              borderBottom:
-                currentState === 2 ? "2px solid #68D391" : "2px solid #000",
-              cursor: "pointer",
+              borderBottom: currentState === 2 ? "2px solid #68D391" : "2px solid #000",
+              cursor: "pointer"
             }}
             onClick={() => onclickFuntion(2)}
           >
@@ -465,10 +450,7 @@ const SubmitArticle = () => {
                   </label>
                   {unregistered_authors.map((author, index) => {
                     return (
-                      <div
-                        className="grid gap-2 md:grid-cols-2 m-2"
-                        key={index}
-                      >
+                      <div className="grid gap-2 md:grid-cols-2 m-2" key={index}>
                         <div className="flex flex-row">
                           <input
                             style={{ border: "2px solid #cbd5e0" }}
@@ -503,10 +485,7 @@ const SubmitArticle = () => {
               </div>
 
               <div className="mb-6">
-                <label
-                  htmlFor="keywords"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
+                <label htmlFor="keywords" className="block mb-2 text-sm font-medium text-gray-900">
                   Keywords(separated with {'","'})
                 </label>
                 <input
@@ -524,12 +503,8 @@ const SubmitArticle = () => {
                 </span>
               </div>
               <div className="mb-6">
-                <label
-                  htmlFor="link"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  URL to article (Add the Url only if it is already published,
-                  else leave it empty)
+                <label htmlFor="link" className="block mb-2 text-sm font-medium text-gray-900">
+                  URL to article (Add the Url only if it is already published, else leave it empty)
                 </label>
                 <input
                   style={{ border: "2px solid #cbd5e0" }}
@@ -546,10 +521,7 @@ const SubmitArticle = () => {
               </div>
 
               <div className="mb-6">
-                <label
-                  htmlFor="video"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
+                <label htmlFor="video" className="block mb-2 text-sm font-medium text-gray-900">
                   Video Link (if any)
                 </label>
                 <input
@@ -567,10 +539,7 @@ const SubmitArticle = () => {
               </div>
 
               <div className="mb-6">
-                <label
-                  htmlFor="Code"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
+                <label htmlFor="Code" className="block mb-2 text-sm font-medium text-gray-900">
                   Code Link (if any)
                 </label>
                 <input
@@ -587,10 +556,7 @@ const SubmitArticle = () => {
                 </span>
               </div>
               <div className="mb-6">
-                <label
-                  htmlFor="file"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
+                <label htmlFor="file" className="block mb-2 text-sm font-medium text-gray-900">
                   File
                 </label>
                 <input
@@ -603,10 +569,7 @@ const SubmitArticle = () => {
                 />
               </div>
               <div className="mb-6">
-                <label
-                  htmlFor="Abstract"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
+                <label htmlFor="Abstract" className="block mb-2 text-sm font-medium text-gray-900">
                   Abstract
                 </label>
                 <textarea
@@ -653,15 +616,9 @@ const SubmitArticle = () => {
                     required
                   />
                 </div>
-                <label
-                  htmlFor="remember"
-                  className="ml-2 text-sm font-medium text-gray-900"
-                >
+                <label htmlFor="remember" className="ml-2 text-sm font-medium text-gray-900">
                   I agree with the{" "}
-                  <a
-                    href="/terms-and-conditions"
-                    className="text-green-600 hover:underline"
-                  >
+                  <a href="/terms-and-conditions" className="text-green-600 hover:underline">
                     terms and conditions
                   </a>
                   .

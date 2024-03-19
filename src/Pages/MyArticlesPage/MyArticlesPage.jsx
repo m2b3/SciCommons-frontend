@@ -4,7 +4,6 @@ import Loader from "../../Components/Loader/Loader";
 import { useGlobalContext } from "../../Context/StateContext";
 import MyArticleCard from "./MyArticleCard";
 
-
 const MyArticlesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [articles, setArticles] = useState([]);
@@ -26,8 +25,8 @@ const MyArticlesPage = () => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const response = await axios.get(`/api/user/articles/`, config);
@@ -49,10 +48,7 @@ const MyArticlesPage = () => {
     const newArticles = [...articles].filter((article) => {
       return (
         article.article_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.authors
-          .join(" ")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+        article.authors.join(" ").toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.keywords.toLowerCase().includes(searchTerm.toLowerCase())
       );
     });
@@ -70,9 +66,7 @@ const MyArticlesPage = () => {
   const sortFavourite = (e) => {
     e.preventDefault();
     setLoading(true);
-    const sortedByFavourite = [...articles].sort(
-      (a, b) => b.favourites - a.favourites
-    );
+    const sortedByFavourite = [...articles].sort((a, b) => b.favourites - a.favourites);
     setSortedArticles(sortedByFavourite);
 
     setLoading(false);

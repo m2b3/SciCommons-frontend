@@ -1,7 +1,7 @@
 export const navbarNavigationRoutes = [
   { title: "Submit Article", path: "/submitarticle" },
   { title: "Communities", path: "/communities" },
-  { title: "Articles", path: "/articles" },
+  { title: "Articles", path: "/articles" }
 ];
 
 export const closeIcon = () => (

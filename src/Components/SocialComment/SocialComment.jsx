@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  AiOutlineLike,
-  AiFillLike,
-  AiOutlineEdit,
-} from "react-icons/ai";
+import { AiOutlineLike, AiFillLike, AiOutlineEdit } from "react-icons/ai";
 import { BsReplyAll } from "react-icons/bs";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -20,9 +16,7 @@ const SocialComment = ({ comment, post, setPost }) => {
   const { token, user } = useGlobalContext();
   const [value, setValue] = useState(comment.comment);
   const [liked, setLiked] = useState(comment.commentliked);
-  const [likes, setLikes] = useState(
-    comment.commentlikes === null ? 0 : comment.commentlikes
-  );
+  const [likes, setLikes] = useState(comment.commentlikes === null ? 0 : comment.commentlikes);
   const [loading, setLoading] = useState(false);
   const [showReply, setShowReply] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -49,30 +43,22 @@ const SocialComment = ({ comment, post, setPost }) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     if (liked) {
       try {
-        const res = await axios.post(
-          `/api/feedcomment/unlike/`,
-          { comment: comment.id },
-          config
-        );
+        const res = await axios.post(`/api/feedcomment/unlike/`, { comment: comment.id }, config);
         setLiked(!liked);
-        setLikes(likes-1);
+        setLikes(likes - 1);
       } catch (err) {
         console.log(err);
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/feedcomment/like/`,
-          { comment: comment.id },
-          config
-        );
+        const res = await axios.post(`/api/feedcomment/like/`, { comment: comment.id }, config);
         setLiked(!liked);
-        setLikes(liked+1);
+        setLikes(liked + 1);
       } catch (err) {
         console.log(err);
       }
@@ -103,23 +89,23 @@ const SocialComment = ({ comment, post, setPost }) => {
     if (token === null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         params: {
           comment: comment.id,
-          post: comment.post,
-        },
+          post: comment.post
+        }
       };
     } else {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`
         },
         params: {
           comment: comment.id,
-          post: comment.post,
-        },
+          post: comment.post
+        }
       };
     }
     try {
@@ -191,19 +177,13 @@ const SocialComment = ({ comment, post, setPost }) => {
   };
 
   const styleLinksWithColor = (htmlContent) => {
-    const coloredLinks = htmlContent.replace(
-      /<a /g,
-      '<a style="color: blue;" '
-    );
+    const coloredLinks = htmlContent.replace(/<a /g, '<a style="color: blue;" ');
     return coloredLinks;
   };
 
   return (
     <>
-      <div
-        key={comment.id}
-        className="rounded-lg pl-2 mt-2 bg-white border-l-2 border-green-600"
-      >
+      <div key={comment.id} className="rounded-lg pl-2 mt-2 bg-white border-l-2 border-green-600">
         <div className="flex mb-2">
           <div className="flex flex-row items-center">
             {comment.commentavatar.includes("None") ? (
@@ -223,9 +203,7 @@ const SocialComment = ({ comment, post, setPost }) => {
               >
                 {comment.username}
               </p>
-              <span className="text-xs text-slate-400">
-                {findTime(comment.created_at)}
-              </span>
+              <span className="text-xs text-slate-400">{findTime(comment.created_at)}</span>
             </div>
           </div>
         </div>
@@ -238,16 +216,8 @@ const SocialComment = ({ comment, post, setPost }) => {
         </div>
         <div className="w-full ml-10 flex flex-row items-center">
           <div className="flex flex-row items-center mr-3">
-            <button
-              style={{ cursor: "pointer" }}
-              onClick={handleLike}
-              className="flex"
-            >
-              {liked ? (
-                <AiFillLike className="text-md" />
-              ) : (
-                <AiOutlineLike className="text-md" />
-              )}
+            <button style={{ cursor: "pointer" }} onClick={handleLike} className="flex">
+              {liked ? <AiFillLike className="text-md" /> : <AiOutlineLike className="text-md" />}
             </button>
             <span className="text-sm">{formatCount(likes)}</span>
           </div>
@@ -290,29 +260,16 @@ const SocialComment = ({ comment, post, setPost }) => {
           />
         )}
         {showEdit && (
-          <EditModal
-            comment={editData}
-            setShowEdit={setShowEdit}
-            changeComment={changeComment}
-          />
+          <EditModal comment={editData} setShowEdit={setShowEdit} changeComment={changeComment} />
         )}
         <div className="ml-1">
           {repliesData.length > 0 &&
             repliesData.map((reply) => (
-              <SocialComment
-                key={reply.id}
-                comment={reply}
-                post={post}
-                setPost={post}
-              />
+              <SocialComment key={reply.id} comment={reply} post={post} setPost={post} />
             ))}
         </div>
         {comment.replies > 0 && (
-          <button
-            style={{ cursor: "pointer" }}
-            onClick={handleReply}
-            className="ml-5 text-xs mt-4"
-          >
+          <button style={{ cursor: "pointer" }} onClick={handleReply} className="ml-5 text-xs mt-4">
             {loading ? (
               <span className="text-green-600">Loading...</span>
             ) : (

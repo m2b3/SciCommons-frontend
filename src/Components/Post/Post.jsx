@@ -6,7 +6,7 @@ import {
   IoChatbubbleOutline,
   IoPaperPlaneOutline,
   IoBookmarkOutline,
-  IoBookmark,
+  IoBookmark
 } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
@@ -34,16 +34,12 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     if (liked) {
       try {
-        const res = await axios.post(
-          `/api/feed/unlike/`,
-          { post: post.id },
-          config
-        );
+        const res = await axios.post(`/api/feed/unlike/`, { post: post.id }, config);
         setLiked(!liked);
         setLikes(likes - 1);
       } catch (err) {
@@ -51,11 +47,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/feed/like/`,
-          { post: post.id },
-          config
-        );
+        const res = await axios.post(`/api/feed/like/`, { post: post.id }, config);
         setLiked(!liked);
         setLikes(likes + 1);
       } catch (err) {
@@ -77,16 +69,12 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     if (bookmark) {
       try {
-        const res = await axios.post(
-          `/api/feed/unbookmark/`,
-          { post: post.id },
-          config
-        );
+        const res = await axios.post(`/api/feed/unbookmark/`, { post: post.id }, config);
         setBookmark((prevBookmark) => !prevBookmark);
         setBookmarks((prevBookmarks) => prevBookmarks - 1);
       } catch (err) {
@@ -94,11 +82,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/feed/bookmark/`,
-          { post: post.id },
-          config
-        );
+        const res = await axios.post(`/api/feed/bookmark/`, { post: post.id }, config);
         setBookmark(!bookmark);
         setBookmarks(bookmarks + 1);
       } catch (err) {
@@ -128,8 +112,8 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
       valign: "top",
       styles: {
         backgroundColor: "green",
-        fontSize: "20px",
-      },
+        fontSize: "20px"
+      }
     });
     e.stopPropagation();
     navigator.clipboard.writeText(`https://scicommons.org/post/${post.id}`);
@@ -163,10 +147,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
   };
 
   const styleLinksWithColor = (htmlContent) => {
-    const coloredLinks = htmlContent.replace(
-      /<a /g,
-      '<a style="color: blue;" '
-    );
+    const coloredLinks = htmlContent.replace(/<a /g, '<a style="color: blue;" ');
     return coloredLinks;
   };
 
@@ -178,23 +159,13 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
             {post.avatar.includes("None") ? (
               <SlUser className="w-6 h-6 mr-2" />
             ) : (
-              <img
-                src={post.avatar}
-                alt={post.username}
-                className="w-10 h-10 rounded-full mr-4"
-              />
+              <img src={post.avatar} alt={post.username} className="w-10 h-10 rounded-full mr-4" />
             )}
             <div className="flex flex-col">
-              <p
-                className="font-bold"
-                style={{ cursor: "pointer" }}
-                onClick={handleProfile}
-              >
+              <p className="font-bold" style={{ cursor: "pointer" }} onClick={handleProfile}>
                 {post.username}
               </p>
-              <span className="text-sm text-slate-400">
-                {findTime(post.created_at)}
-              </span>
+              <span className="text-sm text-slate-400">{findTime(post.created_at)}</span>
             </div>
           </div>
           <div className="flex items-center">
@@ -225,11 +196,7 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
           <div className="w-full">
             <div className="flex flex-row justify-between">
               {/* Like Button */}
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={handleLike}
-                className="flex"
-              >
+              <button style={{ cursor: "pointer" }} onClick={handleLike} className="flex">
                 {liked ? (
                   <IoHeart className="text-xl text-red-500" />
                 ) : (
@@ -238,29 +205,17 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
                 <span className="text-sm md:ml-2">{formatCount(likes)}</span>
               </button>
               {/* Comment Button */}
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={handleComments}
-                className="flex"
-              >
+              <button style={{ cursor: "pointer" }} onClick={handleComments} className="flex">
                 <IoChatbubbleOutline className="text-xl" />
-                <span className="text-sm md:ml-2">
-                  {formatCount(post.comments_count)}
-                </span>
+                <span className="text-sm md:ml-2">{formatCount(post.comments_count)}</span>
               </button>
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={handleBookmark}
-                className="flex"
-              >
+              <button style={{ cursor: "pointer" }} onClick={handleBookmark} className="flex">
                 {bookmark ? (
                   <IoBookmark className="text-xl text-gray-800" />
                 ) : (
                   <IoBookmarkOutline className="text-xl" />
                 )}
-                <span className="text-sm md:ml-2">
-                  {formatCount(bookmarks)}
-                </span>
+                <span className="text-sm md:ml-2">{formatCount(bookmarks)}</span>
               </button>
               <button
                 style={{ cursor: "pointer" }}
@@ -277,6 +232,5 @@ const Post = ({ post, onDeletePost, handleEditChange }) => {
     </>
   );
 };
-
 
 export default Post;

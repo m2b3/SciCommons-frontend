@@ -5,9 +5,8 @@ import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 import { useNavigate } from "react-router-dom";
-import { MdSubscriptions } from 'react-icons/md';
-import { FaBook, FaPencilAlt, FaUsers } from 'react-icons/fa';
-
+import { MdSubscriptions } from "react-icons/md";
+import { FaBook, FaPencilAlt, FaUsers } from "react-icons/fa";
 
 const Communities = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,15 +27,12 @@ const Communities = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     try {
-      const response = await axios.get(
-        `/api/community?search=${searchTerm}`,
-        config
-      );
+      const response = await axios.get(`/api/community?search=${searchTerm}`, config);
       setCommunities(response.data.success.results);
     } catch (error) {
       console.log(error);
@@ -61,8 +57,8 @@ const Communities = () => {
       if (token !== null) {
         config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
       }
       const response = await axios.get(
@@ -75,8 +71,8 @@ const Communities = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
       await loadMoreData(data);
@@ -88,14 +84,9 @@ const Communities = () => {
 
   return (
     <>
-      <div
-        className="flex flex-col items-center justify-center bg-gray-50 w-full"
-      >
+      <div className="flex flex-col items-center justify-center bg-gray-50 w-full">
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Communities</h1>
-        <form
-          className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row"
-          onSubmit={handleSearch}
-        >
+        <form className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row" onSubmit={handleSearch}>
           <div className="relative w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -135,39 +126,53 @@ const Communities = () => {
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-12 w-full">
                 {communities.length !== 0 ? (
                   communities.map((item, index) => (
-                    <div key={item.id} >
-                      <div key={item.id} className="p-4 bg-white shadow-md rounded-lg hover:shadow-xl" style={{cursor:"pointer"}} onClick={()=> {navigate(`/community/${item.Community_name}`)}}>
+                    <div key={item.id}>
+                      <div
+                        key={item.id}
+                        className="p-4 bg-white shadow-md rounded-lg hover:shadow-xl"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          navigate(`/community/${item.Community_name}`);
+                        }}
+                      >
                         <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 className="text-xl text-green-600 font-bold mb-4">{item.Community_name.replace(/_/g, " ")}</h2>
-                            </div>
-                            <div className="flex items-center mb-2">
-                                <FaUsers className="w-5 h-5 mr-2 text-gray-500" />
-                                <span className="text-gray-600">{item.membercount}</span>
-                            </div>
+                          <div>
+                            <h2 className="text-xl text-green-600 font-bold mb-4">
+                              {item.Community_name.replace(/_/g, " ")}
+                            </h2>
+                          </div>
+                          <div className="flex items-center mb-2">
+                            <FaUsers className="w-5 h-5 mr-2 text-gray-500" />
+                            <span className="text-gray-600">{item.membercount}</span>
+                          </div>
                         </div>
                         <div className="flex items-center justify-between mb-2">
-                            <div>
-                                <div className="flex items-center mb-2">
-                                    <FaPencilAlt className="w-5 h-5 mr-2 text-gray-500" />
-                                    <span className="text-gray-600">Evaluated : {item.evaluatedcount}</span>
-                                </div>
-                                <div className="flex items-center mb-2">
-                                    <FaBook className="w-5 h-5 mr-2 text-gray-500" />
-                                    <span className="text-gray-600">Published : {item.publishedcount}</span>
-                                </div>
+                          <div>
+                            <div className="flex items-center mb-2">
+                              <FaPencilAlt className="w-5 h-5 mr-2 text-gray-500" />
+                              <span className="text-gray-600">
+                                Evaluated : {item.evaluatedcount}
+                              </span>
                             </div>
-                            <div className="flex">
-                                <MdSubscriptions className="text-xl text-green-700 mr-3" /> <span className="text-md text-left text-gray-500">{item?.subscribed}</span>
+                            <div className="flex items-center mb-2">
+                              <FaBook className="w-5 h-5 mr-2 text-gray-500" />
+                              <span className="text-gray-600">
+                                Published : {item.publishedcount}
+                              </span>
                             </div>
+                          </div>
+                          <div className="flex">
+                            <MdSubscriptions className="text-xl text-green-700 mr-3" />{" "}
+                            <span className="text-md text-left text-gray-500">
+                              {item?.subscribed}
+                            </span>
+                          </div>
                         </div>
-                    </div>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <h1 className="text-2xl font-bold text-gray-500">
-                    No Communities Found
-                  </h1>
+                  <h1 className="text-2xl font-bold text-gray-500">No Communities Found</h1>
                 )}
               </div>
               {communities.length !== 0 && (

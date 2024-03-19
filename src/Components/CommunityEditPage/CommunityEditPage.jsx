@@ -42,8 +42,8 @@ const CommunityEditPage = () => {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
         const res = await axios.get(`/api/community/mycommunity`, config);
 
@@ -67,8 +67,8 @@ const CommunityEditPage = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -78,8 +78,8 @@ const CommunityEditPage = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -89,8 +89,8 @@ const CommunityEditPage = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -100,8 +100,8 @@ const CommunityEditPage = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -111,8 +111,8 @@ const CommunityEditPage = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -122,24 +122,20 @@ const CommunityEditPage = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.put(
-        `/api/community/${community.Community_name}/`,
-        form_data,
-        {
-          headers: {
-            "Content-type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.put(`/api/community/${community.Community_name}/`, form_data, {
+        headers: {
+          "Content-type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
       if (response.data.success) {
         setLoading(false);
         setShowModal(false);
@@ -148,8 +144,8 @@ const CommunityEditPage = () => {
           valign: "top",
           styles: {
             backgroundColor: "green",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
     } catch (error) {
@@ -159,8 +155,8 @@ const CommunityEditPage = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
         return;
       }
@@ -213,9 +209,7 @@ const CommunityEditPage = () => {
               </div>
               <div className="mt-4">
                 <p className="text-md text-left text-gray-500">
-                  <span className="text-lg text-left font-bold text-green-700">
-                    Subtitle :{" "}
-                  </span>
+                  <span className="text-lg text-left font-bold text-green-700">Subtitle : </span>
                   {community?.subtitle}
                 </p>
                 <p className="text-md text-left text-gray-500">

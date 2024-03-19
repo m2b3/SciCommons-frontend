@@ -1,12 +1,11 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-import { useGlobalContext } from '../../Context/StateContext'
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useGlobalContext } from "../../Context/StateContext";
 
-const PrivateRoute = ({ redirectTo, component}) => {
+const PrivateRoute = ({ redirectTo, component }) => {
+  const { token } = useGlobalContext();
 
-    const {token} = useGlobalContext();
+  return token !== null ? component : <Navigate to={redirectTo} />;
+};
 
-    return token!==null ?  component : <Navigate to={redirectTo} />;
-}
-
-export default PrivateRoute
+export default PrivateRoute;

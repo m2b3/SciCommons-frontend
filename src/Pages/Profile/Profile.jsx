@@ -13,7 +13,6 @@ import { useGlobalContext } from "../../Context/StateContext";
 import Following from "./Following";
 import Followers from "./Followers";
 
-
 const Profile = () => {
   const { username } = useParams();
   const [User, setUser] = useState(null);
@@ -34,16 +33,12 @@ const Profile = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     if (!User.isFollowing) {
       try {
-        const res = await axios.post(
-          `/api/user/follow/`,
-          { followed_user: User.id },
-          config
-        );
+        const res = await axios.post(`/api/user/follow/`, { followed_user: User.id }, config);
         let updatedUser = { ...User };
         updatedUser.isFollowing = !updatedUser.isFollowing;
         updatedUser.followers = updatedUser.followers + 1;
@@ -53,11 +48,7 @@ const Profile = () => {
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/user/unfollow/`,
-          { followed_user: User.id },
-          config
-        );
+        const res = await axios.post(`/api/user/unfollow/`, { followed_user: User.id }, config);
         let updatedUser = { ...User };
         updatedUser.isFollowing = !updatedUser.isFollowing;
         updatedUser.followers = updatedUser.followers - 1;
@@ -108,15 +99,15 @@ const Profile = () => {
     if (token === null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       };
     } else {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
 
@@ -136,22 +127,19 @@ const Profile = () => {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     } else {
       config = {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       };
     }
 
     try {
-      const response = await axios.get(
-        `/api/user/${username}/articles/`,
-        config
-      );
+      const response = await axios.get(`/api/user/${username}/articles/`, config);
       await loadArticleData(response.data.success);
     } catch (error) {
       console.log(error);
@@ -169,15 +157,15 @@ const Profile = () => {
     if (token === null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       };
     } else {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
 
@@ -188,8 +176,8 @@ const Profile = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
         navigate("/");
       }
@@ -241,8 +229,7 @@ const Profile = () => {
               </div>
               <div className="mt-4 flex flex-row justify-center">
                 <span className="mr-3">
-                  <strong>{formatCount(User.posts)}</strong>{" "}
-                  <span className="text-sm">posts</span>
+                  <strong>{formatCount(User.posts)}</strong> <span className="text-sm">posts</span>
                 </span>
                 <span className="mr-3">
                   <strong>{formatCount(User.followers)}</strong>{" "}
@@ -296,11 +283,8 @@ const Profile = () => {
                       : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200 py-2"
                   }
                   style={{
-                    borderBottom:
-                      currentState === 1
-                        ? "2px solid #68D391"
-                        : "2px solid #000",
-                    cursor: "pointer",
+                    borderBottom: currentState === 1 ? "2px solid #68D391" : "2px solid #000",
+                    cursor: "pointer"
                   }}
                   onClick={() => onclickFuntion(1)}
                 >
@@ -313,11 +297,8 @@ const Profile = () => {
                       : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2"
                   }
                   style={{
-                    borderBottom:
-                      currentState === 2
-                        ? "2px solid #68D391"
-                        : "2px solid #000",
-                    cursor: "pointer",
+                    borderBottom: currentState === 2 ? "2px solid #68D391" : "2px solid #000",
+                    cursor: "pointer"
                   }}
                   onClick={() => onclickFuntion(2)}
                 >
@@ -330,11 +311,8 @@ const Profile = () => {
                       : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2"
                   }
                   style={{
-                    borderBottom:
-                      currentState === 3
-                        ? "2px solid #68D391"
-                        : "2px solid #000",
-                    cursor: "pointer",
+                    borderBottom: currentState === 3 ? "2px solid #68D391" : "2px solid #000",
+                    cursor: "pointer"
                   }}
                   onClick={() => onclickFuntion(3)}
                 >
@@ -360,9 +338,7 @@ const Profile = () => {
                         ))}
                       {posts.length === 0 && (
                         <div className="flex justify-center h-screen">
-                          <p className="text-2xl font-semibold">
-                            No Posts to show
-                          </p>
+                          <p className="text-2xl font-semibold">No Posts to show</p>
                         </div>
                       )}
                     </>
@@ -377,10 +353,7 @@ const Profile = () => {
                     <>
                       {articles.length > 0 ? (
                         articles.map((item) => (
-                          <div
-                            key={item.id}
-                            className="p-5 bg-white rounded-md m-2 shadow-md"
-                          >
+                          <div key={item.id} className="p-5 bg-white rounded-md m-2 shadow-md">
                             <a href={"/article/" + `${item.id}`}>
                               <div>
                                 <div className="justify-between sm:flex">
@@ -389,42 +362,26 @@ const Profile = () => {
                                       {item.article_name.replace(/_/g, " ")}
                                     </h3>
                                     <p className="text-gray-500 mt-2 pr-2">
-                                      <span className="text-green-700">
-                                        Authors :{" "}
-                                      </span>
+                                      <span className="text-green-700">Authors : </span>
                                       {item.authors.map((author, index) => (
-                                        <span
-                                          key={index}
-                                          className="font-bold mr-2"
-                                        >
+                                        <span key={index} className="font-bold mr-2">
                                           {author}
                                         </span>
                                       ))}
                                     </p>
                                     <p className="text-gray-500 mt-2 pr-2">
-                                      <span className="text-green-700">
-                                        Keywords :{" "}
-                                      </span>
-                                      {item.keywords.replace(
-                                        /[\[\]"_\|\|]/g,
-                                        ""
-                                      )}
+                                      <span className="text-green-700">Keywords : </span>
+                                      {item.keywords.replace(/[\[\]"_\|\|]/g, "")}
                                     </p>
                                     <p className="text-gray-500 mt-2 pr-2">
-                                      <span className="text-green-700">
-                                        Added On :{" "}
-                                      </span>
-                                      {dayjs(item.Public_date).format(
-                                        "MMMM D, YYYY HH:mm A"
-                                      )}
+                                      <span className="text-green-700">Added On : </span>
+                                      {dayjs(item.Public_date).format("MMMM D, YYYY HH:mm A")}
                                     </p>
                                     <div className="flex flex-row">
                                       <span className="flex items-center text-gray-500 mr-4">
                                         <AiFillEye className="w-4 h-4 mr-2" />
                                         <span className="text-lg font-bold">
-                                          {item.views == null
-                                            ? 0
-                                            : formatCount(item.views)}
+                                          {item.views == null ? 0 : formatCount(item.views)}
                                         </span>
                                       </span>
                                       <span className="flex items-center text-gray-500">
@@ -459,9 +416,7 @@ const Profile = () => {
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
                                         className={`h-5 w-5 ${
-                                          (item.rating == null
-                                            ? 0
-                                            : item.rating) >= 1
+                                          (item.rating == null ? 0 : item.rating) >= 1
                                             ? "text-yellow-500"
                                             : "text-gray-400"
                                         }`}
@@ -474,9 +429,7 @@ const Profile = () => {
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
                                         className={`h-5 w-5 ${
-                                          (item.rating == null
-                                            ? 0
-                                            : item.rating) >= 2
+                                          (item.rating == null ? 0 : item.rating) >= 2
                                             ? "text-yellow-500"
                                             : "text-gray-400"
                                         }`}
@@ -488,9 +441,7 @@ const Profile = () => {
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
                                         className={`h-5 w-5 ${
-                                          (item.rating == null
-                                            ? 0
-                                            : item.rating) >= 3
+                                          (item.rating == null ? 0 : item.rating) >= 3
                                             ? "text-yellow-500"
                                             : "text-gray-400"
                                         }`}
@@ -502,9 +453,7 @@ const Profile = () => {
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
                                         className={`h-5 w-5 ${
-                                          (item.rating == null
-                                            ? 0
-                                            : item.rating) >= 4
+                                          (item.rating == null ? 0 : item.rating) >= 4
                                             ? "text-yellow-500"
                                             : "text-gray-400"
                                         }`}
@@ -516,9 +465,7 @@ const Profile = () => {
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
                                         className={`h-5 w-5 ${
-                                          (item.rating == null
-                                            ? 0
-                                            : item.rating) >= 5
+                                          (item.rating == null ? 0 : item.rating) >= 5
                                             ? "text-yellow-500"
                                             : "text-gray-400"
                                         }`}
@@ -549,48 +496,32 @@ const Profile = () => {
                 <div className="container px-4 w-full">
                   <div className="flex flex-col items-start">
                     <div className="flex flex-row items-center">
-                      <h1 className="text-lg text-green-600 font-semibold">
-                        Email :{" "}
-                      </h1>
+                      <h1 className="text-lg text-green-600 font-semibold">Email : </h1>
                       <p className="text-md ml-2">{User.email}</p>
                     </div>
                     <div className="flex flex-row items-center">
-                      <h1 className="text-lg text-green-600 font-semibold">
-                        First Name :{" "}
-                      </h1>
+                      <h1 className="text-lg text-green-600 font-semibold">First Name : </h1>
                       <p className="text-md ml-2">{User.first_name}</p>
                     </div>
                     <div className="flex flex-row items-center">
-                      <h1 className="text-lg text-green-600 font-semibold">
-                        Last Name :{" "}
-                      </h1>
+                      <h1 className="text-lg text-green-600 font-semibold">Last Name : </h1>
                       <p className="text-md ml-2">{User.last_name}</p>
                     </div>
                     <div className="flex flex-row items-center">
-                      <h1 className="text-lg text-green-600 font-semibold">
-                        Institute :
-                      </h1>
+                      <h1 className="text-lg text-green-600 font-semibold">Institute :</h1>
                       <p className="text-md ml-2">{User.institute}</p>
                     </div>
                     <div className="flex flex-row items-center">
                       <h1 className="text-lg text-green-600 font-semibold">
                         Google Scholar Link :
                       </h1>
-                      <a
-                        href={User.google_scholar}
-                        className="text-md text-blue-500 ml-2"
-                      >
+                      <a href={User.google_scholar} className="text-md text-blue-500 ml-2">
                         {User.google_scholar}
                       </a>
                     </div>
                     <div className="flex flex-row items-center">
-                      <h1 className="text-lg text-green-600 font-semibold">
-                        Pubmed Link :
-                      </h1>
-                      <a
-                        href={User.pubmed}
-                        className="text-md text-blue-500  ml-2"
-                      >
+                      <h1 className="text-lg text-green-600 font-semibold">Pubmed Link :</h1>
+                      <a href={User.pubmed} className="text-md text-blue-500  ml-2">
                         {User.pubmed}
                       </a>
                     </div>
@@ -601,9 +532,7 @@ const Profile = () => {
           </div>
         </div>
       )}
-      {(loading || User === null || articles === null || posts === null) && (
-        <Loader />
-      )}
+      {(loading || User === null || articles === null || posts === null) && <Loader />}
       {followers && <Followers User={User} setFollowersModal={setFollowers} />}
       {following && <Following User={User} setFollowingModal={setFollowing} />}
     </>

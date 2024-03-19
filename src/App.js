@@ -20,10 +20,7 @@ import { MdExplore } from "react-icons/md";
 import { HiUserGroup } from "react-icons/hi";
 import { AiOutlineUsergroupAdd, AiOutlineHeart } from "react-icons/ai";
 import { MdPostAdd } from "react-icons/md";
-import {
-  IoIosArrowDropupCircle,
-  IoIosArrowDropdownCircle,
-} from "react-icons/io";
+import { IoIosArrowDropupCircle, IoIosArrowDropdownCircle } from "react-icons/io";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { CgFeed } from "react-icons/cg";
 import { GrArticle } from "react-icons/gr";
@@ -43,55 +40,54 @@ function App() {
     {
       text: "Explore",
       icon: MdExplore,
-      route: "/explore",
+      route: "/explore"
     },
     {
       text: "Community",
       icon: HiUserGroup,
-      route: "/mycommunity",
+      route: "/mycommunity"
     },
     {
       text: "",
       icon: IoIosArrowDropupCircle,
-      route: "",
+      route: ""
     },
     {
       text: "My Posts",
       icon: MdPostAdd,
-      route: "/myposts",
+      route: "/myposts"
     },
     {
       text: "Favourites",
       icon: AiOutlineHeart,
-      route: "/favourites",
-    },
+      route: "/favourites"
+    }
   ];
 
   const bottomSheetRoutes = [
     {
       text: "My Timeline",
       icon: CgFeed,
-      route: "/mytimeline",
+      route: "/mytimeline"
     },
     {
       text: "Create Community",
       icon: AiOutlineUsergroupAdd,
-      route: "/createcommunity",
+      route: "/createcommunity"
     },
     {
       text: "My Articles",
       icon: GrArticle,
-      route: "/myarticles",
+      route: "/myarticles"
     },
     {
       text: "Bookmarks",
       icon: BsBookmarkCheck,
-      route: "/bookmarks",
-    },
+      route: "/bookmarks"
+    }
   ];
 
-  const container =
-    window !== undefined ? () => window.document.body : undefined;
+  const container = window !== undefined ? () => window.document.body : undefined;
   const drawerBleeding = 0;
   const Puller = styled("div")(({ theme }) => ({
     width: 30,
@@ -100,7 +96,7 @@ function App() {
     borderRadius: 3,
     position: "absolute",
     top: 8,
-    left: "calc(50% - 15px)",
+    left: "calc(50% - 15px)"
   }));
 
   return (
@@ -117,7 +113,7 @@ function App() {
             zIndex: 60,
             bottom: 0,
             right: 0,
-            borderTop: "1px solid rgb(228,231,235)",
+            borderTop: "1px solid rgb(228,231,235)"
           }}
         >
           <BottomNavigation
@@ -130,14 +126,14 @@ function App() {
             {bottomNavRoutes.map((route, index) =>
               route.text === "" ? (
                 <BottomNavigationAction
-                key={index}
+                  key={index}
                   label={route.text}
                   icon={<route.icon style={{ fontSize: "48px" }} />}
-                  onClick={() => setIsBottomSheetOpen(prev => !prev)}
+                  onClick={() => setIsBottomSheetOpen((prev) => !prev)}
                 />
               ) : (
                 <BottomNavigationAction
-                key={index}
+                  key={index}
                   label={route.text}
                   icon={<route.icon style={{ fontSize: "24px" }} />}
                   onClick={() => navigate(route.route)}
@@ -158,11 +154,11 @@ function App() {
         swipeAreaWidth={drawerBleeding}
         disableSwipeToOpen={true}
         ModalProps={{
-          keepMounted: true,
+          keepMounted: true
         }}
       >
         <div
-        /*eslint-disable */
+          /*eslint-disable */
           sx={{
             position: "absolute",
             top: -drawerBleeding,
@@ -170,12 +166,11 @@ function App() {
             borderTopRightRadius: 8, */
             visibility: "visible",
             right: 0,
-            left: 0,
+            left: 0
           }}
         >
           <Puller />
-          <Typography sx={{ p: 2, color: "text.secondary" }}>
-          </Typography>
+          <Typography sx={{ p: 2, color: "text.secondary" }}></Typography>
           <div>
             <BottomNavigation
               showLabels
@@ -185,7 +180,7 @@ function App() {
                 setActiveBottomNavTab(null);
               }}
               style={{
-                marginBottom: "20px",
+                marginBottom: "20px"
               }}
             >
               {bottomSheetRoutes.map((route, index) => (
@@ -216,15 +211,13 @@ function App() {
                         <IoIosArrowDropupCircle style={{ fontSize: "48px" }} />
                       )
                     }
-                    onClick={() => setIsBottomSheetOpen(prev => !prev)}
+                    onClick={() => setIsBottomSheetOpen((prev) => !prev)}
                   />
                 ) : (
                   <BottomNavigationAction
                     key={index}
                     label={route.text}
-                    icon={
-                      route.icon && <route.icon style={{ fontSize: "24px" }} />
-                    }
+                    icon={route.icon && <route.icon style={{ fontSize: "24px" }} />}
                     onClick={() => navigate(route.route)}
                   />
                 )

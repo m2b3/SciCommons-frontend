@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import axios from '../../Utils/axios';
-import ToastMaker from 'toastmaker';
-import 'toastmaker/dist/toastmaker.css';
-import { useGlobalContext } from '../../Context/StateContext';
+import React, { useState } from "react";
+import axios from "../../Utils/axios";
+import ToastMaker from "toastmaker";
+import "toastmaker/dist/toastmaker.css";
+import { useGlobalContext } from "../../Context/StateContext";
 
 const PublishArticleModal = ({ setShowPublish, article, community }) => {
   const [loading, setLoading] = useState(false);
   const { token } = useGlobalContext();
-  const [doi, setDoi] = useState('');
-  const [license, setLicense] = useState('');
+  const [doi, setDoi] = useState("");
+  const [license, setLicense] = useState("");
 
   const handlePublish = async (e) => {
     e.preventDefault();
     const form_data = new FormData(e.target);
     setLoading(true);
     if (doi.length > 255 || license.length > 255) {
-      ToastMaker('Doi,License must have less than 255 characters!!!', 3500, {
-        valign: 'top',
+      ToastMaker("Doi,License must have less than 255 characters!!!", 3500, {
+        valign: "top",
         styles: {
-          backgroundColor: 'red',
-          fontSize: '20px'
+          backgroundColor: "red",
+          fontSize: "20px"
         }
       });
       setLoading(false);
@@ -39,21 +39,21 @@ const PublishArticleModal = ({ setShowPublish, article, community }) => {
       );
       if (res.status === 200) {
         ToastMaker(res.data.success, 3500, {
-          valign: 'top',
+          valign: "top",
           styles: {
-            backgroundColor: 'green',
-            fontSize: '20px'
+            backgroundColor: "green",
+            fontSize: "20px"
           }
         });
       }
       setShowPublish(false);
     } catch (error) {
       console.log(error);
-      ToastMaker('Please try again!!!', 3500, {
-        valign: 'top',
+      ToastMaker("Please try again!!!", 3500, {
+        valign: "top",
         styles: {
-          backgroundColor: 'red',
-          fontSize: '20px'
+          backgroundColor: "red",
+          fontSize: "20px"
         }
       });
     }
@@ -71,7 +71,7 @@ const PublishArticleModal = ({ setShowPublish, article, community }) => {
             <form onSubmit={(e) => handlePublish(e)} encType="multipart/form-data">
               <div className="w-full flex flex-col items-center justify-center">
                 <input
-                  style={{ border: '2px solid #cbd5e0' }}
+                  style={{ border: "2px solid #cbd5e0" }}
                   className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
                   name="doi"
                   type="text"
@@ -85,7 +85,7 @@ const PublishArticleModal = ({ setShowPublish, article, community }) => {
                   Number of characters: {doi.length}/255
                 </span>
                 <input
-                  style={{ border: '2px solid #cbd5e0' }}
+                  style={{ border: "2px solid #cbd5e0" }}
                   className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
                   name="license"
                   type="text"
@@ -99,7 +99,7 @@ const PublishArticleModal = ({ setShowPublish, article, community }) => {
                   Number of characters: {license.length}/255
                 </span>
                 <input
-                  style={{ border: '2px solid #cbd5e0' }}
+                  style={{ border: "2px solid #cbd5e0" }}
                   type="file"
                   required
                   accept="application/pdf"
@@ -111,15 +111,17 @@ const PublishArticleModal = ({ setShowPublish, article, community }) => {
                 <button
                   className="text-sm font-semibold text-white p-2 px-5 mr-5 rounded-lg bg-green-600 flex mt-3"
                   type="submit"
-                  style={{ cursor: 'pointer' }}>
-                  {loading ? 'loading...' : 'Publish'}
+                  style={{ cursor: "pointer" }}
+                >
+                  {loading ? "loading..." : "Publish"}
                 </button>
                 <button
                   className="text-sm font-semibold text-white p-2 px-5 rounded-lg bg-red-600 flex ml-2 mt-3"
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                   onClick={() => {
                     setShowPublish(false);
-                  }}>
+                  }}
+                >
                   Cancel
                 </button>
               </div>

@@ -42,130 +42,95 @@ function RoutesContainer() {
   const windowSize = useWindowSize();
   const loadContainerStyles = location.pathname !== "/login" && location.pathname !== "/register";
   return (
-    <div className="flex-grow" style={loadContainerStyles ? getContainerStyles(windowSize.width) : {}}>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/articles" element={<AllArticlesPage />} />
-      <Route path="/communities" element={<Communities />} />
-      <Route
-        path="/submitarticle"
-        element={
-          <PrivateRoute redirectTo="/login" component={<SubmitArticle />} />
-        }
-      />
-      <Route
-        path="/articlesuccessfulsubmission"
-        element={
-          <PrivateRoute
-            redirectTo="/login"
-            component={<SuccessfulSubmission />}
-          />
-        }
-      />
-      <Route
-        path="/registersuccessful"
-        element={
-          <PrivateRoute
-            redirectTo="/login"
-            component={<SuccessfulRegistration />}
-          />
-        }
-      />
-      <Route
-        path="/createcommunity"
-        element={
-          <PrivateRoute redirectTo="/login" component={<CreateCommunity />} />
-        }
-      />
-      <Route
-        path="/communitysuccessfulcreated"
-        element={
-          <PrivateRoute redirectTo="/login" component={<CommunityCreation />} />
-        }
-      />
-      <Route
-        path="/notifications"
-        element={
-          <PrivateRoute redirectTo="/login" component={<Notifications />} />
-        }
-      />
-      <Route path="/explore" element={<Feed />} />
-      <Route
-        path="/mytimeline"
-        element={<PrivateRoute redirectTo="/login" component={<Timeline />} />}
-      />
-      <Route
-        path="/bookmarks"
-        element={<PrivateRoute redirectTo="/login" component={<BookMarks />} />}
-      />
-      <Route path="/community/:communityName" element={<CommunityPage />} />
-      <Route
-        path="/join-community/:communityName"
-        element={
-          <PrivateRoute redirectTo="/login" component={<JoinRequest />} />
-        }
-      />
-      <Route
-        path="/mycommunity"
-        element={
-          <PrivateRoute
-            redirectTo="/login"
-            component={<CommunityAdminPage />}
-          />
-        }
-      />
-      <Route path="/post/:postId" element={<SinglePost />} />
-      <Route path="/profile/:username" element={<Profile />} />
-      <Route path="/article/:articleId" element={<ArticlePage />} />
-      <Route
-        path="/favourites"
-        element={
-          <PrivateRoute redirectTo="/login" component={<FavouritePage />} />
-        }
-      />
-      <Route
-        path="/myposts"
-        element={
-          <PrivateRoute redirectTo="/login" component={<MyPostsPage />} />
-        }
-      />
-      <Route
-        path="/myarticles"
-        element={
-          <PrivateRoute redirectTo="/login" component={<MyArticlesPage />} />
-        }
-      />
-      <Route
-        path="/myarticles/:articleId"
-        element={
-          <PrivateRoute redirectTo="/login" component={<AuthorArticlePage />} />
-        }
-      />
-      {/* <Route path="/myactivity" element={<PrivateRoute redirectTo="/login" component={<UserActivity/>}/>}/> */}
-      <Route
-        path="/community/:communityName/:articleId"
-        element={
-          <PrivateRoute
-            redirectTo="/login"
-            component={<CommunityArticlePage />}
-          />
-        }
-      />
-      <Route
-        path="/chat/:id"
-        element={<PrivateRoute redirectTo="/login" component={<ChatPage />} />}
-      />
-      {/* <Route path="/messages" element={<PrivateRoute redirectTo="/login" component={<AllMessages/>}/>}/> */}
-      <Route
-        path="/myprofile"
-        element={<PrivateRoute redirectTo="/login" component={<MyProfile />} />}
-      />
-      <Route path="/forgotpassword" element={<ForgotPassword />} />
-      <Route path="/verify" element={<Verify />} />
-      <Route path="*" element={<ErrorPage />} />
-    </Routes>
+    <div
+      className="flex-grow"
+      style={loadContainerStyles ? getContainerStyles(windowSize.width) : {}}
+    >
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/articles" element={<AllArticlesPage />} />
+        <Route path="/communities" element={<Communities />} />
+        <Route
+          path="/submitarticle"
+          element={<PrivateRoute redirectTo="/login" component={<SubmitArticle />} />}
+        />
+        <Route
+          path="/articlesuccessfulsubmission"
+          element={<PrivateRoute redirectTo="/login" component={<SuccessfulSubmission />} />}
+        />
+        <Route
+          path="/registersuccessful"
+          element={<PrivateRoute redirectTo="/login" component={<SuccessfulRegistration />} />}
+        />
+        <Route
+          path="/createcommunity"
+          element={<PrivateRoute redirectTo="/login" component={<CreateCommunity />} />}
+        />
+        <Route
+          path="/communitysuccessfulcreated"
+          element={<PrivateRoute redirectTo="/login" component={<CommunityCreation />} />}
+        />
+        <Route
+          path="/notifications"
+          element={<PrivateRoute redirectTo="/login" component={<Notifications />} />}
+        />
+        <Route path="/explore" element={<Feed />} />
+        <Route
+          path="/mytimeline"
+          element={<PrivateRoute redirectTo="/login" component={<Timeline />} />}
+        />
+        <Route
+          path="/bookmarks"
+          element={<PrivateRoute redirectTo="/login" component={<BookMarks />} />}
+        />
+        <Route path="/community/:communityName" element={<CommunityPage />} />
+        <Route
+          path="/join-community/:communityName"
+          element={<PrivateRoute redirectTo="/login" component={<JoinRequest />} />}
+        />
+        <Route
+          path="/mycommunity"
+          element={<PrivateRoute redirectTo="/login" component={<CommunityAdminPage />} />}
+        />
+        <Route path="/post/:postId" element={<SinglePost />} />
+        <Route path="/profile/:username" element={<Profile />} />
+        <Route path="/article/:articleId" element={<ArticlePage />} />
+        <Route
+          path="/favourites"
+          element={<PrivateRoute redirectTo="/login" component={<FavouritePage />} />}
+        />
+        <Route
+          path="/myposts"
+          element={<PrivateRoute redirectTo="/login" component={<MyPostsPage />} />}
+        />
+        <Route
+          path="/myarticles"
+          element={<PrivateRoute redirectTo="/login" component={<MyArticlesPage />} />}
+        />
+        <Route
+          path="/myarticles/:articleId"
+          element={<PrivateRoute redirectTo="/login" component={<AuthorArticlePage />} />}
+        />
+        {/* <Route path="/myactivity" element={<PrivateRoute redirectTo="/login" component={<UserActivity/>}/>}/> */}
+        <Route
+          path="/community/:communityName/:articleId"
+          element={<PrivateRoute redirectTo="/login" component={<CommunityArticlePage />} />}
+        />
+        <Route
+          path="/chat/:id"
+          element={<PrivateRoute redirectTo="/login" component={<ChatPage />} />}
+        />
+        {/* <Route path="/messages" element={<PrivateRoute redirectTo="/login" component={<AllMessages/>}/>}/> */}
+        <Route
+          path="/myprofile"
+          element={<PrivateRoute redirectTo="/login" component={<MyProfile />} />}
+        />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
     </div>
   );
 }

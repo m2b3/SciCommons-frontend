@@ -38,8 +38,8 @@ const AllArticlesPage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     try {
@@ -75,8 +75,8 @@ const AllArticlesPage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     if (orderOption === "Ascending") {
@@ -89,8 +89,8 @@ const AllArticlesPage = () => {
         `/api/article/?search=${searchTerm}`,
         {
           params: {
-            order: filter,
-          },
+            order: filter
+          }
         },
         config
       );
@@ -114,16 +114,16 @@ const AllArticlesPage = () => {
       if (token !== null) {
         config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
       }
       const response = await axios.get(
         `/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,
         {
           params: {
-            order: filter,
-          },
+            order: filter
+          }
         },
         config
       );
@@ -133,8 +133,8 @@ const AllArticlesPage = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
       await loadMoreData(data);
@@ -148,10 +148,7 @@ const AllArticlesPage = () => {
     <>
       <div className="flex flex-col items-center justify-start bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Articles</h1>
-        <form
-          className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row"
-          onSubmit={handleSearch}
-        >
+        <form className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row" onSubmit={handleSearch}>
           <div className="relative w-full">
             <input
               style={{ border: "2px solid #cbd5e0" }}

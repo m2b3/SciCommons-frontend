@@ -15,10 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import {
-  sidenavLargeWidth,
-  sidenavSmallWidth,
-} from "../../Utils/Constants/Globals";
+import { sidenavLargeWidth, sidenavSmallWidth } from "../../Utils/Constants/Globals";
 import { closeIcon, hamburgerIcon } from "../../Utils/Constants/Navbar";
 import useWindowSize from "../../Utils/Hooks/useWindowSize";
 
@@ -37,43 +34,43 @@ const SideNav = () => {
     {
       text: "My TimeLine",
       icon: CgFeed,
-      href: "/mytimeline",
+      href: "/mytimeline"
     },
     {
       text: "Explore",
       icon: MdExplore,
-      href: "/explore",
+      href: "/explore"
     },
     {
       text: "Create Community",
       icon: AiOutlineUsergroupAdd,
-      href: "/createcommunity",
+      href: "/createcommunity"
     },
     {
       text: "My Community",
       icon: HiUserGroup,
-      href: "/mycommunity",
+      href: "/mycommunity"
     },
     {
       text: "My Articles",
       icon: GrArticle,
-      href: "/myarticles",
+      href: "/myarticles"
     },
     {
       text: "Favourites",
       icon: AiOutlineHeart,
-      href: "/favourites",
+      href: "/favourites"
     },
     {
       text: "My Posts",
       icon: MdPostAdd,
-      href: "/myposts",
+      href: "/myposts"
     },
     {
       text: "Bookmarks",
       icon: BsBookmarkCheck,
-      href: "/bookmarks",
-    },
+      href: "/bookmarks"
+    }
     /* {
     text: "Messages",
     icon: TbMessageCircle2,
@@ -91,8 +88,8 @@ const SideNav = () => {
             width: sidenavWidth,
             boxSizing: "border-box",
             transition: "width 0.2s ease",
-            zIndex: 50,
-          },
+            zIndex: 50
+          }
         }}
         variant="permanent"
         anchor="left"

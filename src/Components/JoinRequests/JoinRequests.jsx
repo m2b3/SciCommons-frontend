@@ -34,13 +34,10 @@ const JoinRequests = ({ community }) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
-      const res = await axios.get(
-        `/api/community/${community}/get_requests/`,
-        config
-      );
+      const res = await axios.get(`/api/community/${community}/get_requests/`, config);
       await loadData(res.data.success);
       setLoading(false);
     } catch (error) {
@@ -86,9 +83,7 @@ const JoinRequests = ({ community }) => {
         <div className="w-full">
           {requests.length === 0 ? (
             <div className="w-full flex flex-col items-center justify-center">
-              <h1 className="text-md md:text-2xl font-bold text-gray-600">
-                No Join Requests
-              </h1>
+              <h1 className="text-md md:text-2xl font-bold text-gray-600">No Join Requests</h1>
             </div>
           ) : (
             <div className="w-full">
@@ -101,9 +96,7 @@ const JoinRequests = ({ community }) => {
                   placeholder="Search members"
                 />
                 <div className="flex flex-row items-center">
-                  <span className="text-gray-600 text-sm font-semibold mr-2">
-                    Sort By :
-                  </span>
+                  <span className="text-gray-600 text-sm font-semibold mr-2">Sort By :</span>
                   <button
                     className="px-2 py-2 mr-3 bg-green-200 rounded-xl"
                     style={{ cursor: "pointer" }}
@@ -128,7 +121,7 @@ const JoinRequests = ({ community }) => {
               {sortedRequests.length !== 0 ? (
                 sortedRequests.map((request, index) => (
                   <div
-                  key={index}
+                    key={index}
                     id={index}
                     className="bg-gray-200 rounded-lg md:rounded-3xl shadow-md md:shadow-xl mb-2"
                   >
@@ -155,9 +148,7 @@ const JoinRequests = ({ community }) => {
                             />
                           )}
                           <span className="text-md md:text-lg font-semibold">
-                            <a href={`/profile/${request.username}`}>
-                              {request.username}
-                            </a>
+                            <a href={`/profile/${request.username}`}>{request.username}</a>
                           </span>
                           <span
                             className={`${
@@ -200,16 +191,12 @@ const JoinRequests = ({ community }) => {
                                 />
                               )}
                               <span className="text-lg font-semibold">
-                                <a href={`/profile/${request.username}`}>
-                                  {request.username}
-                                </a>
+                                <a href={`/profile/${request.username}`}>{request.username}</a>
                               </span>
                             </div>
                             <div className="flex flex-col max-w-md">
                               <div className="flex flex-wrap items-center">
-                                <span className="text-sm font-semibold text-gray-600">
-                                  About :
-                                </span>
+                                <span className="text-sm font-semibold text-gray-600">About :</span>
                                 <div className="flex flex-wrap word-wrap truncate">
                                   {request.about}
                                 </div>
@@ -234,7 +221,7 @@ const JoinRequests = ({ community }) => {
                               setAddModalData({
                                 request: request,
                                 community: community,
-                                index: index,
+                                index: index
                               });
                             }}
                           >
@@ -248,7 +235,7 @@ const JoinRequests = ({ community }) => {
                               setRejectModalData({
                                 request: request,
                                 community: community,
-                                index: index,
+                                index: index
                               });
                             }}
                           >
@@ -296,15 +283,7 @@ const JoinRequests = ({ community }) => {
 
 export default JoinRequests;
 
-const AcceptModal = ({
-  setShow,
-  request,
-  community,
-  index,
-  onDelete,
-  loading,
-  setLoading,
-}) => {
+const AcceptModal = ({ setShow, request, community, index, onDelete, loading, setLoading }) => {
   const { token } = useGlobalContext();
 
   const handleAccept = async () => {
@@ -312,8 +291,8 @@ const AcceptModal = ({
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const res = await axios.post(
         `/api/community/${community}/approve_request/`,
@@ -364,15 +343,7 @@ const AcceptModal = ({
   );
 };
 
-const RejectModal = ({
-  setReject,
-  request,
-  community,
-  index,
-  onDelete,
-  loading,
-  setLoading,
-}) => {
+const RejectModal = ({ setReject, request, community, index, onDelete, loading, setLoading }) => {
   const { token } = useGlobalContext();
 
   const handleReject = async () => {
@@ -380,8 +351,8 @@ const RejectModal = ({
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const res = await axios.post(
         `/api/community/${community}/approve_request/`,

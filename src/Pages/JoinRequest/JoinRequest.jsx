@@ -24,13 +24,10 @@ const JoinRequest = () => {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
-        const res = await axios.get(
-          `/api/community/${communityName}/`,
-          config
-        );
+        const res = await axios.get(`/api/community/${communityName}/`, config);
         await loadCommunity(res.data.success);
       } catch (error) {
         console.log(error);
@@ -39,8 +36,8 @@ const JoinRequest = () => {
             valign: "top",
             styles: {
               backgroundColor: "red",
-              fontSize: "20px",
-            },
+              fontSize: "20px"
+            }
           });
           navigate("/communities");
         }
@@ -63,8 +60,8 @@ const JoinRequest = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -74,8 +71,8 @@ const JoinRequest = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoading(false);
       return;
@@ -87,8 +84,8 @@ const JoinRequest = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         }
       );
 
@@ -98,8 +95,8 @@ const JoinRequest = () => {
           valign: "top",
           styles: {
             backgroundColor: "green",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
       navigate(`/community/${communityName}`);
@@ -110,8 +107,8 @@ const JoinRequest = () => {
         valign: "top",
         styles: {
           backgroundColor: "red",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       console.log(error);
       return;
@@ -136,10 +133,7 @@ const JoinRequest = () => {
       <div className="m-10 flex justify-center">
         <form onSubmit={(e) => submitForm(e)} className="w-full md:w-2/3">
           <div className="mb-6">
-            <label
-              htmlFor="about"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="about" className="block mb-2 text-sm font-medium text-gray-900">
               Tell us about yourself?
             </label>
             <textarea
@@ -152,16 +146,11 @@ const JoinRequest = () => {
               placeholder=""
               required
             />
-            <span className="text-xs font-semibold">
-              Number of characters: {about.length}/5000
-            </span>
+            <span className="text-xs font-semibold">Number of characters: {about.length}/5000</span>
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="summary"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="summary" className="block mb-2 text-sm font-medium text-gray-900">
               Why do you want to join this community?
             </label>
             <textarea
@@ -190,15 +179,9 @@ const JoinRequest = () => {
                 required
               />
             </div>
-            <label
-              htmlFor="remember"
-              className="ml-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="remember" className="ml-2 text-sm font-medium text-gray-900">
               I agree with the{" "}
-              <a
-                href="/terms-and-conditions"
-                className="text-green-600 hover:underline"
-              >
+              <a href="/terms-and-conditions" className="text-green-600 hover:underline">
                 terms and conditions
               </a>
               .

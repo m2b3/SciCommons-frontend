@@ -7,10 +7,7 @@ import Popper from "popper.js";
 import { useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { useGlobalContext } from "../../Context/StateContext";
-import {
-  navbarNavigationRoutes,
-  arrowHeadNextIcon,
-} from "../../Utils/Constants/Navbar";
+import { navbarNavigationRoutes, arrowHeadNextIcon } from "../../Utils/Constants/Navbar";
 import { getContainerStyles } from "../../Utils/Constants/Globals";
 import useWindowSize from "../../Utils/Hooks/useWindowSize";
 import Menu from "@mui/material/Menu";
@@ -57,8 +54,8 @@ const NavBar = () => {
     try {
       const response = await axios.get(`/api/user/get_current_user/`, {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
       const user = response.data.success;
       await loadUserData(user);
@@ -144,11 +141,7 @@ const NavBar = () => {
                 <Dropdown
                   color="orange"
                   onLogout={handleLogout}
-                  User={
-                    user.profile_pic_url.includes("None")
-                      ? null
-                      : user.profile_pic_url
-                  }
+                  User={user.profile_pic_url.includes("None") ? null : user.profile_pic_url}
                 />
               </div>
             )}
@@ -242,34 +235,25 @@ const NavBar = () => {
             onClose={() => handleClose()}
             anchorOrigin={{
               vertical: "bottom",
-              horizontal: "left",
+              horizontal: "left"
             }}
             transformOrigin={{
               vertical: "bottom",
-              horizontal: "left",
+              horizontal: "left"
             }}
           >
             <Link to="/submitarticle" className="block">
-              <MenuItem
-                onClick={() => handleClose()}
-                sx={{ padding: "8px 28px" }}
-              >
+              <MenuItem onClick={() => handleClose()} sx={{ padding: "8px 28px" }}>
                 Submit Article
               </MenuItem>
             </Link>
             <Link to="/communities" className="block">
-              <MenuItem
-                onClick={() => handleClose()}
-                sx={{ padding: "8px 28px" }}
-              >
+              <MenuItem onClick={() => handleClose()} sx={{ padding: "8px 28px" }}>
                 Communities
               </MenuItem>
             </Link>
             <Link to="/articles" className="block">
-              <MenuItem
-                onClick={() => handleClose()}
-                sx={{ padding: "8px 28px" }}
-              >
+              <MenuItem onClick={() => handleClose()} sx={{ padding: "8px 28px" }}>
                 Articles
               </MenuItem>
             </Link>
@@ -287,7 +271,7 @@ const Dropdown = ({ color, onLogout, User }) => {
   const popoverDropdownRef = React.createRef();
   const openDropdownPopover = () => {
     new Popper(btnDropdownRef.current, popoverDropdownRef.current, {
-      placement: "bottom-start",
+      placement: "bottom-start"
     });
     setDropdownPopoverShow(true);
   };
@@ -326,11 +310,7 @@ const Dropdown = ({ color, onLogout, User }) => {
                 {User === null ? (
                   <SlUser className="text-black w-4 h-4 inline-block" />
                 ) : (
-                  <img
-                    className="object-cover w-10 h-4 mt-1"
-                    src={User}
-                    alt="avatar"
-                  />
+                  <img className="object-cover w-10 h-4 mt-1" src={User} alt="avatar" />
                 )}
               </span>
             </button>
@@ -344,26 +324,20 @@ const Dropdown = ({ color, onLogout, User }) => {
                 onClose={() => handleClose()}
                 anchorOrigin={{
                   vertical: "bottom",
-                  horizontal: "left",
+                  horizontal: "left"
                 }}
                 transformOrigin={{
                   vertical: "bottom",
-                  horizontal: "left",
+                  horizontal: "left"
                 }}
               >
                 <Link to="/myprofile" className="block">
-                  <MenuItem
-                    onClick={() => handleClose()}
-                    sx={{ padding: "8px 28px" }}
-                  >
+                  <MenuItem onClick={() => handleClose()} sx={{ padding: "8px 28px" }}>
                     Your Profile
                   </MenuItem>
                 </Link>
                 <Link to="/notifications" className="block">
-                  <MenuItem
-                    onClick={() => handleClose()}
-                    sx={{ padding: "8px 28px" }}
-                  >
+                  <MenuItem onClick={() => handleClose()} sx={{ padding: "8px 28px" }}>
                     Notifications
                   </MenuItem>
                 </Link>

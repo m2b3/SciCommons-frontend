@@ -16,14 +16,11 @@ const AppProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(
-        `/api/user/get_current_user/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.get(`/api/user/get_current_user/`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
       const user = response.data.success;
       await loadUserData(user);
     } catch (error) {
@@ -50,7 +47,7 @@ const AppProvider = ({ children }) => {
         user,
         token,
         setToken,
-        setUser,
+        setUser
       }}
     >
       {children}

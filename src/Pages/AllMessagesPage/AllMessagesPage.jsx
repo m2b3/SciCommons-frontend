@@ -12,7 +12,7 @@ const AllMessagesPage = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const { token} = useGlobalContext();
+  const { token } = useGlobalContext();
   const navigate = useNavigate();
 
   const loadData = async (res) => {
@@ -28,8 +28,8 @@ const AllMessagesPage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const res = await axios.get(`/api/user/messages/`, config);
@@ -79,8 +79,8 @@ const AllMessagesPage = () => {
         const config = {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
         const response = await axios.get(
           `/api/user/`,
@@ -100,18 +100,10 @@ const AllMessagesPage = () => {
       <NavBar />
       {messages.length !== 0 && (
         <div className="w-full md:w-2/3 mt-4 shadow-xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-600 text-center">
-            Messages
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-600 text-center">Messages</h1>
           <div className="bg-gray-100 rounded-full px-4 py-2 flex items-center">
             {loading ? (
-              <ColorRing
-                height="20"
-                width="20"
-                radius="4"
-                color="green"
-                ariaLabel="loading"
-              />
+              <ColorRing height="20" width="20" radius="4" color="green" ariaLabel="loading" />
             ) : (
               <FaSearch className="text-gray-500 text-xl mr-2" />
             )}
@@ -132,9 +124,7 @@ const AllMessagesPage = () => {
                 onUserClick={handleUserClick}
               />
             </div>
-            {suggestions.length > 0 && (
-              <Suggestions suggestions={suggestions} />
-            )}
+            {suggestions.length > 0 && <Suggestions suggestions={suggestions} />}
             <div className="all-messages-page__content__message-list">
               <MessageList
                 className="message-list"
@@ -154,13 +144,7 @@ const AllMessagesPage = () => {
             </h1>
             <div className="bg-gray-100 rounded-full px-4 py-2 flex items-center">
               {loading ? (
-                <ColorRing
-                  height="20"
-                  width="20"
-                  radius="4"
-                  color="green"
-                  ariaLabel="loading"
-                />
+                <ColorRing height="20" width="20" radius="4" color="green" ariaLabel="loading" />
               ) : (
                 <FaSearch className="text-gray-500 text-xl mr-2" />
               )}
@@ -172,13 +156,9 @@ const AllMessagesPage = () => {
                 className="bg-transparent focus:outline-none w-full border-0 rounded-full"
               />
             </div>
-            {suggestions.length > 0 && (
-              <Suggestions suggestions={suggestions} />
-            )}
+            {suggestions.length > 0 && <Suggestions suggestions={suggestions} />}
             <div className="min-h-screen flex flex-row justify-center items-center">
-              <h1 className="text-xl text-gray-600 text-center font-bold">
-                No messages found!!
-              </h1>
+              <h1 className="text-xl text-gray-600 text-center font-bold">No messages found!!</h1>
             </div>
           </div>
         </div>

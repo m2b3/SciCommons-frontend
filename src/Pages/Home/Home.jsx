@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import "./Home.css";
-import {
-  HomeCarousalData,
-  HomeFeaturesTileData,
-  faqs,
-} from "../../Utils/Constants/Home";
+import { HomeCarousalData, HomeFeaturesTileData, faqs } from "../../Utils/Constants/Home";
 import FeatureTile from "./Components/FeatureTile";
 import FaqAccordian from "./Components/FaqAccordian";
 
@@ -17,9 +13,7 @@ const Home = () => {
     const faqAnswer = document.querySelector(str);
     console.log(str);
     if (faqAnswer) {
-      const currentDisplay = window
-        .getComputedStyle(faqAnswer)
-        .getPropertyValue("display");
+      const currentDisplay = window.getComputedStyle(faqAnswer).getPropertyValue("display");
 
       if (currentDisplay === "none") {
         faqAnswer.style.display = "block";
@@ -31,14 +25,8 @@ const Home = () => {
 
   return (
     <>
-      <div
-        className="custom-google-fonts-enabled comps"
-        id="107237-212152"
-      >
-        <div
-          className="page-component__bg_image_box bg-medium-color"
-          id="header-23-256551"
-        >
+      <div className="custom-google-fonts-enabled comps" id="107237-212152">
+        <div className="page-component__bg_image_box bg-medium-color" id="header-23-256551">
           <div className="page-component__bg_overlay_box " />
           <div
             className="page-component__wrapper bg-[#ebfde8]"
@@ -47,16 +35,12 @@ const Home = () => {
             <header className="header-23 graphics-image default-graphics-image">
               <div className="container container--large header-23__container">
                 <div className="header-23__left">
-                  <div
-                    className="header-23__left_content"
-                    style={{ marginLeft: "50px" }}
-                  >
+                  <div className="header-23__left_content" style={{ marginLeft: "50px" }}>
                     <h1 className="heading heading--accent header-23__heading ">
                       Welcome to SciCommons
                     </h1>
                     <div className="header-23__text content_box ">
-                      An open peer review platform for efficient and anonymous
-                      article reviewal.
+                      An open peer review platform for efficient and anonymous article reviewal.
                     </div>
                     <div className="header-23__cta_box">
                       <div className="buttons-set">
@@ -77,8 +61,7 @@ const Home = () => {
                           </li>
                         </ul>
                         <div className="content_box cta_bottom_info ">
-                          Join us and make the reviewal process fast and
-                          efficient.
+                          Join us and make the reviewal process fast and efficient.
                         </div>
                       </div>
                     </div>
@@ -97,10 +80,7 @@ const Home = () => {
             </header>
           </div>
         </div>
-        <div
-          className="page-component__bg_image_box    bg-white-color  "
-          id="tabs-03-581951"
-        >
+        <div className="page-component__bg_image_box    bg-white-color  " id="tabs-03-581951">
           <div className="page-component__bg_overlay_box " />
           <div
             className="page-component__wrapper"
@@ -124,7 +104,7 @@ const Home = () => {
                         style={{
                           border: "2px solid #10b981",
                           backgroundColor: idx === 0 ? "green" : "white",
-                          color: idx === 0 ? "white" : "green",
+                          color: idx === 0 ? "white" : "green"
                         }}
                         type="button"
                         data-index="tab-0"
@@ -143,7 +123,7 @@ const Home = () => {
                         style={{
                           border: "2px solid #10b981",
                           backgroundColor: idx === 1 ? "green" : "white",
-                          color: idx === 1 ? "white" : "green",
+                          color: idx === 1 ? "white" : "green"
                         }}
                         data-index="tab-1"
                         data-group="my-images-group-tabs-03-581951"
@@ -161,7 +141,7 @@ const Home = () => {
                         style={{
                           border: "2px solid #10b981",
                           backgroundColor: idx === 2 ? "green" : "white",
-                          color: idx === 2 ? "white" : "green",
+                          color: idx === 2 ? "white" : "green"
                         }}
                         data-index="tab-2"
                         data-group="my-images-group-tabs-03-581951"
@@ -180,15 +160,15 @@ const Home = () => {
                         data-index="tab-0"
                         data-group="my-images-group-tabs-03-581951"
                       >
-                        <div
-                          className="tabs-03__item js-tab-content-item"
-                          data-height=""
-                        >
+                        <div className="tabs-03__item js-tab-content-item" data-height="">
                           <div className="tabs-03__video-container">
                             <div className="flex-1 text-center mt-7 lg:mt-0 lg:ml-3">
                               <img
                                 src={`${process.env.PUBLIC_URL}/${displayData[idx].image}`}
-                                style={{ width: "50rem", height: "25rem" }}
+                                style={{
+                                  width: "50rem",
+                                  height: "25rem"
+                                }}
                                 alt="submit"
                               />
                             </div>
@@ -197,9 +177,7 @@ const Home = () => {
                             <h2 className="text-2xl text-green-800 font-bold">
                               {displayData[idx].title}
                             </h2>
-                            <div className="content_box ">
-                              {displayData[idx].description}
-                            </div>
+                            <div className="content_box ">{displayData[idx].description}</div>
                             <div className="tabs-03__cta" />
                           </div>
                         </div>
@@ -211,10 +189,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div
-          className="page-component__bg_image_box    bg-green-100  "
-          id="links-06-607481"
-        >
+        <div className="page-component__bg_image_box    bg-green-100  " id="links-06-607481">
           <div className="page-component__bg_overlay_box " />
           <div
             className="page-component__wrapper"
@@ -240,10 +215,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div
-          className="page-component__bg_image_box    bg-white "
-          id="faq-01-374221"
-        >
+        <div className="page-component__bg_image_box    bg-white " id="faq-01-374221">
           <div className="page-component__bg_overlay_box " />
           <div
             className="page-component__wrapper"
@@ -252,14 +224,12 @@ const Home = () => {
             <div className="faq-01">
               <div className="container container--small">
                 <div className="title-box title-box--center">
-                  <h2 className="heading ">
-                    We Have Answered Almost All Your Questions
-                  </h2>
+                  <h2 className="heading ">We Have Answered Almost All Your Questions</h2>
                 </div>
               </div>
               <div className="container container--small">
                 {faqs.map((faq, index) => {
-                  return <FaqAccordian faq={faq} index={index} key= {index}/>;
+                  return <FaqAccordian faq={faq} index={index} key={index} />;
                 })}
                 <div className="bottom_cta" />
               </div>
@@ -280,20 +250,12 @@ const Home = () => {
                     <h3 className="footer-04__title">Company</h3>
                     <ul className="footer-04__list">
                       <li className="footer-04__item">
-                        <a
-                          href="/about"
-                          target="_blank"
-                          className="footer-04__link"
-                        >
+                        <a href="/about" target="_blank" className="footer-04__link">
                           About Us
                         </a>
                       </li>
                       <li className="footer-04__item">
-                        <a
-                          href="/contact"
-                          target="_blank"
-                          className="footer-04__link"
-                        >
+                        <a href="/contact" target="_blank" className="footer-04__link">
                           Contact Us
                         </a>
                       </li>
@@ -303,20 +265,12 @@ const Home = () => {
                     <h3 className="footer-04__title">Resources</h3>
                     <ul className="footer-04__list">
                       <li className="footer-04__item">
-                        <a
-                          href="/faq"
-                          target="_blank"
-                          className="footer-04__link"
-                        >
+                        <a href="/faq" target="_blank" className="footer-04__link">
                           FAQ
                         </a>
                       </li>
                       <li className="footer-04__item">
-                        <a
-                          href="/blog"
-                          target="_blank"
-                          className="footer-04__link"
-                        >
+                        <a href="/blog" target="_blank" className="footer-04__link">
                           Blog
                         </a>
                       </li>
@@ -399,22 +353,10 @@ const Home = () => {
             <div className="pswp__ui pswp__ui--hidden">
               <div className="pswp__top-bar">
                 <div className="pswp__counter" />
-                <button
-                  className="pswp__button pswp__button--close"
-                  title="Close (Esc)"
-                />
-                <button
-                  className="pswp__button pswp__button--share"
-                  title="Share"
-                />
-                <button
-                  className="pswp__button pswp__button--fs"
-                  title="Toggle fullscreen"
-                />
-                <button
-                  className="pswp__button pswp__button--zoom"
-                  title="Zoom in/out"
-                />
+                <button className="pswp__button pswp__button--close" title="Close (Esc)" />
+                <button className="pswp__button pswp__button--share" title="Share" />
+                <button className="pswp__button pswp__button--fs" title="Toggle fullscreen" />
+                <button className="pswp__button pswp__button--zoom" title="Zoom in/out" />
                 <div className="pswp__preloader">
                   <div className="pswp__preloader__icn">
                     <div className="pswp__preloader__cut">

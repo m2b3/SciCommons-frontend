@@ -33,11 +33,11 @@ const ChatPage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       params: {
-        article: id,
-      },
+        article: id
+      }
     };
     axios
       .get(`/api/article_chat/`, config)
@@ -59,8 +59,8 @@ const ChatPage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     try {
@@ -74,8 +74,8 @@ const ChatPage = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
       navigate("/404");
@@ -141,14 +141,14 @@ const ChatPage = () => {
       const config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const response = await axios.post(
         `/api/article_chat/`,
         {
           article: id,
-          body: Message,
+          body: Message
         },
         config
       );
@@ -160,15 +160,7 @@ const ChatPage = () => {
 
   const fillLoader = () => {
     if (loadings) {
-      return (
-        <ColorRing
-          height="30"
-          width="30"
-          radius="4"
-          color="white"
-          ariaLabel="loading"
-        />
-      );
+      return <ColorRing height="30" width="30" radius="4" color="white" ariaLabel="loading" />;
     }
     return <AiOutlineSend size={20} />;
   };
@@ -183,8 +175,8 @@ const ChatPage = () => {
         personal: true,
         created_at: new Date().toISOString(),
         media: null,
-        article: id,
-      },
+        article: id
+      }
     ];
     setMessages(messages);
   };
@@ -221,9 +213,9 @@ const ChatPage = () => {
               </span>
             </div>
             <div className="bg-green-50 rounded-lg shadow-md p-1 md:p-4 h-full overflow-y-scroll">
-              {Messages.map((message,index) => (
+              {Messages.map((message, index) => (
                 <MessageBox
-                key={index}
+                  key={index}
                   position={message.personal ? "right" : "left"}
                   type={"text"}
                   text={message.body}

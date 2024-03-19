@@ -15,7 +15,7 @@ const UserActivity = () => {
     setLoading(true);
     try {
       const response = await axios.get(`/api/user/myactivity/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = response.data.success;
       await loadData(data);
@@ -41,9 +41,7 @@ const UserActivity = () => {
     <div>
       <NavBar />
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-4xl font-bold mt-4 text-center text-green-500">
-          Your Activity
-        </h1>
+        <h1 className="text-4xl font-bold mt-4 text-center text-green-500">Your Activity</h1>
       </div>
       <div className="container mx-auto mt-4 w-full md:w-3/4">
         {loading && <Loader />}
@@ -51,10 +49,7 @@ const UserActivity = () => {
           <>
             <div className="flex items-center justify-center">
               <div className="w-1/3 h-1/3 block">
-                <img
-                  src={process.env.PUBLIC_URL + "/nonotifications.jpg"}
-                  alt="No activity"
-                />
+                <img src={process.env.PUBLIC_URL + "/nonotifications.jpg"} alt="No activity" />
               </div>
             </div>
             <h1 className="text-2xl font-bold mb-4 mt-4 text-center text-green-500">

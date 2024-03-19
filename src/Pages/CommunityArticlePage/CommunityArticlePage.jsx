@@ -50,14 +50,11 @@ const CommunityArticlePage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
-      const res = await axios.put(
-        `/api/article/${articleId}/updateviews/`,
-        config
-      );
+      const res = await axios.put(`/api/article/${articleId}/updateviews/`, config);
     } catch (err) {
       console.log(err);
     }
@@ -71,23 +68,19 @@ const CommunityArticlePage = () => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const res = await axios.get(`/api/community/${communityName}/`, config);
       await loadCommunity(res.data.success);
       if (!res.data.success.isMember) {
-        ToastMaker(
-          `You are not member of ${res.data.success.Community_name}`,
-          3000,
-          {
-            valign: "top",
-            styles: {
-              backgroundColor: "red",
-              fontSize: "20px",
-            },
+        ToastMaker(`You are not member of ${res.data.success.Community_name}`, 3000, {
+          valign: "top",
+          styles: {
+            backgroundColor: "red",
+            fontSize: "20px"
           }
-        );
+        });
         navigate("/communities");
       }
     } catch (error) {
@@ -97,8 +90,8 @@ const CommunityArticlePage = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
         navigate("/communities");
       }
@@ -109,8 +102,8 @@ const CommunityArticlePage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const res = await axios.get(`/api/article/${articleId}`, config);
@@ -122,8 +115,8 @@ const CommunityArticlePage = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
       }
       navigate("/404");
@@ -141,15 +134,15 @@ const CommunityArticlePage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       params: {
         article: articleId,
         order: filter,
         Type: Type === "null" ? null : Type,
         comment_type: comment_type === "null" ? null : comment_type,
-        tag: communityName,
-      },
+        tag: communityName
+      }
     };
     try {
       const res = await axios.get(`/api/comment/`, config);
@@ -212,20 +205,16 @@ const CommunityArticlePage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     if (article.isFavourite === false) {
       try {
-        const res = await axios.post(
-          `/api/article/favourite/`,
-          { article: articleId },
-          config
-        );
+        const res = await axios.post(`/api/article/favourite/`, { article: articleId }, config);
         const newArticle = {
           ...article,
           isFavourite: true,
-          favourites: article.favourites + 1,
+          favourites: article.favourites + 1
         };
         await loadArticleData(newArticle);
       } catch (err) {
@@ -233,15 +222,11 @@ const CommunityArticlePage = () => {
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/article/unfavourite/`,
-          { article: articleId },
-          config
-        );
+        const res = await axios.post(`/api/article/unfavourite/`, { article: articleId }, config);
         const newArticle = {
           ...article,
           isFavourite: false,
-          favourites: article.favourites - 1,
+          favourites: article.favourites - 1
         };
         await loadArticleData(newArticle);
       } catch (err) {
@@ -287,21 +272,18 @@ const CommunityArticlePage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       params: {
         article: articleId,
         order: filter,
         Type: Type === "null" ? null : Type,
         comment_type: comment_type === "null" ? null : comment_type,
-        tag: communityName,
-      },
+        tag: communityName
+      }
     };
     try {
-      const res = await axios.get(
-        `/api/comment/?limit=20&offset=${comments.length}`,
-        config
-      );
+      const res = await axios.get(`/api/comment/?limit=20&offset=${comments.length}`, config);
       await loadCommentData([...comments, ...res.data.success.results]);
     } catch (err) {
       console.log(err);
@@ -346,13 +328,11 @@ const CommunityArticlePage = () => {
       valign: "top",
       styles: {
         backgroundColor: "green",
-        fontSize: "20px",
-      },
+        fontSize: "20px"
+      }
     });
     e.stopPropagation();
-    navigator.clipboard.writeText(
-      `https://scicommons.org/article/${article.id}`
-    );
+    navigator.clipboard.writeText(`https://scicommons.org/article/${article.id}`);
   };
 
   return (
@@ -368,11 +348,7 @@ const CommunityArticlePage = () => {
                     {article.article_name.replace(/_/g, " ")}
                   </div>
                   <div className="flex flex-row">
-                    <div
-                      className="icon"
-                      style={{ cursor: "pointer" }}
-                      onClick={handleFavourites}
-                    >
+                    <div className="icon" style={{ cursor: "pointer" }} onClick={handleFavourites}>
                       {article.isFavourite === true ? (
                         <AiFillHeart className="w-[2rem] h-[2rem]" />
                       ) : (
@@ -384,9 +360,7 @@ const CommunityArticlePage = () => {
                 <div className="py-1 bg-white">
                   <span className="italic font-sans text-md md:text-lg leading-[1.5rem] ">
                     {article.link && (
-                      <span className="text-green-800 font-semibold">
-                        Added by:{" "}
-                      </span>
+                      <span className="text-green-800 font-semibold">Added by: </span>
                     )}
                     {article.authors.map((data, i) => {
                       return (
@@ -428,11 +402,7 @@ const CommunityArticlePage = () => {
                   <span className="text-[.75rem] p-0">
                     {!article.link && (
                       <>
-                        <img
-                          className="w-[.875rem] inline mb-1"
-                          src={cal}
-                          alt=""
-                        ></img>
+                        <img className="w-[.875rem] inline mb-1" src={cal} alt=""></img>
                         <span className="pl-1">Published:</span>
                         {article.published_date === null
                           ? " Not Published"
@@ -448,11 +418,7 @@ const CommunityArticlePage = () => {
                           : `Accepted by ${article.published}`}
                       </>
                     )}
-                    <img
-                      className="w-[.875rem] inline mb-1 mr-1 ml-4"
-                      src={eye}
-                      alt=""
-                    ></img>
+                    <img className="w-[.875rem] inline mb-1 mr-1 ml-4" src={eye} alt=""></img>
 
                     {article.status === "public" ? "Everyone" : "Private"}
                     <AiFillHeart className="w-[.875rem] inline mb-1 mr-1 ml-4" />
@@ -473,18 +439,13 @@ const CommunityArticlePage = () => {
                 )}
                 {article.license !== null && article.license !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      License :{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> License : </strong>
                     <span>{article.license}</span>
                   </div>
                 )}
                 {article.Code !== null && article.Code !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      Code :{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]">Code : </strong>
                     <a href={article.Code} className="text-[#337ab7]">
                       {" "}
                       {article.Code}
@@ -493,10 +454,7 @@ const CommunityArticlePage = () => {
                 )}
                 {article.video !== null && article.Code !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      Video Link:{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> Video Link: </strong>
                     <a href={article.video} className="text-[#337ab7]">
                       {" "}
                       {article.video}
@@ -505,10 +463,7 @@ const CommunityArticlePage = () => {
                 )}
                 {article.doi !== null && article.doi !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      DOI:{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> DOI: </strong>
                     <a href={article.doi} className="text-[#337ab7]">
                       {article.doi}
                     </a>
@@ -516,10 +471,7 @@ const CommunityArticlePage = () => {
                 )}
                 {article.link && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">
-                      {" "}
-                      Article Link:{" "}
-                    </strong>
+                    <strong className="text-green-700 font-[700]"> Article Link: </strong>
                     <a href={article.link} className="text-[#337ab7]">
                       {" "}
                       {article.link}
@@ -527,10 +479,7 @@ const CommunityArticlePage = () => {
                   </div>
                 )}
                 <div className="block">
-                  <strong className="text-green-700 font-[700]">
-                    {" "}
-                    Submission Date :{" "}
-                  </strong>
+                  <strong className="text-green-700 font-[700]"> Submission Date : </strong>
                   <span> {findTime(article.Public_date)} </span>
                 </div>
               </div>
@@ -663,12 +612,7 @@ const CommunityArticlePage = () => {
                 {!loadingComment &&
                   comments.length > 0 &&
                   comments.map((comment) => (
-                    <Comments
-                      key={comment.id}
-                      comment={comment}
-                      article={article}
-                      colour={1}
-                    />
+                    <Comments key={comment.id} comment={comment} article={article} colour={1} />
                   ))}
                 {loadingComment && <Loader />}
                 {!loadingComment && comments.length === 0 && (

@@ -53,9 +53,7 @@ const ArticleCard = ({ articles }) => {
                       <span className="flex items-center text-gray-500">
                         <AiFillHeart className="w-4 h-4 mr-2" />
                         <span className="text-lg font-bold">
-                          {item.favourites == null
-                            ? 0
-                            : formatCount(item.favourites)}
+                          {item.favourites == null ? 0 : formatCount(item.favourites)}
                         </span>
                       </span>
                     </div>
@@ -136,9 +134,7 @@ const ArticleCard = ({ articles }) => {
           </li>
         ))
       ) : (
-        <h1 className="text-2xl font-bold text-center w-full text-gray-500">
-          No Articles Found
-        </h1>
+        <h1 className="text-2xl font-bold text-center w-full text-gray-500">No Articles Found</h1>
       )}
     </ul>
   );

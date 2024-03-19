@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {useGlobalContext} from "../../Context/StateContext";
+import { useEffect, useState } from "react";
+import { useGlobalContext } from "../../Context/StateContext";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import Post from "../../Components/Post/Post";
@@ -7,7 +7,6 @@ import PageHeader from "../../Components/PageHeader";
 import NewPostModal from "./NewPostModal";
 
 const MyPostsPage = () => {
-
   const { token } = useGlobalContext();
 
   const [loading, setLoading] = useState(true);
@@ -18,11 +17,11 @@ const MyPostsPage = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     };
     try {
-      const res = await axios.get(`/api/user/myposts/`, config)
+      const res = await axios.get(`/api/user/myposts/`, config);
       await setPosts(res.data.success);
     } catch (err) {
       console.log(err);
@@ -50,29 +49,29 @@ const MyPostsPage = () => {
   if (loading) return <Loader />;
 
   return (
-      <div className="h-full flex-grow">
-          <PageHeader
-              title="My Posts"
-              subtitle="View and manage your posts here."
-              sidebarRenderer={() => (<NewPostModal refreshPost={fetchPosts} />)}
-          />
-          <div className="container mx-auto px-4 w-full md:w-1/2 md:!py-12 lg:!py-20">
-            {posts.length > 0 &&
-              posts.map((post) => (
-                <Post
-                  key={post.id}
-                  post={post}
-                  onDeletePost={onDeletePost}
-                  handleEditChange={handleEditChange}
-                />
-              ))}
-            {posts.length === 0 && (
-              <div className="flex justify-center h-screen">
-                <p className="text-2xl font-semibold">No Posts to show</p>
-              </div>
-            )}
+    <div className="h-full flex-grow">
+      <PageHeader
+        title="My Posts"
+        subtitle="View and manage your posts here."
+        sidebarRenderer={() => <NewPostModal refreshPost={fetchPosts} />}
+      />
+      <div className="container mx-auto px-4 w-full md:w-1/2 md:!py-12 lg:!py-20">
+        {posts.length > 0 &&
+          posts.map((post) => (
+            <Post
+              key={post.id}
+              post={post}
+              onDeletePost={onDeletePost}
+              handleEditChange={handleEditChange}
+            />
+          ))}
+        {posts.length === 0 && (
+          <div className="flex justify-center h-screen">
+            <p className="text-2xl font-semibold">No Posts to show</p>
           </div>
-        </div>
+        )}
+      </div>
+    </div>
   );
 };
 

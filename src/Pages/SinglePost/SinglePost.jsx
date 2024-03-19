@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
-import {
-  AiOutlineSend,
-} from "react-icons/ai";
+import { AiOutlineSend } from "react-icons/ai";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
 import ToastMaker from "toastmaker";
@@ -55,25 +53,22 @@ const SinglePost = () => {
     if (token === null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       };
     } else {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`
         },
         params: {
-          post: postId,
-        },
+          post: postId
+        }
       };
     }
     try {
-      const res = await axios.get(
-        `/api/feedcomment/?limit=20&offset=${comments.length}`,
-        config
-      );
+      const res = await axios.get(`/api/feedcomment/?limit=20&offset=${comments.length}`, config);
       await loadCommentsData([...comments, ...res.data.success.results]);
     } catch (err) {
       console.log(err);
@@ -87,15 +82,15 @@ const SinglePost = () => {
     if (token === null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       };
     } else {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
 
@@ -109,8 +104,8 @@ const SinglePost = () => {
           valign: "top",
           styles: {
             backgroundColor: "red",
-            fontSize: "20px",
-          },
+            fontSize: "20px"
+          }
         });
         navigate("/explore");
       }
@@ -141,15 +136,11 @@ const SinglePost = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
-      const res = await axios.post(
-        `/api/feedcomment/`,
-        { post: postId, comment: comment },
-        config
-      );
+      const res = await axios.post(`/api/feedcomment/`, { post: postId, comment: comment }, config);
       res.data.comment.commentavatar = user.profile_pic_url;
       res.data.comment.username = user.username;
       res.data.comment.commentliked = 0;
@@ -163,8 +154,8 @@ const SinglePost = () => {
         valign: "top",
         styles: {
           backgroundColor: "green",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
       setLoadSubmit(false);
     } catch (err) {
@@ -238,18 +229,11 @@ const SinglePost = () => {
 
             <div className="mx-auto border p-6 w-full md:w-1/2 bg-white">
               <div className="text-3xl font-semibold text-green-600">
-                Comments{" "}
-                {post.comments_count > 0 &&
-                  `(${formatCount(post.comments_count)})`}
+                Comments {post.comments_count > 0 && `(${formatCount(post.comments_count)})`}
               </div>
               {comments.length > 0 &&
-                comments.map((comment,index) => (
-                  <SocialComment
-                  key = {index}
-                    comment={comment}
-                    post={post}
-                    setPost={setPost}
-                  />
+                comments.map((comment, index) => (
+                  <SocialComment key={index} comment={comment} post={post} setPost={setPost} />
                 ))}
               <button
                 style={{ cursor: "pointer" }}

@@ -40,18 +40,18 @@ const CommunityPage = () => {
         if (token === null) {
           config = {
             headers: {
-              "Content-Type": "application/json",
-            },
+              "Content-Type": "application/json"
+            }
           };
         } else {
           config = {
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           };
         }
         const res = await axios.get(`/api/community/${communityName}/`, config);
-        const checkIsAdmin = res.data.success.isAdmin
+        const checkIsAdmin = res.data.success.isAdmin;
         setIsAdminCommunity(checkIsAdmin);
         await loadCommunity(res.data.success);
         setSubscribed(res.data.success.isSubscribed);
@@ -62,8 +62,8 @@ const CommunityPage = () => {
             valign: "top",
             styles: {
               backgroundColor: "red",
-              fontSize: "20px",
-            },
+              fontSize: "20px"
+            }
           });
           navigate("/communities");
         }
@@ -87,14 +87,14 @@ const CommunityPage = () => {
       const updatedStatus = !subscribed;
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       if (subscribed === false) {
         const response = await axios.post(
           `/api/community/${community.Community_name}/subscribe/`,
           {
-            user: user.id,
+            user: user.id
           },
           config
         );
@@ -105,7 +105,7 @@ const CommunityPage = () => {
         const response = await axios.post(
           `/api/community/${community.Community_name}/unsubscribe/`,
           {
-            user: user.id,
+            user: user.id
           },
           config
         );
@@ -188,10 +188,7 @@ const CommunityPage = () => {
               </div>
               <div className="mt-4 flex">
                 <BsGithub className="text-xl text-green-700 md:mr-3" />{" "}
-                <a
-                  className="text-sm md:text-md text-left text-gray-500"
-                  href={community?.github}
-                >
+                <a className="text-sm md:text-md text-left text-gray-500" href={community?.github}>
                   {community?.github}
                 </a>
               </div>
@@ -203,10 +200,7 @@ const CommunityPage = () => {
               </div>
               <div className="mt-4 flex">
                 <CgWebsite className="text-xl text-green-700 md:mr-3" />{" "}
-                <a
-                  className="text-sm md:text-md text-left text-gray-500"
-                  href={community?.website}
-                >
+                <a className="text-sm md:text-md text-left text-gray-500" href={community?.website}>
                   {community?.website}
                 </a>
               </div>
@@ -220,10 +214,7 @@ const CommunityPage = () => {
               </div>
               <div className="mt-4 flex">
                 <FaPencilAlt className="text-xl text-green-700 md:mr-3" />{" "}
-                <a
-                  className="text-sm md:text-md text-left text-gray-500"
-                  href={community?.github}
-                >
+                <a className="text-sm md:text-md text-left text-gray-500" href={community?.github}>
                   {community?.evaluatedcount}
                 </a>
               </div>
@@ -241,19 +232,21 @@ const CommunityPage = () => {
               </div>
             </div>
             <div className="mt-8 flex flex-row justify-end">
-              {!isAdminCommunity && <button
-                className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  if (token === null) {
-                    navigate("/login");
-                  } else {
-                    navigate(`/join-community/${community.Community_name}`);
-                  }
-                }}
-              >
-                Join Community
-              </button> }
+              {!isAdminCommunity && (
+                <button
+                  className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    if (token === null) {
+                      navigate("/login");
+                    } else {
+                      navigate(`/join-community/${community.Community_name}`);
+                    }
+                  }}
+                >
+                  Join Community
+                </button>
+              )}
               {/* <button
                                         className={`${
                                             subscribed

@@ -17,9 +17,7 @@ const Comments = ({ comment, article, colour }) => {
   const [loading, setLoading] = useState(false);
   const [repliesData, setRepliesData] = useState([]);
   const [show, setShow] = useState(false);
-  const [rating, setRating] = useState(
-    comment.userrating ? comment.userrating : 0
-  );
+  const [rating, setRating] = useState(comment.userrating ? comment.userrating : 0);
   const [overallrating, setOverallRating] = useState(
     comment.commentrating ? comment.commentrating : 0
   );
@@ -32,7 +30,7 @@ const Comments = ({ comment, article, colour }) => {
 
   const colorClasses = {
     0: "bg-white",
-    1: "bg-slate-100",
+    1: "bg-slate-100"
   };
 
   const findTime = (date) => {
@@ -79,43 +77,32 @@ const Comments = ({ comment, article, colour }) => {
   };
 
   const styleLinksWithColor = (htmlContent) => {
-    const coloredLinks = htmlContent.replace(
-      /<a /g,
-      '<a style="color: blue;" '
-    );
+    const coloredLinks = htmlContent.replace(/<a /g, '<a style="color: blue;" ');
     return coloredLinks;
   };
 
   const fillConfidence = () => {
     if (comment.confidence === 1) {
-      return (
-        <span className="text-sm italic">My review is educated guess</span>
-      );
+      return <span className="text-sm italic">My review is educated guess</span>;
     } else if (comment.confidence === 2) {
       return (
         <span className="text-sm italic">
-          I am willing to defend my evaluation but Its likely that I didnt
-          understand central parts of paper
+          I am willing to defend my evaluation but Its likely that I didnt understand central parts
+          of paper
         </span>
       );
     } else if (comment.confidence === 3) {
-      return (
-        <span className="text-sm italic">
-          I am fairly confident that review is correct
-        </span>
-      );
+      return <span className="text-sm italic">I am fairly confident that review is correct</span>;
     } else if (comment.confidence === 4) {
       return (
         <span className="text-sm italic">
-          I am confident but not absolutely certain that my evaluation is
-          correct
+          I am confident but not absolutely certain that my evaluation is correct
         </span>
       );
     } else if (comment.confidence === 5) {
       return (
         <span className="text-sm italic">
-          I am absolutely certain that evaluation is correct and familiar with
-          relevant literature
+          I am absolutely certain that evaluation is correct and familiar with relevant literature
         </span>
       );
     }
@@ -142,8 +129,8 @@ const Comments = ({ comment, article, colour }) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const res = await axios.post(
@@ -155,8 +142,8 @@ const Comments = ({ comment, article, colour }) => {
         valign: "top",
         styles: {
           backgroundColor: "green",
-          fontSize: "20px",
-        },
+          fontSize: "20px"
+        }
       });
     } catch (err) {
       console.log(err);
@@ -175,26 +162,23 @@ const Comments = ({ comment, article, colour }) => {
       config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`
         },
         params: {
           parent_comment: versions[index].id,
-          article: article.id,
-        },
+          article: article.id
+        }
       };
     } else {
       config = {
         params: {
           parent_comment: versions[index].id,
-          article: article.id,
-        },
+          article: article.id
+        }
       };
     }
     try {
-      const res = await axios.get(
-        `/api/comment/?limit=20&offset=${repliesData.length}`,
-        config
-      );
+      const res = await axios.get(`/api/comment/?limit=20&offset=${repliesData.length}`, config);
       await loadData(res.data.success.results);
     } catch (err) {
       console.log(err);
@@ -206,9 +190,7 @@ const Comments = ({ comment, article, colour }) => {
     if (repliesData.length === 0) {
       return `Load replies`;
     } else if (versions[index].replies > repliesData.length) {
-      return `Load ${
-        versions[index].replies - repliesData.length
-      } more replies`;
+      return `Load ${versions[index].replies - repliesData.length} more replies`;
     } else {
       return "";
     }
@@ -346,11 +328,7 @@ const Comments = ({ comment, article, colour }) => {
               <IoIosArrowForward className="w-6 h-6" />
             </button>
             {article.isArticleModerator && (
-              <Dropdown
-                article={article}
-                comment={comment}
-                color={colorClasses[colour]}
-              />
+              <Dropdown article={article} comment={comment} color={colorClasses[colour]} />
             )}
           </div>
         </div>
@@ -388,8 +366,8 @@ const Comments = ({ comment, article, colour }) => {
                     <Slider
                       sx={{
                         '& input[type="range"]': {
-                          WebkitAppearance: "slider-vertical",
-                        },
+                          WebkitAppearance: "slider-vertical"
+                        }
                       }}
                       orientation="vertical"
                       defaultValue={rating}
@@ -406,9 +384,7 @@ const Comments = ({ comment, article, colour }) => {
                 )}
               </div>
               <div className="border-l-2 border-gray-200 p-2 rounded-xl">
-                <div className="text-sm font-semibold text-green-800">
-                  Comment:
-                </div>
+                <div className="text-sm font-semibold text-green-800">Comment:</div>
                 <ReactQuill
                   value={styleLinksWithColor(versions[index].Comment)}
                   readOnly={true}
@@ -416,9 +392,7 @@ const Comments = ({ comment, article, colour }) => {
                 />
                 {comment.Type === "review" && (
                   <div className="container w-full mt-1">
-                    <span className="font-semibold text-sm text-green-800">
-                      Confidence:
-                    </span>{" "}
+                    <span className="font-semibold text-sm text-green-800">Confidence:</span>{" "}
                     {fillConfidence()}
                   </div>
                 )}
@@ -496,6 +470,5 @@ const Comments = ({ comment, article, colour }) => {
     </>
   );
 };
-
 
 export default Comments;
