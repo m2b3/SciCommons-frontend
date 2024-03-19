@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { SlUser } from "react-icons/sl";
-import { IoMdMore } from "react-icons/io";
-import axios from "../../Utils/axios";
-import Popper from "popper.js";
-import { useNavigate } from "react-router-dom";
-import { FiLogOut } from "react-icons/fi";
-import { useGlobalContext } from "../../Context/StateContext";
-import {
-  navbarNavigationRoutes,
-  arrowHeadNextIcon,
-} from "../../Utils/Constants/Navbar";
-import { getContainerStyles } from "../../Utils/Constants/Globals";
-import useWindowSize from "../../Utils/Hooks/useWindowSize";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { IoMdMore } from 'react-icons/io';
+import axios from '../../Utils/axios';
+import Popper from 'popper.js';
+import { useNavigate } from 'react-router-dom';
+import { FiLogOut } from 'react-icons/fi';
+import { useGlobalContext } from '../../Context/StateContext';
+
+import { navbarNavigationRoutes, arrowHeadNextIcon } from '../../Utils/Constants/Navbar';
+import { getContainerStyles } from '../../Utils/Constants/Globals';
+import useWindowSize from '../../Utils/Hooks/useWindowSize';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const Spinner = () => {
   return (
@@ -45,6 +43,7 @@ const NavBar = () => {
     setAnchorEl(null);
     setIsMenuOpen(false);
   };
+  // const { userGlobal } = useGlobalContext();
 
   //const navigation = navbarNavigationRoutes;
 
@@ -57,8 +56,8 @@ const NavBar = () => {
     try {
       const response = await axios.get(`/api/user/get_current_user/`, {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
       const user = response.data.success;
       await loadUserData(user);
@@ -79,12 +78,12 @@ const NavBar = () => {
 
   const handleLogout = (e) => {
     setIsAuth(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("Menu");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('Menu');
     setToken(null);
     setIsOpen(false);
-    navigate("/", { replace: true });
+    navigate('/', { replace: true });
     window.location.reload();
   };
 
@@ -96,22 +95,19 @@ const NavBar = () => {
     <>
       <nav
         className="sticky top-0 bg-white md:text-sm z-50 border-b-2 py-3"
-        style={getContainerStyles(windowSize.width)}
-      >
+        style={getContainerStyles(windowSize.width)}>
         <div
           className="gap-x-7 items-center pl-4 pr-2 md:pr-6 flex flex-row"
-          style={{ justifyContent: "space-between" }}
-        >
+          style={{ justifyContent: 'space-between' }}>
           <div className="flex items-center justify-between py-1 md:hidden">
             <div className="flex flex-row items-center justify-between">
               {windowSize.width < 768 && (
                 <Link
                   to="/"
                   className="font-bold text-green-600 flex flex-row items-center"
-                  style={{ textDecoration: "none", justifyContent: "center" }}
-                >
+                  style={{ textDecoration: 'none', justifyContent: 'center' }}>
                   <img
-                    src={process.env.PUBLIC_URL + "/logo.png"}
+                    src={process.env.PUBLIC_URL + '/logo.png'}
                     width={40}
                     height={20}
                     alt="logo"
@@ -127,8 +123,7 @@ const NavBar = () => {
                 <Link
                   to={link.path}
                   className="text-sm text-green-600 font-semibold p-2"
-                  key={index}
-                >
+                  key={index}>
                   {link.title}
                 </Link>
               );
@@ -136,19 +131,14 @@ const NavBar = () => {
           </div>
           <div
             className="flex flex-row items-center justify-end md:gap-x-6"
-            style={{ justifySelf: "flex-end" }}
-          >
+            style={{ justifySelf: 'flex-end' }}>
             {(loading || isAuth === null) && <Spinner />}
             {!loading && isAuth && (
               <div className=" flex items-center">
                 <Dropdown
                   color="orange"
                   onLogout={handleLogout}
-                  User={
-                    user.profile_pic_url.includes("None")
-                      ? null
-                      : user.profile_pic_url
-                  }
+                  User={user.profile_pic_url.includes('None') ? null : user.profile_pic_url}
                 />
               </div>
             )}
@@ -157,14 +147,12 @@ const NavBar = () => {
               <div className="gap-x-4 flex flex-row items-center">
                 <Link
                   to="/login"
-                  className="block text-sm text-base text-green-500 font-semibold hover:text-green-700"
-                >
+                  className="block text-sm text-base text-green-500 font-semibold hover:text-green-700">
                   Log in
                 </Link>
                 <Link
                   to="/register"
-                  className="flex text-sm items-center bottom-2 justify-center gap-x-1 py-2 px-4 text-white font-medium bg-green-600 hover:bg-green-700 active:bg-green-900 rounded-full md:inline-flex"
-                >
+                  className="flex text-sm items-center bottom-2 justify-center gap-x-1 py-2 px-4 text-white font-medium bg-green-600 hover:bg-green-700 active:bg-green-900 rounded-full md:inline-flex">
                   Register
                   {arrowHeadNextIcon()}
                 </Link>
@@ -172,8 +160,7 @@ const NavBar = () => {
             )}
             <div
               className="flex flex-row items-center justify-between md:hidden text-2xl ml-2"
-              onClick={(e) => handleClick(e)}
-            >
+              onClick={(e) => handleClick(e)}>
               <IoMdMore />
             </div>
           </div>
@@ -241,35 +228,25 @@ const NavBar = () => {
             open={isMenuOpen}
             onClose={() => handleClose()}
             anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
+              vertical: 'bottom',
+              horizontal: 'left'
             }}
             transformOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-          >
+              vertical: 'bottom',
+              horizontal: 'left'
+            }}>
             <Link to="/submitarticle" className="block">
-              <MenuItem
-                onClick={() => handleClose()}
-                sx={{ padding: "8px 28px" }}
-              >
+              <MenuItem onClick={() => handleClose()} sx={{ padding: '8px 28px' }}>
                 Submit Article
               </MenuItem>
             </Link>
             <Link to="/communities" className="block">
-              <MenuItem
-                onClick={() => handleClose()}
-                sx={{ padding: "8px 28px" }}
-              >
+              <MenuItem onClick={() => handleClose()} sx={{ padding: '8px 28px' }}>
                 Communities
               </MenuItem>
             </Link>
             <Link to="/articles" className="block">
-              <MenuItem
-                onClick={() => handleClose()}
-                sx={{ padding: "8px 28px" }}
-              >
+              <MenuItem onClick={() => handleClose()} sx={{ padding: '8px 28px' }}>
                 Articles
               </MenuItem>
             </Link>
@@ -287,7 +264,7 @@ const Dropdown = ({ color, onLogout, User }) => {
   const popoverDropdownRef = React.createRef();
   const openDropdownPopover = () => {
     new Popper(btnDropdownRef.current, popoverDropdownRef.current, {
-      placement: "bottom-start",
+      placement: 'bottom-start'
     });
     setDropdownPopoverShow(true);
   };
@@ -315,22 +292,17 @@ const Dropdown = ({ color, onLogout, User }) => {
           <div className="relative inline-flex align-middle w-full">
             <button
               className={
-                "text-white font-bold uppercase text-sm rounded-full outline-none focus:outline-none bg-slate-200"
+                'text-white font-bold uppercase text-sm rounded-full outline-none focus:outline-none bg-slate-200'
               }
-              style={{ transition: "all .15s ease", cursor: "pointer" }}
+              style={{ transition: 'all .15s ease', cursor: 'pointer' }}
               type="button"
               ref={btnDropdownRef}
-              onClick={(e) => handleOpen(e)}
-            >
-              <span className="p-2 inline-block flex items-center justify-items-center">
+              onClick={(e) => handleOpen(e)}>
+              <span className="inline-block w-11 h-11 overflow-hidden rounded-full">
                 {User === null ? (
-                  <SlUser className="text-black w-4 h-4 inline-block" />
+                  <SlUser className="text-black w-10 h-10" />
                 ) : (
-                  <img
-                    className="object-cover w-10 h-4 mt-1"
-                    src={User}
-                    alt="avatar"
-                  />
+                  <img className="w-full h-full object-cover" src={User} alt="avatar" />
                 )}
               </span>
             </button>
@@ -343,27 +315,20 @@ const Dropdown = ({ color, onLogout, User }) => {
                 open={dropdownPopoverShow}
                 onClose={() => handleClose()}
                 anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
+                  vertical: 'bottom',
+                  horizontal: 'left'
                 }}
                 transformOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-              >
+                  vertical: 'bottom',
+                  horizontal: 'left'
+                }}>
                 <Link to="/myprofile" className="block">
-                  <MenuItem
-                    onClick={() => handleClose()}
-                    sx={{ padding: "8px 28px" }}
-                  >
+                  <MenuItem onClick={() => handleClose()} sx={{ padding: '8px 28px' }}>
                     Your Profile
                   </MenuItem>
                 </Link>
                 <Link to="/notifications" className="block">
-                  <MenuItem
-                    onClick={() => handleClose()}
-                    sx={{ padding: "8px 28px" }}
-                  >
+                  <MenuItem onClick={() => handleClose()} sx={{ padding: '8px 28px' }}>
                     Notifications
                   </MenuItem>
                 </Link>
@@ -373,8 +338,7 @@ const Dropdown = ({ color, onLogout, User }) => {
                       handleClose();
                       onLogout(e);
                     }}
-                    sx={{ padding: "8px 28px" }}
-                  >
+                    sx={{ padding: '8px 28px' }}>
                     <FiLogOut className="w-4 h-4 mr-1" />
                     Log Out
                   </MenuItem>
