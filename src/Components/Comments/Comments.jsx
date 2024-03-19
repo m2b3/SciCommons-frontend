@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
@@ -9,14 +9,16 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import { useNavigate } from "react-router-dom";
 import axios from "../../Utils/axios";
+import { FaLink } from "react-icons/fa6";
+import toast from "react-hot-toast";
 import ArticleCommentModal from "./ArticleCommentModal";
 import ArticleCommentEditModal from "./ArticleCommentEditModal";
 import Dropdown from "./Dropdown";
 
-const Comments = ({ comment, article, colour }) => {
+const Comments = ({ comment, article, colour, paramCommentId }) => {
   const [loading, setLoading] = useState(false);
   const [repliesData, setRepliesData] = useState([]);
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(typeof comment.replies === "object");
   const [rating, setRating] = useState(
     comment.userrating ? comment.userrating : 0
   );
@@ -29,6 +31,7 @@ const Comments = ({ comment, article, colour }) => {
   const [index, setIndex] = useState(comment.versions.length);
   const { token } = useGlobalContext();
   const navigate = useNavigate();
+  const [commentHighlight, setCommentHighlight] = useState(false);
 
   const colorClasses = {
     0: "bg-white",
@@ -228,11 +231,28 @@ const Comments = ({ comment, article, colour }) => {
     setShowEditModal(true);
   };
 
+  useEffect(() => {
+    if (paramCommentId == comment.id) {
+      document
+        .getElementById(paramCommentId)
+        .scrollIntoView({ behavior: "smooth" });
+      setCommentHighlight(true);
+      setTimeout(() => {
+        setCommentHighlight(false);
+      }, 2000);
+    }
+  }, []);
+
   return (
     <>
       <div
-        className={`mb-2 w-full ${colorClasses[colour]} shadow-lg min-w-[200px] rounded px-4 py-2 overflow-x-auto`}
+        className={`mb-2 w-full  ${
+          commentHighlight
+            ? "shadow-[0_0px_20px_0px_rgba(0,0,0,0.2)] border-green-600 border-1 bg-green-50"
+            : `shadow-lg ${colorClasses[colour]}`
+        } min-w-[200px] rounded px-4 py-2 overflow-x-auto transition-all duration-300 ease-in-out`}
         data-commentid={comment.id}
+        id={comment.id}
       >
         <div className="flex flex-row items-center justify-between">
           <div
@@ -353,6 +373,20 @@ const Comments = ({ comment, article, colour }) => {
               />
             )}
           </div>
+          <FaLink
+            className="cursor-pointer size-5"
+            onClick={() => {
+              const baseUrl = window.location.href.split("?")[0];
+              const currentParams = new URLSearchParams(window.location.search);
+              const currentCommentId = currentParams.get("commentId");
+              const newCommentId = comment.id;
+              currentParams.delete("commentId");
+              currentParams.set("commentId", newCommentId);
+              const newUrl = `${baseUrl}?${currentParams.toString()}`;
+              navigator.clipboard.writeText(newUrl);
+              toast.success("Comment link copied to clipboard");
+            }}
+          />
         </div>
         {show && (
           <>
@@ -450,15 +484,26 @@ const Comments = ({ comment, article, colour }) => {
               </div>
             </div>
             <div className="mt-3 ml-1 lg:ml-5">
-              {repliesData.length > 0 &&
-                repliesData.map((reply) => (
-                  <Comments
-                    key={reply.id}
-                    comment={reply}
-                    article={article}
-                    colour={colour === 1 ? 0 : 1}
-                  />
-                ))}
+              {typeof comment.replies !== "object"
+                ? repliesData.length > 0 &&
+                  repliesData.map((reply) => (
+                    <Comments
+                      key={reply.id}
+                      comment={reply}
+                      article={article}
+                      colour={colour === 1 ? 0 : 1}
+                      paramCommentId={paramCommentId}
+                    />
+                  ))
+                : comment.replies.map((reply) => (
+                    <Comments
+                      key={reply.id}
+                      comment={reply}
+                      article={article}
+                      colour={colour === 1 ? 0 : 1}
+                      paramCommentId={paramCommentId}
+                    />
+                  ))}
             </div>
             {versions[index].replies > 0 && (
               <button
