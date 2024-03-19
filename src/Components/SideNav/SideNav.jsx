@@ -92,6 +92,9 @@ const SideNav = () => {
             boxSizing: "border-box",
             transition: "width 0.2s ease",
             zIndex: 50,
+            ":hover": {
+              boxShadow: "10px 0px 20px 0px rgba(0,0,0,0.08)",
+            },
           },
         }}
         variant="permanent"

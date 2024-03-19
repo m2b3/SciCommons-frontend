@@ -19,6 +19,7 @@ import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
 import { AiOutlineFilePdf, AiOutlineShareAlt } from "react-icons/ai";
 import { BsChatLeftText } from "react-icons/bs";
+import { Toaster } from "react-hot-toast";
 
 const ArticleCommentModal = ({
   setShowCommentModal,
@@ -586,6 +587,7 @@ const ArticlePage = () => {
   const [order, setOrder] = useState("recent");
   const [orderOption, setOrderOption] = useState("Ascending");
   const [loadingComment, setLoadingComment] = useState(false);
+  const [paramCommentId, setParamCommentId] = useState(null);
 
   const loadArticleData = async (res) => {
     setArticle(res);
@@ -594,6 +596,25 @@ const ArticlePage = () => {
 
   const loadCommentData = async (res) => {
     setComments(res);
+  };
+
+  const fetchCommentIdThread = async (commentId) => {
+    let arr = [];
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axios.get(
+        `/api/comment/${commentId}/parents/`,
+        config
+      );
+      arr.push(response.data.success);
+      loadCommentData(arr);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateViews = async () => {
@@ -684,12 +705,18 @@ const ArticlePage = () => {
   };
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const commentId = url.searchParams.get("commentId");
+    if (commentId) {
+      fetchCommentIdThread(commentId);
+      setParamCommentId(commentId);
+    } else {
+      getComments();
+    }
     getArticle();
-    getComments();
   }, []);
 
   const handleProfile = (data) => {
-    console.log(data);
     navigate(`/profile/${data}`);
   };
 
@@ -882,6 +909,7 @@ const ArticlePage = () => {
 
   return (
     <div className="bg-white min-h-screen w-full">
+      <Toaster />
       {(loading || article === null || comments === null) && <Loader />}
       {!loading && article && comments && (
         <div className="bg-white">
@@ -1184,14 +1212,17 @@ const ArticlePage = () => {
               <div className="p-3">
                 {!loadingComment &&
                   comments.length > 0 &&
-                  comments.map((comment) => (
-                    <Comments
-                      key={comment.id}
-                      comment={comment}
-                      article={article}
-                      colour={1}
-                    />
-                  ))}
+                  comments.map((comment) => {
+                    return (
+                      <Comments
+                        key={comment.id}
+                        comment={comment}
+                        article={article}
+                        colour={1}
+                        paramCommentId={paramCommentId}
+                      />
+                    );
+                  })}
                 {loadingComment && <Loader />}
                 {!loadingComment && comments.length === 0 && (
                   <div className="w-full flex flex-row justify-center items-center">
