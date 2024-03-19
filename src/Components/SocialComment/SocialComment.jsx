@@ -2,218 +2,18 @@ import React, { useState, useEffect } from "react";
 import {
   AiOutlineLike,
   AiFillLike,
-  AiOutlineSend,
-  AiOutlineClose,
   AiOutlineEdit,
 } from "react-icons/ai";
 import { BsReplyAll } from "react-icons/bs";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import axios from "../../Utils/axios";
-import "./SocialComment.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { SlUser } from "react-icons/sl";
 import { useGlobalContext } from "../../Context/StateContext";
-
-const ReplyModal = ({ comment, setShowReply, handleReply, addReply }) => {
-  const { user, token } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
-  const { postId } = useParams();
-  const [body, setBody] = useState("");
-
-  const handleBodyChange = async (event) => {
-    setBody(event);
-  };
-
-  const handleComment = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (body.length > 200) {
-      ToastMaker("Comment should be less than 200 characters", 3000, {
-        valign: "top",
-        styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
-      });
-      setLoading(false);
-      return;
-    }
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    try {
-      const res = await axios.post(
-        `/api/feedcomment/`,
-        { post: postId, comment: body, parent_comment: comment.id },
-        config
-      );
-      addReply(res.data.comment);
-      ToastMaker("Replied!!!", 3000, {
-        valign: "top",
-        styles: {
-          backgroundColor: "green",
-          fontSize: "20px",
-        },
-      });
-      setShowReply(false);
-      await handleReply(e);
-    } catch (err) {
-      console.log(err);
-    }
-    setLoading(false);
-  };
-
-  const handleClose = () => {
-    setShowReply(false);
-  };
-
-  return (
-    <>
-      <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
-        <div className="bg-white w-2/3 rounded-lg shadow-lg p-6 max-h-[75vh] overflow-y-auto">
-          <div className="flex flex-col mb-2 mt-2 w-full">
-            <div className="flex flex-col ">
-              {user.profile_pic_url.includes("None") ? (
-                <SlUser className="w-6 h-6 sticky rounded-full mr-4" />
-              ) : (
-                <img
-                  src={user.profile_pic_url}
-                  alt={user.username}
-                  className="w-8 h-8 sticky rounded-full mr-4"
-                />
-              )}
-              <ReactQuill
-                theme="snow"
-                className="bg-white w-full p-2 mb-4 resize-none border rounded"
-                value={body}
-                onChange={handleBodyChange}
-              />
-              <span className="text-xs font-semibold">
-                Number of characters: {body.length}/200
-              </span>
-            </div>
-            <div className="flex flex-row justify-center">
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={handleComment}
-                className="bg-green-600 rounded-lg text-white p-2 mr-2"
-              >
-                {loading ? "Loading..." : "Reply"}
-              </button>
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={handleClose}
-                className="bg-red-600 rounded-lg text-white p-2"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
-const EditModal = ({ comment, setShowEdit, changeComment }) => {
-  const [editedComment, setEditedComment] = useState(comment.comment);
-  const [loading, setLoading] = useState(false);
-  const [body, setBody] = useState(comment.comment);
-  const { token } = useGlobalContext();
-
-  const handleBodyChange = (event) => {
-    setBody(event);
-  };
-
-  const handleSave = (e) => {
-    handleEdit(e);
-  };
-
-  const handleEdit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    if (body.length > 200) {
-      ToastMaker("Comment should be less than 200 characters", 3000, {
-        valign: "top",
-        styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
-      });
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await axios.put(
-        `/api/feedcomment/${comment.id}/`,
-        { post: comment.post, comment: body },
-        config
-      );
-
-      ToastMaker("Edited!!!", 3000, {
-        valign: "top",
-        styles: {
-          backgroundColor: "green",
-          fontSize: "20px",
-        },
-      });
-      await changeComment(res.data.success.comment);
-      setShowEdit(false);
-    } catch (err) {
-      console.log(err);
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
-      <div className="bg-white w-2/3 rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Edit Comment</h2>
-        <ReactQuill
-          theme="snow"
-          className="bg-white w-full p-2 mb-4 resize-none border rounded"
-          value={body}
-          onChange={handleBodyChange}
-        />
-        <span className="text-xs my-2 font-semibold">
-          Number of characters: {body.length}/200
-        </span>
-        <div className="flex justify-end">
-          <button
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded mr-2"
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setShowEdit(false);
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
-            style={{ cursor: "pointer" }}
-            onClick={handleSave}
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import ReplyModal from "./ReplyModal";
+import EditModal from "./EditModal";
 
 const SocialComment = ({ comment, post, setPost }) => {
   const navigate = useNavigate();
@@ -259,8 +59,8 @@ const SocialComment = ({ comment, post, setPost }) => {
           { comment: comment.id },
           config
         );
-        setLiked((prevLiked) => !prevLiked);
-        setLikes((prevLikes) => prevLikes - 1);
+        setLiked(!liked);
+        setLikes(likes-1);
       } catch (err) {
         console.log(err);
       }
@@ -271,8 +71,8 @@ const SocialComment = ({ comment, post, setPost }) => {
           { comment: comment.id },
           config
         );
-        setLiked((prevLiked) => !prevLiked);
-        setLikes((prevLikes) => prevLikes + 1);
+        setLiked(!liked);
+        setLikes(liked+1);
       } catch (err) {
         console.log(err);
       }

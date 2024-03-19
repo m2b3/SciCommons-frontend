@@ -3,53 +3,16 @@ import { ChatList, MessageList } from "react-chat-elements";
 import axios from "../../Utils/axios";
 import { useGlobalContext } from "../../Context/StateContext";
 import { useNavigate } from "react-router-dom";
-import "./AllMessagesPage.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import { FaSearch } from "react-icons/fa";
-import { SlUser } from "react-icons/sl";
 import { ColorRing } from "react-loader-spinner";
-
-const Suggestions = ({ suggestions }) => {
-  const { token, user } = useGlobalContext();
-  const navigate = useNavigate();
-
-  const handleClick = (e, index) => {
-    e.preventDefault();
-    const channelName =
-      suggestions[index].username <= user.username.toString()
-        ? `chat_${suggestions[index].username}_${user.username}`
-        : `chat_${user.username}_${suggestions[index].username}`;
-    navigate(`/chat/${channelName}`);
-  };
-
-  return (
-    <ul className="mt-2 border border-gray-300 rounded-md bg-white shadow-md">
-      {suggestions.map((suggestion, index) => (
-        <li key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-          <div
-            onClick={(e) => {
-              handleClick(e, index);
-            }}
-            className="flex flex-row"
-          >
-            {suggestion.profile_pic_url.includes("None") ? (
-              <SlUser className="w-6 h-6" />
-            ) : (
-              <img src={suggestion.profile_pic_url} className="w-8 h-8 mr-2" />
-            )}
-            <span className="ml-2">{suggestion.username}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-};
+import Suggestions from "./Suggestions";
 
 const AllMessagesPage = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const { token, user } = useGlobalContext();
+  const { token} = useGlobalContext();
   const navigate = useNavigate();
 
   const loadData = async (res) => {

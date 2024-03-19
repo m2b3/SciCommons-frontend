@@ -1,7 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import cal from "./calendar.png";
-import folder from "./folder.png";
-import eye from "./eye-open.png";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../Utils/axios";
 import Loader from "../../Components/Loader/Loader";
@@ -9,7 +6,6 @@ import Comments from "../../Components/Comments/Comments";
 import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from "react-icons/ai";
 import { MdOutlineViewSidebar } from "react-icons/md";
 import "./ArticlePage.css";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -34,11 +30,12 @@ const ArticlePage = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [loadComments, setLoadComments] = useState(false);
   const { token } = useGlobalContext();
-  const [Type, setType] = useState("null");
-  const [comment_type, setCommentType] = useState("null");
-  const [order, setOrder] = useState("recent");
-  const [orderOption, setOrderOption] = useState("Ascending");
+  const [Type, setType] = useState('null');
+  const [comment_type, setCommentType] = useState('null');
+  const [order, setOrder] = useState('recent');
+  const [orderOption, setOrderOption] = useState('Ascending');
   const [loadingComment, setLoadingComment] = useState(false);
+  const [paramCommentId, setParamCommentId] = useState(null);
 
   const loadArticleData = async (res) => {
     setArticle(res);
@@ -52,17 +49,33 @@ const ArticlePage = () => {
   const updateViews = async () => {
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    };
+    try {
+      const res = await axios.put(`/api/article/${articleId}/updateviews/`, config);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchCommentIdThread = async (commentId) => {
+    let arr = [];
+    const config = {
+      headers: {
         Authorization: `Bearer ${token}`,
       },
     };
     try {
-      const res = await axios.put(
-        `/api/article/${articleId}/updateviews/`,
+      const response = await axios.get(
+        `/api/comment/${commentId}/parents/`,
         config
       );
-    } catch (err) {
-      console.log(err);
+      arr.push(response.data.success);
+      loadCommentData(arr);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -70,37 +83,37 @@ const ArticlePage = () => {
     setLoadingComment(true);
     let config = null;
     let filter = null;
-    if (orderOption === "Descending") {
-      filter = "most_" + order;
+    if (orderOption === 'Descending') {
+      filter = 'most_' + order;
     } else {
-      filter = "least_" + order;
+      filter = 'least_' + order;
     }
     if (token !== null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     } else {
       config = {
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     }
     try {
       const res = await axios.get(`/api/comment/`, config);
-      await loadCommentData(res.data.success.results);
+      await loadCommentData(res?.data?.success?.results);
     } catch (err) {
       console.log(err);
     }
@@ -113,29 +126,30 @@ const ArticlePage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     try {
-      const res = await axios.get(`/api/article/${articleId}`, config);
-      await loadArticleData(res.data.success);
+      const res = await axios.get(`/api/article/${articleId}/`, config);
+      await loadArticleData(res?.data?.success);
     } catch (err) {
       console.log(err);
-      if (err.response.data.detail === "Not found.") {
+      if (err?.response?.data?.detail === 'Not found.') {
         ToastMaker("Article doesn't exists!!!", 3000, {
-          valign: "top",
+          valign: 'top',
           styles: {
-            backgroundColor: "red",
-            fontSize: "20px",
-          },
+            backgroundColor: 'red',
+            fontSize: '20px'
+          }
         });
       }
-      navigate("/404");
+      navigate('/404');
     }
     setLoading(false);
   };
 
+  // scroll to comment if commentId is present in the URL
   useEffect(() => {
     if (commentId & (loading === false) && loadingComment === false) {
       const commentElement = document.getElementById(`comment-${commentId}`);
@@ -164,12 +178,18 @@ const ArticlePage = () => {
   }, [articleId, commentId, loading, loadingComment]);
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const commentId = url.searchParams.get("commentId");
+    if (commentId) {
+      fetchCommentIdThread(commentId);
+      setParamCommentId(commentId);
+    } else {
+      getComments();
+    }
     getArticle();
-    getComments();
   }, []);
 
   const handleProfile = (data) => {
-    console.log(data);
     navigate(`/profile/${data}`);
   };
 
@@ -206,25 +226,21 @@ const ArticlePage = () => {
 
   const handleFavourites = async () => {
     if (token === null) {
-      navigate("/login");
+      navigate('/login');
     }
     const config = {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
     };
     if (article.isFavourite === false) {
       try {
-        const res = await axios.post(
-          `/api/article/favourite/`,
-          { article: articleId },
-          config
-        );
+        const res = await axios.post(`/api/article/favourite/`, { article: articleId }, config);
         const newArticle = {
           ...article,
           isFavourite: true,
-          favourites: article.favourites + 1,
+          favourites: article.favourites + 1
         };
         await loadArticleData(newArticle);
       } catch (err) {
@@ -232,15 +248,11 @@ const ArticlePage = () => {
       }
     } else {
       try {
-        const res = await axios.post(
-          `/api/article/unfavourite/`,
-          { article: articleId },
-          config
-        );
+        const res = await axios.post(`/api/article/unfavourite/`, { article: articleId }, config);
         const newArticle = {
           ...article,
           isFavourite: false,
-          favourites: article.favourites - 1,
+          favourites: article.favourites - 1
         };
         await loadArticleData(newArticle);
       } catch (err) {
@@ -251,7 +263,7 @@ const ArticlePage = () => {
 
   const handleShow = () => {
     if (token === null) {
-      navigate("/login");
+      navigate('/login');
     }
     if (currentState === 1) {
       setShowReviewModal(true);
@@ -266,48 +278,45 @@ const ArticlePage = () => {
     } else if (article.commentcount > comments.length) {
       return `Load ${article.commentcount - comments.length} more comments`;
     } else {
-      return "";
+      return '';
     }
   };
 
   const loadMore = async () => {
     setLoadComments(true);
     let filter = null;
-    if (orderOption === "Descending") {
-      filter = "most_" + order;
+    if (orderOption === 'Descending') {
+      filter = 'most_' + order;
     } else {
-      filter = "least_" + order;
+      filter = 'least_' + order;
     }
     let config = null;
     if (token !== null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     } else {
       config = {
         params: {
           article: articleId,
           order: filter,
-          Type: Type === "null" ? null : Type,
-          comment_type: comment_type === "null" ? null : comment_type,
-        },
+          Type: Type === 'null' ? null : Type,
+          comment_type: comment_type === 'null' ? null : comment_type
+        }
       };
     }
     try {
-      const res = await axios.get(
-        `/api/comment/?limit=20&offset=${comments.length}`,
-        config
-      );
-      await loadCommentData([...comments, ...res.data.success.results]);
+      const res = await axios.get(`/api/comment/?limit=20&offset=${comments.length}`, config);
+      await loadCommentData([...comments, ...(res?.data?.success?.results ?? [])]);
     } catch (err) {
       console.log(err);
     }
@@ -323,9 +332,9 @@ const ArticlePage = () => {
     if (count < 1000) {
       return count.toString();
     } else if (count < 1000000) {
-      return (count / 1000).toFixed(1) + "K";
+      return (count / 1000).toFixed(1) + 'K';
     } else {
-      return (count / 1000000).toFixed(1) + "M";
+      return (count / 1000000).toFixed(1) + 'M';
     }
   };
 
@@ -347,23 +356,48 @@ const ArticlePage = () => {
 
   const handleShare = (e) => {
     e.preventDefault();
-    ToastMaker("Link Copied to Clipboard", 3500, {
-      valign: "top",
+    ToastMaker('Link Copied to Clipboard', 3500, {
+      valign: 'top',
       styles: {
-        backgroundColor: "green",
-        fontSize: "20px",
-      },
+        backgroundColor: 'green',
+        fontSize: '20px'
+      }
     });
     e.stopPropagation();
-    navigator.clipboard.writeText(
-      `https://scicommons.onrender.com/article/${article.id}`
-    );
+    navigator.clipboard.writeText(`https://scicommons.org/article/${article.id}`);
   };
+
+  useEffect(() => {
+    if (commentId & (loading === false) && loadingComment === false) {
+      const commentElement = document.getElementById(`comment-${commentId}`);
+      console.log(commentElement, "commentElement");
+      if (commentElement) {
+        console.log("Scrolling to comment", commentId, commentElement);
+        // Scroll into view with TailwindCSS classes
+        commentElement.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
+        // Apply TailwindCSS utilities for highlighting
+        commentElement.classList.add(
+          "bg-yellow-100",
+          "border",
+          "border-yellow-300",
+          "p-4"
+        );
+        // Optionally, remove the highlight after a few seconds
+        setTimeout(() => {
+          commentElement.classList.remove("bg-yellow-100", "border-yellow-300");
+        }, 3000);
+      }
+    }
+  }, [articleId, commentId, loading, loadingComment]);
 
   console.log(comments, "comments");
 
   return (
-    <div className="bg-white min-h-screen min-w-[800px]">
+    <div className="bg-white min-h-screen w-full">
       {(loading || article === null || comments === null) && <Loader />}
       {!loading && article && comments && (
         <div className="bg-white">
@@ -524,8 +558,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={Type}
-                    onChange={(e) => handleTypeChange(e)}
-                  >
+                    onChange={(e) => handleTypeChange(e)}>
                     <option value="null">All</option>
                     <option value="review">Review</option>
                     <option value="decision">Decision</option>
@@ -535,8 +568,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={comment_type}
-                    onChange={(e) => handleCommentTypeChange(e)}
-                  >
+                    onChange={(e) => handleCommentTypeChange(e)}>
                     <option value="null">All</option>
                     <option value="OfficialComment">Official Comment</option>
                     <option value="PublicComment">Public Comment</option>
@@ -546,8 +578,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={order}
-                    onChange={(e) => handleOrderChange(e)}
-                  >
+                    onChange={(e) => handleOrderChange(e)}>
                     <option value="recent">Date</option>
                     <option value="rated">Comment Rating</option>
                     <option value="reputated">User Reputation</option>
@@ -557,8 +588,7 @@ const ArticlePage = () => {
                   <select
                     className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
                     value={orderOption}
-                    onChange={(e) => handleOrderOptionChange(e)}
-                  >
+                    onChange={(e) => handleOrderOptionChange(e)}>
                     <option value="Descending">Descending</option>
                     <option value="Ascending">Ascending</option>
                   </select>
@@ -566,8 +596,7 @@ const ArticlePage = () => {
                 <div className="relative inline-flex mr-2">
                   <button
                     className="text-sm md:text-md bg-green-500 rounded-lg p-1 text-white font-semibold"
-                    onClick={getComments}
-                  >
+                    onClick={getComments}>
                     Apply Filters
                   </button>
                 </div>
@@ -575,23 +604,25 @@ const ArticlePage = () => {
               <div className="p-3">
                 {!loadingComment &&
                   comments.length > 0 &&
-                  comments.map((comment) => (
-                    <Comments
-                      key={comment.id}
-                      comment={comment}
-                      article={article}
-                      colour={1}
-                    />
-                  ))}
+                  comments.map((comment) => {
+                    return (
+                      <Comments
+                        key={comment.id}
+                        comment={comment}
+                        article={article}
+                        colour={1}
+                        paramCommentId={paramCommentId}
+                      />
+                    );
+                  })}
                 {loadingComment && <Loader />}
                 {!loadingComment && comments.length === 0 && (
                   <div className="w-full flex flex-row justify-center items-center">
                     <button
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={loadMore}
-                      className="p-2 text-green-500 text-2xl text-center font-bold mt-2"
-                    >
-                      {loadComments ? "Loading..." : fillLoad()}
+                      className="p-2 text-green-500 text-2xl text-center font-bold mt-2">
+                      {loadComments ? 'Loading...' : fillLoad()}
                     </button>
                   </div>
                 )}

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./CreateCommunity.css";
-import Footer from "../../Components/Footer/Footer";
 import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -21,7 +19,6 @@ const options = countries.map((country) => ({
 const CreateCommunity = () => {
   const baseURL = `/api/community/`;
   const { token } = useGlobalContext();
-  const windowSize = useWindowSize();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);

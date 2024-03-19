@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./NavBar.css";
 import { SlUser } from "react-icons/sl";
 import { IoMdMore } from "react-icons/io";
 import axios from "../../Utils/axios";
 import Popper from "popper.js";
 import { useNavigate } from "react-router-dom";
-import { CiMenuFries } from "react-icons/ci";
-import SideNav from "../SideNav/SideNav";
 import { FiLogOut } from "react-icons/fi";
 import { useGlobalContext } from "../../Context/StateContext";
 import {
   navbarNavigationRoutes,
-  closeIcon,
-  hamburgerIcon,
   arrowHeadNextIcon,
 } from "../../Utils/Constants/Navbar";
 import { getContainerStyles } from "../../Utils/Constants/Globals";
@@ -332,7 +327,7 @@ const Dropdown = ({ color, onLogout, User }) => {
                   <SlUser className="text-black w-4 h-4 inline-block" />
                 ) : (
                   <img
-                    className="object-cover w-6 h-6 rounded-full ring ring-gray-300 mt-1"
+                    className="object-cover w-10 h-4 mt-1"
                     src={User}
                     alt="avatar"
                   />

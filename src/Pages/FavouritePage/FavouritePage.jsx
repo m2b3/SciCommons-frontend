@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "../../Utils/axios";
 import ArticleCard from "../../Components/ArticleCard/ArticleCard";
 import Loader from "../../Components/Loader/Loader";
-import Footer from "../../Components/Footer/Footer";
 import { useGlobalContext } from "../../Context/StateContext";
 
 const FavouritePage = () => {

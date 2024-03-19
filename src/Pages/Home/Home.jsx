@@ -259,7 +259,7 @@ const Home = () => {
               </div>
               <div className="container container--small">
                 {faqs.map((faq, index) => {
-                  return <FaqAccordian faq={faq} index={index} />;
+                  return <FaqAccordian faq={faq} index={index} key= {index}/>;
                 })}
                 <div className="bottom_cta" />
               </div>
@@ -332,6 +332,7 @@ const Home = () => {
                               className="social-buttons__link social-buttons__link--facebook"
                               href="https://www.facebook.com/SciCommons"
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <img
                                 loading="lazy"
@@ -346,6 +347,7 @@ const Home = () => {
                               className="social-buttons__link social-buttons__link--twitter"
                               href="https://www.twitter.com/SciCommons"
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <img
                                 loading="lazy"
@@ -360,6 +362,7 @@ const Home = () => {
                               className="social-buttons__link social-buttons__link--linkedin"
                               href="https://www.linkedin.com/company/SciCommons"
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <img
                                 loading="lazy"

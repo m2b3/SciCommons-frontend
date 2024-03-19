@@ -1,15 +1,8 @@
-import Fab from "@mui/material/Fab";
-import Grid from "@mui/material/Grid";
-import Container from "@mui/material/Container";
 import { useParams, useNavigate } from "react-router";
-import TextField from "@mui/material/TextField";
-import Send from "@mui/icons-material/Send";
-import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
-import ListItemText from "@mui/material/ListItemText";
 import axios from "../../Utils/axios";
 import { useGlobalContext } from "../../Context/StateContext";
-import { ChatItem, MessageBox, Input, ChatList } from "react-chat-elements";
+import { MessageBox, Input } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -17,7 +10,6 @@ import Loader from "../../Components/Loader/Loader";
 import { AiOutlineSend } from "react-icons/ai";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { ColorRing } from "react-loader-spinner";
-import { BiDownArrowAlt } from "react-icons/bi";
 
 const ChatPage = () => {
   const [Messages, setMessages] = useState(null);
@@ -229,8 +221,9 @@ const ChatPage = () => {
               </span>
             </div>
             <div className="bg-green-50 rounded-lg shadow-md p-1 md:p-4 h-full overflow-y-scroll">
-              {Messages.map((message) => (
+              {Messages.map((message,index) => (
                 <MessageBox
+                key={index}
                   position={message.personal ? "right" : "left"}
                   type={"text"}
                   text={message.body}

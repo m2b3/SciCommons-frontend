@@ -128,6 +128,7 @@ const JoinRequests = ({ community }) => {
               {sortedRequests.length !== 0 ? (
                 sortedRequests.map((request, index) => (
                   <div
+                  key={index}
                     id={index}
                     className="bg-gray-200 rounded-lg md:rounded-3xl shadow-md md:shadow-xl mb-2"
                   >
@@ -403,7 +404,7 @@ const RejectModal = ({
           <div className="w-full h-full flex flex-col items-center justify-center">
             <div className="w-5/6 md:w-1/2 bg-white p-5 rounded-lg flex flex-col items-center justify-center">
               <h1 className="text-md  md:text-xl font-bold text-gray-600 mb-4">
-                Are you sure you want to reject this member's request?
+                Are you sure you want to reject this member&apos;s request?
               </h1>
               <div className="w-full flex flex-row items-center justify-center">
                 <button
