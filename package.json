@@ -86,6 +86,7 @@
     "eslint-plugin-react": "^7.34.1",
     "postcss": "^8.4.26",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.12",
     "tailwindcss": "^3.3.3"
   }
 }
