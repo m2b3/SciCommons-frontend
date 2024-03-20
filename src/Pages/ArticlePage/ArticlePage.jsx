@@ -18,6 +18,7 @@ import { BsChatLeftText } from "react-icons/bs";
 import ArticleCommentModal from "./ArticleCommentModal";
 import ArticleReviewModal from "./ArticleReviewModal";
 import ArticleDecisionModal from "./ArticleDecisionModal";
+import { Toaster } from "react-hot-toast";
 
 const ArticlePage = () => {
   const { articleId } = useParams();
