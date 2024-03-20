@@ -7,6 +7,7 @@ import { useGlobalContext } from "../../Context/StateContext";
 import { useNavigate } from "react-router-dom";
 import { MdSubscriptions } from 'react-icons/md';
 import { FaBook, FaPencilAlt, FaUsers } from 'react-icons/fa';
+import CommunityCardSkeleton from "../../Components/Loader/CommentCardSkeleton";
 
 
 const Communities = () => {
@@ -129,7 +130,11 @@ const Communities = () => {
         </form>
         <div className="flex flex-col items-center justify-center w-full bg-gray-50 p-5">
           {loading ? (
-            <Loader />
+           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-12 w-full">
+           {Array.from({ length: 6 }).map((_, index) => (
+            <CommunityCardSkeleton key={index} />
+          ))}
+           </div>
           ) : (
             <>
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-12 w-full">

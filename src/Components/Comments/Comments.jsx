@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import ToastMaker from "toastmaker";
-import "toastmaker/dist/toastmaker.css";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useGlobalContext } from "../../Context/StateContext";
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
-import { useNavigate } from "react-router-dom";
-import axios from "../../Utils/axios";
-import { FaLink } from "react-icons/fa6";
-import toast from "react-hot-toast";
-import ArticleCommentModal from "./ArticleCommentModal";
-import ArticleCommentEditModal from "./ArticleCommentEditModal";
-import Dropdown from "./Dropdown";
-import { Tooltip } from "flowbite-react";
+import React, { useEffect, useState } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import ToastMaker from 'toastmaker';
+import 'toastmaker/dist/toastmaker.css';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { useGlobalContext } from '../../Context/StateContext';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+import { useNavigate } from 'react-router-dom';
+import axios from '../../Utils/axios';
+import { FaLink } from 'react-icons/fa6';
+import toast from 'react-hot-toast';
+import ArticleCommentModal from './ArticleCommentModal';
+import ArticleCommentEditModal from './ArticleCommentEditModal';
+import Dropdown from './Dropdown';
+import { Tooltip } from 'flowbite-react';
 
 const Comments = ({ comment, article, colour, paramCommentId }) => {
   const [loading, setLoading] = useState(false);
   const [repliesData, setRepliesData] = useState([]);
-  const [show, setShow] = useState(typeof comment.replies === "object");
-  const [rating, setRating] = useState(
-    comment.userrating ? comment.userrating : 0
-  );
+  const [show, setShow] = useState(typeof comment.replies === 'object');
+  const [rating, setRating] = useState(comment.userrating ? comment.userrating : 0);
   const [overallrating, setOverallRating] = useState(
     comment.commentrating ? comment.commentrating : 0
   );
@@ -35,8 +33,8 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
   const [commentHighlight, setCommentHighlight] = useState(false);
 
   const colorClasses = {
-    0: "bg-white",
-    1: "bg-slate-100",
+    0: 'bg-white',
+    1: 'bg-slate-100'
   };
 
   const findTime = (date) => {
@@ -83,43 +81,32 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
   };
 
   const styleLinksWithColor = (htmlContent) => {
-    const coloredLinks = htmlContent.replace(
-      /<a /g,
-      '<a style="color: blue;" '
-    );
+    const coloredLinks = htmlContent.replace(/<a /g, '<a style="color: blue;" ');
     return coloredLinks;
   };
 
   const fillConfidence = () => {
     if (comment.confidence === 1) {
-      return (
-        <span className="text-sm italic">My review is educated guess</span>
-      );
+      return <span className="text-sm italic">My review is educated guess</span>;
     } else if (comment.confidence === 2) {
       return (
         <span className="text-sm italic">
-          I am willing to defend my evaluation but Its likely that I didnt
-          understand central parts of paper
+          I am willing to defend my evaluation but Its likely that I didnt understand central parts
+          of paper
         </span>
       );
     } else if (comment.confidence === 3) {
-      return (
-        <span className="text-sm italic">
-          I am fairly confident that review is correct
-        </span>
-      );
+      return <span className="text-sm italic">I am fairly confident that review is correct</span>;
     } else if (comment.confidence === 4) {
       return (
         <span className="text-sm italic">
-          I am confident but not absolutely certain that my evaluation is
-          correct
+          I am confident but not absolutely certain that my evaluation is correct
         </span>
       );
     } else if (comment.confidence === 5) {
       return (
         <span className="text-sm italic">
-          I am absolutely certain that evaluation is correct and familiar with
-          relevant literature
+          I am absolutely certain that evaluation is correct and familiar with relevant literature
         </span>
       );
     }
@@ -133,7 +120,7 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
 
   const handleSliderChange = async (event) => {
     if (token === null) {
-      navigate("/login");
+      navigate('/login');
     }
     await loadRatingData(event);
     await handleLike(event);
@@ -145,9 +132,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
   const handleLike = async (event) => {
     const config = {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const res = await axios.post(
@@ -155,12 +142,12 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
         { post: comment.id, value: event.target.value },
         config
       );
-      ToastMaker("Comment Rated Successfully!!!", 3000, {
-        valign: "top",
+      ToastMaker('Comment Rated Successfully!!!', 3000, {
+        valign: 'top',
         styles: {
-          backgroundColor: "green",
-          fontSize: "20px",
-        },
+          backgroundColor: 'green',
+          fontSize: '20px'
+        }
       });
     } catch (err) {
       console.log(err);
@@ -178,27 +165,24 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
     if (token !== null) {
       config = {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         params: {
           parent_comment: versions[index].id,
-          article: article.id,
-        },
+          article: article.id
+        }
       };
     } else {
       config = {
         params: {
           parent_comment: versions[index].id,
-          article: article.id,
-        },
+          article: article.id
+        }
       };
     }
     try {
-      const res = await axios.get(
-        `/api/comment/?limit=20&offset=${repliesData.length}`,
-        config
-      );
+      const res = await axios.get(`/api/comment/?limit=20&offset=${repliesData.length}`, config);
       await loadData(res.data.success.results);
     } catch (err) {
       console.log(err);
@@ -210,11 +194,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
     if (repliesData.length === 0) {
       return `Load replies`;
     } else if (versions[index].replies > repliesData.length) {
-      return `Load ${
-        versions[index].replies - repliesData.length
-      } more replies`;
+      return `Load ${versions[index].replies - repliesData.length} more replies`;
     } else {
-      return "";
+      return '';
     }
   };
 
@@ -222,9 +204,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
     if (count < 1000) {
       return count.toString();
     } else if (count < 1000000) {
-      return (count / 1000).toFixed(1) + "K";
+      return (count / 1000).toFixed(1) + 'K';
     } else {
-      return (count / 1000000).toFixed(1) + "M";
+      return (count / 1000000).toFixed(1) + 'M';
     }
   };
 
@@ -234,47 +216,52 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
 
   useEffect(() => {
     if (paramCommentId == comment.id) {
-      document
-        .getElementById(paramCommentId)
-        .scrollIntoView({ behavior: "smooth" });
-      setCommentHighlight(true);
-      setTimeout(() => {
-        setCommentHighlight(false);
-      }, 2000);
+      const commentElement = document.getElementById(paramCommentId);
+      console.log(commentElement);
+      if (commentElement) {
+        commentElement.scrollIntoView({ behavior: 'smooth' });
+        setCommentHighlight(true);
+        setTimeout(() => {
+          setCommentHighlight(false);
+        }, 2000);
+      } else {
+        navigate(`/article/${article.id}`);
+        toast.error(`Element with id ${paramCommentId} not found`);
+        console.error(`Element with id ${paramCommentId} not found`);
+      }
     }
-  }, []);
+  }, [paramCommentId, comment.id]);
 
   return (
     <>
       <div
         className={`mb-2 w-full  ${
           commentHighlight
-            ? "shadow-[0_0px_20px_0px_rgba(0,0,0,0.2)] border-green-600 border-1 bg-green-50"
+            ? 'shadow-[0_0px_20px_0px_rgba(0,0,0,0.2)] border-green-600 border-1 bg-green-50'
             : `shadow-lg ${colorClasses[colour]}`
         } min-w-[200px] rounded px-4 py-2 overflow-x-auto transition-all duration-300 ease-in-out`}
         data-commentid={comment.id}
-        id={`comment-${comment.id}`} // This is the id of the comment
-      >
+        // id={`comment-${comment.id}`} // This is the id of the comment
+        id={comment.id}>
         <div className="flex flex-row items-center justify-between">
           <div
             className="flex flex-row items-center"
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
             onClick={() => {
               setShow(!show);
-            }}
-          >
+            }}>
             <div className="flex flex-row items-center">
               <span className="font-bold  relative text-xl text-gray-600 leading-[1.25rem]">
                 {versions[index].Title}
               </span>
               <span className=" text-[#777] font-[400] text-[0.55 rem] ml-2  p-2">
-                • by {versions[index].personal ? "you" : versions[index].user}
+                • by {versions[index].personal ? 'you' : versions[index].user}
               </span>
               <span className="text-xs text-slate-400">
                 • {findTime(versions[index].Comment_date)} •
               </span>
             </div>
-            {comment.Type === "review" && (
+            {comment.Type === 'review' && (
               <div className="flex ml-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -282,10 +269,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                   fill="currentColor"
                   className={`h-5 w-5 ${
                     (comment.rating == null ? 0 : comment.rating) >= 1
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  }`}
-                >
+                      ? 'text-yellow-500'
+                      : 'text-gray-400'
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
 
@@ -295,10 +281,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                   fill="currentColor"
                   className={`h-5 w-5 ${
                     (comment.rating == null ? 0 : comment.rating) >= 2
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  }`}
-                >
+                      ? 'text-yellow-500'
+                      : 'text-gray-400'
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
                 <svg
@@ -307,10 +292,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                   fill="currentColor"
                   className={`h-5 w-5 ${
                     (comment.rating == null ? 0 : comment.rating) >= 3
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  }`}
-                >
+                      ? 'text-yellow-500'
+                      : 'text-gray-400'
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
                 <svg
@@ -319,10 +303,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                   fill="currentColor"
                   className={`h-5 w-5 ${
                     (comment.rating == null ? 0 : comment.rating) >= 4
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  }`}
-                >
+                      ? 'text-yellow-500'
+                      : 'text-gray-400'
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
                 <svg
@@ -331,10 +314,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                   fill="currentColor"
                   className={`h-5 w-5 ${
                     (comment.rating == null ? 0 : comment.rating) >= 5
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  }`}
-                >
+                      ? 'text-yellow-500'
+                      : 'text-gray-400'
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
               </div>
@@ -347,10 +329,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                 await handleRefresh();
                 setIndex(index - 1);
               }}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: 'pointer' }}
               disabled={index === 0}
-              className={index === 0 ? "text-gray-300" : ""}
-            >
+              className={index === 0 ? 'text-gray-300' : ''}>
               <IoIosArrowBack className="w-6 h-6" />
             </button>
             {index + 1} / {versions.length}
@@ -360,39 +341,25 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                 await handleRefresh();
                 setIndex(index + 1);
               }}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: 'pointer' }}
               disabled={index === versions.length - 1}
-              className={index === versions.length - 1 ? "text-gray-300" : ""}
-            >
+              className={index === versions.length - 1 ? 'text-gray-300' : ''}>
               <IoIosArrowForward className="w-6 h-6" />
             </button>
             {article.isArticleModerator && (
-              <Dropdown
-                article={article}
-                comment={comment}
-                color={colorClasses[colour]}
-              />
+              <Dropdown article={article} comment={comment} color={colorClasses[colour]} />
             )}
             {/* Url Link for comment */}
-            <div
-              className="text-blue-500 underline text-xl cursor-pointer"
-              // copy to clipboard
-              onClick={(e) => {
-                e.preventDefault();
-                navigator.clipboard.writeText(
-                  `${window.location.origin}/article/${article.id}/comment/${comment.id}`
-                );
-                ToastMaker("Link Copied!!!", 3000, {
-                  valign: "top",
-                  styles: {
-                    backgroundColor: "green",
-                    fontSize: "20px",
-                  },
-                });
-              }}
-            >
+            <div className="text-blue-500 underline text-xl cursor-pointer">
               <Tooltip content="Copy Link" position="top">
-                <FaLink />
+                <FaLink
+                  className="cursor-pointer size-5"
+                  onClick={() => {
+                    const newUrl = `${window.location.origin}/article/${article.id}/comment/${comment.id}`;
+                    navigator.clipboard.writeText(newUrl);
+                    toast.success('Comment link copied to clipboard');
+                  }}
+                />
               </Tooltip>
             </div>
           </div>
@@ -401,11 +368,10 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
           <>
             <div
               className="w-full"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: 'pointer' }}
               onClick={() => {
                 setShow(!show);
-              }}
-            >
+              }}>
               <span className="inline-flex items-center gap-1.5 rounded text-xs p-[2px] font-medium bg-red-500 text-white">
                 {comment.Type}
               </span>
@@ -415,7 +381,7 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
               <span className="inline-flex items-center gap-1.5 ml-3 rounded text-xs p-[2px] font-medium bg-orange-500 text-white">
                 {comment.comment_type}
               </span>
-              {comment.role !== "none" && (
+              {comment.role !== 'none' && (
                 <span className="inline-flex items-center gap-1.5 ml-3 rounded text-xs p-[2px] font-medium bg-purple-500 text-white">
                   {comment.role}
                 </span>
@@ -431,8 +397,8 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                     <Slider
                       sx={{
                         '& input[type="range"]': {
-                          WebkitAppearance: "slider-vertical",
-                        },
+                          WebkitAppearance: 'slider-vertical'
+                        }
                       }}
                       orientation="vertical"
                       defaultValue={rating}
@@ -449,19 +415,15 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                 )}
               </div>
               <div className="border-l-2 border-gray-200 p-2 rounded-xl">
-                <div className="text-sm font-semibold text-green-800">
-                  Comment:
-                </div>
+                <div className="text-sm font-semibold text-green-800">Comment:</div>
                 <ReactQuill
                   value={styleLinksWithColor(versions[index].Comment)}
                   readOnly={true}
                   modules={{ toolbar: false }}
                 />
-                {comment.Type === "review" && (
+                {comment.Type === 'review' && (
                   <div className="container w-full mt-1">
-                    <span className="font-semibold text-sm text-green-800">
-                      Confidence:
-                    </span>{" "}
+                    <span className="font-semibold text-sm text-green-800">Confidence:</span>{' '}
                     {fillConfidence()}
                   </div>
                 )}
@@ -472,28 +434,26 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
                 {comment.personal && (
                   <span
                     className="box-content text-white bg-[#4d8093] text-md border-solid ml-2 mr-2 md:font-bold p-2 pt-0 rounded"
-                    style={{ cursor: "pointer" }}
-                    onClick={handleEditModal}
-                  >
+                    style={{ cursor: 'pointer' }}
+                    onClick={handleEditModal}>
                     edit comment
                   </span>
                 )}
                 <span
                   className="box-content text-white bg-[#4d8093] text-md border-solid ml-2 md:font-bold p-2 pt-0 rounded"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     if (token === null) {
-                      navigate("/login");
+                      navigate('/login');
                     }
                     setShowCommentModal(true);
-                  }}
-                >
+                  }}>
                   reply
                 </span>
               </div>
             </div>
             <div className="mt-3 ml-1 lg:ml-5">
-              {typeof comment.replies !== "object"
+              {typeof comment.replies !== 'object'
                 ? repliesData.length > 0 &&
                   repliesData.map((reply) => (
                     <Comments
@@ -516,10 +476,9 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
             </div>
             {versions[index].replies > 0 && (
               <button
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
                 onClick={handleReply}
-                className="ml-5 text-xs mt-4"
-              >
+                className="ml-5 text-xs mt-4">
                 {loading ? (
                   <span className="text-gray-600 font-bold">Loading...</span>
                 ) : (
@@ -550,6 +509,5 @@ const Comments = ({ comment, article, colour, paramCommentId }) => {
     </>
   );
 };
-
 
 export default Comments;

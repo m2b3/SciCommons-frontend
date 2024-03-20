@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "../../Utils/axios";
-import Loader from "../../Components/Loader/Loader";
-import Comments from "../../Components/Comments/Comments";
-import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from "react-icons/ai";
-import { MdOutlineViewSidebar } from "react-icons/md";
-import "./ArticlePage.css";
-import "react-quill/dist/quill.snow.css";
-import ToastMaker from "toastmaker";
-import "toastmaker/dist/toastmaker.css";
-import { useGlobalContext } from "../../Context/StateContext";
-import { AiOutlineFilePdf, AiOutlineShareAlt } from "react-icons/ai";
-import { BsChatLeftText } from "react-icons/bs";
-import ArticleCommentModal from "./ArticleCommentModal";
-import ArticleReviewModal from "./ArticleReviewModal";
-import ArticleDecisionModal from "./ArticleDecisionModal";
-import { LockClosedIcon, LockOpenIcon } from "@heroicons/react/solid";
-import { Tooltip } from "flowbite-react";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '../../Utils/axios';
+import Loader from '../../Components/Loader/Loader';
+import Comments from '../../Components/Comments/Comments';
+import { AiFillHeart, AiTwotoneStar, AiOutlineHeart } from 'react-icons/ai';
+import { MdOutlineViewSidebar } from 'react-icons/md';
+import './ArticlePage.css';
+import 'react-quill/dist/quill.snow.css';
+import ToastMaker from 'toastmaker';
+import 'toastmaker/dist/toastmaker.css';
+import { useGlobalContext } from '../../Context/StateContext';
+import { AiOutlineFilePdf, AiOutlineShareAlt } from 'react-icons/ai';
+import { BsChatLeftText } from 'react-icons/bs';
+import ArticleCommentModal from './ArticleCommentModal';
+import ArticleReviewModal from './ArticleReviewModal';
+import ArticleDecisionModal from './ArticleDecisionModal';
+import { LockClosedIcon, LockOpenIcon } from '@heroicons/react/solid';
+import { Tooltip } from 'flowbite-react';
+import toast from 'react-hot-toast';
 
 const ArticlePage = () => {
   const { articleId, commentId } = useParams();
@@ -64,14 +65,11 @@ const ArticlePage = () => {
     let arr = [];
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
-      const response = await axios.get(
-        `/api/comment/${commentId}/parents/`,
-        config
-      );
+      const response = await axios.get(`/api/comment/${commentId}/parents/`, config);
       arr.push(response.data.success);
       loadCommentData(arr);
     } catch (error) {
@@ -149,45 +147,35 @@ const ArticlePage = () => {
     setLoading(false);
   };
 
-  // scroll to comment if commentId is present in the URL
   useEffect(() => {
-    if (commentId & (loading === false) && loadingComment === false) {
-      const commentElement = document.getElementById(`comment-${commentId}`);
-      console.log(commentElement, "commentElement");
-      if (commentElement) {
-        console.log("Scrolling to comment", commentId, commentElement);
-        // Scroll into view with TailwindCSS classes
-        commentElement.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
-        // Apply TailwindCSS utilities for highlighting
-        commentElement.classList.add(
-          "bg-yellow-100",
-          "border",
-          "border-yellow-300",
-          "p-4"
-        );
-        // Optionally, remove the highlight after a few seconds
-        setTimeout(() => {
-          commentElement.classList.remove("bg-yellow-100", "border-yellow-300");
-        }, 3000);
-      }
-    }
-  }, [articleId, commentId, loading, loadingComment]);
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const commentId = url.searchParams.get("commentId");
     if (commentId) {
-      fetchCommentIdThread(commentId);
-      setParamCommentId(commentId);
+      // Make the axios call asynchronous
+      const checkCommentExists = async () => {
+        try {
+          // Await the response from the API call
+          const res = await axios.get(`/api/article/${articleId}/comment/${commentId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          // If the comment exists, fetch the comment thread and set the parameter
+          fetchCommentIdThread(commentId);
+          setParamCommentId(commentId);
+        } catch (err) {
+          console.log(err);
+          toast.error("Comment doesn't exist. Redirecting to the article page");
+          navigate(`/article/${articleId}`);
+        }
+      };
+
+      // Call the asynchronous function
+      checkCommentExists();
     } else {
       getComments();
     }
     getArticle();
-  }, []);
+  }, [commentId, articleId, token, navigate]);
 
   const handleProfile = (data) => {
     navigate(`/profile/${data}`);
@@ -367,34 +355,8 @@ const ArticlePage = () => {
     navigator.clipboard.writeText(`https://scicommons.org/article/${article.id}`);
   };
 
-  useEffect(() => {
-    if (commentId & (loading === false) && loadingComment === false) {
-      const commentElement = document.getElementById(`comment-${commentId}`);
-      console.log(commentElement, "commentElement");
-      if (commentElement) {
-        console.log("Scrolling to comment", commentId, commentElement);
-        // Scroll into view with TailwindCSS classes
-        commentElement.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
-        // Apply TailwindCSS utilities for highlighting
-        commentElement.classList.add(
-          "bg-yellow-100",
-          "border",
-          "border-yellow-300",
-          "p-4"
-        );
-        // Optionally, remove the highlight after a few seconds
-        setTimeout(() => {
-          commentElement.classList.remove("bg-yellow-100", "border-yellow-300");
-        }, 3000);
-      }
-    }
-  }, [articleId, commentId, loading, loadingComment]);
 
-  console.log(comments, "comments");
+  console.log(comments, 'comments');
 
   return (
     <div className="bg-white min-h-screen w-full">
@@ -404,7 +366,7 @@ const ArticlePage = () => {
           <div className="p-4 bg-white w-full md:w-5/6 mt-[1rem] mx-auto">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-3xl uppercase font-bold text-gray-800">
-                {article.article_name.replace(/_/g, " ")}
+                {article.article_name.replace(/_/g, ' ')}
               </h1>
               <button onClick={handleFavourites} className="text-red-500">
                 {article.isFavourite ? (
@@ -420,30 +382,25 @@ const ArticlePage = () => {
             </div>
 
             <div className="mb-2">
-              <span className="text-lg font-semibold text-green-800">
-                Added by:{" "}
-              </span>
+              <span className="text-lg font-semibold text-green-800">Added by: </span>
               {article.authors.map((author, i) => (
                 <span
                   key={i}
                   onClick={() => handleProfile(author)}
-                  className="cursor-pointer text-lg"
-                >
+                  className="cursor-pointer text-lg">
                   {author}
-                  {i < article.authors.length - 1 ? ", " : ""}
+                  {i < article.authors.length - 1 ? ', ' : ''}
                 </span>
               ))}
             </div>
 
             {article.unregistered_authors.length > 0 && (
               <div className="mb-2">
-                <span className="text-sm font-bold text-green-800">
-                  Unregistered Author(s):{" "}
-                </span>
+                <span className="text-sm font-bold text-green-800">Unregistered Author(s): </span>
                 {article.unregistered_authors.map((author, i) => (
                   <span key={i} className="cursor-pointer text-sm">
                     {author.fullName}
-                    {i < article.unregistered_authors.length - 1 ? ", " : ""}
+                    {i < article.unregistered_authors.length - 1 ? ', ' : ''}
                   </span>
                 ))}
               </div>
@@ -451,7 +408,7 @@ const ArticlePage = () => {
 
             <div className="flex items-center space-x-4 mb-4">
               <span className="text-sm">
-                {article.status === "public" ? (
+                {article.status === 'public' ? (
                   <Tooltip content="Public Article" position="top">
                     <LockOpenIcon className="w-4 h-4 inline" />
                   </Tooltip>
@@ -463,73 +420,61 @@ const ArticlePage = () => {
               </span>
               <span className="text-sm">
                 <Tooltip content="Article Favourites" position="top">
-                  <AiFillHeart className="w-4 h-4 inline" />{" "}
-                  {formatCount(article.favourites)}
+                  <AiFillHeart className="w-4 h-4 inline" /> {formatCount(article.favourites)}
                 </Tooltip>
               </span>
               <span className="text-sm">
                 <Tooltip content="Article Views" position="top">
-                  <MdOutlineViewSidebar className="w-4 h-4 inline" />{" "}
-                  {formatCount(article.views)}
+                  <MdOutlineViewSidebar className="w-4 h-4 inline" /> {formatCount(article.views)}
                 </Tooltip>
               </span>
               <span className="text-sm">
                 <Tooltip content="Article Rating" position="top">
-                  <AiTwotoneStar className="w-4 h-4 inline" />{" "}
-                  {article.rating ?? "0"}
+                  <AiTwotoneStar className="w-4 h-4 inline" /> {article.rating ?? '0'}
                 </Tooltip>
               </span>
             </div>
 
             {article.Abstract && (
               <div className="mb-2">
-                <strong className="text-md font-semibold text-green-700">
-                  Abstract:{" "}
-                </strong>
+                <strong className="text-md font-semibold text-green-700">Abstract: </strong>
                 <span className="text-md italic">{article.Abstract}</span>
               </div>
             )}
 
             <div className="mb-2">
-              <strong className="text-md font-semibold text-green-700">
-                Article Link:{" "}
-              </strong>
+              <strong className="text-md font-semibold text-green-700">Article Link: </strong>
               <a href={article.link} className="text-blue-700">
                 {article.link}
               </a>
             </div>
 
             <div className="mb-4">
-              <strong className="text-md font-semibold text-green-700">
-                Submission Date:{" "}
-              </strong>
+              <strong className="text-md font-semibold text-green-700">Submission Date: </strong>
               <span>{findTime(article.Public_date)}</span>
             </div>
 
             <div className="flex justify-center space-x-4 mb-4">
-              {!article.article_file.includes("None") && (
+              {!article.article_file.includes('None') && (
                 <button
                   onClick={handleFile}
-                  className="flex items-center px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                >
+                  className="flex items-center px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
                   <AiOutlineFilePdf className="w-5 h-5 mr-2" />
                   <span>Pdf</span>
                 </button>
               )}
               <button
                 className="flex items-center space-x-2 p-2 bg-green-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-green-600"
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
                 onClick={() => {
                   navigate(`/chat/${articleId}`);
-                }}
-              >
+                }}>
                 <BsChatLeftText className="w-5 h-5" />
                 <span className="text-md">Chat</span>
               </button>
               <button
                 onClick={handleShare}
-                className="flex items-center px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              >
+                className="flex items-center px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                 <AiOutlineShareAlt className="w-5 h-5 mr-2" />
                 <span>Share</span>
               </button>
@@ -538,10 +483,9 @@ const ArticlePage = () => {
             <div className="text-right">
               <button
                 onClick={handleShow}
-                className="px-4 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-              >
+                className="px-4 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
                 <Tooltip content="Add Review" position="top">
-                  {currentState === 1 ? "Add Review" : "Add Comment"}
+                  {currentState === 1 ? 'Add Review' : 'Add Comment'}
                 </Tooltip>
               </button>
             </div>

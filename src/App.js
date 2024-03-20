@@ -1,110 +1,106 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 // import AllMessages from './Pages/AllMessagesPage/AllMessagesPage';
-import NavBar from "./Components/NavBar/NavBar";
-import { useLocation } from "react-router-dom";
-import SideNav from "./Components/SideNav/SideNav";
-import useWindowSize from "./Utils/Hooks/useWindowSize";
-import { useNavigate } from "react-router-dom";
-import "./App.css";
-import Box from "@mui/material/Box";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import NavBar from './Components/NavBar/NavBar';
+import { useLocation } from 'react-router-dom';
+import SideNav from './Components/SideNav/SideNav';
+import useWindowSize from './Utils/Hooks/useWindowSize';
+import { useNavigate } from 'react-router-dom';
+import './App.css';
+import Box from '@mui/material/Box';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 //
-import { styled } from "@mui/material/styles";
-import { grey } from "@mui/material/colors";
-import Typography from "@mui/material/Typography";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import { styled } from '@mui/material/styles';
+import { grey } from '@mui/material/colors';
+import Typography from '@mui/material/Typography';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 
 // Bottom Navigation Icons
-import { MdExplore } from "react-icons/md";
-import { HiUserGroup } from "react-icons/hi";
-import { AiOutlineUsergroupAdd, AiOutlineHeart } from "react-icons/ai";
-import { MdPostAdd } from "react-icons/md";
-import {
-  IoIosArrowDropupCircle,
-  IoIosArrowDropdownCircle,
-} from "react-icons/io";
-import { BsBookmarkCheck } from "react-icons/bs";
-import { CgFeed } from "react-icons/cg";
-import { GrArticle } from "react-icons/gr";
-import RoutesContainer from "./RoutesContainer";
-import { Toaster } from "react-hot-toast";
+import { MdExplore } from 'react-icons/md';
+import { HiUserGroup } from 'react-icons/hi';
+import { AiOutlineUsergroupAdd, AiOutlineHeart } from 'react-icons/ai';
+import { MdPostAdd } from 'react-icons/md';
+import { IoIosArrowDropupCircle, IoIosArrowDropdownCircle } from 'react-icons/io';
+import { BsBookmarkCheck } from 'react-icons/bs';
+import { CgFeed } from 'react-icons/cg';
+import { GrArticle } from 'react-icons/gr';
+import RoutesContainer from './RoutesContainer';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const showNavBar = location.pathname !== "/login" && location.pathname !== "/register";
-  const showSideNavBar = location.pathname !== "/login" && location.pathname !== "/register";
+  const showNavBar = location.pathname !== '/login' && location.pathname !== '/register';
+  const showSideNavBar = location.pathname !== '/login' && location.pathname !== '/register';
   const [activeBottomNavTab, setActiveBottomNavTab] = useState();
   const [activeBottomSheetTab, setActiveBottomSheetTab] = useState();
   const windowSize = useWindowSize();
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const bottomNavRoutes = [
     {
-      text: "Explore",
+      text: 'Explore',
       icon: MdExplore,
-      route: "/explore",
+      route: '/explore'
     },
     {
-      text: "Community",
+      text: 'Community',
       icon: HiUserGroup,
-      route: "/mycommunity",
+      route: '/mycommunity'
     },
     {
-      text: "",
+      text: '',
       icon: IoIosArrowDropupCircle,
-      route: "",
+      route: ''
     },
     {
-      text: "My Posts",
+      text: 'My Posts',
       icon: MdPostAdd,
-      route: "/myposts",
+      route: '/myposts'
     },
     {
-      text: "Favourites",
+      text: 'Favourites',
       icon: AiOutlineHeart,
-      route: "/favourites",
-    },
+      route: '/favourites'
+    }
   ];
 
   const bottomSheetRoutes = [
     {
-      text: "My Timeline",
+      text: 'My Timeline',
       icon: CgFeed,
-      route: "/mytimeline",
+      route: '/mytimeline'
     },
     {
-      text: "Create Community",
+      text: 'Create Community',
       icon: AiOutlineUsergroupAdd,
-      route: "/createcommunity",
+      route: '/createcommunity'
     },
     {
-      text: "My Articles",
+      text: 'My Articles',
       icon: GrArticle,
-      route: "/myarticles",
+      route: '/myarticles'
     },
     {
-      text: "Bookmarks",
+      text: 'Bookmarks',
       icon: BsBookmarkCheck,
-      route: "/bookmarks",
-    },
+      route: '/bookmarks'
+    }
   ];
 
-  const container =
-    window !== undefined ? () => window.document.body : undefined;
+  const container = window !== undefined ? () => window.document.body : undefined;
   const drawerBleeding = 0;
-  const Puller = styled("div")(({ theme }) => ({
+  const Puller = styled('div')(({ theme }) => ({
     width: 30,
     height: 6,
-    backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
+    backgroundColor: theme.palette.mode === 'light' ? grey[300] : grey[900],
     borderRadius: 3,
-    position: "absolute",
+    position: 'absolute',
     top: 8,
-    left: "calc(50% - 15px)",
+    left: 'calc(50% - 15px)'
   }));
 
   return (
-    <div className="relative">
+    <div className="relative bg-white dark:bg-gray-800 text-black dark:text-white">
       <Toaster />
       {showNavBar && <NavBar />}
       {showSideNavBar && <SideNav />}
@@ -112,34 +108,32 @@ function App() {
       {windowSize.width < 500 && showNavBar && (
         <Box
           sx={{
-            width: "100%",
-            position: "fixed",
+            width: '100%',
+            position: 'fixed',
             zIndex: 60,
             bottom: 0,
             right: 0,
-            borderTop: "1px solid rgb(228,231,235)",
-          }}
-        >
+            borderTop: '1px solid rgb(228,231,235)'
+          }}>
           <BottomNavigation
             showLabels
             value={activeBottomNavTab}
             onChange={(event, newValue) => {
               setActiveBottomNavTab(newValue);
-            }}
-          >
+            }}>
             {bottomNavRoutes.map((route, index) =>
-              route.text === "" ? (
+              route.text === '' ? (
                 <BottomNavigationAction
-                key={index}
+                  key={index}
                   label={route.text}
-                  icon={<route.icon style={{ fontSize: "48px" }} />}
-                  onClick={() => setIsBottomSheetOpen(prev => !prev)}
+                  icon={<route.icon style={{ fontSize: '48px' }} />}
+                  onClick={() => setIsBottomSheetOpen((prev) => !prev)}
                 />
               ) : (
                 <BottomNavigationAction
-                key={index}
+                  key={index}
                   label={route.text}
-                  icon={<route.icon style={{ fontSize: "24px" }} />}
+                  icon={<route.icon style={{ fontSize: '24px' }} />}
                   onClick={() => navigate(route.route)}
                 />
               )
@@ -158,24 +152,21 @@ function App() {
         swipeAreaWidth={drawerBleeding}
         disableSwipeToOpen={true}
         ModalProps={{
-          keepMounted: true,
-        }}
-      >
+          keepMounted: true
+        }}>
         <div
-        /*eslint-disable */
+          /*eslint-disable */
           sx={{
-            position: "absolute",
+            position: 'absolute',
             top: -drawerBleeding,
             /* borderTopLeftRadius: 8,
             borderTopRightRadius: 8, */
-            visibility: "visible",
+            visibility: 'visible',
             right: 0,
-            left: 0,
-          }}
-        >
+            left: 0
+          }}>
           <Puller />
-          <Typography sx={{ p: 2, color: "text.secondary" }}>
-          </Typography>
+          <Typography sx={{ p: 2, color: 'text.secondary' }}></Typography>
           <div>
             <BottomNavigation
               showLabels
@@ -185,13 +176,12 @@ function App() {
                 setActiveBottomNavTab(null);
               }}
               style={{
-                marginBottom: "20px",
-              }}
-            >
+                marginBottom: '20px'
+              }}>
               {bottomSheetRoutes.map((route, index) => (
                 <BottomNavigationAction
                   label={route.text}
-                  icon={<route.icon style={{ fontSize: "24px" }} />}
+                  icon={<route.icon style={{ fontSize: '24px' }} />}
                   onClick={() => navigate(route.route)}
                 />
               ))}
@@ -202,29 +192,26 @@ function App() {
               onChange={(event, newValue) => {
                 setActiveBottomNavTab(newValue);
                 setActiveBottomSheetTab(null);
-              }}
-            >
+              }}>
               {bottomNavRoutes.map((route, index) =>
-                route.text === "" ? (
+                route.text === '' ? (
                   <BottomNavigationAction
                     key={index}
                     label={route.text}
                     icon={
                       isBottomSheetOpen ? (
-                        <IoIosArrowDropdownCircle style={{ fontSize: "48px" }} />
+                        <IoIosArrowDropdownCircle style={{ fontSize: '48px' }} />
                       ) : (
-                        <IoIosArrowDropupCircle style={{ fontSize: "48px" }} />
+                        <IoIosArrowDropupCircle style={{ fontSize: '48px' }} />
                       )
                     }
-                    onClick={() => setIsBottomSheetOpen(prev => !prev)}
+                    onClick={() => setIsBottomSheetOpen((prev) => !prev)}
                   />
                 ) : (
                   <BottomNavigationAction
                     key={index}
                     label={route.text}
-                    icon={
-                      route.icon && <route.icon style={{ fontSize: "24px" }} />
-                    }
+                    icon={route.icon && <route.icon style={{ fontSize: '24px' }} />}
                     onClick={() => navigate(route.route)}
                   />
                 )
