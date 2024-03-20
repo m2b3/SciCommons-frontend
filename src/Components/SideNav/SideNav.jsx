@@ -88,7 +88,10 @@ const SideNav = () => {
             width: sidenavWidth,
             boxSizing: "border-box",
             transition: "width 0.2s ease",
-            zIndex: 50
+            zIndex: 50,
+            ":hover": {
+              boxShadow: "10px 0px 20px 0px rgba(0,0,0,0.08)"
+            }
           }
         }}
         variant="permanent"
@@ -100,13 +103,11 @@ const SideNav = () => {
         onMouseOut={() => {
           setIsSidenavOpen(false);
           windowWidth <= 768 && setSidenavWidth(sidenavSmallWidth);
-        }}
-      >
+        }}>
         <Link
           to="/"
-          className="font-bold text-green-600 md:py-4 py-2.5 flex flex-row items-center"
-          style={{ textDecoration: "none", justifyContent: "center" }}
-        >
+          className="flex flex-row items-center py-2.5 font-bold text-green-600 md:py-4"
+          style={{ textDecoration: "none", justifyContent: "center" }}>
           {windowWidth > 768 ? (
             <>
               <img
@@ -129,8 +130,7 @@ const SideNav = () => {
                   onClick={() => {
                     setSidenavWidth(sidenavSmallWidth);
                     setIsSidenavOpen(false);
-                  }}
-                >
+                  }}>
                   {closeIcon()}
                 </button>
               ) : (
@@ -139,8 +139,7 @@ const SideNav = () => {
                   onClick={() => {
                     setSidenavWidth(sidenavLargeWidth);
                     setIsSidenavOpen(true);
-                  }}
-                >
+                  }}>
                   {hamburgerIcon()}
                 </button>
               )}

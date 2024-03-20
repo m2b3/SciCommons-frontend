@@ -36,6 +36,7 @@ const ArticlePage = () => {
   const [order, setOrder] = useState("recent");
   const [orderOption, setOrderOption] = useState("Ascending");
   const [loadingComment, setLoadingComment] = useState(false);
+  const [paramCommentId, setParamCommentId] = useState(null);
 
   const loadArticleData = async (res) => {
     setArticle(res);
@@ -57,6 +58,22 @@ const ArticlePage = () => {
       const res = await axios.put(`/api/article/${articleId}/updateviews/`, config);
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const fetchCommentIdThread = async (commentId) => {
+    let arr = [];
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+    try {
+      const response = await axios.get(`/api/comment/${commentId}/parents/`, config);
+      arr.push(response.data.success);
+      loadCommentData(arr);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -131,12 +148,18 @@ const ArticlePage = () => {
   };
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const commentId = url.searchParams.get("commentId");
+    if (commentId) {
+      fetchCommentIdThread(commentId);
+      setParamCommentId(commentId);
+    } else {
+      getComments();
+    }
     getArticle();
-    getComments();
   }, []);
 
   const handleProfile = (data) => {
-    console.log(data);
     navigate(`/profile/${data}`);
   };
 
@@ -315,31 +338,32 @@ const ArticlePage = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen w-full">
+    <div className="min-h-screen w-full bg-white">
+      <Toaster />
       {(loading || article === null || comments === null) && <Loader />}
       {!loading && article && comments && (
         <div className="bg-white">
-          <div className="flex justify-center bg-white w-full md:w-5/6 mt-[1rem] mx-auto p-2 overflow-hidden">
+          <div className="mx-auto mt-[1rem] flex w-full justify-center overflow-hidden bg-white p-2 md:w-5/6">
             <div className=" mt-1 w-full  justify-self-center bg-white">
               <div className="py-5 ">
-                <div className="flex bg-white flex-row justify-between">
-                  <div className="text-lg md:text-3xl font-[700] text-gray-600 bg-white uppercase">
+                <div className="flex flex-row justify-between bg-white">
+                  <div className="bg-white text-lg font-[700] uppercase text-gray-600 md:text-3xl">
                     {article.article_name.replace(/_/g, " ")}
                   </div>
                   <div className="flex flex-row">
                     <div className="icon" style={{ cursor: "pointer" }} onClick={handleFavourites}>
                       {article.isFavourite === true ? (
-                        <AiFillHeart className="w-[2rem] h-[2rem]" />
+                        <AiFillHeart className="h-[2rem] w-[2rem]" />
                       ) : (
-                        <AiOutlineHeart className="w-[2rem] h-[2rem]" />
+                        <AiOutlineHeart className="h-[2rem] w-[2rem]" />
                       )}
                     </div>
                   </div>
                 </div>
-                <div className="py-1 bg-white">
-                  <span className="italic font-sans text-md md:text-lg leading-[1.5rem] ">
+                <div className="bg-white py-1">
+                  <span className="text-md font-sans italic leading-[1.5rem] md:text-lg ">
                     {article.link && (
-                      <span className="text-green-800 font-semibold">Added by: </span>
+                      <span className="font-semibold text-green-800">Added by: </span>
                     )}
                     {article.authors.map((data, i) => {
                       return (
@@ -349,8 +373,7 @@ const ArticlePage = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             handleProfile(data);
-                          }}
-                        >
+                          }}>
                           {data}
                           <span> </span>
                         </span>
@@ -358,13 +381,13 @@ const ArticlePage = () => {
                     })}
                   </span>
                 </div>
-                <div className="py-1 bg-white">
+                <div className="bg-white py-1">
                   {article.unregistered_authors.length > 0 && (
                     <>
                       <span className="text-[0.75rem] font-bold text-green-800">
                         UnRegistered Author(s) :{" "}
                       </span>
-                      <span className="italic font-sans text-[0.75rem] leading-[1.5rem] ">
+                      <span className="font-sans text-[0.75rem] italic leading-[1.5rem] ">
                         {article.unregistered_authors.map((data, i) => {
                           return (
                             <span key={i} style={{ cursor: "pointer" }}>
@@ -378,38 +401,37 @@ const ArticlePage = () => {
                   )}
                 </div>
                 <div className="bg-white">
-                  <span className="text-[.75rem] p-0">
+                  <span className="p-0 text-[.75rem]">
                     {!article.link && (
                       <>
-                        <img className="w-[.875rem] inline mb-1" src={cal} alt=""></img>
+                        <img className="mb-1 inline w-[.875rem]" src={cal} alt=""></img>
                         <span className="pl-1">Published:</span>
                         {article.published_date === null
                           ? " Not Published"
                           : findTime(article.published_date)}
                         <img
-                          className="w-[.875rem] inline mb-1 mr-1 ml-4"
+                          className="mb-1 ml-4 mr-1 inline w-[.875rem]"
                           src={folder}
-                          alt=""
-                        ></img>
+                          alt=""></img>
 
                         {article.published === null
                           ? " Not Yet"
                           : `Accepted by ${article.published}`}
                       </>
                     )}
-                    <img className="w-[.875rem] inline mb-1 mr-1 ml-4" src={eye} alt=""></img>
+                    <img className="mb-1 ml-4 mr-1 inline w-[.875rem]" src={eye} alt=""></img>
 
                     {article.status === "public" ? "Everyone" : "Private"}
-                    <AiFillHeart className="w-[.875rem] inline mb-1 mr-1 ml-4" />
+                    <AiFillHeart className="mb-1 ml-4 mr-1 inline w-[.875rem]" />
                     {formatCount(article.favourites)}
-                    <MdOutlineViewSidebar className="w-[.875rem] inline mb-1 mr-1 ml-4" />
+                    <MdOutlineViewSidebar className="mb-1 ml-4 mr-1 inline w-[.875rem]" />
                     {formatCount(article.views)}
-                    <AiTwotoneStar className="w-[.875rem] inline mb-1 mr-1 ml-4" />
+                    <AiTwotoneStar className="mb-1 ml-4 mr-1 inline w-[.875rem]" />
                     {article.rating === null ? "0" : article.rating}
                   </span>
                 </div>
               </div>
-              <div className="text-[.75rem] leading-[1.125rem] mt-[-0.875rem] bg-white">
+              <div className="mt-[-0.875rem] bg-white text-[.75rem] leading-[1.125rem]">
                 {article.Abstract !== null && article.Abstract !== "" && (
                   <span className="block">
                     <strong className="text-green-700"> Abstract : </strong>
@@ -418,13 +440,13 @@ const ArticlePage = () => {
                 )}
                 {article.license !== null && article.license !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]"> License : </strong>
+                    <strong className="font-[700] text-green-700"> License : </strong>
                     <span>{article.license}</span>
                   </div>
                 )}
                 {article.Code !== null && article.Code !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]">Code : </strong>
+                    <strong className="font-[700] text-green-700">Code : </strong>
                     <a href={article.Code} className="text-[#337ab7]">
                       {" "}
                       {article.Code}
@@ -433,7 +455,7 @@ const ArticlePage = () => {
                 )}
                 {article.video !== null && article.Code !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]"> Video Link: </strong>
+                    <strong className="font-[700] text-green-700"> Video Link: </strong>
                     <a href={article.video} className="text-[#337ab7]">
                       {" "}
                       {article.video}
@@ -442,7 +464,7 @@ const ArticlePage = () => {
                 )}
                 {article.doi !== null && article.doi !== "" && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]"> DOI: </strong>
+                    <strong className="font-[700] text-green-700"> DOI: </strong>
                     <a href={article.doi} className="text-[#337ab7]">
                       {article.doi}
                     </a>
@@ -450,7 +472,7 @@ const ArticlePage = () => {
                 )}
                 {article.link && (
                   <div className="block">
-                    <strong className="text-green-700 font-[700]"> Article Link: </strong>
+                    <strong className="font-[700] text-green-700"> Article Link: </strong>
                     <a href={article.link} className="text-[#337ab7]">
                       {" "}
                       {article.link}
@@ -458,7 +480,7 @@ const ArticlePage = () => {
                   </div>
                 )}
                 <div className="block">
-                  <strong className="text-green-700 font-[700]"> Submission Date : </strong>
+                  <strong className="font-[700] text-green-700"> Submission Date : </strong>
                   <span> {findTime(article.Public_date)} </span>
                 </div>
               </div>
@@ -466,47 +488,43 @@ const ArticlePage = () => {
               <div className="flex flex-row justify-center bg-white">
                 {!article.article_file.includes("None") && (
                   <button
-                    className="flex items-center space-x-2 p-2 bg-red-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-red-600"
+                    className="text-md mr-4 flex items-center space-x-2 rounded-md bg-red-500 p-2 text-white shadow-lg hover:bg-red-600"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       handleFile();
-                    }}
-                  >
-                    <AiOutlineFilePdf className="w-5 h-5" />
+                    }}>
+                    <AiOutlineFilePdf className="h-5 w-5" />
                     <span className="text-md">Pdf</span>
                   </button>
                 )}
                 <button
-                  className="flex items-center space-x-2 p-2 bg-green-500 mr-4 text-white text-md shadow-lg rounded-md hover:bg-green-600"
+                  className="text-md mr-4 flex items-center space-x-2 rounded-md bg-green-500 p-2 text-white shadow-lg hover:bg-green-600"
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     navigate(`/chat/${articleId}`);
-                  }}
-                >
-                  <BsChatLeftText className="w-5 h-5" />
+                  }}>
+                  <BsChatLeftText className="h-5 w-5" />
                   <span className="text-md">Chat</span>
                 </button>
                 <button
-                  className="flex items-center space-x-2 p-2 bg-blue-500 text-white text-md shadow-lg rounded-md hover:bg-blue-600"
+                  className="text-md flex items-center space-x-2 rounded-md bg-blue-500 p-2 text-white shadow-lg hover:bg-blue-600"
                   style={{ cursor: "pointer" }}
                   onClick={(e) => {
                     handleShare(e);
-                  }}
-                >
-                  <AiOutlineShareAlt className="w-5 h-5" />
+                  }}>
+                  <AiOutlineShareAlt className="h-5 w-5" />
                   <span className="text-md">Share</span>
                 </button>
               </div>
 
               <div className="ab m-0">
-                <div className="bg-white border-[#3f6978] border-solid">
+                <div className="border-solid border-[#3f6978] bg-white">
                   <div className="float-right">
                     <span className="text-[0.75rem] text-gray-600">Add:</span>
                     <span
-                      className="box-content text-white bg-[#4d8093] text-[0.55 rem] border-solid ml-2 md:font-bold p-2 pt-0 rounded"
+                      className="text-[0.55 rem] ml-2 box-content rounded border-solid bg-[#4d8093] p-2 pt-0 text-white md:font-bold"
                       style={{ cursor: "pointer" }}
-                      onClick={handleShow}
-                    >
+                      onClick={handleShow}>
                       {currentState === 1 && "add review"}
                       {currentState !== 1 && "add comment"}
                     </span>
@@ -515,9 +533,9 @@ const ArticlePage = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col w-full md:w-5/6 bg-white mt-[1rem] mx-auto p-2 overflow-hidden">
+          <div className="mx-auto mt-[1rem] flex w-full flex-col overflow-hidden bg-white p-2 md:w-5/6">
             <div className="w-full">
-              <div className="flex flex-row justify-center mt-4 text-4xl font-bold text-gray-600">
+              <div className="mt-4 flex flex-row justify-center text-4xl font-bold text-gray-600">
                 Reviews
                 {/* <button className={currentState === 2 ? 'mb-2 text-sm md:text-xl text-green-600 px-2 font-bold md:px-5 py-2 border-b-2 border-green-600' : 'mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2'} 
                             style={{ borderBottom:currentState===2  ? '2px solid #68D391' : '2px solid #000',cursor:"pointer" }} onClick={()=> onclickFuntion(2)}>
@@ -533,56 +551,51 @@ const ArticlePage = () => {
                             </button> */}
               </div>
             </div>
-            <div className="w-full min-h-screen">
-              <div className="flex flex-row justify-around p-3 items-center w-full mb-3 mt-3 bg-zinc-200 rounded-lg shadow-md">
-                <div className="relative inline-flex mr-2">
+            <div className="min-h-screen w-full">
+              <div className="mb-3 mt-3 flex w-full flex-row items-center justify-around rounded-lg bg-zinc-200 p-3 shadow-md">
+                <div className="relative mr-2 inline-flex">
                   <select
-                    className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
+                    className="md:text-md rounded-md border-2 border-green-600 bg-white px-4 py-1 text-sm text-gray-800 transition duration-150 ease-in-out focus:border-2 focus:border-green-600"
                     value={Type}
-                    onChange={(e) => handleTypeChange(e)}
-                  >
+                    onChange={(e) => handleTypeChange(e)}>
                     <option value="null">All</option>
                     <option value="review">Review</option>
                     <option value="decision">Decision</option>
                   </select>
                 </div>
-                <div className="relative inline-flex mr-2">
+                <div className="relative mr-2 inline-flex">
                   <select
-                    className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
+                    className="md:text-md rounded-md border-2 border-green-600 bg-white px-4 py-1 text-sm text-gray-800 transition duration-150 ease-in-out focus:border-2 focus:border-green-600"
                     value={comment_type}
-                    onChange={(e) => handleCommentTypeChange(e)}
-                  >
+                    onChange={(e) => handleCommentTypeChange(e)}>
                     <option value="null">All</option>
                     <option value="OfficialComment">Official Comment</option>
                     <option value="PublicComment">Public Comment</option>
                   </select>
                 </div>
-                <div className="relative inline-flex mr-2">
+                <div className="relative mr-2 inline-flex">
                   <select
-                    className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
+                    className="md:text-md rounded-md border-2 border-green-600 bg-white px-4 py-1 text-sm text-gray-800 transition duration-150 ease-in-out focus:border-2 focus:border-green-600"
                     value={order}
-                    onChange={(e) => handleOrderChange(e)}
-                  >
+                    onChange={(e) => handleOrderChange(e)}>
                     <option value="recent">Date</option>
                     <option value="rated">Comment Rating</option>
                     <option value="reputated">User Reputation</option>
                   </select>
                 </div>
-                <div className="relative inline-flex mr-2">
+                <div className="relative mr-2 inline-flex">
                   <select
-                    className="bg-white text-gray-800 text-sm md:text-md border-2 rounded-md border-green-600 focus:border-2 focus:border-green-600 px-4 py-1 transition duration-150 ease-in-out"
+                    className="md:text-md rounded-md border-2 border-green-600 bg-white px-4 py-1 text-sm text-gray-800 transition duration-150 ease-in-out focus:border-2 focus:border-green-600"
                     value={orderOption}
-                    onChange={(e) => handleOrderOptionChange(e)}
-                  >
+                    onChange={(e) => handleOrderOptionChange(e)}>
                     <option value="Descending">Descending</option>
                     <option value="Ascending">Ascending</option>
                   </select>
                 </div>
-                <div className="relative inline-flex mr-2">
+                <div className="relative mr-2 inline-flex">
                   <button
-                    className="text-sm md:text-md bg-green-500 rounded-lg p-1 text-white font-semibold"
-                    onClick={getComments}
-                  >
+                    className="md:text-md rounded-lg bg-green-500 p-1 text-sm font-semibold text-white"
+                    onClick={getComments}>
                     Apply Filters
                   </button>
                 </div>
@@ -590,17 +603,24 @@ const ArticlePage = () => {
               <div className="p-3">
                 {!loadingComment &&
                   comments.length > 0 &&
-                  comments.map((comment) => (
-                    <Comments key={comment.id} comment={comment} article={article} colour={1} />
-                  ))}
+                  comments.map((comment) => {
+                    return (
+                      <Comments
+                        key={comment.id}
+                        comment={comment}
+                        article={article}
+                        colour={1}
+                        paramCommentId={paramCommentId}
+                      />
+                    );
+                  })}
                 {loadingComment && <Loader />}
                 {!loadingComment && comments.length === 0 && (
-                  <div className="w-full flex flex-row justify-center items-center">
+                  <div className="flex w-full flex-row items-center justify-center">
                     <button
                       style={{ cursor: "pointer" }}
                       onClick={loadMore}
-                      className="p-2 text-green-500 text-2xl text-center font-bold mt-2"
-                    >
+                      className="mt-2 p-2 text-center text-2xl font-bold text-green-500">
                       {loadComments ? "Loading..." : fillLoad()}
                     </button>
                   </div>

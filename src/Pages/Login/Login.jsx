@@ -71,7 +71,6 @@ const Login = () => {
           "Content-Type": "application/json"
         }
       });
-      console.log(response);
       localStorage.setItem("token", response.data.success.access);
       await loadTokenData(response.data.success.access);
       await getCurrentUser();
@@ -95,27 +94,26 @@ const Login = () => {
     <>
       {loading && <Loader />}
       {!loading && (
-        <main className="w-full h-screen flex flex-col items-center bg-green-50 justify-center px-4">
-          <div className="max-w-sm w-full text-gray-600">
+        <main className="flex h-screen w-full flex-col items-center justify-center bg-green-50 px-4">
+          <div className="w-full max-w-sm text-gray-600">
             <div
               className="text-center"
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/");
-              }}
-            >
+              }}>
               <img src="/logo.png" width={150} className="mx-auto" alt="logo" />
             </div>
             <br />
-            <div className="bg-white shadow p-4 py-6 sm:p-6 sm:rounded-lg">
+            <div className="bg-white p-4 py-6 shadow sm:rounded-lg sm:p-6">
               <form onSubmit={handleSubmit}>
-                <div className="max-w-md mx-auto">
+                <div className="mx-auto max-w-md">
                   <label htmlFor="username" className="block py-2 font-bold text-gray-800">
                     Username or Email
                   </label>
-                  <div className="flex items-center text-gray-700 border rounded-md">
-                    <div className="px-3 py-2.5 rounded-l-md bg-gray-50 border-r">@</div>
+                  <div className="flex items-center rounded-md border text-gray-700">
+                    <div className="rounded-l-md border-r bg-gray-50 px-3 py-2.5">@</div>
                     <input
                       style={{ border: "2px solid #cbd5e0" }}
                       type="text"
@@ -128,33 +126,31 @@ const Login = () => {
                 </div>
                 <div>
                   <label className="font-bold text-gray-800">Password</label>
-                  <div className="relative max-w-screen mt-2">
+                  <div className="max-w-screen relative mt-2">
                     <input
                       style={{ border: "2px solid #cbd5e0" }}
                       type={!isPasswordHidden ? "password" : "text"}
                       id="password"
                       placeholder="enter the password"
                       ref={password}
-                      className="w-full pr-12 pl-3 py-2 text-gray-700 bg-transparent outline-none border focus:border-green-600 shadow-sm rounded-lg"
+                      className="w-full rounded-lg border bg-transparent py-2 pl-3 pr-12 text-gray-700 shadow-sm outline-none focus:border-green-600"
                     />
                     <button
                       type="button"
-                      className="text-gray-700 absolute right-3 inset-y-0 my-auto active:text-gray-600"
+                      className="absolute inset-y-0 right-3 my-auto text-gray-700 active:text-gray-600"
                       style={{ cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
                         setPasswordHidden(!isPasswordHidden);
-                      }}
-                    >
+                      }}>
                       {isPasswordHidden ? (
                         <svg
-                          className="w-6 h-6"
+                          className="h-6 w-6"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
                           strokeWidth={1.5}
-                          stroke="currentColor"
-                        >
+                          stroke="currentColor">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -173,8 +169,7 @@ const Login = () => {
                           viewBox="0 0 24 24"
                           strokeWidth={1.5}
                           stroke="currentColor"
-                          className="w-6 h-6"
-                        >
+                          className="h-6 w-6">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -188,22 +183,20 @@ const Login = () => {
                 <div className="text-right">
                   <Link
                     to="/forgotpassword"
-                    className="font-medium text-green-600 hover:text-green-500"
-                  >
+                    className="font-medium text-green-600 hover:text-green-500">
                     Forgot password?
                   </Link>
                 </div>
                 <br />
 
                 <button
-                  className="w-full px-4 py-2 text-white font-medium bg-green-600 hover:bg-green-500 active:bg-green-600 rounded-lg duration-150"
+                  className="w-full rounded-lg bg-green-600 px-4 py-2 font-medium text-white duration-150 hover:bg-green-500 active:bg-green-600"
                   style={{ cursor: "pointer" }}
-                  type="submit"
-                >
+                  type="submit">
                   Sign in
                 </button>
                 <br />
-                <hr className="my-6 border-gray-200 w-full" />
+                <hr className="my-6 w-full border-gray-200" />
                 <p className="text-center">
                   Don&apos;t have an account?{" "}
                   <Link to="/register" className="font-medium text-green-600 hover:text-green-500">

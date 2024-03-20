@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
@@ -9,14 +9,16 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import { useNavigate } from "react-router-dom";
 import axios from "../../Utils/axios";
+import { FaLink } from "react-icons/fa6";
+import toast from "react-hot-toast";
 import ArticleCommentModal from "./ArticleCommentModal";
 import ArticleCommentEditModal from "./ArticleCommentEditModal";
 import Dropdown from "./Dropdown";
 
-const Comments = ({ comment, article, colour }) => {
+const Comments = ({ comment, article, colour, paramCommentId }) => {
   const [loading, setLoading] = useState(false);
   const [repliesData, setRepliesData] = useState([]);
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(typeof comment.replies === "object");
   const [rating, setRating] = useState(comment.userrating ? comment.userrating : 0);
   const [overallrating, setOverallRating] = useState(
     comment.commentrating ? comment.commentrating : 0
@@ -27,6 +29,7 @@ const Comments = ({ comment, article, colour }) => {
   const [index, setIndex] = useState(comment.versions.length);
   const { token } = useGlobalContext();
   const navigate = useNavigate();
+  const [commentHighlight, setCommentHighlight] = useState(false);
 
   const colorClasses = {
     0: "bg-white",
@@ -210,25 +213,38 @@ const Comments = ({ comment, article, colour }) => {
     setShowEditModal(true);
   };
 
+  useEffect(() => {
+    if (paramCommentId == comment.id) {
+      document.getElementById(paramCommentId).scrollIntoView({ behavior: "smooth" });
+      setCommentHighlight(true);
+      setTimeout(() => {
+        setCommentHighlight(false);
+      }, 2000);
+    }
+  }, []);
+
   return (
     <>
       <div
-        className={`mb-2 w-full ${colorClasses[colour]} shadow-lg min-w-[200px] rounded px-4 py-2 overflow-x-auto`}
+        className={`mb-2 w-full  ${
+          commentHighlight
+            ? "border-1 border-green-600 bg-green-50 shadow-[0_0px_20px_0px_rgba(0,0,0,0.2)]"
+            : `shadow-lg ${colorClasses[colour]}`
+        } min-w-[200px] overflow-x-auto rounded px-4 py-2 transition-all duration-300 ease-in-out`}
         data-commentid={comment.id}
-      >
+        id={comment.id}>
         <div className="flex flex-row items-center justify-between">
           <div
             className="flex flex-row items-center"
             style={{ cursor: "pointer" }}
             onClick={() => {
               setShow(!show);
-            }}
-          >
+            }}>
             <div className="flex flex-row items-center">
-              <span className="font-bold  relative text-xl text-gray-600 leading-[1.25rem]">
+              <span className="relative  text-xl font-bold leading-[1.25rem] text-gray-600">
                 {versions[index].Title}
               </span>
-              <span className=" text-[#777] font-[400] text-[0.55 rem] ml-2  p-2">
+              <span className=" text-[0.55 rem] ml-2 p-2 font-[400]  text-[#777]">
                 • by {versions[index].personal ? "you" : versions[index].user}
               </span>
               <span className="text-xs text-slate-400">
@@ -236,7 +252,7 @@ const Comments = ({ comment, article, colour }) => {
               </span>
             </div>
             {comment.Type === "review" && (
-              <div className="flex ml-2">
+              <div className="ml-2 flex">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -245,8 +261,7 @@ const Comments = ({ comment, article, colour }) => {
                     (comment.rating == null ? 0 : comment.rating) >= 1
                       ? "text-yellow-500"
                       : "text-gray-400"
-                  }`}
-                >
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
 
@@ -258,8 +273,7 @@ const Comments = ({ comment, article, colour }) => {
                     (comment.rating == null ? 0 : comment.rating) >= 2
                       ? "text-yellow-500"
                       : "text-gray-400"
-                  }`}
-                >
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
                 <svg
@@ -270,8 +284,7 @@ const Comments = ({ comment, article, colour }) => {
                     (comment.rating == null ? 0 : comment.rating) >= 3
                       ? "text-yellow-500"
                       : "text-gray-400"
-                  }`}
-                >
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
                 <svg
@@ -282,8 +295,7 @@ const Comments = ({ comment, article, colour }) => {
                     (comment.rating == null ? 0 : comment.rating) >= 4
                       ? "text-yellow-500"
                       : "text-gray-400"
-                  }`}
-                >
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
                 <svg
@@ -294,8 +306,7 @@ const Comments = ({ comment, article, colour }) => {
                     (comment.rating == null ? 0 : comment.rating) >= 5
                       ? "text-yellow-500"
                       : "text-gray-400"
-                  }`}
-                >
+                  }`}>
                   <path d="M12 1l2.753 8.472h8.938l-7.251 5.269 2.753 8.472L12 18.208l-7.193 5.005 2.753-8.472L.309 9.472h8.938z" />
                 </svg>
               </div>
@@ -310,9 +321,8 @@ const Comments = ({ comment, article, colour }) => {
               }}
               style={{ cursor: "pointer" }}
               disabled={index === 0}
-              className={index === 0 ? "text-gray-300" : ""}
-            >
-              <IoIosArrowBack className="w-6 h-6" />
+              className={index === 0 ? "text-gray-300" : ""}>
+              <IoIosArrowBack className="h-6 w-6" />
             </button>
             {index + 1} / {versions.length}
             <button
@@ -323,14 +333,27 @@ const Comments = ({ comment, article, colour }) => {
               }}
               style={{ cursor: "pointer" }}
               disabled={index === versions.length - 1}
-              className={index === versions.length - 1 ? "text-gray-300" : ""}
-            >
-              <IoIosArrowForward className="w-6 h-6" />
+              className={index === versions.length - 1 ? "text-gray-300" : ""}>
+              <IoIosArrowForward className="h-6 w-6" />
             </button>
             {article.isArticleModerator && (
               <Dropdown article={article} comment={comment} color={colorClasses[colour]} />
             )}
           </div>
+          <FaLink
+            className="size-5 cursor-pointer"
+            onClick={() => {
+              const baseUrl = window.location.href.split("?")[0];
+              const currentParams = new URLSearchParams(window.location.search);
+              const currentCommentId = currentParams.get("commentId");
+              const newCommentId = comment.id;
+              currentParams.delete("commentId");
+              currentParams.set("commentId", newCommentId);
+              const newUrl = `${baseUrl}?${currentParams.toString()}`;
+              navigator.clipboard.writeText(newUrl);
+              toast.success("Comment link copied to clipboard");
+            }}
+          />
         </div>
         {show && (
           <>
@@ -339,26 +362,25 @@ const Comments = ({ comment, article, colour }) => {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 setShow(!show);
-              }}
-            >
-              <span className="inline-flex items-center gap-1.5 rounded text-xs p-[2px] font-medium bg-red-500 text-white">
+              }}>
+              <span className="inline-flex items-center gap-1.5 rounded bg-red-500 p-[2px] text-xs font-medium text-white">
                 {comment.Type}
               </span>
-              <span className="inline-flex items-center gap-1.5 ml-3 rounded text-xs p-[2px] font-medium bg-cyan-500 text-white">
+              <span className="ml-3 inline-flex items-center gap-1.5 rounded bg-cyan-500 p-[2px] text-xs font-medium text-white">
                 {comment.tag}
               </span>
-              <span className="inline-flex items-center gap-1.5 ml-3 rounded text-xs p-[2px] font-medium bg-orange-500 text-white">
+              <span className="ml-3 inline-flex items-center gap-1.5 rounded bg-orange-500 p-[2px] text-xs font-medium text-white">
                 {comment.comment_type}
               </span>
               {comment.role !== "none" && (
-                <span className="inline-flex items-center gap-1.5 ml-3 rounded text-xs p-[2px] font-medium bg-purple-500 text-white">
+                <span className="ml-3 inline-flex items-center gap-1.5 rounded bg-purple-500 p-[2px] text-xs font-medium text-white">
                   {comment.role}
                 </span>
               )}
             </div>
-            <div className="container w-full flex flex-row mt-2">
-              <div className="m-1 flex flex-row items-center z-20">
-                <div className="text-xl font-semibold m-1 w-10 h-10 bg-gray-600 text-white flex flex-row justify-center items-center rounded-xl shadow-xl">
+            <div className="container mt-2 flex w-full flex-row">
+              <div className="z-20 m-1 flex flex-row items-center">
+                <div className="m-1 flex h-10 w-10 flex-row items-center justify-center rounded-xl bg-gray-600 text-xl font-semibold text-white shadow-xl">
                   {formatCount(overallrating)}
                 </div>
                 {versions[index].personal === false && (
@@ -383,7 +405,7 @@ const Comments = ({ comment, article, colour }) => {
                   </Box>
                 )}
               </div>
-              <div className="border-l-2 border-gray-200 p-2 rounded-xl">
+              <div className="rounded-xl border-l-2 border-gray-200 p-2">
                 <div className="text-sm font-semibold text-green-800">Comment:</div>
                 <ReactQuill
                   value={styleLinksWithColor(versions[index].Comment)}
@@ -391,59 +413,67 @@ const Comments = ({ comment, article, colour }) => {
                   modules={{ toolbar: false }}
                 />
                 {comment.Type === "review" && (
-                  <div className="container w-full mt-1">
-                    <span className="font-semibold text-sm text-green-800">Confidence:</span>{" "}
+                  <div className="container mt-1 w-full">
+                    <span className="text-sm font-semibold text-green-800">Confidence:</span>{" "}
                     {fillConfidence()}
                   </div>
                 )}
               </div>
             </div>
-            <div className="flex flex-row justify-end items-center">
+            <div className="flex flex-row items-center justify-end">
               <div className="mt-2 flex flex-row">
                 {comment.personal && (
                   <span
-                    className="box-content text-white bg-[#4d8093] text-md border-solid ml-2 mr-2 md:font-bold p-2 pt-0 rounded"
+                    className="text-md ml-2 mr-2 box-content rounded border-solid bg-[#4d8093] p-2 pt-0 text-white md:font-bold"
                     style={{ cursor: "pointer" }}
-                    onClick={handleEditModal}
-                  >
+                    onClick={handleEditModal}>
                     edit comment
                   </span>
                 )}
                 <span
-                  className="box-content text-white bg-[#4d8093] text-md border-solid ml-2 md:font-bold p-2 pt-0 rounded"
+                  className="text-md ml-2 box-content rounded border-solid bg-[#4d8093] p-2 pt-0 text-white md:font-bold"
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     if (token === null) {
                       navigate("/login");
                     }
                     setShowCommentModal(true);
-                  }}
-                >
+                  }}>
                   reply
                 </span>
               </div>
             </div>
-            <div className="mt-3 ml-1 lg:ml-5">
-              {repliesData.length > 0 &&
-                repliesData.map((reply) => (
-                  <Comments
-                    key={reply.id}
-                    comment={reply}
-                    article={article}
-                    colour={colour === 1 ? 0 : 1}
-                  />
-                ))}
+            <div className="ml-1 mt-3 lg:ml-5">
+              {typeof comment.replies !== "object"
+                ? repliesData.length > 0 &&
+                  repliesData.map((reply) => (
+                    <Comments
+                      key={reply.id}
+                      comment={reply}
+                      article={article}
+                      colour={colour === 1 ? 0 : 1}
+                      paramCommentId={paramCommentId}
+                    />
+                  ))
+                : comment.replies.map((reply) => (
+                    <Comments
+                      key={reply.id}
+                      comment={reply}
+                      article={article}
+                      colour={colour === 1 ? 0 : 1}
+                      paramCommentId={paramCommentId}
+                    />
+                  ))}
             </div>
             {versions[index].replies > 0 && (
               <button
                 style={{ cursor: "pointer" }}
                 onClick={handleReply}
-                className="ml-5 text-xs mt-4"
-              >
+                className="ml-5 mt-4 text-xs">
                 {loading ? (
-                  <span className="text-gray-600 font-bold">Loading...</span>
+                  <span className="font-bold text-gray-600">Loading...</span>
                 ) : (
-                  <span className="text-gray-600 font-bold">{fillLoad()}</span>
+                  <span className="font-bold text-gray-600">{fillLoad()}</span>
                 )}
               </button>
             )}
