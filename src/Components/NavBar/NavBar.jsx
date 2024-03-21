@@ -302,11 +302,11 @@ const Dropdown = ({ color, onLogout, User }) => {
               type="button"
               ref={btnDropdownRef}
               onClick={(e) => handleOpen(e)}>
-              <span className="p-2 inline-block flex items-center justify-items-center">
+              <span className="inline-block w-11 h-11 overflow-hidden rounded-full">
                 {User === null ? (
-                  <SlUser className="text-black w-4 h-4 inline-block" />
+                  <SlUser className="text-black w-8 h-8 m-1" />
                 ) : (
-                  <img className="object-cover w-10 h-4 mt-1" src={User} alt="avatar" />
+                  <img className="w-full h-full object-cover" src={User} alt="avatar" />
                 )}
               </span>
             </button>
