@@ -26,6 +26,7 @@
     "flowbite-react": "^0.4.11",
     "heroicons": "^2.0.18",
     "heroicons-react": "^1.4.1",
+    "js-cookie": "^3.0.5",
     "mdb-react-ui-kit": "^6.1.0",
     "popper.js": "^1.16.1",
     "react": "^18.2.0",

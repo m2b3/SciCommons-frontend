@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import axios from "../../Utils/axios";
-import Loader from "../../Components/Loader/Loader";
-import { useGlobalContext } from "../../Context/StateContext";
-import MyArticleCard from "./MyArticleCard";
-
+import React, { useEffect, useState } from 'react';
+import axios from '../../Utils/axios';
+import Loader from '../../Components/Loader/Loader';
+import { useGlobalContext } from '../../Context/StateContext';
+import MyArticleCard from './MyArticleCard';
 
 const MyArticlesPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sortedArticles, setSortedArticles] = useState([]);
@@ -26,8 +25,8 @@ const MyArticlesPage = () => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const response = await axios.get(`/api/user/articles/`, config);
@@ -49,10 +48,7 @@ const MyArticlesPage = () => {
     const newArticles = [...articles].filter((article) => {
       return (
         article.article_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.authors
-          .join(" ")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+        article.authors.join(' ').toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.keywords.toLowerCase().includes(searchTerm.toLowerCase())
       );
     });
@@ -70,9 +66,7 @@ const MyArticlesPage = () => {
   const sortFavourite = (e) => {
     e.preventDefault();
     setLoading(true);
-    const sortedByFavourite = [...articles].sort(
-      (a, b) => b.favourites - a.favourites
-    );
+    const sortedByFavourite = [...articles].sort((a, b) => b.favourites - a.favourites);
     setSortedArticles(sortedByFavourite);
 
     setLoading(false);
@@ -109,8 +103,7 @@ const MyArticlesPage = () => {
                 className="absolute top-0 bottom-0 w-6 h-6 my-auto text-gray-400 left-3"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -119,7 +112,7 @@ const MyArticlesPage = () => {
                 />
               </svg>
               <input
-                style={{ border: "2px solid #cbd5e0" }}
+                style={{ border: '2px solid #cbd5e0' }}
                 type="text"
                 placeholder="Search using keywords, authors, articles"
                 value={searchTerm}
@@ -130,8 +123,7 @@ const MyArticlesPage = () => {
             <button
               type="submit"
               onClick={handleSearch}
-              className="absolute top-0 bottom-0 right-0 px-4 py-3 text-sm font-semibold text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:bg-gray-700"
-            >
+              className="absolute top-0 bottom-0 right-0 px-4 py-3 text-sm font-semibold text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:bg-gray-700">
               Search
             </button>
           </div>
@@ -139,30 +131,26 @@ const MyArticlesPage = () => {
         <div className="flex flex-row justify-end mb-5 w-full md:w-2/3">
           <button
             className="mx-1 px-3 mt-4 text-black bg-green-100 rounded-md hover:bg-green-400"
-            style={{ cursor: "pointer" }}
-            onClick={sortRated}
-          >
+            style={{ cursor: 'pointer' }}
+            onClick={sortRated}>
             Most Rated
           </button>
           <button
             className="mx-1 px-3 mt-4 text-black bg-green-100 rounded-md hover:bg-green-400"
-            style={{ cursor: "pointer" }}
-            onClick={sortFavourite}
-          >
+            style={{ cursor: 'pointer' }}
+            onClick={sortFavourite}>
             Most Favourite
           </button>
           <button
             className="mx-1 px-3 mt-4 text-black bg-green-100 rounded-md hover:bg-green-400"
-            style={{ cursor: "pointer" }}
-            onClick={sortViews}
-          >
+            style={{ cursor: 'pointer' }}
+            onClick={sortViews}>
             Most Views
           </button>
           <button
             className="mx-1 px-3 mt-4 text-black bg-green-100 rounded-md hover:bg-green-400"
-            style={{ cursor: "pointer" }}
-            onClick={sortDate}
-          >
+            style={{ cursor: 'pointer' }}
+            onClick={sortDate}>
             Most Recent
           </button>
         </div>

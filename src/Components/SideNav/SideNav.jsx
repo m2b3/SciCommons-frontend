@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "./SideNav.css";
-import { HiUserGroup } from "react-icons/hi";
-import { AiOutlineUsergroupAdd, AiOutlineHeart } from "react-icons/ai";
-import { CgFeed } from "react-icons/cg";
-import { MdExplore } from "react-icons/md";
-import { BsBookmarkCheck } from "react-icons/bs";
-import { MdPostAdd } from "react-icons/md";
-import { GrArticle } from "react-icons/gr";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import {
-  sidenavLargeWidth,
-  sidenavSmallWidth,
-} from "../../Utils/Constants/Globals";
-import { closeIcon, hamburgerIcon } from "../../Utils/Constants/Navbar";
-import useWindowSize from "../../Utils/Hooks/useWindowSize";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import './SideNav.css';
+import { HiUserGroup } from 'react-icons/hi';
+import { AiOutlineUsergroupAdd, AiOutlineHeart } from 'react-icons/ai';
+import { CgFeed } from 'react-icons/cg';
+import { MdExplore } from 'react-icons/md';
+import { BsBookmarkCheck } from 'react-icons/bs';
+import { MdPostAdd } from 'react-icons/md';
+import { GrArticle } from 'react-icons/gr';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { sidenavLargeWidth, sidenavSmallWidth } from '../../Utils/Constants/Globals';
+import { closeIcon, hamburgerIcon } from '../../Utils/Constants/Navbar';
+import useWindowSize from '../../Utils/Hooks/useWindowSize';
 
 const SideNav = () => {
   const windowWidth = useWindowSize().width;
@@ -35,45 +32,45 @@ const SideNav = () => {
   }, [windowWidth]);
   const tabs = [
     {
-      text: "My TimeLine",
+      text: 'My TimeLine',
       icon: CgFeed,
-      href: "/mytimeline",
+      href: '/mytimeline'
     },
     {
-      text: "Explore",
+      text: 'Explore',
       icon: MdExplore,
-      href: "/explore",
+      href: '/explore'
     },
     {
-      text: "Create Community",
+      text: 'Create Community',
       icon: AiOutlineUsergroupAdd,
-      href: "/createcommunity",
+      href: '/createcommunity'
     },
     {
-      text: "My Community",
+      text: 'My Community',
       icon: HiUserGroup,
-      href: "/mycommunity",
+      href: '/mycommunity'
     },
     {
-      text: "My Articles",
+      text: 'My Articles',
       icon: GrArticle,
-      href: "/myarticles",
+      href: '/myarticles'
     },
     {
-      text: "Favourites",
+      text: 'Favourites',
       icon: AiOutlineHeart,
-      href: "/favourites",
+      href: '/favourites'
     },
     {
-      text: "My Posts",
+      text: 'My Posts',
       icon: MdPostAdd,
-      href: "/myposts",
+      href: '/myposts'
     },
     {
-      text: "Bookmarks",
+      text: 'Bookmarks',
       icon: BsBookmarkCheck,
-      href: "/bookmarks",
-    },
+      href: '/bookmarks'
+    }
     /* {
     text: "Messages",
     icon: TbMessageCircle2,
@@ -87,15 +84,15 @@ const SideNav = () => {
         sx={{
           width: sidenavWidth,
           flexShrink: 0,
-          "& .MuiDrawer-paper": {
+          '& .MuiDrawer-paper': {
             width: sidenavWidth,
-            boxSizing: "border-box",
-            transition: "width 0.2s ease",
+            boxSizing: 'border-box',
+            transition: 'width 0.2s ease',
             zIndex: 50,
-            ":hover": {
-              boxShadow: "10px 0px 20px 0px rgba(0,0,0,0.08)",
-            },
-          },
+            ':hover': {
+              boxShadow: '10px 0px 20px 0px rgba(0,0,0,0.08)'
+            }
+          }
         }}
         variant="permanent"
         anchor="left"
@@ -106,17 +103,15 @@ const SideNav = () => {
         onMouseOut={() => {
           setIsSidenavOpen(false);
           windowWidth <= 768 && setSidenavWidth(sidenavSmallWidth);
-        }}
-      >
+        }}>
         <Link
           to="/"
           className="font-bold text-green-600 md:py-4 py-2.5 flex flex-row items-center"
-          style={{ textDecoration: "none", justifyContent: "center" }}
-        >
+          style={{ textDecoration: 'none', justifyContent: 'center' }}>
           {windowWidth > 768 ? (
             <>
               <img
-                src={process.env.PUBLIC_URL + "/logo.png"}
+                src={process.env.PUBLIC_URL + '/logo.png'}
                 width={40}
                 height={20}
                 alt="logo"
@@ -131,22 +126,20 @@ const SideNav = () => {
             <div className="px-4">
               {isSidenavOpen ? (
                 <button
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     setSidenavWidth(sidenavSmallWidth);
                     setIsSidenavOpen(false);
-                  }}
-                >
+                  }}>
                   {closeIcon()}
                 </button>
               ) : (
                 <button
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     setSidenavWidth(sidenavLargeWidth);
                     setIsSidenavOpen(true);
-                  }}
-                >
+                  }}>
                   {hamburgerIcon()}
                 </button>
               )}
@@ -159,7 +152,7 @@ const SideNav = () => {
               <ListItem key={index} disablePadding sx={{ marginTop: 1 }}>
                 <ListItemButton component={Link} to={tab.href}>
                   <ListItemIcon>
-                    {tab.icon && <tab.icon style={{ fontSize: "25px" }} />}
+                    {tab.icon && <tab.icon style={{ fontSize: '25px' }} />}
                   </ListItemIcon>
                   <ListItemText primary={tab.text} />
                 </ListItemButton>
