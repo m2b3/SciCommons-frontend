@@ -374,7 +374,7 @@ const CommunityEditPage = () => {
                         required
                       />
                       <span className="text-xs font-semibold">
-                        Number of characters : {location.length}/100
+                        {/* Number of characters : {location.length}/100 */}
                       </span>
                     </div>
 

@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import axios from "../../Utils/axios";
-import ArticleCard from "../../Components/ArticleCard/ArticleCard";
-import Loader from "../../Components/Loader/Loader";
-import ToastMaker from "toastmaker";
-import "toastmaker/dist/toastmaker.css";
-import { useGlobalContext } from "../../Context/StateContext";
+import React, { useEffect, useState } from 'react';
+import axios from '../../Utils/axios';
+import ArticleCard from '../../Components/ArticleCard/ArticleCard';
+import Loader from '../../Components/Loader/Loader';
+import ToastMaker from 'toastmaker';
+import 'toastmaker/dist/toastmaker.css';
+import { useGlobalContext } from '../../Context/StateContext';
+import ArticleCardSkeleton from '../../Components/Loader/ArticleCardSkeleton';
 
 const AllArticlesPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("All");
-  const [orderOption, setOrderOption] = useState("Ascending");
+  const [selectedOption, setSelectedOption] = useState('All');
+  const [orderOption, setOrderOption] = useState('Ascending');
   const [loadingmore, setLoadingMore] = useState(false);
   const { token } = useGlobalContext();
 
@@ -38,8 +39,8 @@ const AllArticlesPage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
     try {
@@ -53,14 +54,14 @@ const AllArticlesPage = () => {
   };
 
   const fillFilter = () => {
-    if (selectedOption === "Rating") {
-      return "rated";
-    } else if (selectedOption === "Favourites") {
-      return "favourite";
-    } else if (selectedOption === "Views") {
-      return "viewed";
+    if (selectedOption === 'Rating') {
+      return 'rated';
+    } else if (selectedOption === 'Favourites') {
+      return 'favourite';
+    } else if (selectedOption === 'Views') {
+      return 'viewed';
     }
-    return "recent";
+    return 'recent';
   };
 
   useEffect(() => {
@@ -75,22 +76,22 @@ const AllArticlesPage = () => {
     if (token !== null) {
       config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
     }
-    if (orderOption === "Ascending") {
-      filter = "least_" + filter;
+    if (orderOption === 'Ascending') {
+      filter = 'least_' + filter;
     } else {
-      filter = "most_" + filter;
+      filter = 'most_' + filter;
     }
     try {
       const response = await axios.get(
         `/api/article/?search=${searchTerm}`,
         {
           params: {
-            order: filter,
-          },
+            order: filter
+          }
         },
         config
       );
@@ -105,36 +106,36 @@ const AllArticlesPage = () => {
     setLoadingMore(true);
     try {
       let filter = fillFilter();
-      if (orderOption === "Ascending") {
-        filter = "least_" + filter;
+      if (orderOption === 'Ascending') {
+        filter = 'least_' + filter;
       } else {
-        filter = "most_" + filter;
+        filter = 'most_' + filter;
       }
       let config = null;
       if (token !== null) {
         config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
       }
       const response = await axios.get(
         `/api/article/?search=${searchTerm}&limit=20&offset=${articles.length}`,
         {
           params: {
-            order: filter,
-          },
+            order: filter
+          }
         },
         config
       );
       const data = response.data.success.results;
       if (response.data.success.count === articles.length) {
-        ToastMaker("No more articles to load", 3000, {
-          valign: "top",
+        ToastMaker('No more articles to load', 3000, {
+          valign: 'top',
           styles: {
-            backgroundColor: "red",
-            fontSize: "20px",
-          },
+            backgroundColor: 'red',
+            fontSize: '20px'
+          }
         });
       }
       await loadMoreData(data);
@@ -148,13 +149,10 @@ const AllArticlesPage = () => {
     <>
       <div className="flex flex-col items-center justify-start bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-gray-700 mt-10">Articles</h1>
-        <form
-          className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row"
-          onSubmit={handleSearch}
-        >
+        <form className="w-5/6 px-4 mt-10 md:w-2/3 flex flex-row" onSubmit={handleSearch}>
           <div className="relative w-full">
             <input
-              style={{ border: "2px solid #cbd5e0" }}
+              style={{ border: '2px solid #cbd5e0' }}
               type="text"
               placeholder="Search using keywords, authors, articles"
               value={searchTerm}
@@ -164,8 +162,7 @@ const AllArticlesPage = () => {
           </div>
           <button
             className="px-1 text-white text-lg bg-gray-600 ml-2 rounded-md px-4"
-            onClick={handleSearch}
-          >
+            onClick={handleSearch}>
             Search
           </button>
         </form>
@@ -175,8 +172,7 @@ const AllArticlesPage = () => {
               <select
                 className="bg-white text-gray-800 text-sm md:text-lg border rounded-lg px-4 py-1 transition duration-150 ease-in-out"
                 value={selectedOption}
-                onChange={handleOptionChange}
-              >
+                onChange={handleOptionChange}>
                 <option value="Date">Date</option>
                 <option value="Rating">Rating</option>
                 <option value="Favourites">Favourites</option>
@@ -190,8 +186,7 @@ const AllArticlesPage = () => {
               <select
                 className="bg-white text-gray-800 text-sm md:text-lg border rounded-lg px-4 py-1 transition duration-150 ease-in-out"
                 value={orderOption}
-                onChange={handleOrderChange}
-              >
+                onChange={handleOrderChange}>
                 <option value="Descending">Descending</option>
                 <option value="Ascending">Ascending</option>
               </select>
@@ -199,21 +194,27 @@ const AllArticlesPage = () => {
           </div>
           <button
             className="bg-green-500 text-md text-white shadow-lg mt-3 ml-3 p-1 rounded-lg"
-            onClick={handleSearch}
-          >
+            onClick={handleSearch}>
             Apply Filters
           </button>
         </div>
 
         <div className="flex flex-col items-center justify-center mx-auto w-full bg-gray-50 mb-5">
-          {loading ? <Loader /> : <ArticleCard articles={articles} />}
+          {loading ? (
+            <div className="mt-2 grid gap-2 xs-grid-cols-1 sm-grid-cols-2 md:grid-cols-2 lg:grid-cols-4 space-y-3 w-full">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <ArticleCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            <ArticleCard articles={articles} />
+          )}
           {(loading || articles.length > 0) && (
             <div className="flex flex-row justify-center">
               <button
                 className="bg-green-500 text-white px-2 py-1 mt-4 rounded-lg"
-                onClick={handleLoadMore}
-              >
-                {loadingmore ? "loading..." : "load More Articles"}
+                onClick={handleLoadMore}>
+                {loadingmore ? 'loading...' : 'load More Articles'}
               </button>
             </div>
           )}

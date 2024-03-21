@@ -5,7 +5,12 @@ import axios from "../../Utils/axios";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
+import InputField from "../../Components/InputField/InputField";
+import TextareaField from "../../Components/TextArea/TextAreaField";
 import PubMedSearch from "./PubMedSearch";
+import ArticleFetcher from "./ArticleFetcher";
+// import axios from 'axios';
+
 
 const SubmitArticle = () => {
   const baseURL = `/api/article/`;
@@ -373,6 +378,21 @@ const SubmitArticle = () => {
           >
             Existing Article
           </button>
+          <button
+            className={
+              currentState === 3
+                ? "mb-2 text-sm md:text-xl text-green-600 px-2 font-bold md:px-5 py-2 border-b-2 border-green-600"
+                : "mb-2 text-sm font-bold md:text-xl px-2 md:px-5 text-gray-600 border-b-2 border-gray-200  py-2"
+            }
+            style={{
+              borderBottom:
+                currentState === 3 ? "2px solid #68D391" : "2px solid #000",
+              cursor: "pointer",
+            }}
+            onClick={() => onclickFuntion(3)}
+          >
+            Fetch Article
+          </button>
         </div>
       </div>
       {currentState === 1 && (
@@ -388,27 +408,16 @@ const SubmitArticle = () => {
           <div className="m-10 flex justify-center">
             <form onSubmit={(e) => submitForm(e)} encType="multipart/form-data">
               <div className="grid gap-6 mb-6 ">
-                <div>
-                  <label
-                    htmlFor="article_name"
-                    className="block mb-4 text-sm font-medium text-gray-900"
-                  >
-                    Title
-                  </label>
-                  <input
-                    style={{ border: "2px solid #cbd5e0" }}
-                    type="text"
-                    id="article_name"
-                    name="article_name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                    required
-                  />
-                  <span className="text-xs font-semibold">
-                    Number of characters: {name.length}/300
-                  </span>
-                </div>
+                <InputField
+                  id="article_name"
+                  name="article_name"
+                  label="Title"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  characterCount={true}
+                  maxLength={300}
+                  required={true}
+                />
                 <div>
                   <label
                     htmlFor="id"
@@ -502,90 +511,50 @@ const SubmitArticle = () => {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label
-                  htmlFor="keywords"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Keywords(separated with {'","'})
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="text"
-                  id="keywords"
-                  name="keywords"
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                  required
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {keywords.length}/255
-                </span>
-              </div>
-              <div className="mb-6">
-                <label
-                  htmlFor="link"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  URL to article (Add the Url only if it is already published,
-                  else leave it empty)
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="url"
-                  id="link"
-                  name="link"
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {link.length}/255
-                </span>
-              </div>
+              <InputField
+                id="keywords"
+                name="keywords"
+                label="Keywords(separated with ',' )"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                characterCount={true}
+                maxLength={255}
+                required={true}
+              />
 
-              <div className="mb-6">
-                <label
-                  htmlFor="video"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Video Link (if any)
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="url"
-                  id="video"
-                  name="video"
-                  value={video}
-                  onChange={(e) => setVideo(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {video.length}/255
-                </span>
-              </div>
+              <InputField
+                id="link"
+                name="link"
+                type="url"
+                label="URL to article (Add the Url only if it is already published, else leave it empty)"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                characterCount={true}
+                maxLength={255}
+              />
 
-              <div className="mb-6">
-                <label
-                  htmlFor="Code"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Code Link (if any)
-                </label>
-                <input
-                  style={{ border: "2px solid #cbd5e0" }}
-                  type="url"
-                  id="Code"
-                  value={Code}
-                  onChange={(e) => setCode(e.target.value)}
-                  name="Code"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                />
-                <span className="text-xs font-semibold">
-                  Number of characters: {Code.length}/100
-                </span>
-              </div>
+              <InputField
+                id="video"
+                name="video"
+                type="url"
+                label="Video Link (if any)"
+                value={video}
+                onChange={(e) => setVideo(e.target.value)}
+                characterCount={true}
+                maxLength={255}
+              />
+
+              <InputField
+                id="Code"
+                name="Code"
+                type="url"
+                label="Code Link (if any)"
+                value={Code}
+                onChange={(e) => setCode(e.target.value)}
+                characterCount={true}
+                maxLength={100}
+              />
+
               <div className="mb-6">
                 <label
                   htmlFor="file"
@@ -599,9 +568,10 @@ const SubmitArticle = () => {
                   required
                   accept="application/pdf"
                   name="article_file"
-                  className="block w-full px-5 py-2 mt-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg file:bg-gray-200 file:text-gray-700 file:text-sm file:px-4 file:py-1 file:border-none file:rounded-full  placeholder-gray-400/70  focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+                  className="block w-full px-5 py-2 mt-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg file:bg-gray-200 file:text-gray-700 file:text-sm file:px-4 file:py-1 file:border-none file:rounded-full  placeholder-gray-400/70  focus:border-green-400 focus:outline-none focus:ring focus:ring-green-300 focus:ring-opacity-40"
                 />
               </div>
+
               <div className="mb-6">
                 <label
                   htmlFor="Abstract"
@@ -683,6 +653,7 @@ const SubmitArticle = () => {
           <PubMedSearch />
         </>
       )}
+      {currentState === 3 && <ArticleFetcher />}
     </>
   );
 };

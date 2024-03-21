@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "../../Utils/axios";
 import "./ArticlePage.css";
 import ReactQuill from "react-quill";
@@ -6,8 +6,6 @@ import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
-
-
 
 
 const ArticleCommentModal = ({
@@ -79,7 +77,7 @@ const ArticleCommentModal = ({
         setLoading(false);
         setTitle("");
         setComment("");
-        await handleComment(res?.data?.comment);
+        await handleComment(res.data.comment);
         setShowCommentModal(false);
         ToastMaker("Comment Posted Successfully!!!", 3000, {
           valign: "top",
@@ -90,8 +88,8 @@ const ArticleCommentModal = ({
         });
       } catch (err) {
         setLoading(false);
-        if (err?.response?.data?.error) {
-          ToastMaker(err?.response?.data?.error, 3000, {
+        if (err.response.data.error) {
+          ToastMaker(err.response.data.error, 3000, {
             valign: "top",
             styles: {
               backgroundColor: "red",
@@ -162,6 +160,6 @@ const ArticleCommentModal = ({
         </div>
       </>
     );
-};
+  };
 
-export default ArticleCommentModal;
+  export default ArticleCommentModal;

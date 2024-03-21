@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "../../Utils/axios";
 import "./ArticlePage.css";
 import ReactQuill from "react-quill";
@@ -6,7 +6,6 @@ import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
-
 
 const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
     const [title, setTitle] = useState("");
@@ -76,7 +75,7 @@ const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
         setTitle("");
         setComment("");
         setRating(0);
-        await handleComment(res?.data?.comment);
+        await handleComment(res.data.comment);
         setShowReviewModal(false);
         ToastMaker("Review Posted Successfully!!!", 3000, {
           valign: "top",
@@ -87,8 +86,8 @@ const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
         });
       } catch (err) {
         setLoading(false);
-        if (err?.response?.data?.error) {
-          ToastMaker(err?.response?.data?.error, 3000, {
+        if (err.response.data.error) {
+          ToastMaker(err.response.data.error, 3000, {
             valign: "top",
             styles: {
               backgroundColor: "red",
@@ -221,6 +220,6 @@ const ArticleReviewModal = ({ setShowReviewModal, article, handleComment }) => {
         </div>
       </>
     );
-};
+  };
 
-export default ArticleReviewModal;
+  export default ArticleReviewModal;

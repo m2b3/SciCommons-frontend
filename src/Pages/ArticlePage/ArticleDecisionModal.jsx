@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "../../Utils/axios";
 import "./ArticlePage.css";
 import ReactQuill from "react-quill";
@@ -6,7 +6,6 @@ import "react-quill/dist/quill.snow.css";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
 import { useGlobalContext } from "../../Context/StateContext";
-
 
 const ArticleDecisionModal = ({
     setShowDecisionModal,
@@ -81,7 +80,7 @@ const ArticleDecisionModal = ({
         setTitle("");
         setComment("");
         setDecision("");
-        await handleComment(res?.data?.comment);
+        await handleComment(res.data.comment);
         setShowDecisionModal(false);
         ToastMaker("Decision Posted Successfully!!!", 3000, {
           valign: "top",
@@ -92,8 +91,8 @@ const ArticleDecisionModal = ({
         });
       } catch (err) {
         setLoading(false);
-        if (err?.response?.data?.error) {
-          ToastMaker(err?.response?.data?.error, 3000, {
+        if (err.response.data.error) {
+          ToastMaker(err.response.data.error, 3000, {
             valign: "top",
             styles: {
               backgroundColor: "red",
@@ -188,4 +187,4 @@ const ArticleDecisionModal = ({
     );
   };
 
-export default ArticleDecisionModal;
+  export default ArticleDecisionModal;
