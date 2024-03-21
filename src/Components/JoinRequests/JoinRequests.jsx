@@ -4,6 +4,8 @@ import Loader from "../Loader/Loader";
 import { TECollapse } from "tw-elements-react";
 import { SlUser } from "react-icons/sl";
 import { useGlobalContext } from "../../Context/StateContext";
+import { FaChevronUp } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
 
 const JoinRequests = ({ community }) => {
   const { user, token } = useGlobalContext();
@@ -12,16 +14,20 @@ const JoinRequests = ({ community }) => {
   const [activeElement, setActiveElement] = useState("");
   const [sortedRequests, setSortedRequests] = useState([]);
   const [show, setShow] = useState(false);
-  const [addModalData, setAddModalData] = useState(null);
+  const [addModalData, setAddModalData] = useState({
+    request: null,
+    community: null,
+    index: null,
+    id: null
+  });
   const [reject, setReject] = useState(false);
   const [rejectModalData, setRejectModalData] = useState(null);
+  const [showdown, setShowdown] = useState({ ind: null, bool: true });
 
-  const handleClick = (value) => {
-    if (value === activeElement) {
-      setActiveElement("");
-    } else {
-      setActiveElement(value);
-    }
+  const handleClick = (index) => {
+    setActiveElement(activeElement === index ? null : index);
+    const showbool = showdown.bool;
+    setShowdown({ ind: index, bool: !showbool });
   };
 
   const loadData = async (res) => {
@@ -34,13 +40,10 @@ const JoinRequests = ({ community }) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
-      const res = await axios.get(
-        `/api/community/${community}/get_requests/`,
-        config
-      );
+      const res = await axios.get(`/api/community/${community}/get_requests/`, config);
       await loadData(res.data.success);
       setLoading(false);
     } catch (error) {
@@ -86,9 +89,7 @@ const JoinRequests = ({ community }) => {
         <div className="w-full">
           {requests.length === 0 ? (
             <div className="w-full flex flex-col items-center justify-center">
-              <h1 className="text-md md:text-2xl font-bold text-gray-600">
-                No Join Requests
-              </h1>
+              <h1 className="text-md md:text-2xl font-bold text-gray-600">No Join Requests</h1>
             </div>
           ) : (
             <div className="w-full">
@@ -101,16 +102,13 @@ const JoinRequests = ({ community }) => {
                   placeholder="Search members"
                 />
                 <div className="flex flex-row items-center">
-                  <span className="text-gray-600 text-sm font-semibold mr-2">
-                    Sort By :
-                  </span>
+                  <span className="text-gray-600 text-sm font-semibold mr-2">Sort By :</span>
                   <button
                     className="px-2 py-2 mr-3 bg-green-200 rounded-xl"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       handleRank();
-                    }}
-                  >
+                    }}>
                     Reputation
                   </button>
                   <button
@@ -118,8 +116,7 @@ const JoinRequests = ({ community }) => {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       handleDate();
-                    }}
-                  >
+                    }}>
                     Date
                   </button>
                 </div>
@@ -128,23 +125,18 @@ const JoinRequests = ({ community }) => {
               {sortedRequests.length !== 0 ? (
                 sortedRequests.map((request, index) => (
                   <div
-                  key={index}
+                    key={index}
                     id={index}
-                    className="bg-gray-200 rounded-lg md:rounded-3xl shadow-md md:shadow-xl mb-2"
-                  >
+                    className="bg-gray-200 rounded-lg md:rounded-3xl shadow-md md:shadow-xl mb-2">
                     <div className="rounded-t-lg border border-neutral-200">
                       <h2 className="mb-0" id="headingOne">
                         <button
-                          className={`${
-                            activeElement === "element1" &&
-                            `text-primary [box-shadow:inset_0_-1px_0_rgba(229,231,235)]`
-                          } group relative flex w-full items-center rounded-t-[15px] border-0 bg-white px-2 py-1 md:px-5 md:py-4 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none`}
+                          key={index}
+                          className={` group relative flex w-full items-center rounded-t-[15px] border-0 bg-white px-2 py-1 md:px-5 md:py-4 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none`}
                           type="button"
                           style={{ cursor: "pointer" }}
-                          onClick={() => handleClick("element1")}
                           aria-expanded="true"
-                          aria-controls="collapseOne"
-                        >
+                          aria-controls="collapseOne">
                           {request.profile_pic_url.includes("None") ? (
                             <SlUser className="w-4 h-4 mr-2" />
                           ) : (
@@ -155,38 +147,25 @@ const JoinRequests = ({ community }) => {
                             />
                           )}
                           <span className="text-md md:text-lg font-semibold">
-                            <a href={`/profile/${request.username}`}>
-                              {request.username}
-                            </a>
+                            <a href={`/profile/${request.username}`}>{request.username}</a>
                           </span>
                           <span
-                            className={`${
-                              activeElement === "element1"
-                                ? `rotate-[-180deg] -mr-1`
-                                : `rotate-0 fill-[#212529]`
-                            } ml-auto h-5 w-5 shrink-0 fill-[#336dec] transition-transform duration-200 ease-in-out motion-reduce:transition-none`}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="h-6 w-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                              />
-                            </svg>
+                            className={`${activeElement === index} ml-auto h-5 w-5 shrink-0 fill-[#336dec] transition-transform duration-200 ease-in-out motion-reduce:transition-none`}>
+                            {showdown.ind === index ? (
+                              showdown.bool ? (
+                                <FaChevronDown onClick={() => handleClick(index)} />
+                              ) : (
+                                <FaChevronUp onClick={() => handleClick(index)} />
+                              )
+                            ) : (
+                              <FaChevronDown onClick={() => handleClick(index)} />
+                            )}
                           </span>
                         </button>
                       </h2>
                       <TECollapse
-                        show={activeElement === "element1"}
-                        className="!mt-0 !rounded-b-none !shadow-none"
-                      >
+                        show={activeElement === index}
+                        className="!mt-0 !rounded-b-none !shadow-none">
                         <div className=" w-full px-2 py-1 md:px-5 md:py-4 bg-green-50">
                           <div className="flex flex-row items-center">
                             <div className="flex flex-col items-center mr-6">
@@ -200,16 +179,12 @@ const JoinRequests = ({ community }) => {
                                 />
                               )}
                               <span className="text-lg font-semibold">
-                                <a href={`/profile/${request.username}`}>
-                                  {request.username}
-                                </a>
+                                <a href={`/profile/${request.username}`}>{request.username}</a>
                               </span>
                             </div>
                             <div className="flex flex-col max-w-md">
                               <div className="flex flex-wrap items-center">
-                                <span className="text-sm font-semibold text-gray-600">
-                                  About :
-                                </span>
+                                <span className="text-sm font-semibold text-gray-600">About :</span>
                                 <div className="flex flex-wrap word-wrap truncate">
                                   {request.about}
                                 </div>
@@ -235,9 +210,10 @@ const JoinRequests = ({ community }) => {
                                 request: request,
                                 community: community,
                                 index: index,
+                                id: request.id
                               });
-                            }}
-                          >
+                              console.log(addModalData);
+                            }}>
                             Accept
                           </button>
                           <button
@@ -248,14 +224,36 @@ const JoinRequests = ({ community }) => {
                               setRejectModalData({
                                 request: request,
                                 community: community,
-                                index: index,
+                                index: index
                               });
-                            }}
-                          >
+                            }}>
                             Reject
                           </button>
                         </div>
                       </TECollapse>
+                      {show && addModalData && request.id === addModalData.id && (
+                        <AcceptModal
+                          setShow={setShow}
+                          request={addModalData.request}
+                          community={community}
+                          index={addModalData.index}
+                          onDelete={onDelete}
+                          loading={loading}
+                          setLoading={setLoading}
+                        />
+                      )}
+
+                      {reject && (
+                        <RejectModal
+                          setReject={setReject}
+                          request={rejectModalData.request}
+                          community={community}
+                          index={rejectModalData.index}
+                          onDelete={onDelete}
+                          loading={loading}
+                          setLoading={setLoading}
+                        />
+                      )}
                     </div>
                   </div>
                 ))
@@ -263,28 +261,6 @@ const JoinRequests = ({ community }) => {
                 <div className="border-b flex hover:bg-green-100 text-md md:text-xl justify-center text-green-600 bg-gray-100">
                   No Members Found
                 </div>
-              )}
-              {show && (
-                <AcceptModal
-                  setShow={setShow}
-                  request={addModalData.request}
-                  community={community}
-                  index={addModalData.index}
-                  onDelete={onDelete}
-                  loading={loading}
-                  setLoading={setLoading}
-                />
-              )}
-              {reject && (
-                <RejectModal
-                  setReject={setReject}
-                  request={rejectModalData.request}
-                  community={community}
-                  index={rejectModalData.index}
-                  onDelete={onDelete}
-                  loading={loading}
-                  setLoading={setLoading}
-                />
               )}
             </div>
           )}
@@ -296,15 +272,7 @@ const JoinRequests = ({ community }) => {
 
 export default JoinRequests;
 
-const AcceptModal = ({
-  setShow,
-  request,
-  community,
-  index,
-  onDelete,
-  loading,
-  setLoading,
-}) => {
+const AcceptModal = ({ setShow, request, community, index, onDelete, loading, setLoading }) => {
   const { token } = useGlobalContext();
 
   const handleAccept = async () => {
@@ -312,8 +280,8 @@ const AcceptModal = ({
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const res = await axios.post(
         `/api/community/${community}/approve_request/`,
@@ -342,8 +310,7 @@ const AcceptModal = ({
                 <button
                   className="text-sm font-semibold text-white p-1 px-2 mr-2 md:mr-5 rounded-lg bg-green-600 flex"
                   style={{ cursor: "pointer" }}
-                  onClick={handleAccept}
-                >
+                  onClick={handleAccept}>
                   Yes
                 </button>
                 <button
@@ -351,8 +318,7 @@ const AcceptModal = ({
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     setShow(false);
-                  }}
-                >
+                  }}>
                   No
                 </button>
               </div>
@@ -364,15 +330,7 @@ const AcceptModal = ({
   );
 };
 
-const RejectModal = ({
-  setReject,
-  request,
-  community,
-  index,
-  onDelete,
-  loading,
-  setLoading,
-}) => {
+const RejectModal = ({ setReject, request, community, index, onDelete, loading, setLoading }) => {
   const { token } = useGlobalContext();
 
   const handleReject = async () => {
@@ -380,8 +338,8 @@ const RejectModal = ({
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const res = await axios.post(
         `/api/community/${community}/approve_request/`,
@@ -410,8 +368,7 @@ const RejectModal = ({
                 <button
                   className="text-sm font-semibold text-white p-1 px-2 mr-2 rounded-lg bg-green-600 flex"
                   style={{ cursor: "pointer" }}
-                  onClick={handleReject}
-                >
+                  onClick={handleReject}>
                   Yes
                 </button>
                 <button
@@ -419,8 +376,7 @@ const RejectModal = ({
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     setReject(false);
-                  }}
-                >
+                  }}>
                   No
                 </button>
               </div>
