@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import axios from '../Utils/axios';
-import { cookies } from '../Utils/Services/StorageService';
+import { cookies, localStorage } from '../Utils/Services/StorageService';
 
 const AppContext = React.createContext();
 
@@ -28,7 +28,7 @@ const AppProvider = ({ children }) => {
       setUser(null);
       setToken(null);
       cookies.remove('token');
-      localStorage.removeItem('user');
+      localStorage.remove('user');
       console.log(error);
     }
   };

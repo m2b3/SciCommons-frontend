@@ -11,3 +11,15 @@ export const cookies = {
     Cookies.remove(key);
   }
 };
+
+export const localStorage = {
+  set: (key, value) => {
+    window.localStorage.setItem;
+  },
+  get: (key) => {
+    return window.localStorage.getItem(key);
+  },
+  remove: (key) => {
+    window.localStorage.removeItem(key);
+  }
+};

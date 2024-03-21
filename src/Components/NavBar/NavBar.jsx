@@ -14,7 +14,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { DarkThemeToggle } from 'flowbite-react';
 import DarkModeToggle from '../DarkModeToggle/DarkModeToggle';
-import { cookies } from '../../Utils/Services/StorageService';
+import { cookies, localStorage } from '../../Utils/Services/StorageService';
 
 const Spinner = () => {
   return (
@@ -80,8 +80,8 @@ const NavBar = () => {
   const handleLogout = (e) => {
     setIsAuth(false);
     cookies.remove('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('Menu');
+    localStorage.remove('user');
+    localStorage.remove('Menu');
     setToken(null);
     setIsOpen(false);
     navigate('/', { replace: true });
