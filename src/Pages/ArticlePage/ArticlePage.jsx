@@ -355,7 +355,6 @@ const ArticlePage = () => {
     navigator.clipboard.writeText(`https://scicommons.org/article/${article.id}`);
   };
 
-
   console.log(comments, 'comments');
 
   return (

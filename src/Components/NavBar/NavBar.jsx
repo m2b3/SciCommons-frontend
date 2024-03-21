@@ -14,6 +14,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { DarkThemeToggle } from 'flowbite-react';
 import DarkModeToggle from '../DarkModeToggle/DarkModeToggle';
+import { cookies } from '../../Utils/Services/StorageService';
 
 const Spinner = () => {
   return (
@@ -78,7 +79,7 @@ const NavBar = () => {
 
   const handleLogout = (e) => {
     setIsAuth(false);
-    localStorage.removeItem('token');
+    cookies.remove('token');
     localStorage.removeItem('user');
     localStorage.removeItem('Menu');
     setToken(null);
@@ -132,7 +133,7 @@ const NavBar = () => {
           <div
             className="flex flex-row items-center justify-end md:gap-x-6"
             style={{ justifySelf: 'flex-end' }}>
-              {/* Todo: Enable after dark mode is rolled out gradually */}
+            {/* Todo: Enable after dark mode is rolled out gradually */}
             {/* <div>
               <DarkModeToggle />{' '}
             </div> */}
