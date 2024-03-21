@@ -1,3 +1,5 @@
+import React from "react";
+
 const InputField = ({ id, name, type="text", value, onChange, label, error, characterCount, maxLength, required=true }) => {
     return (
       <div className="mb-6">

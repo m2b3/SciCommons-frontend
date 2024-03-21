@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import Footer from '../Footer/Footer';
+import '@testing-library/jest-dom';
+import Footer from '../Footer';
+import React from 'react';
 
 describe('Footer Component', () => {
   test('renders the logo image', () => {
