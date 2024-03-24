@@ -7,8 +7,7 @@ import { useGlobalContext } from "../../Context/StateContext";
 
 const Verify = () => {
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(localStorage.getItem("email"));
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [otp, setOtp] = useState("");
@@ -26,9 +25,7 @@ const Verify = () => {
     const currentUrl = window.location.href;
     const url = new URL(currentUrl);
     isValidEmail(email);
-    setEmail(url.searchParams.get("email"));
     if (email !== "") {
-      handleSubmit({ preventDefault: () => {} });
       setDisabled(true);
     }
   }, []);
@@ -139,30 +136,13 @@ const Verify = () => {
           Verify your account
         </h1>
         <div className="w-full mx-auto">
-          <div className="flex items-center text-gray-700 border rounded-md m-2">
-            <div className="px-3 py-2.5 rounded-l-md bg-gray-50 border-r">
-              @
-            </div>
-            <input
-              style={{ border: "2px solid #cbd5e0" }}
-              type="email"
-              placeholder="Enter the email"
-              value={email}
-              name="email"
-              disabled={disabled}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              className="w-full bg-transparent outline-none rounded-lg"
-            />
-          </div>
           <div className="m-2">
             <button
               className="w-full px-4 py-2 text-white font-medium bg-green-600 hover:bg-green-500 active:bg-green-600 rounded-lg duration-150"
               style={{ cursor: "pointer" }}
               onClick={handleSubmit}
             >
-              Send One Time Password
+              Send One Time Password To Verify
             </button>
           </div>
         </div>
