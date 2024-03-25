@@ -5,7 +5,7 @@ import Loader from "../../Components/Loader/Loader";
 import { MdLocationPin, MdSubscriptions } from "react-icons/md";
 import { BsGithub } from "react-icons/bs";
 import { BiLogoGmail } from "react-icons/bi";
-import { CgWebsite } from "react-icons/cg";
+import { CgArrowLongLeft, CgLaptop, CgWebsite } from "react-icons/cg";
 import { FaUsers, FaBook, FaPencilAlt } from "react-icons/fa";
 import ToastMaker from "toastmaker";
 import "toastmaker/dist/toastmaker.css";
@@ -18,6 +18,7 @@ const CommunityPage = () => {
   const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isAdminCommunity, setIsAdminCommunity] = useState(0);
+  const [isMemberCommunity, setIsMemberCommunity] = useState(0);
   const [subscribed, setSubscribed] = useState(null);
   const { user, token } = useGlobalContext();
 
@@ -53,6 +54,9 @@ const CommunityPage = () => {
         const res = await axios.get(`/api/community/${communityName}/`, config);
         const checkIsAdmin = res.data.success.isAdmin
         setIsAdminCommunity(checkIsAdmin);
+        console.log(res.data)
+        const checkMember = res.data.success.isMember
+        setIsMemberCommunity(checkMember);
         await loadCommunity(res.data.success);
         setSubscribed(res.data.success.isSubscribed);
       } catch (error) {
@@ -241,7 +245,7 @@ const CommunityPage = () => {
               </div>
             </div>
             <div className="mt-8 flex flex-row justify-end">
-              {!isAdminCommunity && <button
+              {!isAdminCommunity && !isMemberCommunity && <button
                 className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
                 style={{ cursor: "pointer" }}
                 onClick={() => {
