@@ -73,6 +73,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    localStorage.setItem("email",email);
     const data = {
       username,
       password,
