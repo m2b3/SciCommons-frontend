@@ -7,6 +7,7 @@ import {
 } from "../../Utils/Constants/Home";
 import FeatureTile from "./Components/FeatureTile";
 import FaqAccordian from "./Components/FaqAccordian";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [idx, setIdx] = useState(0);
@@ -62,18 +63,17 @@ const Home = () => {
                       <div className="buttons-set">
                         <ul className="buttons-set__list ">
                           <li className="buttons-set__item ">
-                            <a
+                            <Link
                               data-stripe-product-id=""
                               data-stripe-mode="payment"
                               data-successful-payment-url=""
                               data-cancel-payment-url=""
                               className="button border-4 border-green-500 text-green-500 font-semibold rounded-md"
-                              href="/register"
-                              target="_blank"
+                              to={"/register"}
                               style={{ border: "2px solid #10b981" }}
                             >
                               <span className="button__text">Get Started</span>
-                            </a>
+                            </Link>
                           </li>
                         </ul>
                         <div className="content_box cta_bottom_info ">
