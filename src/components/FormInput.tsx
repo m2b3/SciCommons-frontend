@@ -74,18 +74,20 @@ const FormInput = <TFieldValues extends FieldValues>({
       {label && (
         <div className="mb-2 flex items-center space-x-2">
           <span className="text-sm font-medium text-gray-700">{label}</span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button>
-                  <Info size={16} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{info}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {info && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button>
+                    <Info size={16} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{info}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
