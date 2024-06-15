@@ -280,7 +280,6 @@ const Dropdown = ({ color, onLogout, User }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleOpen = (event) => {
-    //console.log(event);
     setAnchorEl(event.currentTarget);
     setDropdownPopoverShow(true);
   };

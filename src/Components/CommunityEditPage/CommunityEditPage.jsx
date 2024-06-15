@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import ToastMaker from "toastmaker";
-import "toastmaker/dist/toastmaker.css";
-import Loader from "../Loader/Loader";
-import { MdLocationPin } from "react-icons/md";
-import { BsGithub } from "react-icons/bs";
-import { BiLogoGmail } from "react-icons/bi";
-import { CgWebsite } from "react-icons/cg";
-import { useGlobalContext } from "../../Context/StateContext";
-import axios from "../../Utils/axios";
+import React, { useState, useEffect } from 'react';
+import ToastMaker from 'toastmaker';
+import 'toastmaker/dist/toastmaker.css';
+import Loader from '../Loader/Loader';
+import { MdLocationPin } from 'react-icons/md';
+import { BsGithub } from 'react-icons/bs';
+import { BiLogoGmail } from 'react-icons/bi';
+import { CgWebsite } from 'react-icons/cg';
+import { useGlobalContext } from '../../Context/StateContext';
+import axios from '../../Utils/axios';
 
 const CommunityEditPage = () => {
   const [community, setCommunity] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [subtitle, setSubtitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [github, setGithub] = useState("");
-  const [website, setWebsite] = useState("");
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [subtitle, setSubtitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
+  const [github, setGithub] = useState('');
+  const [website, setWebsite] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const { token } = useGlobalContext();
 
   const loadData = async (res) => {
@@ -42,10 +42,10 @@ const CommunityEditPage = () => {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         };
-        const res = await axios.get(`/api/community/mycommunity`, config);
+        const res = await axios.get(`/api/community/mycommunity/`, config);
 
         await loadData(res.data.success);
       } catch (error) {
@@ -63,104 +63,100 @@ const CommunityEditPage = () => {
     setLoading(true);
     const form_data = new FormData(e.target);
     if (subtitle.length > 300) {
-      ToastMaker("Subtitle should be less than 300 characters", 3500, {
-        valign: "top",
+      ToastMaker('Subtitle should be less than 300 characters', 3500, {
+        valign: 'top',
         styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
+          backgroundColor: 'red',
+          fontSize: '20px'
+        }
       });
       setLoading(false);
       return;
     }
     if (name.length > 300) {
-      ToastMaker("Community Name should be less than 300 characters", 3500, {
-        valign: "top",
+      ToastMaker('Community Name should be less than 300 characters', 3500, {
+        valign: 'top',
         styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
+          backgroundColor: 'red',
+          fontSize: '20px'
+        }
       });
       setLoading(false);
       return;
     }
     if (location.length > 100) {
-      ToastMaker("location should be less than 100 characters", 3500, {
-        valign: "top",
+      ToastMaker('location should be less than 100 characters', 3500, {
+        valign: 'top',
         styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
+          backgroundColor: 'red',
+          fontSize: '20px'
+        }
       });
       setLoading(false);
       return;
     }
     if (github.length > 200) {
-      ToastMaker("Github link should be less than 200 characters", 3500, {
-        valign: "top",
+      ToastMaker('Github link should be less than 200 characters', 3500, {
+        valign: 'top',
         styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
+          backgroundColor: 'red',
+          fontSize: '20px'
+        }
       });
       setLoading(false);
       return;
     }
     if (website.length > 300) {
-      ToastMaker("Website link should be less than 300 characters", 3500, {
-        valign: "top",
+      ToastMaker('Website link should be less than 300 characters', 3500, {
+        valign: 'top',
         styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
+          backgroundColor: 'red',
+          fontSize: '20px'
+        }
       });
       setLoading(false);
       return;
     }
     if (email.length > 100) {
-      ToastMaker("Email should be less than 100 characters", 3500, {
-        valign: "top",
+      ToastMaker('Email should be less than 100 characters', 3500, {
+        valign: 'top',
         styles: {
-          backgroundColor: "red",
-          fontSize: "20px",
-        },
+          backgroundColor: 'red',
+          fontSize: '20px'
+        }
       });
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.put(
-        `/api/community/${community.Community_name}/`,
-        form_data,
-        {
-          headers: {
-            "Content-type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.put(`/api/community/${community.Community_name}/`, form_data, {
+        headers: {
+          'Content-type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
       if (response.data.success) {
         setLoading(false);
         setShowModal(false);
         await loadData1(response.data.success);
-        ToastMaker("Community Details Updated Successfully", 3500, {
-          valign: "top",
+        ToastMaker('Community Details Updated Successfully', 3500, {
+          valign: 'top',
           styles: {
-            backgroundColor: "green",
-            fontSize: "20px",
-          },
+            backgroundColor: 'green',
+            fontSize: '20px'
+          }
         });
       }
     } catch (error) {
       setLoading(false);
       if (error.response.data.error) {
-        ToastMaker("Could not update the details", 3500, {
-          valign: "top",
+        ToastMaker('Could not update the details', 3500, {
+          valign: 'top',
           styles: {
-            backgroundColor: "red",
-            fontSize: "20px",
-          },
+            backgroundColor: 'red',
+            fontSize: '20px'
+          }
         });
         return;
       }
@@ -190,9 +186,9 @@ const CommunityEditPage = () => {
 
   const fillLoad = () => {
     if (loading) {
-      return "Saving";
+      return 'Saving';
     }
-    return "Save";
+    return 'Save';
   };
 
   return (
@@ -213,57 +209,60 @@ const CommunityEditPage = () => {
               </div>
               <div className="mt-4">
                 <p className="text-md text-left text-gray-500">
-                  <span className="text-lg text-left font-bold text-green-700">
-                    Subtitle :{" "}
-                  </span>
+                  <span className="text-lg text-left font-bold text-green-700">Subtitle : </span>
                   {community?.subtitle}
                 </p>
                 <p className="text-md text-left text-gray-500">
                   <span className="text-lg text-center font-bold text-green-700">
-                    Description :{" "}
+                    Description :{' '}
                   </span>
                   {community?.description}
                 </p>
               </div>
               <div className="mt-4 flex flex-wrap justify-between">
-                <div className="mt-4 flex">
-                  <MdLocationPin className="text-xl text-green-700 md:mr-3" />{" "}
-                  <span className="text-sm md:text-md text-left text-gray-500">
-                    {community?.location}
-                  </span>
-                </div>
-                <div className="mt-4 flex">
-                  <BsGithub className="text-xl text-green-700 md:mr-3" />{" "}
-                  <a
-                    className="text-sm md:text-md text-left text-gray-500"
-                    href={community?.github}
-                  >
-                    {community?.github}
-                  </a>
-                </div>
-                <div className="mt-4 flex">
-                  <BiLogoGmail className="text-xl text-green-700 md:mr-3" />{" "}
-                  <span className="text-sm md:text-md text-left text-gray-500">
-                    {community?.email}
-                  </span>
-                </div>
-                <div className="mt-4 flex">
-                  <CgWebsite className="text-xl text-green-700 md:mr-3" />{" "}
-                  <a
-                    className="text-sm md:text-md text-left text-gray-500"
-                    href={community?.website}
-                  >
-                    {community?.website}
-                  </a>
-                </div>
+                {community?.location && (
+                  <div className="mt-4 flex">
+                    <MdLocationPin className="text-xl text-green-700 md:mr-3" />{' '}
+                    <span className="text-sm md:text-md text-left text-gray-500">
+                      {community?.location}
+                    </span>
+                  </div>
+                )}
+                {community?.github && (
+                  <div className="mt-4 flex">
+                    <BsGithub className="text-xl text-green-700 md:mr-3" />{' '}
+                    <a
+                      className="text-sm md:text-md text-left text-gray-500"
+                      href={community?.github}>
+                      {community?.github}
+                    </a>
+                  </div>
+                )}
+                {community?.email && (
+                  <div className="mt-4 flex">
+                    <BiLogoGmail className="text-xl text-green-700 md:mr-3" />{' '}
+                    <span className="text-sm md:text-md text-left text-gray-500">
+                      {community?.email}
+                    </span>
+                  </div>
+                )}
+                {community?.website && (
+                  <div className="mt-4 flex">
+                    <CgWebsite className="text-xl text-green-700 md:mr-3" />{' '}
+                    <a
+                      className="text-sm md:text-md text-left text-gray-500"
+                      href={community?.website}>
+                      {community?.website}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex flex-row justify-center">
               <button
                 className="bg-green-600 text-white text-sm md:text-lg font-semibold py-2 px-2 rounded-xl"
-                style={{ width: "auto", cursor: "pointer" }}
-                onClick={() => setShowModal(true)}
-              >
+                style={{ width: 'auto', cursor: 'pointer' }}
+                onClick={() => setShowModal(true)}>
                 Edit Details
               </button>
             </div>
@@ -278,9 +277,8 @@ const CommunityEditPage = () => {
                   </h1>
                   <button
                     className="bg-transparent border-0 text-red-600 float-right"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setShowModal(false)}
-                  >
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setShowModal(false)}>
                     <span className="text-red-600 opacity-7 h-6 w-6 text-sm py-0 font-bold rounded-full">
                       Close
                     </span>
@@ -290,16 +288,14 @@ const CommunityEditPage = () => {
                   <form
                     onSubmit={(e) => submitForm(e)}
                     encType="multipart/form-data"
-                    className="w-full"
-                  >
+                    className="w-full">
                     <label
                       htmlFor="Community_name"
-                      className="block mb-4 text-lg font-medium text-gray-900"
-                    >
+                      className="block mb-4 text-lg font-medium text-gray-900">
                       Community Name
                     </label>
                     <input
-                      style={{ border: "2px solid #cbd5e0" }}
+                      style={{ border: '2px solid #cbd5e0' }}
                       type="text"
                       id="Community_name"
                       name="Community_name"
@@ -316,12 +312,11 @@ const CommunityEditPage = () => {
                     <div className="mb-6">
                       <label
                         htmlFor="subtitle"
-                        className="block mb-2 text-lg font-medium text-gray-900"
-                      >
+                        className="block mb-2 text-lg font-medium text-gray-900">
                         Subtitle
                       </label>
                       <input
-                        style={{ border: "2px solid #cbd5e0" }}
+                        style={{ border: '2px solid #cbd5e0' }}
                         type="text"
                         id="subtitle"
                         name="subtitle"
@@ -338,8 +333,7 @@ const CommunityEditPage = () => {
                     <div className="mb-6">
                       <label
                         htmlFor="description"
-                        className="block mb-2 text-lg font-medium text-gray-900"
-                      >
+                        className="block mb-2 text-lg font-medium text-gray-900">
                         Description
                       </label>
                       <textarea
@@ -359,12 +353,11 @@ const CommunityEditPage = () => {
                     <div className="mb-6">
                       <label
                         htmlFor="location"
-                        className="block mb-2 text-lg font-medium text-gray-900"
-                      >
+                        className="block mb-2 text-lg font-medium text-gray-900">
                         Location
                       </label>
                       <input
-                        style={{ border: "2px solid #cbd5e0" }}
+                        style={{ border: '2px solid #cbd5e0' }}
                         type="text"
                         id="location"
                         name="location"
@@ -381,12 +374,11 @@ const CommunityEditPage = () => {
                     <div className="mb-6">
                       <label
                         htmlFor="github"
-                        className="block mb-2 text-lg font-medium text-gray-900"
-                      >
+                        className="block mb-2 text-lg font-medium text-gray-900">
                         Github Link (if any)
                       </label>
                       <input
-                        style={{ border: "2px solid #cbd5e0" }}
+                        style={{ border: '2px solid #cbd5e0' }}
                         type="url"
                         id="github"
                         name="github"
@@ -402,12 +394,11 @@ const CommunityEditPage = () => {
                     <div className="mb-6">
                       <label
                         htmlFor="website"
-                        className="block mb-2 text-lg font-medium text-gray-900"
-                      >
+                        className="block mb-2 text-lg font-medium text-gray-900">
                         Website Link
                       </label>
                       <input
-                        style={{ border: "2px solid #cbd5e0" }}
+                        style={{ border: '2px solid #cbd5e0' }}
                         type="url"
                         id="website"
                         name="website"
@@ -424,12 +415,11 @@ const CommunityEditPage = () => {
                     <div className="mb-6">
                       <label
                         htmlFor="email"
-                        className="block mb-2 text-lg font-medium text-gray-900"
-                      >
+                        className="block mb-2 text-lg font-medium text-gray-900">
                         Email (of the Community)
                       </label>
                       <input
-                        style={{ border: "2px solid #cbd5e0" }}
+                        style={{ border: '2px solid #cbd5e0' }}
                         type="email"
                         id="email"
                         name="email"
@@ -445,8 +435,7 @@ const CommunityEditPage = () => {
 
                     <button
                       type="submit"
-                      className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-                    >
+                      className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
                       {loading && (
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                           <div className="rounded-full border-2 border-t-2 border-green-100 h-4 w-4 animate-spin"></div>

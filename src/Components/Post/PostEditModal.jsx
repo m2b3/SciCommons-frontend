@@ -30,7 +30,6 @@ const PostEditModal = ({ post, setShowEdit, handleEditChange }) => {
     const form_data = new FormData(e.target);
 
     form_data.append('body', updatedBody);
-    console.log(updatedBody, updatedBody.length);
     if (updatedBody.length > 500) {
       ToastMaker('Post body is too large. Maximum allowed size is 500 characters', 3500, {
         valign: 'top',

@@ -82,7 +82,6 @@ const MyProfile = () => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
-      console.log(imageUrl);
       setUserInfo({
         ...userInfo,
         profilePicUrl: imageUrl

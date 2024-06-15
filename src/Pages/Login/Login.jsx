@@ -71,7 +71,6 @@ const Login = () => {
           'Content-Type': 'application/json'
         }
       });
-      console.log(response.data.success);
       cookies.set('token', response.data.success.access);
       await loadTokenData(response.data.success.access);
       await getCurrentUser();

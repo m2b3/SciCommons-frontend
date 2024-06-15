@@ -33,7 +33,6 @@ const CreateCommunity = () => {
   });
 
   const handleChange = (value) => {
-    console.log('value:', value);
     setLocation(value);
   };
 
@@ -245,6 +244,40 @@ const CreateCommunity = () => {
                 terms and conditions
               </a>
               .
+            </label>
+          </div>
+
+          <label className="block mb-2 text-sm font-medium text-gray-900">Access</label>
+          <div className="flex items-center space-x-4 mb-5">
+            <input
+              id="public"
+              name="access"
+              type="radio"
+              value="public"
+              className="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300"
+            />
+            <label htmlFor="public" className="text-sm font-medium text-gray-900">
+              Public
+            </label>
+            <input
+              id="private"
+              name="access"
+              type="radio"
+              value="private"
+              className="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300"
+            />
+            <label htmlFor="private" className="text-sm font-medium text-gray-900">
+              Private
+            </label>
+            <input
+              id="locked"
+              name="access"
+              type="radio"
+              value="locked"
+              className="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300"
+            />
+            <label htmlFor="locked" className="text-sm font-medium text-gray-900">
+              Locked
             </label>
           </div>
 

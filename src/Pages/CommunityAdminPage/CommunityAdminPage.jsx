@@ -7,6 +7,7 @@ import Loader from '../../Components/Loader/Loader';
 import MembersTable from '../../Components/MembersTable/MembersTable';
 import AdminArticlePage from '../AdminArticlePage/AdminArticlePage';
 import { useGlobalContext } from '../../Context/StateContext';
+import SendInvitationPage from '../SendInvitationPage/SendInvitationPage';
 
 const CommunityAdminPage = () => {
   const [currentState, setcurrentState] = useState(1);
@@ -28,13 +29,13 @@ const CommunityAdminPage = () => {
           }
         };
         const res = await axios.get(`/api/community/mycommunity/`, config);
-        await loadData(res.data.success);
+        if (res.data.success) await loadData(res.data.success);
+        else setCommunity(null);
       } catch (error) {
         console.error('Network error:', error);
       }
     };
     getCommunity();
-
     setLoading(false);
   }, []);
 
@@ -99,7 +100,7 @@ const CommunityAdminPage = () => {
                 cursor: 'pointer'
               }}
               onClick={() => onclickFuntion(4)}>
-              Join Requests
+              {community?.access === 'private' ? 'Invitations' : 'Join Requests'}
             </button>
           </div>
           <div>
@@ -107,13 +108,17 @@ const CommunityAdminPage = () => {
               <CommunityEditPage />
             </div>
             <div className={currentState === 2 ? ' p-3 w-full md:w-4/5 mx-auto' : ' p-3 hidden'}>
-              <AdminArticlePage community={community.Community_name} />
+              <AdminArticlePage community={community?.Community_name} />
             </div>
             <div className={currentState === 3 ? ' p-3 w-full md:w-4/5 mx-auto' : ' p-3 hidden'}>
               <MembersTable community={community?.Community_name} />
             </div>
             <div className={currentState === 4 ? ' p-3 w-full md:w-4/5 mx-auto' : ' p-3 hidden'}>
-              <JoinRequests community={community?.Community_name} />
+              {community?.access === 'private' ? (
+                <SendInvitationPage community={community} />
+              ) : (
+                <JoinRequests community={community?.Community_name} />
+              )}
             </div>
           </div>
         </div>
