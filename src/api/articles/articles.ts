@@ -18,15 +18,12 @@ import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import type {
+  ArticleDetails,
   ArticleResponseSchema,
-  ArticleSchema,
   ArticlesApiCreateArticleBody,
-  ArticlesApiGetArticleParams,
-  ReplyResponseSchema,
-  ReplySchema,
-  ReviewEditSchema,
-  ReviewResponseSchema,
-  ReviewSchema,
+  ArticlesApiGetPublicArticlesParams,
+  ArticlesApiUpdateArticleBody,
+  Message,
 } from '.././schemas';
 
 /**
@@ -37,23 +34,19 @@ export const articlesApiCreateArticle = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleResponseSchema>> => {
   const formData = new FormData();
-  formData.append('title', articlesApiCreateArticleBody.title);
-  formData.append('abstract', articlesApiCreateArticleBody.abstract);
-  formData.append('keywords', articlesApiCreateArticleBody.keywords);
-  formData.append('authors', articlesApiCreateArticleBody.authors);
-  formData.append('submission_type', articlesApiCreateArticleBody.submission_type);
   if (articlesApiCreateArticleBody.image_file !== undefined) {
     formData.append('image_file', articlesApiCreateArticleBody.image_file);
   }
   if (articlesApiCreateArticleBody.pdf_file !== undefined) {
     formData.append('pdf_file', articlesApiCreateArticleBody.pdf_file);
   }
+  formData.append('details', JSON.stringify(articlesApiCreateArticleBody.details));
 
   return axios.post(`http://localhost:8000/api/articles/articles/`, formData, options);
 };
 
 export const getArticlesApiCreateArticleMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -87,13 +80,13 @@ export type ArticlesApiCreateArticleMutationResult = NonNullable<
   Awaited<ReturnType<typeof articlesApiCreateArticle>>
 >;
 export type ArticlesApiCreateArticleMutationBody = ArticlesApiCreateArticleBody;
-export type ArticlesApiCreateArticleMutationError = AxiosError<unknown>;
+export type ArticlesApiCreateArticleMutationError = AxiosError<Message>;
 
 /**
  * @summary Create Article
  */
 export const useArticlesApiCreateArticle = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -114,35 +107,105 @@ export const useArticlesApiCreateArticle = <
   return useMutation(mutationOptions);
 };
 /**
+ * @summary Update Article
+ */
+export const articlesApiUpdateArticle = (
+  articleId: number,
+  articlesApiUpdateArticleBody: ArticlesApiUpdateArticleBody,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<ArticleResponseSchema>> => {
+  const formData = new FormData();
+  if (articlesApiUpdateArticleBody.image_file !== undefined) {
+    formData.append('image_file', articlesApiUpdateArticleBody.image_file);
+  }
+  if (articlesApiUpdateArticleBody.pdf_file !== undefined) {
+    formData.append('pdf_file', articlesApiUpdateArticleBody.pdf_file);
+  }
+  formData.append('details', JSON.stringify(articlesApiUpdateArticleBody.details));
+
+  return axios.put(`http://localhost:8000/api/articles/${articleId}`, formData, options);
+};
+
+export const getArticlesApiUpdateArticleMutationOptions = <
+  TError = AxiosError<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
+    TError,
+    { articleId: number; data: ArticlesApiUpdateArticleBody },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
+  TError,
+  { articleId: number; data: ArticlesApiUpdateArticleBody },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
+    { articleId: number; data: ArticlesApiUpdateArticleBody }
+  > = (props) => {
+    const { articleId, data } = props ?? {};
+
+    return articlesApiUpdateArticle(articleId, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesApiUpdateArticleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesApiUpdateArticle>>
+>;
+export type ArticlesApiUpdateArticleMutationBody = ArticlesApiUpdateArticleBody;
+export type ArticlesApiUpdateArticleMutationError = AxiosError<Message>;
+
+/**
+ * @summary Update Article
+ */
+export const useArticlesApiUpdateArticle = <
+  TError = AxiosError<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
+    TError,
+    { articleId: number; data: ArticlesApiUpdateArticleBody },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
+  TError,
+  { articleId: number; data: ArticlesApiUpdateArticleBody },
+  TContext
+> => {
+  const mutationOptions = getArticlesApiUpdateArticleMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
  * @summary Get Article
  */
 export const articlesApiGetArticle = (
-  articleId: number,
-  params?: ArticlesApiGetArticleParams,
+  articleSlug: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleSchema>> => {
-  return axios.get(`http://localhost:8000/api/articles/articles/${articleId}`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+): Promise<AxiosResponse<ArticleDetails>> => {
+  return axios.get(`http://localhost:8000/api/articles/article/${articleSlug}`, options);
 };
 
-export const getArticlesApiGetArticleQueryKey = (
-  articleId: number,
-  params?: ArticlesApiGetArticleParams
-) => {
-  return [
-    `http://localhost:8000/api/articles/articles/${articleId}`,
-    ...(params ? [params] : []),
-  ] as const;
+export const getArticlesApiGetArticleQueryKey = (articleSlug: string) => {
+  return [`http://localhost:8000/api/articles/article/${articleSlug}`] as const;
 };
 
 export const getArticlesApiGetArticleQueryOptions = <
   TData = Awaited<ReturnType<typeof articlesApiGetArticle>>,
-  TError = AxiosError<string>,
+  TError = AxiosError<Message>,
 >(
-  articleId: number,
-  params?: ArticlesApiGetArticleParams,
+  articleSlug: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticle>>, TError, TData>
@@ -152,12 +215,12 @@ export const getArticlesApiGetArticleQueryOptions = <
 ) => {
   const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getArticlesApiGetArticleQueryKey(articleId, params);
+  const queryKey = queryOptions?.queryKey ?? getArticlesApiGetArticleQueryKey(articleSlug);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetArticle>>> = ({ signal }) =>
-    articlesApiGetArticle(articleId, params, { signal, ...axiosOptions });
+    articlesApiGetArticle(articleSlug, { signal, ...axiosOptions });
 
-  return { queryKey, queryFn, enabled: !!articleId, ...queryOptions } as UseQueryOptions<
+  return { queryKey, queryFn, enabled: !!articleSlug, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof articlesApiGetArticle>>,
     TError,
     TData
@@ -167,17 +230,16 @@ export const getArticlesApiGetArticleQueryOptions = <
 export type ArticlesApiGetArticleQueryResult = NonNullable<
   Awaited<ReturnType<typeof articlesApiGetArticle>>
 >;
-export type ArticlesApiGetArticleQueryError = AxiosError<string>;
+export type ArticlesApiGetArticleQueryError = AxiosError<Message>;
 
 /**
  * @summary Get Article
  */
 export const useArticlesApiGetArticle = <
   TData = Awaited<ReturnType<typeof articlesApiGetArticle>>,
-  TError = AxiosError<string>,
+  TError = AxiosError<Message>,
 >(
-  articleId: number,
-  params?: ArticlesApiGetArticleParams,
+  articleSlug: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticle>>, TError, TData>
@@ -185,7 +247,7 @@ export const useArticlesApiGetArticle = <
     axios?: AxiosRequestConfig;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesApiGetArticleQueryOptions(articleId, params, options);
+  const queryOptions = getArticlesApiGetArticleQueryOptions(articleSlug, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -195,220 +257,92 @@ export const useArticlesApiGetArticle = <
 };
 
 /**
- * @summary Create Review
+ * Fetches and filters articles visible to the public based on their submission status
+and community affiliation.
+
+This endpoint allows for filtering and sorting of articles that:
+i) Are not submitted to any community.
+ii) Are published by communities.
+iii) Are submitted and accepted (but not published) in a public community.
+
+Parameters:
+- search (str, optional): Filter articles by title.
+- community (int, optional): Filter articles by community ID.
+- sort (str, optional): Sort articles ('latest', 'popular', 'older').
+- rating (int, optional): Filter articles by minimum rating.
+
+Returns:
+- List[ArticleSchema]: Serialized articles matching the filters.
+ * @summary Get Public Articles
  */
-export const articlesApiCreateReview = (
-  reviewSchema: ReviewSchema,
+export const articlesApiGetPublicArticles = (
+  params?: ArticlesApiGetPublicArticlesParams,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ReviewResponseSchema>> => {
-  return axios.post(`http://localhost:8000/api/articles/reviews/`, reviewSchema, options);
+): Promise<AxiosResponse<ArticleDetails[]>> => {
+  return axios.get(`http://localhost:8000/api/articles/`, {
+    ...options,
+    params: { ...params, ...options?.params },
+  });
 };
 
-export const getArticlesApiCreateReviewMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesApiCreateReview>>,
+export const getArticlesApiGetPublicArticlesQueryKey = (
+  params?: ArticlesApiGetPublicArticlesParams
+) => {
+  return [`http://localhost:8000/api/articles/`, ...(params ? [params] : [])] as const;
+};
+
+export const getArticlesApiGetPublicArticlesQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesApiGetPublicArticles>>,
+  TError = AxiosError<unknown>,
+>(
+  params?: ArticlesApiGetPublicArticlesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetPublicArticles>>, TError, TData>
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getArticlesApiGetPublicArticlesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetPublicArticles>>> = ({
+    signal,
+  }) => articlesApiGetPublicArticles(params, { signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof articlesApiGetPublicArticles>>,
     TError,
-    { data: ReviewSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesApiCreateReview>>,
-  TError,
-  { data: ReviewSchema },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesApiCreateReview>>,
-    { data: ReviewSchema }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return articlesApiCreateReview(data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
+    TData
+  > & { queryKey: QueryKey };
 };
 
-export type ArticlesApiCreateReviewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesApiCreateReview>>
+export type ArticlesApiGetPublicArticlesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesApiGetPublicArticles>>
 >;
-export type ArticlesApiCreateReviewMutationBody = ReviewSchema;
-export type ArticlesApiCreateReviewMutationError = AxiosError<string>;
+export type ArticlesApiGetPublicArticlesQueryError = AxiosError<unknown>;
 
 /**
- * @summary Create Review
+ * @summary Get Public Articles
  */
-export const useArticlesApiCreateReview = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesApiCreateReview>>,
-    TError,
-    { data: ReviewSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesApiCreateReview>>,
-  TError,
-  { data: ReviewSchema },
-  TContext
-> => {
-  const mutationOptions = getArticlesApiCreateReviewMutationOptions(options);
+export const useArticlesApiGetPublicArticles = <
+  TData = Awaited<ReturnType<typeof articlesApiGetPublicArticles>>,
+  TError = AxiosError<unknown>,
+>(
+  params?: ArticlesApiGetPublicArticlesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetPublicArticles>>, TError, TData>
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getArticlesApiGetPublicArticlesQueryOptions(params, options);
 
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Edit Review
- */
-export const articlesApiEditReview = (
-  reviewId: number,
-  reviewEditSchema: ReviewEditSchema,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ReviewResponseSchema>> => {
-  return axios.put(
-    `http://localhost:8000/api/articles/reviews/${reviewId}/`,
-    reviewEditSchema,
-    options
-  );
-};
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
-export const getArticlesApiEditReviewMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesApiEditReview>>,
-    TError,
-    { reviewId: number; data: ReviewEditSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesApiEditReview>>,
-  TError,
-  { reviewId: number; data: ReviewEditSchema },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  query.queryKey = queryOptions.queryKey;
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesApiEditReview>>,
-    { reviewId: number; data: ReviewEditSchema }
-  > = (props) => {
-    const { reviewId, data } = props ?? {};
-
-    return articlesApiEditReview(reviewId, data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ArticlesApiEditReviewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesApiEditReview>>
->;
-export type ArticlesApiEditReviewMutationBody = ReviewEditSchema;
-export type ArticlesApiEditReviewMutationError = AxiosError<string>;
-
-/**
- * @summary Edit Review
- */
-export const useArticlesApiEditReview = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesApiEditReview>>,
-    TError,
-    { reviewId: number; data: ReviewEditSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesApiEditReview>>,
-  TError,
-  { reviewId: number; data: ReviewEditSchema },
-  TContext
-> => {
-  const mutationOptions = getArticlesApiEditReviewMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Create Reply
- */
-export const articlesApiCreateReply = (
-  replySchema: ReplySchema,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ReplyResponseSchema>> => {
-  return axios.post(`http://localhost:8000/api/articles/replies/`, replySchema, options);
-};
-
-export const getArticlesApiCreateReplyMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesApiCreateReply>>,
-    TError,
-    { data: ReplySchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesApiCreateReply>>,
-  TError,
-  { data: ReplySchema },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesApiCreateReply>>,
-    { data: ReplySchema }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return articlesApiCreateReply(data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ArticlesApiCreateReplyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesApiCreateReply>>
->;
-export type ArticlesApiCreateReplyMutationBody = ReplySchema;
-export type ArticlesApiCreateReplyMutationError = AxiosError<string>;
-
-/**
- * @summary Create Reply
- */
-export const useArticlesApiCreateReply = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesApiCreateReply>>,
-    TError,
-    { data: ReplySchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesApiCreateReply>>,
-  TError,
-  { data: ReplySchema },
-  TContext
-> => {
-  const mutationOptions = getArticlesApiCreateReplyMutationOptions(options);
-
-  return useMutation(mutationOptions);
+  return query;
 };

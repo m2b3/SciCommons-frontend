@@ -6,6 +6,6 @@
  */
 
 export type CommunitiesApiListCommunitiesParams = {
-  page?: number | null;
-  size?: number | null;
+  page?: number;
+  limit?: number;
 };

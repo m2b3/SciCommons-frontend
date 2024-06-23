@@ -18,135 +18,76 @@ import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import type {
-  EmailSchema,
-  LogInSchemaIn,
-  LogInSchemaOut,
-  SignUpSchemaIn,
-  StatusMessageSchema,
-  UsersApiResetPasswordParams,
+  ArticleDetails,
+  Message,
+  NotificationSchema,
+  UsersApiGetMyArticlesParams,
 } from '.././schemas';
 
 /**
- * @summary Signup
+ * @summary Get My Articles
  */
-export const usersApiSignup = (
-  signUpSchemaIn: SignUpSchemaIn,
+export const usersApiGetMyArticles = (
+  params?: UsersApiGetMyArticlesParams,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(`http://localhost:8000/api/users/signup`, signUpSchemaIn, options);
+): Promise<AxiosResponse<ArticleDetails[]>> => {
+  return axios.get(`http://localhost:8000/api/users/my-articles`, {
+    ...options,
+    params: { ...params, ...options?.params },
+  });
 };
 
-export const getUsersApiSignupMutationOptions = <
-  TError = AxiosError<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiSignup>>,
-    TError,
-    { data: SignUpSchemaIn },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiSignup>>,
-  TError,
-  { data: SignUpSchemaIn },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiSignup>>,
-    { data: SignUpSchemaIn }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return usersApiSignup(data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
+export const getUsersApiGetMyArticlesQueryKey = (params?: UsersApiGetMyArticlesParams) => {
+  return [`http://localhost:8000/api/users/my-articles`, ...(params ? [params] : [])] as const;
 };
 
-export type UsersApiSignupMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiSignup>>>;
-export type UsersApiSignupMutationBody = SignUpSchemaIn;
-export type UsersApiSignupMutationError = AxiosError<unknown>;
-
-/**
- * @summary Signup
- */
-export const useUsersApiSignup = <TError = AxiosError<unknown>, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiSignup>>,
-    TError,
-    { data: SignUpSchemaIn },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiSignup>>,
-  TError,
-  { data: SignUpSchemaIn },
-  TContext
-> => {
-  const mutationOptions = getUsersApiSignupMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Activate
- */
-export const usersApiActivate = (
-  token: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.get(`http://localhost:8000/api/users/activate/${token}`, options);
-};
-
-export const getUsersApiActivateQueryKey = (token: string) => {
-  return [`http://localhost:8000/api/users/activate/${token}`] as const;
-};
-
-export const getUsersApiActivateQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersApiActivate>>,
-  TError = AxiosError<unknown>,
+export const getUsersApiGetMyArticlesQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiGetMyArticles>>,
+  TError = AxiosError<Message>,
 >(
-  token: string,
+  params?: UsersApiGetMyArticlesParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof usersApiActivate>>, TError, TData>>;
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiGetMyArticles>>, TError, TData>
+    >;
     axios?: AxiosRequestConfig;
   }
 ) => {
   const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getUsersApiActivateQueryKey(token);
+  const queryKey = queryOptions?.queryKey ?? getUsersApiGetMyArticlesQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiActivate>>> = ({ signal }) =>
-    usersApiActivate(token, { signal, ...axiosOptions });
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetMyArticles>>> = ({ signal }) =>
+    usersApiGetMyArticles(params, { signal, ...axiosOptions });
 
-  return { queryKey, queryFn, enabled: !!token, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof usersApiActivate>>,
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiGetMyArticles>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type UsersApiActivateQueryResult = NonNullable<Awaited<ReturnType<typeof usersApiActivate>>>;
-export type UsersApiActivateQueryError = AxiosError<unknown>;
+export type UsersApiGetMyArticlesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiGetMyArticles>>
+>;
+export type UsersApiGetMyArticlesQueryError = AxiosError<Message>;
 
 /**
- * @summary Activate
+ * @summary Get My Articles
  */
-export const useUsersApiActivate = <
-  TData = Awaited<ReturnType<typeof usersApiActivate>>,
-  TError = AxiosError<unknown>,
+export const useUsersApiGetMyArticles = <
+  TData = Awaited<ReturnType<typeof usersApiGetMyArticles>>,
+  TError = AxiosError<Message>,
 >(
-  token: string,
+  params?: UsersApiGetMyArticlesParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof usersApiActivate>>, TError, TData>>;
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiGetMyArticles>>, TError, TData>
+    >;
     axios?: AxiosRequestConfig;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getUsersApiActivateQueryOptions(token, options);
+  const queryOptions = getUsersApiGetMyArticlesQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -156,286 +97,140 @@ export const useUsersApiActivate = <
 };
 
 /**
- * @summary Resend Activation
+ * @summary Get Notifications
  */
-export const usersApiResendActivation = (
-  emailSchema: EmailSchema,
+export const usersApiGetNotifications = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(`http://localhost:8000/api/users/resend-activation`, emailSchema, options);
+): Promise<AxiosResponse<NotificationSchema[]>> => {
+  return axios.get(`http://localhost:8000/api/users/notifications`, options);
 };
 
-export const getUsersApiResendActivationMutationOptions = <
-  TError = AxiosError<unknown>,
+export const getUsersApiGetNotificationsQueryKey = () => {
+  return [`http://localhost:8000/api/users/notifications`] as const;
+};
+
+export const getUsersApiGetNotificationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiGetNotifications>>,
+  TError = AxiosError<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof usersApiGetNotifications>>, TError, TData>
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiGetNotificationsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetNotifications>>> = ({
+    signal,
+  }) => usersApiGetNotifications({ signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiGetNotifications>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiGetNotificationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiGetNotifications>>
+>;
+export type UsersApiGetNotificationsQueryError = AxiosError<Message>;
+
+/**
+ * @summary Get Notifications
+ */
+export const useUsersApiGetNotifications = <
+  TData = Awaited<ReturnType<typeof usersApiGetNotifications>>,
+  TError = AxiosError<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof usersApiGetNotifications>>, TError, TData>
+  >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiGetNotificationsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Mark Notification As Read
+ */
+export const usersApiMarkNotificationAsRead = (
+  notificationId: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<Message>> => {
+  return axios.post(
+    `http://localhost:8000/api/users/notifications/${notificationId}/mark-as-read`,
+    undefined,
+    options
+  );
+};
+
+export const getUsersApiMarkNotificationAsReadMutationOptions = <
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiResendActivation>>,
+    Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
     TError,
-    { data: EmailSchema },
+    { notificationId: number },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiResendActivation>>,
+  Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
   TError,
-  { data: EmailSchema },
+  { notificationId: number },
   TContext
 > => {
   const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiResendActivation>>,
-    { data: EmailSchema }
+    Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
+    { notificationId: number }
   > = (props) => {
-    const { data } = props ?? {};
+    const { notificationId } = props ?? {};
 
-    return usersApiResendActivation(data, axiosOptions);
+    return usersApiMarkNotificationAsRead(notificationId, axiosOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UsersApiResendActivationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiResendActivation>>
+export type UsersApiMarkNotificationAsReadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>
 >;
-export type UsersApiResendActivationMutationBody = EmailSchema;
-export type UsersApiResendActivationMutationError = AxiosError<unknown>;
+
+export type UsersApiMarkNotificationAsReadMutationError = AxiosError<Message>;
 
 /**
- * @summary Resend Activation
+ * @summary Mark Notification As Read
  */
-export const useUsersApiResendActivation = <
-  TError = AxiosError<unknown>,
+export const useUsersApiMarkNotificationAsRead = <
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiResendActivation>>,
+    Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
     TError,
-    { data: EmailSchema },
+    { notificationId: number },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiResendActivation>>,
+  Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
   TError,
-  { data: EmailSchema },
+  { notificationId: number },
   TContext
 > => {
-  const mutationOptions = getUsersApiResendActivationMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Login User
- */
-export const usersApiLoginUser = (
-  logInSchemaIn: LogInSchemaIn,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<LogInSchemaOut>> => {
-  return axios.post(`http://localhost:8000/api/users/login`, logInSchemaIn, options);
-};
-
-export const getUsersApiLoginUserMutationOptions = <
-  TError = AxiosError<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiLoginUser>>,
-    TError,
-    { data: LogInSchemaIn },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiLoginUser>>,
-  TError,
-  { data: LogInSchemaIn },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiLoginUser>>,
-    { data: LogInSchemaIn }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return usersApiLoginUser(data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type UsersApiLoginUserMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiLoginUser>>
->;
-export type UsersApiLoginUserMutationBody = LogInSchemaIn;
-export type UsersApiLoginUserMutationError = AxiosError<unknown>;
-
-/**
- * @summary Login User
- */
-export const useUsersApiLoginUser = <TError = AxiosError<unknown>, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiLoginUser>>,
-    TError,
-    { data: LogInSchemaIn },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiLoginUser>>,
-  TError,
-  { data: LogInSchemaIn },
-  TContext
-> => {
-  const mutationOptions = getUsersApiLoginUserMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Request Reset
- */
-export const usersApiRequestReset = (
-  emailSchema: EmailSchema,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(`http://localhost:8000/api/users/forgot-password`, emailSchema, options);
-};
-
-export const getUsersApiRequestResetMutationOptions = <
-  TError = AxiosError<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiRequestReset>>,
-    TError,
-    { data: EmailSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiRequestReset>>,
-  TError,
-  { data: EmailSchema },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiRequestReset>>,
-    { data: EmailSchema }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return usersApiRequestReset(data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type UsersApiRequestResetMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiRequestReset>>
->;
-export type UsersApiRequestResetMutationBody = EmailSchema;
-export type UsersApiRequestResetMutationError = AxiosError<unknown>;
-
-/**
- * @summary Request Reset
- */
-export const useUsersApiRequestReset = <
-  TError = AxiosError<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiRequestReset>>,
-    TError,
-    { data: EmailSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiRequestReset>>,
-  TError,
-  { data: EmailSchema },
-  TContext
-> => {
-  const mutationOptions = getUsersApiRequestResetMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Reset Password
- */
-export const usersApiResetPassword = (
-  params: UsersApiResetPasswordParams,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<void>> => {
-  return axios.post(`http://localhost:8000/api/users/reset-password`, undefined, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
-};
-
-export const getUsersApiResetPasswordMutationOptions = <
-  TError = AxiosError<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiResetPassword>>,
-    TError,
-    { params: UsersApiResetPasswordParams },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiResetPassword>>,
-  TError,
-  { params: UsersApiResetPasswordParams },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiResetPassword>>,
-    { params: UsersApiResetPasswordParams }
-  > = (props) => {
-    const { params } = props ?? {};
-
-    return usersApiResetPassword(params, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type UsersApiResetPasswordMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiResetPassword>>
->;
-
-export type UsersApiResetPasswordMutationError = AxiosError<unknown>;
-
-/**
- * @summary Reset Password
- */
-export const useUsersApiResetPassword = <
-  TError = AxiosError<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiResetPassword>>,
-    TError,
-    { params: UsersApiResetPasswordParams },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiResetPassword>>,
-  TError,
-  { params: UsersApiResetPasswordParams },
-  TContext
-> => {
-  const mutationOptions = getUsersApiResetPasswordMutationOptions(options);
+  const mutationOptions = getUsersApiMarkNotificationAsReadMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

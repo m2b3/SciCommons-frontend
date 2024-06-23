@@ -6,10 +6,10 @@
  */
 
 export interface ReviewResponseSchema {
-  article_id: number;
   content: string;
+  created_at: string;
   id: number;
   rating: number;
   subject: string;
-  user_id: number;
+  updated_at: string;
 }

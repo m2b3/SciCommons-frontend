@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { useUsersApiSignup } from '@/api/users/users';
+import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/FormInput';
 
 interface IFormInput {
@@ -34,7 +34,7 @@ const RegisterForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const { isSuccess, isError, error, isPending, mutate: signUp } = useUsersApiSignup();
+  const { isSuccess, isError, error, isPending, mutate: signUp } = useUsersApiAuthSignup();
 
   const onSubmit = (data: IFormInput) => {
     signUp({ data });

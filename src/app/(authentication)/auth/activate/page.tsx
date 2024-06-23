@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import toast from 'react-hot-toast';
 
-import { useUsersApiActivate } from '@/api/users/users';
+import { useUsersApiAuthActivate } from '@/api/users-auth/users-auth';
 
 const ActivateAccount = () => {
   const searchParams = useSearchParams();
@@ -18,7 +18,7 @@ const ActivateAccount = () => {
   const token = searchParams.get('token') || '';
   console.log(token);
 
-  const { isLoading, error, isSuccess, isError } = useUsersApiActivate(token);
+  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(token);
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {

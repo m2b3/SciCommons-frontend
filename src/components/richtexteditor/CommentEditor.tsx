@@ -8,6 +8,7 @@ import { Control, FieldValues, Path, useController } from 'react-hook-form';
 
 import MenuBar from './MenuBar';
 
+// Todo: unable to set the content empty after the review is submitted
 interface CommentEditorProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>;
   control: Control<TFieldValues>;
@@ -40,7 +41,7 @@ const CommentEditor = <TFieldValues extends FieldValues>({
           'flex flex-col px-4 py-3 justify-start border-b border-r border-l border-gray-700 items-start w-full gap-3 pt-4 rounded-bl-md rounded-br-md outline-none',
       },
     },
-    content: '',
+    content: field.value as string,
     onCreate: () => setEditorLoaded(true),
     onUpdate({ editor }) {
       field.onChange(editor.getHTML());

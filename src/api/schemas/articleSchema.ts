@@ -4,20 +4,22 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ArticleSchemaCommunityId } from './articleSchemaCommunityId';
 import type { ArticleSchemaImage } from './articleSchemaImage';
 import type { ArticleSchemaPdfFile } from './articleSchemaPdfFile';
-import type { PaginatedReviewSchema } from './paginatedReviewSchema';
 
 export interface ArticleSchema {
   abstract: string;
   authors: string;
+  community_id: ArticleSchemaCommunityId;
   id: number;
-  image?: ArticleSchemaImage;
+  image: ArticleSchemaImage;
   keywords: string;
-  pdf_file?: ArticleSchemaPdfFile;
-  reviews: PaginatedReviewSchema;
+  pdf_file: ArticleSchemaPdfFile;
+  published: boolean;
   slug: string;
+  status: string;
   submission_type: string;
-  submitter: number;
+  submitter_id: number;
   title: string;
 }

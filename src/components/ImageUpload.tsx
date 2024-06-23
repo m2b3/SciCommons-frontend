@@ -1,9 +1,11 @@
 import Image from 'next/image';
 
 import clsx from 'clsx';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, CircleX } from 'lucide-react';
 import { FileRejection, useDropzone } from 'react-dropzone';
 import { Control, FieldValues, Path, useController } from 'react-hook-form';
+
+import { FileObj } from '@/types';
 
 import LabeledTooltip from './LabeledToolTip';
 
@@ -12,13 +14,7 @@ interface ImageUploadProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>;
   label: string;
   info: string;
-}
-
-interface FileObj {
-  file: File;
-  progress: number;
-  status: 'uploading' | 'completed' | 'error';
-  errorMessage?: string;
+  defaultImageURL?: string;
 }
 
 const ImageUpload = <TFieldValues extends FieldValues>({
@@ -26,6 +22,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
   name,
   label,
   info,
+  defaultImageURL,
 }: ImageUploadProps<TFieldValues>) => {
   const {
     field: { onChange, value: fileObj },
@@ -33,7 +30,6 @@ const ImageUpload = <TFieldValues extends FieldValues>({
   } = useController({
     name,
     control,
-    rules: { required: 'An image file is required' },
     defaultValue: undefined,
   });
 
@@ -63,7 +59,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
         file,
         progress: 0,
         status: 'error',
-        errorMessage: 'Invalid file type',
+        errorMessage: 'File either exceeds 2 MB or is not an image',
       } as FileObj);
     }
   };
@@ -146,11 +142,30 @@ const ImageUpload = <TFieldValues extends FieldValues>({
         )}
       >
         <input {...getInputProps()} />
-        <Image src="/imageupload.png" width={64} height={64} className="mx-auto" alt="Upload" />
-        <p>
-          Drop your image here, or <span className="cursor-pointer text-blue-500">Browse</span>
-        </p>
-        <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+        {defaultImageURL ? (
+          <div className="flex flex-col items-center">
+            <Image
+              src={defaultImageURL}
+              width={128}
+              height={128}
+              className="mb-4 rounded"
+              alt="Default"
+            />
+            <p className="text-center">
+              Drop your image to replace or{' '}
+              <span className="cursor-pointer text-blue-500">Browse</span>
+            </p>
+            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+          </div>
+        ) : (
+          <>
+            <Image src="/imageupload.png" width={64} height={64} className="mx-auto" alt="Upload" />
+            <p>
+              Drop your image here, or <span className="cursor-pointer text-blue-500">Browse</span>
+            </p>
+            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+          </>
+        )}
       </div>
       {fileObj && (
         <div className="mt-4">
@@ -183,6 +198,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
             {fileObj.status === 'completed' && (
               <CheckCircle size={24} className="ml-2 text-green-500" />
             )}
+            {fileObj.status === 'error' && <CircleX size={24} className="ml-2 text-red-500" />}
           </div>
         </div>
       )}

@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'gsoc2024.s3.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
     ],
   },
 };

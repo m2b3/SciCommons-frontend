@@ -4,11 +4,8 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ArticleCreateDetails } from './articleCreateDetails';
 
 export interface ArticleCreateSchema {
-  abstract: string;
-  authors: string;
-  keywords: string;
-  submission_type: string;
-  title: string;
+  payload: ArticleCreateDetails;
 }

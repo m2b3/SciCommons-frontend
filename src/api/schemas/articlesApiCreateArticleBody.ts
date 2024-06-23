@@ -4,13 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ArticleCreateSchema } from './articleCreateSchema';
 
 export type ArticlesApiCreateArticleBody = {
-  abstract: string;
-  authors: string;
+  details: ArticleCreateSchema;
   image_file?: Blob;
-  keywords: string;
   pdf_file?: Blob;
-  submission_type: string;
-  title: string;
 };

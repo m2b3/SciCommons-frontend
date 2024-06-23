@@ -4,11 +4,11 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { CommunitySchema } from './communitySchema';
+import type { CommunityDetails } from './communityDetails';
 
 export interface PaginatedCommunitySchema {
+  communities: CommunityDetails[];
   page: number;
-  results: CommunitySchema[];
   size: number;
   total: number;
 }

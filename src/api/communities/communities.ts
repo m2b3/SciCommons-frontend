@@ -20,13 +20,82 @@ import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import type {
   CommunitiesApiCreateCommunityBody,
   CommunitiesApiListCommunitiesParams,
-  CommunityDetailSchema,
-  CommunityMemberSchema,
-  CommunitySchema,
-  InviteSchema,
+  CommunitiesApiUpdateCommunityBody,
+  CommunityDetails,
+  CreateCommunityResponse,
+  Message,
   PaginatedCommunitySchema,
-  UpdateCommunitySchema,
 } from '.././schemas';
+
+/**
+ * @summary Get Community
+ */
+export const communitiesApiGetCommunity = (
+  communityName: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<CommunityDetails>> => {
+  return axios.get(`http://localhost:8000/api/communities/community/${communityName}/`, options);
+};
+
+export const getCommunitiesApiGetCommunityQueryKey = (communityName: string) => {
+  return [`http://localhost:8000/api/communities/community/${communityName}/`] as const;
+};
+
+export const getCommunitiesApiGetCommunityQueryOptions = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
+  TError = AxiosError<Message>,
+>(
+  communityName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunity>>, TError, TData>
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getCommunitiesApiGetCommunityQueryKey(communityName);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiGetCommunity>>> = ({
+    signal,
+  }) => communitiesApiGetCommunity(communityName, { signal, ...axiosOptions });
+
+  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type CommunitiesApiGetCommunityQueryResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesApiGetCommunity>>
+>;
+export type CommunitiesApiGetCommunityQueryError = AxiosError<Message>;
+
+/**
+ * @summary Get Community
+ */
+export const useCommunitiesApiGetCommunity = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
+  TError = AxiosError<Message>,
+>(
+  communityName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunity>>, TError, TData>
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getCommunitiesApiGetCommunityQueryOptions(communityName, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
 
 /**
  * @summary List Communities
@@ -49,7 +118,7 @@ export const getCommunitiesApiListCommunitiesQueryKey = (
 
 export const getCommunitiesApiListCommunitiesQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
 >(
   params?: CommunitiesApiListCommunitiesParams,
   options?: {
@@ -77,14 +146,14 @@ export const getCommunitiesApiListCommunitiesQueryOptions = <
 export type CommunitiesApiListCommunitiesQueryResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiListCommunities>>
 >;
-export type CommunitiesApiListCommunitiesQueryError = AxiosError<unknown>;
+export type CommunitiesApiListCommunitiesQueryError = AxiosError<Message>;
 
 /**
  * @summary List Communities
  */
 export const useCommunitiesApiListCommunities = <
   TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
 >(
   params?: CommunitiesApiListCommunitiesParams,
   options?: {
@@ -109,7 +178,7 @@ export const useCommunitiesApiListCommunities = <
 export const communitiesApiCreateCommunity = (
   communitiesApiCreateCommunityBody: CommunitiesApiCreateCommunityBody,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<CommunitySchema>> => {
+): Promise<AxiosResponse<CreateCommunityResponse>> => {
   const formData = new FormData();
   formData.append('name', communitiesApiCreateCommunityBody.name);
   formData.append('description', communitiesApiCreateCommunityBody.description);
@@ -123,7 +192,7 @@ export const communitiesApiCreateCommunity = (
 };
 
 export const getCommunitiesApiCreateCommunityMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -157,13 +226,13 @@ export type CommunitiesApiCreateCommunityMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiCreateCommunity>>
 >;
 export type CommunitiesApiCreateCommunityMutationBody = CommunitiesApiCreateCommunityBody;
-export type CommunitiesApiCreateCommunityMutationError = AxiosError<unknown>;
+export type CommunitiesApiCreateCommunityMutationError = AxiosError<Message>;
 
 /**
  * @summary Create Community
  */
 export const useCommunitiesApiCreateCommunity = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -184,113 +253,50 @@ export const useCommunitiesApiCreateCommunity = <
   return useMutation(mutationOptions);
 };
 /**
- * @summary Get Community Detail
- */
-export const communitiesApiGetCommunityDetail = (
-  communityId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<CommunityDetailSchema>> => {
-  return axios.get(`http://localhost:8000/api/communities/${communityId}/`, options);
-};
-
-export const getCommunitiesApiGetCommunityDetailQueryKey = (communityId: number) => {
-  return [`http://localhost:8000/api/communities/${communityId}/`] as const;
-};
-
-export const getCommunitiesApiGetCommunityDetailQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>,
-  TError = AxiosError<unknown>,
->(
-  communityId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>, TError, TData>
-    >;
-    axios?: AxiosRequestConfig;
-  }
-) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getCommunitiesApiGetCommunityDetailQueryKey(communityId);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>> = ({
-    signal,
-  }) => communitiesApiGetCommunityDetail(communityId, { signal, ...axiosOptions });
-
-  return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type CommunitiesApiGetCommunityDetailQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>
->;
-export type CommunitiesApiGetCommunityDetailQueryError = AxiosError<unknown>;
-
-/**
- * @summary Get Community Detail
- */
-export const useCommunitiesApiGetCommunityDetail = <
-  TData = Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>,
-  TError = AxiosError<unknown>,
->(
-  communityId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunityDetail>>, TError, TData>
-    >;
-    axios?: AxiosRequestConfig;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiGetCommunityDetailQueryOptions(communityId, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-};
-
-/**
  * @summary Update Community
  */
 export const communitiesApiUpdateCommunity = (
   communityId: number,
-  updateCommunitySchema: UpdateCommunitySchema,
+  communitiesApiUpdateCommunityBody: CommunitiesApiUpdateCommunityBody,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<CommunitySchema>> => {
-  return axios.put(
-    `http://localhost:8000/api/communities/${communityId}/`,
-    updateCommunitySchema,
-    options
-  );
+): Promise<AxiosResponse<Message>> => {
+  const formData = new FormData();
+  formData.append('description', communitiesApiUpdateCommunityBody.description);
+  formData.append('type', communitiesApiUpdateCommunityBody.type);
+  formData.append('tags', communitiesApiUpdateCommunityBody.tags);
+  communitiesApiUpdateCommunityBody.rules.forEach((value) => formData.append('rules', value));
+  if (communitiesApiUpdateCommunityBody.profile_pic_file !== undefined) {
+    formData.append('profile_pic_file', communitiesApiUpdateCommunityBody.profile_pic_file);
+  }
+  if (communitiesApiUpdateCommunityBody.banner_pic_file !== undefined) {
+    formData.append('banner_pic_file', communitiesApiUpdateCommunityBody.banner_pic_file);
+  }
+
+  return axios.patch(`http://localhost:8000/api/communities/${communityId}/`, formData, options);
 };
 
 export const getCommunitiesApiUpdateCommunityMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiUpdateCommunity>>,
     TError,
-    { communityId: number; data: UpdateCommunitySchema },
+    { communityId: number; data: CommunitiesApiUpdateCommunityBody },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiUpdateCommunity>>,
   TError,
-  { communityId: number; data: UpdateCommunitySchema },
+  { communityId: number; data: CommunitiesApiUpdateCommunityBody },
   TContext
 > => {
   const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiUpdateCommunity>>,
-    { communityId: number; data: UpdateCommunitySchema }
+    { communityId: number; data: CommunitiesApiUpdateCommunityBody }
   > = (props) => {
     const { communityId, data } = props ?? {};
 
@@ -303,27 +309,27 @@ export const getCommunitiesApiUpdateCommunityMutationOptions = <
 export type CommunitiesApiUpdateCommunityMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiUpdateCommunity>>
 >;
-export type CommunitiesApiUpdateCommunityMutationBody = UpdateCommunitySchema;
-export type CommunitiesApiUpdateCommunityMutationError = AxiosError<unknown>;
+export type CommunitiesApiUpdateCommunityMutationBody = CommunitiesApiUpdateCommunityBody;
+export type CommunitiesApiUpdateCommunityMutationError = AxiosError<Message>;
 
 /**
  * @summary Update Community
  */
 export const useCommunitiesApiUpdateCommunity = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiUpdateCommunity>>,
     TError,
-    { communityId: number; data: UpdateCommunitySchema },
+    { communityId: number; data: CommunitiesApiUpdateCommunityBody },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiUpdateCommunity>>,
   TError,
-  { communityId: number; data: UpdateCommunitySchema },
+  { communityId: number; data: CommunitiesApiUpdateCommunityBody },
   TContext
 > => {
   const mutationOptions = getCommunitiesApiUpdateCommunityMutationOptions(options);
@@ -398,604 +404,6 @@ export const useCommunitiesApiDeleteCommunity = <
   TContext
 > => {
   const mutationOptions = getCommunitiesApiDeleteCommunityMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Get Community By Slug
- */
-export const communitiesApiGetCommunityBySlug = (
-  slug: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<CommunityDetailSchema>> => {
-  return axios.get(`http://localhost:8000/api/communities/slug/${slug}/`, options);
-};
-
-export const getCommunitiesApiGetCommunityBySlugQueryKey = (slug: string) => {
-  return [`http://localhost:8000/api/communities/slug/${slug}/`] as const;
-};
-
-export const getCommunitiesApiGetCommunityBySlugQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>,
-  TError = AxiosError<unknown>,
->(
-  slug: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>, TError, TData>
-    >;
-    axios?: AxiosRequestConfig;
-  }
-) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getCommunitiesApiGetCommunityBySlugQueryKey(slug);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>> = ({
-    signal,
-  }) => communitiesApiGetCommunityBySlug(slug, { signal, ...axiosOptions });
-
-  return { queryKey, queryFn, enabled: !!slug, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type CommunitiesApiGetCommunityBySlugQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>
->;
-export type CommunitiesApiGetCommunityBySlugQueryError = AxiosError<unknown>;
-
-/**
- * @summary Get Community By Slug
- */
-export const useCommunitiesApiGetCommunityBySlug = <
-  TData = Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>,
-  TError = AxiosError<unknown>,
->(
-  slug: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunityBySlug>>, TError, TData>
-    >;
-    axios?: AxiosRequestConfig;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiGetCommunityBySlugQueryOptions(slug, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-};
-
-/**
- * @summary Create Join Request
- */
-export const communitiesApiCreateJoinRequest = (
-  communityId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  return axios.post(
-    `http://localhost:8000/api/communities/${communityId}/join-request/`,
-    undefined,
-    options
-  );
-};
-
-export const getCommunitiesApiCreateJoinRequestMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiCreateJoinRequest>>,
-    TError,
-    { communityId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiCreateJoinRequest>>,
-  TError,
-  { communityId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiCreateJoinRequest>>,
-    { communityId: number }
-  > = (props) => {
-    const { communityId } = props ?? {};
-
-    return communitiesApiCreateJoinRequest(communityId, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CommunitiesApiCreateJoinRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiCreateJoinRequest>>
->;
-
-export type CommunitiesApiCreateJoinRequestMutationError = AxiosError<string>;
-
-/**
- * @summary Create Join Request
- */
-export const useCommunitiesApiCreateJoinRequest = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiCreateJoinRequest>>,
-    TError,
-    { communityId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiCreateJoinRequest>>,
-  TError,
-  { communityId: number },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiCreateJoinRequestMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Approve Join Request
- */
-export const communitiesApiApproveJoinRequest = (
-  communityId: number,
-  requestId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  return axios.patch(
-    `http://localhost:8000/api/communities/${communityId}/requests/${requestId}/approve/`,
-    undefined,
-    options
-  );
-};
-
-export const getCommunitiesApiApproveJoinRequestMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiApproveJoinRequest>>,
-    TError,
-    { communityId: number; requestId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiApproveJoinRequest>>,
-  TError,
-  { communityId: number; requestId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiApproveJoinRequest>>,
-    { communityId: number; requestId: number }
-  > = (props) => {
-    const { communityId, requestId } = props ?? {};
-
-    return communitiesApiApproveJoinRequest(communityId, requestId, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CommunitiesApiApproveJoinRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiApproveJoinRequest>>
->;
-
-export type CommunitiesApiApproveJoinRequestMutationError = AxiosError<string>;
-
-/**
- * @summary Approve Join Request
- */
-export const useCommunitiesApiApproveJoinRequest = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiApproveJoinRequest>>,
-    TError,
-    { communityId: number; requestId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiApproveJoinRequest>>,
-  TError,
-  { communityId: number; requestId: number },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiApproveJoinRequestMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary Reject Join Request
- */
-export const communitiesApiRejectJoinRequest = (
-  communityId: number,
-  requestId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  return axios.patch(
-    `http://localhost:8000/api/communities/${communityId}/requests/${requestId}/reject/`,
-    undefined,
-    options
-  );
-};
-
-export const getCommunitiesApiRejectJoinRequestMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiRejectJoinRequest>>,
-    TError,
-    { communityId: number; requestId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiRejectJoinRequest>>,
-  TError,
-  { communityId: number; requestId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiRejectJoinRequest>>,
-    { communityId: number; requestId: number }
-  > = (props) => {
-    const { communityId, requestId } = props ?? {};
-
-    return communitiesApiRejectJoinRequest(communityId, requestId, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CommunitiesApiRejectJoinRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiRejectJoinRequest>>
->;
-
-export type CommunitiesApiRejectJoinRequestMutationError = AxiosError<string>;
-
-/**
- * @summary Reject Join Request
- */
-export const useCommunitiesApiRejectJoinRequest = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiRejectJoinRequest>>,
-    TError,
-    { communityId: number; requestId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiRejectJoinRequest>>,
-  TError,
-  { communityId: number; requestId: number },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiRejectJoinRequestMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * @summary List Community Members
- */
-export const communitiesApiListCommunityMembers = (
-  communityId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<CommunityMemberSchema[]>> => {
-  return axios.get(`http://localhost:8000/api/communities/${communityId}/members/`, options);
-};
-
-export const getCommunitiesApiListCommunityMembersQueryKey = (communityId: number) => {
-  return [`http://localhost:8000/api/communities/${communityId}/members/`] as const;
-};
-
-export const getCommunitiesApiListCommunityMembersQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>,
-  TError = AxiosError<string>,
->(
-  communityId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>, TError, TData>
-    >;
-    axios?: AxiosRequestConfig;
-  }
-) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getCommunitiesApiListCommunityMembersQueryKey(communityId);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>> = ({
-    signal,
-  }) => communitiesApiListCommunityMembers(communityId, { signal, ...axiosOptions });
-
-  return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type CommunitiesApiListCommunityMembersQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>
->;
-export type CommunitiesApiListCommunityMembersQueryError = AxiosError<string>;
-
-/**
- * @summary List Community Members
- */
-export const useCommunitiesApiListCommunityMembers = <
-  TData = Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>,
-  TError = AxiosError<string>,
->(
-  communityId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiListCommunityMembers>>, TError, TData>
-    >;
-    axios?: AxiosRequestConfig;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiListCommunityMembersQueryOptions(communityId, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-};
-
-/**
- * @summary Remove Member From Community
- */
-export const communitiesApiRemoveMemberFromCommunity = (
-  communityId: number,
-  userId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  return axios.delete(
-    `http://localhost:8000/api/communities/${communityId}/members/${userId}/`,
-    options
-  );
-};
-
-export const getCommunitiesApiRemoveMemberFromCommunityMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiRemoveMemberFromCommunity>>,
-    TError,
-    { communityId: number; userId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiRemoveMemberFromCommunity>>,
-  TError,
-  { communityId: number; userId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiRemoveMemberFromCommunity>>,
-    { communityId: number; userId: number }
-  > = (props) => {
-    const { communityId, userId } = props ?? {};
-
-    return communitiesApiRemoveMemberFromCommunity(communityId, userId, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CommunitiesApiRemoveMemberFromCommunityMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiRemoveMemberFromCommunity>>
->;
-
-export type CommunitiesApiRemoveMemberFromCommunityMutationError = AxiosError<string>;
-
-/**
- * @summary Remove Member From Community
- */
-export const useCommunitiesApiRemoveMemberFromCommunity = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiRemoveMemberFromCommunity>>,
-    TError,
-    { communityId: number; userId: number },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiRemoveMemberFromCommunity>>,
-  TError,
-  { communityId: number; userId: number },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiRemoveMemberFromCommunityMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * Send an invitation to the specified user via email or username.
-Only community admins can invite new members.
- * @summary Send Invitation
- */
-export const communitiesApiSendInvitation = (
-  communityId: number,
-  inviteSchema: InviteSchema,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  return axios.post(
-    `http://localhost:8000/api/communities/communities/${communityId}/invite/`,
-    inviteSchema,
-    options
-  );
-};
-
-export const getCommunitiesApiSendInvitationMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiSendInvitation>>,
-    TError,
-    { communityId: number; data: InviteSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiSendInvitation>>,
-  TError,
-  { communityId: number; data: InviteSchema },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiSendInvitation>>,
-    { communityId: number; data: InviteSchema }
-  > = (props) => {
-    const { communityId, data } = props ?? {};
-
-    return communitiesApiSendInvitation(communityId, data, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CommunitiesApiSendInvitationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiSendInvitation>>
->;
-export type CommunitiesApiSendInvitationMutationBody = InviteSchema;
-export type CommunitiesApiSendInvitationMutationError = AxiosError<string>;
-
-/**
- * @summary Send Invitation
- */
-export const useCommunitiesApiSendInvitation = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiSendInvitation>>,
-    TError,
-    { communityId: number; data: InviteSchema },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiSendInvitation>>,
-  TError,
-  { communityId: number; data: InviteSchema },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiSendInvitationMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
- * Accepts the invitation by verifying the signed token and adds the user
-to the community through the Membership model.
- * @summary Accept Invitation
- */
-export const communitiesApiAcceptInvitation = (
-  signedToken: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  return axios.post(
-    `http://localhost:8000/api/communities/invitations/${signedToken}/accept/`,
-    undefined,
-    options
-  );
-};
-
-export const getCommunitiesApiAcceptInvitationMutationOptions = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiAcceptInvitation>>,
-    TError,
-    { signedToken: string },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiAcceptInvitation>>,
-  TError,
-  { signedToken: string },
-  TContext
-> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiAcceptInvitation>>,
-    { signedToken: string }
-  > = (props) => {
-    const { signedToken } = props ?? {};
-
-    return communitiesApiAcceptInvitation(signedToken, axiosOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CommunitiesApiAcceptInvitationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiAcceptInvitation>>
->;
-
-export type CommunitiesApiAcceptInvitationMutationError = AxiosError<string>;
-
-/**
- * @summary Accept Invitation
- */
-export const useCommunitiesApiAcceptInvitation = <
-  TError = AxiosError<string>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiAcceptInvitation>>,
-    TError,
-    { signedToken: string },
-    TContext
-  >;
-  axios?: AxiosRequestConfig;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiAcceptInvitation>>,
-  TError,
-  { signedToken: string },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiAcceptInvitationMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

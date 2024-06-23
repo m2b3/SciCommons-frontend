@@ -2,44 +2,24 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
-import clsx from 'clsx';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useArticlesApiCreateArticle } from '@/api/articles/articles';
-import FormInput from '@/components/FormInput';
-import ImageUpload from '@/components/ImageUpload';
-import MultiLabelSelector from '@/components/MultiLabelSelector';
-import { Option } from '@/components/ui/multiple-selector';
+import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
 import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
-
-import FileOrLinkTab from './FileOrLinkTab';
-
-export interface FormValues {
-  title: string;
-  abstract: string;
-  keywords: Option[];
-  authors: Option[];
-  imageFile: FileObj;
-  pdfFile: FileObj;
-  submission_type: 'Public' | 'Private';
-}
-
-export interface FileObj {
-  file: File;
-  progress: number;
-  status: 'uploading' | 'completed' | 'error';
-  errorMessage?: string;
-}
+import { SubmitArticleFormValues } from '@/types';
 
 const ArticleForm: React.FC = () => {
+  const router = useRouter();
+  const params = useParams<{ slug: string }>();
+
   const { articleData } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
   const accessToken = useAuthStore((state) => state.accessToken);
-  const router = useRouter();
 
   const {
     data,
@@ -61,31 +41,14 @@ const ArticleForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormValues>({
+  } = useForm<SubmitArticleFormValues>({
     defaultValues: {
-      submission_type: 'Public',
+      submissionType: 'Public',
       title: articleData?.title || '',
       abstract: articleData?.abstract || '',
     },
     mode: 'onChange',
   });
-
-  useEffect(() => {
-    if (error) {
-      console.error('Error submitting article:', error);
-      toast.error(
-        `Error submitting article: ${(error?.response?.data as { detail?: string })?.detail || 'An error occurred'}`
-      );
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Article submitted successfully! Redirecting....');
-      router.push(`/article/${data.data.id}`);
-    }
-  }, [isSuccess, data, router]);
-
   // reset the form details when there is article data is available
   useEffect(() => {
     if (articleData) {
@@ -97,19 +60,41 @@ const ArticleForm: React.FC = () => {
     }
   }, [articleData, reset]);
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
     const dataToSend = {
-      title: data.title,
-      abstract: data.abstract,
-      submission_type: data.submission_type,
-      authors: JSON.stringify(data.authors),
-      keywords: JSON.stringify(data.keywords),
-      pdf_file: data.pdfFile.file,
-      image_file: data.imageFile.file,
+      payload: {
+        title: formData.title,
+        abstract: formData.abstract,
+        authors: formData.authors.map((author) => ({
+          value: author.value,
+          label: author.label,
+        })),
+        keywords: formData.keywords.map((keyword) => ({
+          value: keyword.value,
+          label: keyword.label,
+        })),
+        submission_type: formData.submissionType,
+      },
     };
+    const image_file = formData.imageFile ? formData.imageFile.file : undefined;
+    const pdf_file = formData.pdfFile ? formData.pdfFile.file : undefined;
 
-    submitArticle({ data: dataToSend });
+    submitArticle({ data: { details: dataToSend, image_file, pdf_file } });
   };
+
+  // Toasts to show success and error messages
+  useEffect(() => {
+    if (error) {
+      toast.error(`${error.response?.data.message}`);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Article submitted successfully! Redirecting....');
+      router.push(`/article/${data.data.slug}`);
+    }
+  }, [isSuccess, data, router, params.slug]);
 
   return (
     <div className="container py-4">
@@ -122,122 +107,18 @@ const ArticleForm: React.FC = () => {
           Share your latest research with the community and receive valuable feedback.
         </p>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
-        <FileOrLinkTab
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          control={control}
-          name="pdfFile"
-        />
-        <FormInput<FormValues>
-          label="Title"
-          name="title"
-          type="text"
-          placeholder="Enter the title of your article"
-          register={register}
-          requiredMessage="Title is required"
-          minLengthValue={10}
-          minLengthMessage="Title must be at least 10 characters"
-          maxLengthValue={100}
-          maxLengthMessage="Title must not exceed 100 characters"
-          info="Please provide a clear and concise title for your article."
-          errors={errors}
-          readOnly={activeTab === 'search'}
-        />
-        {activeTab === 'search' && (
-          <p className="text-sm text-gray-500">
-            You cannot edit the title when searching for articles.
-          </p>
-        )}
-        <Controller
-          name="authors"
-          control={control}
-          rules={{ required: 'Authors are required' }}
-          render={({ field: { onChange, value }, fieldState }) => (
-            <MultiLabelSelector
-              label="Authors"
-              tooltipText="Select authors for the article."
-              placeholder="Add Authors"
-              creatable
-              value={value}
-              onChange={onChange}
-              fieldState={fieldState}
-            />
-          )}
-        />
-        <FormInput<FormValues>
-          label="Abstract"
-          name="abstract"
-          type="text"
-          placeholder="Enter the abstract of your article"
-          register={register}
-          requiredMessage="Abstract is required"
-          info="Provide a brief summary of your article's content."
-          errors={errors}
-          textArea={true}
-          readOnly={activeTab === 'search'}
-        />
-        <Controller
-          name="keywords"
-          control={control}
-          rules={{ required: 'Keywords are required' }}
-          render={({ field, fieldState }) => (
-            <MultiLabelSelector
-              label="Keywords"
-              tooltipText="Select keywords for the article."
-              placeholder="Add Keywords"
-              creatable
-              {...field}
-              fieldState={fieldState}
-            />
-          )}
-        />
-        <Controller
-          name="imageFile"
-          control={control}
-          render={({}) => (
-            <ImageUpload
-              control={control}
-              name="imageFile"
-              label="Image"
-              info="Upload an image for the article"
-            />
-          )}
-        />
-        <div className="mb-4 space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Submission Type</label>
-          <Controller
-            name="submission_type"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <div className="mt-1 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => onChange('Public')}
-                  className={`rounded-md px-4 py-2 ${value === 'Public' ? 'bg-gray-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                >
-                  Public
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onChange('Private')}
-                  className={`rounded-md px-4 py-2 ${value === 'Private' ? 'bg-gray-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                >
-                  Private
-                </button>
-              </div>
-            )}
-          />
-        </div>
-        <button
-          type="submit"
-          className={clsx('mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white', {
-            'cursor-not-allowed opacity-50': isPending,
-          })}
-        >
-          {isPending ? 'Loading...' : 'Submit Article'}
-        </button>
-      </form>
+      <SubmitArticleForm
+        {...{
+          handleSubmit,
+          onSubmit,
+          control,
+          register,
+          errors,
+          isPending,
+          activeTab,
+          setActiveTab,
+        }}
+      />
     </div>
   );
 };

@@ -51,7 +51,9 @@ const NavBar: React.FC = () => {
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">
             <CreateDropdown />
-            <Bell className="h-6 w-6 cursor-pointer text-gray-800" />
+            <Link href="/notifications">
+              <Bell className="h-8 w-8 cursor-pointer rounded-full p-1 text-gray-800 hover:bg-gray-200 hover:text-gray-600" />
+            </Link>
             <ProfileDropdown />
           </div>
         ) : (

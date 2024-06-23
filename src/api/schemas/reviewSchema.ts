@@ -4,10 +4,17 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ReviewHistorySchema } from './reviewHistorySchema';
 
 export interface ReviewSchema {
   article_id: number;
   content: string;
+  created_at: string;
+  history: ReviewHistorySchema[];
+  id: number;
+  is_author?: boolean;
   rating: number;
   subject: string;
+  updated_at: string;
+  user_id: number;
 }

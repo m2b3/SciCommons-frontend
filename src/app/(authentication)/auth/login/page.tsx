@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { useUsersApiLoginUser } from '@/api/users/users';
+import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/FormInput';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const { error, data, isSuccess, isPending, mutate: logInUser } = useUsersApiLoginUser();
+  const { error, data, isSuccess, isPending, mutate: logInUser } = useUsersApiAuthLoginUser();
 
   const onSubmit = (data: ILoginForm) => {
     logInUser({ data });
@@ -40,8 +40,9 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     if (error) {
+      console.log(error);
       toast.error(
-        `Error: ${(error as { response: { data: { detail: string } } })?.response?.data?.detail || 'An error occurred'}`,
+        `Error: ${(error.response?.data as { message: string })?.message ?? error.message}`,
         {
           position: 'bottom-right',
         }
@@ -125,9 +126,7 @@ const LoginForm: React.FC = () => {
             )}
             disabled={isPending}
           >
-            {isPending // Default values shown
-              ? 'Loading...'
-              : 'Login'}
+            {isPending ? 'Loading...' : 'Login'}
           </button>
         </form>
         <div className="mt-4">
