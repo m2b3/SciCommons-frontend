@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import axios from "../../Utils/axios";
-import Loader from "../Loader/Loader";
-import { TECollapse } from "tw-elements-react";
-import { SlUser } from "react-icons/sl";
-import { useGlobalContext } from "../../Context/StateContext";
-import { FaChevronUp } from "react-icons/fa";
-import { FaChevronDown } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import axios from '../../Utils/axios';
+import Loader from '../Loader/Loader';
+import { TECollapse } from 'tw-elements-react';
+import { SlUser } from 'react-icons/sl';
+import { useGlobalContext } from '../../Context/StateContext';
+import { FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown } from 'react-icons/fa';
 
 const JoinRequests = ({ community }) => {
   const { user, token } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState([]);
-  const [activeElement, setActiveElement] = useState("");
+  const [activeElement, setActiveElement] = useState('');
   const [sortedRequests, setSortedRequests] = useState([]);
   const [show, setShow] = useState(false);
   const [addModalData, setAddModalData] = useState({
@@ -95,7 +95,7 @@ const JoinRequests = ({ community }) => {
             <div className="w-full">
               <div className="w-full flex flex-row items-center justify-between mb-3">
                 <input
-                  style={{ border: "2px solid #cbd5e0" }}
+                  style={{ border: '2px solid #cbd5e0' }}
                   type="text"
                   onChange={handleChange}
                   className="w-5/6 md:w-1/2 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
@@ -105,7 +105,7 @@ const JoinRequests = ({ community }) => {
                   <span className="text-gray-600 text-sm font-semibold mr-2">Sort By :</span>
                   <button
                     className="px-2 py-2 mr-3 bg-green-200 rounded-xl"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                       handleRank();
                     }}>
@@ -113,7 +113,7 @@ const JoinRequests = ({ community }) => {
                   </button>
                   <button
                     className="px-1 py-1 bg-green-200 rounded-xl"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                       handleDate();
                     }}>
@@ -134,10 +134,10 @@ const JoinRequests = ({ community }) => {
                           key={index}
                           className={` group relative flex w-full items-center rounded-t-[15px] border-0 bg-white px-2 py-1 md:px-5 md:py-4 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none`}
                           type="button"
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: 'pointer' }}
                           aria-expanded="true"
                           aria-controls="collapseOne">
-                          {request.profile_pic_url.includes("None") ? (
+                          {request.profile_pic_url.includes('None') ? (
                             <SlUser className="w-4 h-4 mr-2" />
                           ) : (
                             <img
@@ -169,7 +169,7 @@ const JoinRequests = ({ community }) => {
                         <div className=" w-full px-2 py-1 md:px-5 md:py-4 bg-green-50">
                           <div className="flex flex-row items-center">
                             <div className="flex flex-col items-center mr-6">
-                              {request.profile_pic_url.includes("None") ? (
+                              {request.profile_pic_url.includes('None') ? (
                                 <SlUser className="w-6 h-6 md:w-10 md:h-10 md:w-20 md:h-20 mr-3" />
                               ) : (
                                 <img
@@ -203,7 +203,7 @@ const JoinRequests = ({ community }) => {
                         <div className="flex justify-center bg-green-50 p-2">
                           <button
                             className="px-2 py-1 mr-3 bg-green-600 rounded-xl text-white"
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: 'pointer' }}
                             onClick={() => {
                               setShow(true);
                               setAddModalData({
@@ -212,13 +212,12 @@ const JoinRequests = ({ community }) => {
                                 index: index,
                                 id: request.id
                               });
-                              console.log(addModalData);
                             }}>
                             Accept
                           </button>
                           <button
                             className="px-2 py-1 bg-red-600 rounded-xl text-white"
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: 'pointer' }}
                             onClick={() => {
                               setReject(true);
                               setRejectModalData({
@@ -285,15 +284,15 @@ const AcceptModal = ({ setShow, request, community, index, onDelete, loading, se
       };
       const res = await axios.post(
         `/api/community/${community}/approve_request/`,
-        { user: request.user_id, status: "approved" },
+        { user: request.user, status: 'approved' },
         config
       );
 
       await onDelete(index);
-      setLoading(false);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   return (
@@ -309,13 +308,13 @@ const AcceptModal = ({ setShow, request, community, index, onDelete, loading, se
               <div className="w-full flex flex-row items-center justify-center">
                 <button
                   className="text-sm font-semibold text-white p-1 px-2 mr-2 md:mr-5 rounded-lg bg-green-600 flex"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={handleAccept}>
                   Yes
                 </button>
                 <button
                   className="text-sm font-semibold text-white p-1 px-2 rounded-lg bg-red-600 flex ml-2"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     setShow(false);
                   }}>
@@ -343,7 +342,7 @@ const RejectModal = ({ setReject, request, community, index, onDelete, loading, 
       };
       const res = await axios.post(
         `/api/community/${community}/approve_request/`,
-        { user: request.user_id, status: "rejected" },
+        { user: request.user_id, status: 'rejected' },
         config
       );
 
@@ -367,13 +366,13 @@ const RejectModal = ({ setReject, request, community, index, onDelete, loading, 
               <div className="w-full flex flex-row items-center justify-center">
                 <button
                   className="text-sm font-semibold text-white p-1 px-2 mr-2 rounded-lg bg-green-600 flex"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={handleReject}>
                   Yes
                 </button>
                 <button
                   className="text-sm font-semibold text-white p-1 px-2 rounded-lg bg-red-600 flex ml-2"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={() => {
                     setReject(false);
                   }}>

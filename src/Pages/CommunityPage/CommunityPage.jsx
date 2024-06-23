@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "../../Utils/axios";
-import Loader from "../../Components/Loader/Loader";
-import { MdLocationPin, MdSubscriptions } from "react-icons/md";
-import { BsGithub } from "react-icons/bs";
-import { BiLogoGmail } from "react-icons/bi";
-import { CgWebsite } from "react-icons/cg";
-import { FaUsers, FaBook, FaPencilAlt } from "react-icons/fa";
-import ToastMaker from "toastmaker";
-import "toastmaker/dist/toastmaker.css";
-import { useGlobalContext } from "../../Context/StateContext";
-import Articles from "./Articles";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '../../Utils/axios';
+import Loader from '../../Components/Loader/Loader';
+import { MdLocationPin, MdSubscriptions } from 'react-icons/md';
+import { BsGithub } from 'react-icons/bs';
+import { BiLogoGmail } from 'react-icons/bi';
+import { CgWebsite } from 'react-icons/cg';
+import { FaUsers, FaBook, FaPencilAlt } from 'react-icons/fa';
+import ToastMaker from 'toastmaker';
+import 'toastmaker/dist/toastmaker.css';
+import { useGlobalContext } from '../../Context/StateContext';
+import Articles from './Articles';
+import toast from 'react-hot-toast';
 
 const CommunityPage = () => {
   const { communityName } = useParams();
@@ -40,32 +41,32 @@ const CommunityPage = () => {
         if (token === null) {
           config = {
             headers: {
-              "Content-Type": "application/json",
-            },
+              'Content-Type': 'application/json'
+            }
           };
         } else {
           config = {
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           };
         }
         const res = await axios.get(`/api/community/${communityName}/`, config);
-        const checkIsAdmin = res.data.success.isAdmin
+        const checkIsAdmin = res.data.success.isAdmin;
         setIsAdminCommunity(checkIsAdmin);
         await loadCommunity(res.data.success);
         setSubscribed(res.data.success.isSubscribed);
       } catch (error) {
         console.log(error);
-        if (error.response.data.detail === "Not found.") {
+        if (error.response.data.detail === 'Not found.') {
           ToastMaker("Community doesn't exists!!!", 3000, {
-            valign: "top",
+            valign: 'top',
             styles: {
-              backgroundColor: "red",
-              fontSize: "20px",
-            },
+              backgroundColor: 'red',
+              fontSize: '20px'
+            }
           });
-          navigate("/communities");
+          navigate('/communities');
         }
       }
     };
@@ -80,21 +81,21 @@ const CommunityPage = () => {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (token === null) {
-      navigate("/login");
+      navigate('/login');
     }
     setLoading(true);
     try {
       const updatedStatus = !subscribed;
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       if (subscribed === false) {
         const response = await axios.post(
           `/api/community/${community.Community_name}/subscribe/`,
           {
-            user: user.id,
+            user: user.id
           },
           config
         );
@@ -105,7 +106,7 @@ const CommunityPage = () => {
         const response = await axios.post(
           `/api/community/${community.Community_name}/unsubscribe/`,
           {
-            user: user.id,
+            user: user.id
           },
           config
         );
@@ -119,6 +120,32 @@ const CommunityPage = () => {
       setLoading(false);
     }
   };
+
+  const handleJoinCommunity = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const response = await axios.post(
+        `/api/community/${communityName}/join_request/`,
+        { community: communityName },
+        config
+      );
+      if (response.data.success) {
+        toast.success(response?.data?.success);
+        // console.log(response);
+      }
+    } catch (error) {
+      setLoading(false);
+      toast.error('An error occurred. Please try again.');
+      console.log(error);
+      return;
+    }
+    // setLoading(false);
+  };
+
   const getButtonLabel = () => {
     if (loading) {
       return (
@@ -126,8 +153,7 @@ const CommunityPage = () => {
           className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
-          viewBox="0 0 24 24"
-        >
+          viewBox="0 0 24 24">
           <circle
             className="opacity-25"
             cx="12"
@@ -145,7 +171,7 @@ const CommunityPage = () => {
       );
     }
 
-    return <>{subscribed === true ? "Unsubscribe" : "Subscribe"}</>;
+    return <>{subscribed === true ? 'Unsubscribe' : 'Subscribe'}</>;
   };
 
   return (
@@ -162,109 +188,102 @@ const CommunityPage = () => {
             <div className="mt-4">
               <p className="test-sm md:text-md text-left text-gray-500">
                 <span className="text-sm md:text-lg text-left font-bold text-green-700">
-                  Subtitle :{" "}
+                  Subtitle :{' '}
                 </span>
                 {community?.subtitle}
               </p>
               <p className="test-sm md:text-md text-left text-gray-500">
                 <span className="test-sm md:text-lg text-left font-bold text-green-700">
-                  Description :{" "}
+                  Description :{' '}
                 </span>
                 {community?.description}
               </p>
               <p className="test-sm md:text-md text-left text-gray-500">
                 <span className="test-sm md:text-lg text-left font-bold text-green-700">
-                  Admins :{" "}
+                  Admins :{' '}
                 </span>
-                {community?.admins.map((admin) => admin).join(", ")}
+                {community?.admins.map((admin) => admin).join(', ')}
               </p>
             </div>
             <div className="mt-4 flex flex-wrap justify-between">
               <div className="mt-4 flex">
-                <MdLocationPin className="text-xl text-green-700 md:mr-3" />{" "}
+                <MdLocationPin className="text-xl text-green-700 md:mr-3" />{' '}
                 <span className="text-sm md:text-md text-left text-gray-500">
                   {community?.location}
                 </span>
               </div>
               <div className="mt-4 flex">
-                <BsGithub className="text-xl text-green-700 md:mr-3" />{" "}
-                <a
-                  className="text-sm md:text-md text-left text-gray-500"
-                  href={community?.github}
-                >
+                <BsGithub className="text-xl text-green-700 md:mr-3" />{' '}
+                <a className="text-sm md:text-md text-left text-gray-500" href={community?.github}>
                   {community?.github}
                 </a>
               </div>
               <div className="mt-4 flex">
-                <BiLogoGmail className="text-xl text-green-700 md:mr-3" />{" "}
+                <BiLogoGmail className="text-xl text-green-700 md:mr-3" />{' '}
                 <span className="text-sm md:text-md text-left text-gray-500">
                   {community?.email}
                 </span>
               </div>
               <div className="mt-4 flex">
-                <CgWebsite className="text-xl text-green-700 md:mr-3" />{" "}
-                <a
-                  className="text-sm md:text-md text-left text-gray-500"
-                  href={community?.website}
-                >
+                <CgWebsite className="text-xl text-green-700 md:mr-3" />{' '}
+                <a className="text-sm md:text-md text-left text-gray-500" href={community?.website}>
                   {community?.website}
                 </a>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap justify-between">
               <div className="mt-4 flex">
-                <FaUsers className="text-xl text-green-700 md:mr-3" />{" "}
+                <FaUsers className="text-xl text-green-700 md:mr-3" />{' '}
                 <span className="text-sm md:text-md text-left text-gray-500">
                   {community?.membercount}
                 </span>
               </div>
               <div className="mt-4 flex">
-                <FaPencilAlt className="text-xl text-green-700 md:mr-3" />{" "}
-                <a
-                  className="text-sm md:text-md text-left text-gray-500"
-                  href={community?.github}
-                >
+                <FaPencilAlt className="text-xl text-green-700 md:mr-3" />{' '}
+                <a className="text-sm md:text-md text-left text-gray-500" href={community?.github}>
                   {community?.evaluatedcount}
                 </a>
               </div>
               <div className="mt-4 flex">
-                <FaBook className="text-xl text-green-700 md:mr-3" />{" "}
+                <FaBook className="text-xl text-green-700 md:mr-3" />{' '}
                 <span className="text-sm md:text-md text-left text-gray-500">
                   {community?.publishedcount}
                 </span>
               </div>
               <div className="mt-4 flex">
-                <MdSubscriptions className="text-xl text-green-700 md:mr-3" />{" "}
+                <MdSubscriptions className="text-xl text-green-700 md:mr-3" />{' '}
                 <span className="text-sm md:text-md text-left text-gray-500">
                   {community?.subscribed}
                 </span>
               </div>
             </div>
             <div className="mt-8 flex flex-row justify-end">
-              {!isAdminCommunity && <button
-                className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  if (token === null) {
-                    navigate("/login");
-                  } else {
-                    navigate(`/join-community/${community.Community_name}`);
-                  }
-                }}
-              >
-                Join Community
-              </button> }
-              {/* <button
-                                        className={`${
-                                            subscribed
-                                            ? 'bg-gray-400 text-gray-700 cursor-default'
-                                            : 'bg-red-500 hover:bg-red-600 text-white'
-                                        } rounded-xl p-1 md:py-2 md:px-4`}
-                                        style={{cursor:"pointer"}}
-                                        onClick={handleSubscribe}
-                                        >
-                                        {getButtonLabel()}
-                                    </button> */}
+              {!isAdminCommunity && (
+                <button
+                  className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    if (token === null) {
+                      navigate('/login');
+                    } else if (community?.access === 'public') {
+                      handleJoinCommunity();
+                    } else {
+                      navigate(`/join-community/${community.Community_name}`);
+                    }
+                  }}>
+                  {community?.access === 'public' ? 'Join Community' : 'Request to Join'}
+                </button>
+              )}
+              <button
+                className={`${
+                  subscribed
+                    ? 'bg-gray-400 text-gray-700 cursor-default'
+                    : 'bg-red-500 hover:bg-red-600 text-white'
+                } rounded-xl p-1 md:py-2 md:px-4`}
+                style={{ cursor: 'pointer' }}
+                onClick={handleSubscribe}>
+                {getButtonLabel()}
+              </button>
             </div>
           </div>
           <div className="flex flex-col items-center justify-center w-full bg-gray-50 mb-5">

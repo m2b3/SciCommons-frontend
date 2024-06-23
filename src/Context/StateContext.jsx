@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import axios from "../Utils/axios";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import axios from '../Utils/axios';
+import { cookies, localStorage } from '../Utils/Services/StorageService';
 
 const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken] = useState(cookies.get('token') || null);
   const [loading, setLoading] = useState(false);
 
   const loadUserData = async (res) => {
@@ -14,23 +15,20 @@ const AppProvider = ({ children }) => {
 
   const getCurrentUser = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = cookies.get('token');
 
-      const response = await axios.get(
-        `/api/user/get_current_user/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.get(`/api/user/get_current_user/`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
       const user = response.data.success;
       await loadUserData(user);
     } catch (error) {
       setUser(null);
       setToken(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      cookies.remove('token');
+      localStorage.remove('user');
       console.log(error);
     }
   };
@@ -50,9 +48,8 @@ const AppProvider = ({ children }) => {
         user,
         token,
         setToken,
-        setUser,
-      }}
-    >
+        setUser
+      }}>
       {children}
     </AppContext.Provider>
   );

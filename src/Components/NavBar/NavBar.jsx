@@ -14,6 +14,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { DarkThemeToggle } from 'flowbite-react';
 import DarkModeToggle from '../DarkModeToggle/DarkModeToggle';
+import { cookies, localStorage } from '../../Utils/Services/StorageService';
 
 const Spinner = () => {
   return (
@@ -78,9 +79,9 @@ const NavBar = () => {
 
   const handleLogout = (e) => {
     setIsAuth(false);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('Menu');
+    cookies.remove('token');
+    localStorage.remove('user');
+    localStorage.remove('Menu');
     setToken(null);
     setIsOpen(false);
     navigate('/', { replace: true });
@@ -132,7 +133,7 @@ const NavBar = () => {
           <div
             className="flex flex-row items-center justify-end md:gap-x-6"
             style={{ justifySelf: 'flex-end' }}>
-              {/* Todo: Enable after dark mode is rolled out gradually */}
+            {/* Todo: Enable after dark mode is rolled out gradually */}
             {/* <div>
               <DarkModeToggle />{' '}
             </div> */}
@@ -279,7 +280,6 @@ const Dropdown = ({ color, onLogout, User }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleOpen = (event) => {
-    //console.log(event);
     setAnchorEl(event.currentTarget);
     setDropdownPopoverShow(true);
   };

@@ -1,52 +1,50 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
-
-import Home from "./Pages/Home/Home";
-import Login from "./Pages/Login/Login";
-import Register from "./Pages/Register/Register";
-import ErrorPage from "./Pages/ErrorPage/ErrorPage";
-import AllArticlesPage from "./Pages/AllArticlesPage/AllArticlesPage";
-import Communities from "./Pages/Communities/Communities";
-import SubmitArticle from "./Pages/SubmitArticle/SubmitArticle";
-import SuccessfulSubmission from "./Components/SuccessfulSubmission";
-import SuccessfulRegistration from "./Components/SuccessfulRegistration";
-import CommunityCreation from "./Components/CommunityCreation";
-import CreateCommunity from "./Pages/CreateCommunity/CreateCommunity";
-import Notifications from "./Pages/Notifications/Notifications";
-import Feed from "./Pages/Feed/Feed";
-import CommunityPage from "./Pages/CommunityPage/CommunityPage";
-import JoinRequest from "./Pages/JoinRequest/JoinRequest";
-import SinglePost from "./Pages/SinglePost/SinglePost";
-import CommunityAdminPage from "./Pages/CommunityAdminPage/CommunityAdminPage";
-import Profile from "./Pages/Profile/Profile";
-import Timeline from "./Pages/Timeline/Timeline";
-import BookMarks from "./Pages/Bookmarks/Bookmarks";
-import ArticlePage from "./Pages/ArticlePage/ArticlePage";
-import FavouritePage from "./Pages/FavouritePage/FavouritePage";
-import MyPostsPage from "./Pages/MyPostsPage/MyPostsPage";
-import MyArticlesPage from "./Pages/MyArticlesPage/MyArticlesPage";
-import AuthorArticlePage from "./Pages/AuthorArticlePage/AuthorArticlePage";
-import CommunityArticlePage from "./Pages/CommunityArticlePage/CommunityArticlePage";
-import MyProfile from "./Pages/MyProfile/MyProfile";
-import ForgotPassword from "./Pages/ForgotPassword/ForgotPassword";
-import Verify from "./Pages/Verify/Verify";
-import PrivateRoute from "./Pages/PrivateRoute/PrivateRoute";
-import ChatPage from "./Pages/ChatPage/ChatPage";
-
-import { getContainerStyles } from "./Utils/Constants/Globals";
-import useWindowSize from "./Utils/Hooks/useWindowSize";
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import Home from './Pages/Home/Home';
+import Login from './Pages/Login/Login';
+import Register from './Pages/Register/Register';
+import ErrorPage from './Pages/ErrorPage/ErrorPage';
+import AllArticlesPage from './Pages/AllArticlesPage/AllArticlesPage';
+import Communities from './Pages/Communities/Communities';
+import SubmitArticle from './Pages/SubmitArticle/SubmitArticle';
+import SuccessfulSubmission from './Components/SuccessfulSubmission';
+import SuccessfulRegistration from './Components/SuccessfulRegistration';
+import CommunityCreation from './Components/CommunityCreation';
+import CreateCommunity from './Pages/CreateCommunity/CreateCommunity';
+import Notifications from './Pages/Notifications/Notifications';
+import Feed from './Pages/Feed/Feed';
+import CommunityPage from './Pages/CommunityPage/CommunityPage';
+import JoinRequest from './Pages/JoinRequest/JoinRequest';
+import SinglePost from './Pages/SinglePost/SinglePost';
+import CommunityAdminPage from './Pages/CommunityAdminPage/CommunityAdminPage';
+import Profile from './Pages/Profile/Profile';
+import Timeline from './Pages/Timeline/Timeline';
+import BookMarks from './Pages/Bookmarks/Bookmarks';
+import ArticlePage from './Pages/ArticlePage/ArticlePage';
+import FavouritePage from './Pages/FavouritePage/FavouritePage';
+import MyPostsPage from './Pages/MyPostsPage/MyPostsPage';
+import MyArticlesPage from './Pages/MyArticlesPage/MyArticlesPage';
+import AuthorArticlePage from './Pages/AuthorArticlePage/AuthorArticlePage';
+import CommunityArticlePage from './Pages/CommunityArticlePage/CommunityArticlePage';
+import MyProfile from './Pages/MyProfile/MyProfile';
+import ForgotPassword from './Pages/ForgotPassword/ForgotPassword';
+import Verify from './Pages/Verify/Verify';
+import PrivateRoute from './Pages/PrivateRoute/PrivateRoute';
+import ChatPage from './Pages/ChatPage/ChatPage';
+import SendInvitationPage from './Pages/SendInvitationPage/SendInvitationPage';
+import { getContainerStyles } from './Utils/Constants/Globals';
+import useWindowSize from './Utils/Hooks/useWindowSize';
+import PrivateCommunityRequestVerify from './Pages/PrivateCommunityRequestVerify/PrivateCommunityRequestVerify';
 
 function RoutesContainer() {
   const location = useLocation();
   const windowSize = useWindowSize();
-  const loadContainerStyles =
-    location.pathname !== "/login" && location.pathname !== "/register";
+  const loadContainerStyles = location.pathname !== '/login' && location.pathname !== '/register';
   return (
     <div
       className="flex-grow"
-      style={loadContainerStyles ? getContainerStyles(windowSize.width) : {}}
-    >
+      style={loadContainerStyles ? getContainerStyles(windowSize.width) : {}}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -55,138 +53,90 @@ function RoutesContainer() {
         <Route path="/communities" element={<Communities />} />
         <Route
           path="/submitarticle"
-          element={
-            <PrivateRoute redirectTo="/login" component={<SubmitArticle />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<SubmitArticle />} />}
         />
         <Route
           path="/articlesuccessfulsubmission"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<SuccessfulSubmission />}
-            />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<SuccessfulSubmission />} />}
         />
         <Route
           path="/registersuccessful"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<SuccessfulRegistration />}
-            />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<SuccessfulRegistration />} />}
         />
         <Route
           path="/createcommunity"
-          element={
-            <PrivateRoute redirectTo="/login" component={<CreateCommunity />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<CreateCommunity />} />}
         />
         <Route
           path="/communitysuccessfulcreated"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<CommunityCreation />}
-            />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<CommunityCreation />} />}
         />
         <Route
           path="/notifications"
-          element={
-            <PrivateRoute redirectTo="/login" component={<Notifications />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<Notifications />} />}
         />
         <Route path="/explore" element={<Feed />} />
         <Route
           path="/mytimeline"
-          element={
-            <PrivateRoute redirectTo="/login" component={<Timeline />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<Timeline />} />}
         />
         <Route
           path="/bookmarks"
-          element={
-            <PrivateRoute redirectTo="/login" component={<BookMarks />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<BookMarks />} />}
         />
         <Route path="/community/:communityName" element={<CommunityPage />} />
         <Route
           path="/join-community/:communityName"
-          element={
-            <PrivateRoute redirectTo="/login" component={<JoinRequest />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<JoinRequest />} />}
         />
         <Route
           path="/mycommunity"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<CommunityAdminPage />}
-            />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<CommunityAdminPage />} />}
         />
         <Route path="/post/:postId" element={<SinglePost />} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/article/:articleId" element={<ArticlePage />} />
-        <Route
-          path="/article/:articleId/comment/:commentId"
-          element={<ArticlePage />}
-        />
+        <Route path="/article/:articleId/comment/:commentId" element={<ArticlePage />} />
         <Route
           path="/favourites"
-          element={
-            <PrivateRoute redirectTo="/login" component={<FavouritePage />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<FavouritePage />} />}
         />
         <Route
           path="/myposts"
-          element={
-            <PrivateRoute redirectTo="/login" component={<MyPostsPage />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<MyPostsPage />} />}
         />
         <Route
           path="/myarticles"
-          element={
-            <PrivateRoute redirectTo="/login" component={<MyArticlesPage />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<MyArticlesPage />} />}
         />
         <Route
           path="/myarticles/:articleId"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<AuthorArticlePage />}
-            />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<AuthorArticlePage />} />}
         />
         {/* <Route path="/myactivity" element={<PrivateRoute redirectTo="/login" component={<UserActivity/>}/>}/> */}
         <Route
           path="/community/:communityName/:articleId"
-          element={
-            <PrivateRoute
-              redirectTo="/login"
-              component={<CommunityArticlePage />}
-            />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<CommunityArticlePage />} />}
         />
         <Route
           path="/chat/:id"
-          element={
-            <PrivateRoute redirectTo="/login" component={<ChatPage />} />
-          }
+          element={<PrivateRoute redirectTo="/login" component={<ChatPage />} />}
         />
         {/* <Route path="/messages" element={<PrivateRoute redirectTo="/login" component={<AllMessages/>}/>}/> */}
         <Route
           path="/myprofile"
+          element={<PrivateRoute redirectTo="/login" component={<MyProfile />} />}
+        />
+        <Route
+          path="/invitation/private/:referralId"
           element={
-            <PrivateRoute redirectTo="/login" component={<MyProfile />} />
+            <PrivateRoute redirectTo="/login" component={<PrivateCommunityRequestVerify />} />
           }
         />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/verify" element={<Verify />} />
         <Route path="*" element={<ErrorPage />} />
+        <Route path="/invite" element={<SendInvitationPage />} />
       </Routes>
     </div>
   );

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "../../Utils/axios";
-import Loader from "../../Components/Loader/Loader";
-import { useGlobalContext } from "../../Context/StateContext";
-import EmptyProfileImage from "./assets/profile-img.png";
-import toast from "react-hot-toast";
-import Box from "@mui/material/Box";
-import LinearProgress from "@mui/material/LinearProgress";
+import React, { useState, useEffect, useRef } from 'react';
+import axios from '../../Utils/axios';
+import Loader from '../../Components/Loader/Loader';
+import { useGlobalContext } from '../../Context/StateContext';
+import EmptyProfileImage from './assets/profile-img.png';
+import toast from 'react-hot-toast';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const MyProfile = () => {
   const [user, setUser] = useState(null);
@@ -15,18 +15,18 @@ const MyProfile = () => {
   const { token } = useGlobalContext();
   const [selectedImage, setSelectedImage] = useState(null);
   const [userInfo, setUserInfo] = useState({
-    id: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    institute: "",
-    googleScholar: "",
-    pubmed: "",
-    profilePicUrl: "",
-    rank: "",
-    followers: "",
-    following: "",
-    posts: "",
+    id: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    institute: '',
+    googleScholar: '',
+    pubmed: '',
+    profilePicUrl: '',
+    rank: '',
+    followers: '',
+    following: '',
+    posts: ''
   });
   /* const [userArticles, setUserArticles] = useState([]); */
   const imageRef = useRef();
@@ -40,23 +40,19 @@ const MyProfile = () => {
   const loadProfile = async (res) => {
     setUser(res);
     const profileUrl =
-      res?.profile_pic_url?.includes("None") || !res.profile_pic_url
-        ? ""
-        : res?.profile_pic_url;
+      res?.profile_pic_url?.includes('None') || !res.profile_pic_url ? '' : res?.profile_pic_url;
     setUserInfo((prevUserInfo) => ({
-      email: res?.email ?? "",
-      firstName: res?.first_name ?? "",
-      lastName: res?.last_name ?? "",
-      institute: res?.institute ?? "",
-      googleScholar: res?.google_scholar ?? "",
-      pubmed: res?.pubmed ?? "",
+      email: res?.email ?? '',
+      firstName: res?.first_name ?? '',
+      lastName: res?.last_name ?? '',
+      institute: res?.institute ?? '',
+      googleScholar: res?.google_scholar ?? '',
+      pubmed: res?.pubmed ?? '',
       profilePicUrl: profileUrl,
       rank: res?.rank !== undefined ? res.rank : prevUserInfo.rank,
-      followers:
-        res?.followers !== undefined ? res.followers : prevUserInfo.followers,
-      following:
-        res?.following !== undefined ? res.following : prevUserInfo.following,
-      posts: res?.posts !== undefined ? res.posts : prevUserInfo.posts,
+      followers: res?.followers !== undefined ? res.followers : prevUserInfo.followers,
+      following: res?.following !== undefined ? res.following : prevUserInfo.following,
+      posts: res?.posts !== undefined ? res.posts : prevUserInfo.posts
     }));
     setEdit(false);
   };
@@ -64,22 +60,20 @@ const MyProfile = () => {
   const handleEdit = (e) => {
     setUserInfo({
       ...userInfo,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 
   const handleEditCancel = () => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
-      email: user?.email ?? "",
-      firstName: user?.first_name ?? "",
-      lastName: user?.last_name ?? "",
-      institute: user?.institute ?? "",
-      googleScholar: user?.google_scholar ?? "",
-      pubmed: user?.pubmed ?? "",
-      profilePicUrl: user?.profile_pic_url?.includes("None")
-        ? ""
-        : user?.profile_pic_url,
+      email: user?.email ?? '',
+      firstName: user?.first_name ?? '',
+      lastName: user?.last_name ?? '',
+      institute: user?.institute ?? '',
+      googleScholar: user?.google_scholar ?? '',
+      pubmed: user?.pubmed ?? '',
+      profilePicUrl: user?.profile_pic_url?.includes('None') ? '' : user?.profile_pic_url
     }));
     setEdit(false);
   };
@@ -88,10 +82,9 @@ const MyProfile = () => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
-      console.log(imageUrl);
       setUserInfo({
         ...userInfo,
-        profilePicUrl: imageUrl,
+        profilePicUrl: imageUrl
       });
       setSelectedImage(file);
     }
@@ -100,15 +93,15 @@ const MyProfile = () => {
   const fetchProfile = async () => {
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
       const response = await axios.get(`/api/user/get_current_user/`, config);
       await loadProfile(response.data.success);
     } catch (error) {
       console.log(error);
-      toast.error("Profile Fetch Failed");
+      toast.error('Profile Fetch Failed');
     } finally {
       setIsComponentLoad(false);
       setShowLoadingProgress(false);
@@ -118,30 +111,26 @@ const MyProfile = () => {
   const handleSave = async () => {
     setShowLoadingProgress(true);
     const updatedUserInfo = {
-      email: userInfo?.email ?? "",
-      first_name: userInfo?.firstName ?? "",
-      last_name: userInfo?.lastName ?? "",
-      institute: userInfo?.institute ?? "",
-      google_scholar: userInfo?.googleScholar ?? "",
-      pubmed: userInfo?.pubmed ?? "",
+      email: userInfo?.email ?? '',
+      first_name: userInfo?.firstName ?? '',
+      last_name: userInfo?.lastName ?? '',
+      institute: userInfo?.institute ?? '',
+      google_scholar: userInfo?.googleScholar ?? '',
+      pubmed: userInfo?.pubmed ?? ''
       //profile_pic_url: userInfo?.profilePicUrl ?? "",
     };
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     };
     try {
-      const response = await axios.put(
-        `/api/user/${user.id}/`,
-        updatedUserInfo,
-        config
-      );
+      const response = await axios.put(`/api/user/${user.id}/`, updatedUserInfo, config);
       await loadProfile(response.data.success);
-      toast.success("Profile Updated Successfully");
+      toast.success('Profile Updated Successfully');
     } catch (error) {
       console.log(error);
-      toast.error("Profile Update Failed");
+      toast.error('Profile Update Failed');
     } finally {
       setShowLoadingProgress(false);
     }
@@ -149,8 +138,8 @@ const MyProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (imageRef.current.value === "") {
-      toast.error("Please select an image to upload");
+    if (imageRef.current.value === '') {
+      toast.error('Please select an image to upload');
       return;
     }
     setShowLoadingProgress(true);
@@ -158,22 +147,18 @@ const MyProfile = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     };
     try {
-      const response = await axios.put(
-        `/api/user/${user.id}/`,
-        form_data,
-        config
-      );
+      const response = await axios.put(`/api/user/${user.id}/`, form_data, config);
       await loadProfile(response.data.success);
     } catch (error) {
       console.log(error);
-      toast.error("Image Update Failed");
+      toast.error('Image Update Failed');
       setUserInfo({
         ...userInfo,
-        profilePicUrl: "",
+        profilePicUrl: ''
       });
     } finally {
       setShowLoadingProgress(false);
@@ -204,12 +189,11 @@ const MyProfile = () => {
       {!isComponentLoad && userInfo && (
         <Box
           sx={{
-            width: "100%",
+            width: '100%',
             opacity: showLoadingProgress ? 0.3 : 1,
-            pointerEvents: showLoadingProgress ? "none" : "auto",
-            marginBottom: "70px",
-          }}
-        >
+            pointerEvents: showLoadingProgress ? 'none' : 'auto',
+            marginBottom: '70px'
+          }}>
           {showLoadingProgress && <LinearProgress color="success" />}
           <div className="flex flex-col items-center h-full mb-5 px-2 mt-5">
             <div className="w-[95%] bg-slate-50 shadow-md rounded-md p-5 m-2">
@@ -219,24 +203,20 @@ const MyProfile = () => {
                   <div
                     className={`flex flex-row items-center justify-end p-2 rounded ${
                       edit
-                        ? "bg-blue-600 cursor-pointer hover:bg-blue-500"
-                        : "bg-blue-300 hover:bg-blue-300 cursor-not-allowed"
+                        ? 'bg-blue-600 cursor-pointer hover:bg-blue-500'
+                        : 'bg-blue-300 hover:bg-blue-300 cursor-not-allowed'
                     }`}
-                    onClick={() => edit && handleSave()}
-                  >
+                    onClick={() => edit && handleSave()}>
                     <span className="text-sm text-white px-3">Save</span>
                   </div>
                   <div
                     className={`flex flex-row items-center justify-end p-2 rounded bg-green-600 cursor-pointer hover:bg-green-500 ${
-                      edit && "bg-red-600 hover:bg-red-500"
+                      edit && 'bg-red-600 hover:bg-red-500'
                     }`}
                     onClick={() => {
                       edit ? handleEditCancel() : setEdit(true);
-                    }}
-                  >
-                    <span className="text-sm text-white px-3">
-                      {edit ? "Cancel" : "Edit"}
-                    </span>
+                    }}>
+                    <span className="text-sm text-white px-3">{edit ? 'Cancel' : 'Edit'}</span>
                   </div>
                 </div>
               </div>
@@ -244,11 +224,7 @@ const MyProfile = () => {
                 <div className="flex flex-col items-center p-5">
                   <div className="relative md:size-56 size-40 rounded-full overflow-hidden">
                     <img
-                      src={
-                        userInfo?.profilePicUrl
-                          ? userInfo?.profilePicUrl
-                          : EmptyProfileImage
-                      }
+                      src={userInfo?.profilePicUrl ? userInfo?.profilePicUrl : EmptyProfileImage}
                       alt="Profile Image"
                     />
                   </div>
@@ -258,10 +234,9 @@ const MyProfile = () => {
                       e.preventDefault();
                       handleSubmit(e);
                     }}
-                    encType="multipart/form-data"
-                  >
+                    encType="multipart/form-data">
                     <input
-                      style={{ border: "2px solid #cbd5e0" }}
+                      style={{ border: '2px solid #cbd5e0' }}
                       className="border-2 border-gray-400 rounded-md w-full h-10 px-2 mt-3"
                       name="profile_pic_url"
                       type="file"
@@ -270,8 +245,7 @@ const MyProfile = () => {
                     />
                     <button
                       className="bg-green-500 text-white rounded-md w-1/2 h-10 mt-3"
-                      type="submit"
-                    >
+                      type="submit">
                       Upload
                     </button>
                   </form>
@@ -286,7 +260,7 @@ const MyProfile = () => {
                       value={userInfo?.firstName}
                       disabled={!edit}
                       className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
-                        !edit && "bg-slate-300"
+                        !edit && 'bg-slate-300'
                       }`}
                       onChange={(e) => handleEdit(e)}
                     />
@@ -300,7 +274,7 @@ const MyProfile = () => {
                       value={userInfo?.lastName}
                       disabled={!edit}
                       className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
-                        !edit && "bg-slate-300"
+                        !edit && 'bg-slate-300'
                       }`}
                       onChange={handleEdit}
                     />
@@ -314,7 +288,7 @@ const MyProfile = () => {
                       value={userInfo?.email}
                       disabled={!edit}
                       className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
-                        !edit && "bg-slate-300"
+                        !edit && 'bg-slate-300'
                       }`}
                       onChange={handleEdit}
                     />
@@ -328,15 +302,13 @@ const MyProfile = () => {
                       value={userInfo?.institute}
                       disabled={!edit}
                       className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
-                        !edit && "bg-slate-300"
+                        !edit && 'bg-slate-300'
                       }`}
                       onChange={handleEdit}
                     />
                   </div>
                   <div className="flex md:flex-row md:items-center justify-between flex-col w-full mb-5 flex-wrap">
-                    <span className="md:text-lg text-base">
-                      Google Scholar:
-                    </span>
+                    <span className="md:text-lg text-base">Google Scholar:</span>
                     <input
                       type="text"
                       name="googleScholar"
@@ -344,7 +316,7 @@ const MyProfile = () => {
                       value={userInfo?.googleScholar}
                       disabled={!edit}
                       className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
-                        !edit && "bg-slate-300"
+                        !edit && 'bg-slate-300'
                       }`}
                       onChange={handleEdit}
                     />
@@ -358,7 +330,7 @@ const MyProfile = () => {
                       value={userInfo?.pubmed}
                       disabled={!edit}
                       className={`lg:w-[70%] md:w-full rounded-md border border-gray-300 ${
-                        !edit && "bg-slate-300"
+                        !edit && 'bg-slate-300'
                       }`}
                       onChange={handleEdit}
                     />
