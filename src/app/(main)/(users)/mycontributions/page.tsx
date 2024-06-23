@@ -3,10 +3,9 @@
 import React from 'react';
 
 import SearchBar from '@/components/SearchBar';
-import ArticleCard from '@/components/articles/ArticleCard';
 import CommunityCard from '@/components/communities/CommunityCard';
 import TabNavigation from '@/components/ui/tab-navigation';
-import { articles, communityData } from '@/constants/dummyData';
+import { communityData } from '@/constants/dummyData';
 
 import { Posts } from './TabContent';
 import UserProfileStats from './UserProfileStats';
@@ -18,9 +17,9 @@ const MyContributions: React.FC = () => {
       content: (
         <div className="flex flex-col space-y-4">
           <SearchBar />
-          {articles.map((article, index) => (
+          {/* {articles.map((article, index) => (
             <ArticleCard key={index} {...article} />
-          ))}
+          ))} */}
         </div>
       ),
     },

@@ -9,6 +9,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "lint:strict": "next lint --dir .",
+    "eslint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "prettier": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "prepare": "husky",
     "generate-api": "npx orval"
