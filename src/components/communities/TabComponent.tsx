@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -31,20 +31,22 @@ const TabComponent = <ActiveTabType extends string>({
   };
 
   return (
-    <div className="flex rounded-md bg-slate-200 p-1 shadow">
-      {tabs.map((tab) => (
-        <button
-          key={tab}
-          className={clsx('rounded-md px-4 py-2 transition-all duration-300', {
-            'bg-white shadow-md': tab === activeTab,
-            'text-gray-500': tab !== activeTab,
-          })}
-          onClick={() => handleTabClick(tab as ActiveTabType)}
-        >
-          {tab}
-        </button>
-      ))}
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="flex rounded-md bg-slate-200 p-1 shadow">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            className={clsx('rounded-md px-4 py-2 transition-all duration-300', {
+              'bg-white shadow-md': tab === activeTab,
+              'text-gray-500': tab !== activeTab,
+            })}
+            onClick={() => handleTabClick(tab as ActiveTabType)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </Suspense>
   );
 };
 
