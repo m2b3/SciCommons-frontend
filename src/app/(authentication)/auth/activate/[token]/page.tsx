@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import toast from 'react-hot-toast';
@@ -12,13 +12,10 @@ import toast from 'react-hot-toast';
 import { useUsersApiAuthActivate } from '@/api/users-auth/users-auth';
 
 const ActivateAccount = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const params = useParams<{ token: string }>();
 
-  const token = searchParams.get('token') || '';
-  console.log(token);
-
-  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(token);
+  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(params.token);
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {

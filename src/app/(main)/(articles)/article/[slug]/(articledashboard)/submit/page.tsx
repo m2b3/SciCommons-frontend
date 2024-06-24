@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import TabComponent from '@/components/communities/TabComponent';
 
@@ -22,7 +22,11 @@ const SubmitArticleToCommunity: React.FC = () => {
         />
       </div>
       {activeTab === 'Status' && <ArticleSubmissionStatus />}
-      {activeTab === 'Submit' && <SubmitToCommunity />}
+      {activeTab === 'Submit' && (
+        <Suspense>
+          <SubmitToCommunity />
+        </Suspense>
+      )}
     </div>
   );
 };
