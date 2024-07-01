@@ -56,10 +56,13 @@ export const communitiesApiPostsGetCommunityArticles = (
   params?: CommunitiesApiPostsGetCommunityArticlesParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleDetails[]>> => {
-  return axios.get(`http://localhost:8000/api/communities/${communityId}/community_articles`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/community_articles`,
+    {
+      ...options,
+      params: { ...params, ...options?.params },
+    }
+  );
 };
 
 export const getCommunitiesApiPostsGetCommunityArticlesQueryKey = (
@@ -67,7 +70,7 @@ export const getCommunitiesApiPostsGetCommunityArticlesQueryKey = (
   params?: CommunitiesApiPostsGetCommunityArticlesParams
 ) => {
   return [
-    `http://localhost:8000/api/communities/${communityId}/community_articles`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/community_articles`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -163,7 +166,7 @@ export const communitiesApiPostsCreateCommunityArticle = (
   formData.append('details', JSON.stringify(communitiesApiPostsCreateCommunityArticleBody.details));
 
   return axios.post(
-    `http://localhost:8000/api/communities/${communityName}/create_community_article`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/create_community_article`,
     formData,
     options
   );
@@ -240,7 +243,7 @@ export const communitiesApiPostsSubmitArticleToCommunity = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleResponseSchema>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/submit-article/${articleSlug}/${communityName}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/submit-article/${articleSlug}/${communityName}`,
     undefined,
     options
   );

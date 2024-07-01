@@ -42,7 +42,11 @@ export const articlesApiCreateArticle = (
   }
   formData.append('details', JSON.stringify(articlesApiCreateArticleBody.details));
 
-  return axios.post(`http://localhost:8000/api/articles/articles/`, formData, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/articles/articles/`,
+    formData,
+    options
+  );
 };
 
 export const getArticlesApiCreateArticleMutationOptions = <
@@ -123,7 +127,11 @@ export const articlesApiUpdateArticle = (
   }
   formData.append('details', JSON.stringify(articlesApiUpdateArticleBody.details));
 
-  return axios.put(`http://localhost:8000/api/articles/${articleId}`, formData, options);
+  return axios.put(
+    `https://scicommons-backend-revamp.onrender.com/api/articles/${articleId}`,
+    formData,
+    options
+  );
 };
 
 export const getArticlesApiUpdateArticleMutationOptions = <
@@ -194,11 +202,16 @@ export const articlesApiGetArticle = (
   articleSlug: string,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleDetails>> => {
-  return axios.get(`http://localhost:8000/api/articles/article/${articleSlug}`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/articles/article/${articleSlug}`,
+    options
+  );
 };
 
 export const getArticlesApiGetArticleQueryKey = (articleSlug: string) => {
-  return [`http://localhost:8000/api/articles/article/${articleSlug}`] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/articles/article/${articleSlug}`,
+  ] as const;
 };
 
 export const getArticlesApiGetArticleQueryOptions = <
@@ -279,7 +292,7 @@ export const articlesApiGetPublicArticles = (
   params?: ArticlesApiGetPublicArticlesParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleDetails[]>> => {
-  return axios.get(`http://localhost:8000/api/articles/`, {
+  return axios.get(`https://scicommons-backend-revamp.onrender.com/api/articles/`, {
     ...options,
     params: { ...params, ...options?.params },
   });
@@ -288,7 +301,10 @@ export const articlesApiGetPublicArticles = (
 export const getArticlesApiGetPublicArticlesQueryKey = (
   params?: ArticlesApiGetPublicArticlesParams
 ) => {
-  return [`http://localhost:8000/api/articles/`, ...(params ? [params] : [])] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/articles/`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getArticlesApiGetPublicArticlesQueryOptions = <

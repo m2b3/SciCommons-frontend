@@ -34,11 +34,16 @@ export const communitiesApiGetCommunity = (
   communityName: string,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<CommunityDetails>> => {
-  return axios.get(`http://localhost:8000/api/communities/community/${communityName}/`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/community/${communityName}/`,
+    options
+  );
 };
 
 export const getCommunitiesApiGetCommunityQueryKey = (communityName: string) => {
-  return [`http://localhost:8000/api/communities/community/${communityName}/`] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/communities/community/${communityName}/`,
+  ] as const;
 };
 
 export const getCommunitiesApiGetCommunityQueryOptions = <
@@ -104,7 +109,7 @@ export const communitiesApiListCommunities = (
   params?: CommunitiesApiListCommunitiesParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<PaginatedCommunitySchema>> => {
-  return axios.get(`http://localhost:8000/api/communities/`, {
+  return axios.get(`https://scicommons-backend-revamp.onrender.com/api/communities/`, {
     ...options,
     params: { ...params, ...options?.params },
   });
@@ -113,7 +118,10 @@ export const communitiesApiListCommunities = (
 export const getCommunitiesApiListCommunitiesQueryKey = (
   params?: CommunitiesApiListCommunitiesParams
 ) => {
-  return [`http://localhost:8000/api/communities/`, ...(params ? [params] : [])] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/communities/`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getCommunitiesApiListCommunitiesQueryOptions = <
@@ -188,7 +196,11 @@ export const communitiesApiCreateCommunity = (
     formData.append('profile_image_file', communitiesApiCreateCommunityBody.profile_image_file);
   }
 
-  return axios.post(`http://localhost:8000/api/communities/`, formData, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/`,
+    formData,
+    options
+  );
 };
 
 export const getCommunitiesApiCreateCommunityMutationOptions = <
@@ -272,7 +284,11 @@ export const communitiesApiUpdateCommunity = (
     formData.append('banner_pic_file', communitiesApiUpdateCommunityBody.banner_pic_file);
   }
 
-  return axios.patch(`http://localhost:8000/api/communities/${communityId}/`, formData, options);
+  return axios.patch(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/`,
+    formData,
+    options
+  );
 };
 
 export const getCommunitiesApiUpdateCommunityMutationOptions = <
@@ -343,7 +359,10 @@ export const communitiesApiDeleteCommunity = (
   communityId: number,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<void>> => {
-  return axios.delete(`http://localhost:8000/api/communities/${communityId}/`, options);
+  return axios.delete(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/`,
+    options
+  );
 };
 
 export const getCommunitiesApiDeleteCommunityMutationOptions = <

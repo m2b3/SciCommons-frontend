@@ -105,7 +105,7 @@ const CreateCommunity = () => {
       description: data.description,
       tags: JSON.stringify(data.tags),
       type: data.type,
-      profile_image_file: data.profileImage.file,
+      profile_image_file: data.profileImage ? data.profileImage.file : undefined,
     };
     createCommunity({ data: dataToSend });
   };
@@ -195,6 +195,7 @@ const CreateCommunity = () => {
         <Controller
           name="profileImage"
           control={control}
+          rules={{ required: 'Profile Image is required' }}
           render={({}) => (
             <ImageUpload
               control={control}

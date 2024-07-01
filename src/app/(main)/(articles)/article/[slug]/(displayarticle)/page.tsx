@@ -29,19 +29,19 @@ const statsData = {
 
 const articlesData = [
   {
-    imageUrl: 'https://source.unsplash.com/random/400x400',
+    imageUrl: 'https://picsum.photos/200/201',
     title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     likes: '1.1k',
     reviews: '2k',
   },
   {
-    imageUrl: 'https://source.unsplash.com/random/400x401',
+    imageUrl: 'https://picsum.photos/200/201',
     title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     likes: '1.1k',
     reviews: '2k',
   },
   {
-    imageUrl: 'https://source.unsplash.com/random/400x402',
+    imageUrl: 'https://picsum.photos/200/202',
     title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     likes: '1.1k',
     reviews: '2k',

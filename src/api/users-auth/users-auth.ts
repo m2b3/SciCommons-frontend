@@ -33,7 +33,11 @@ export const usersApiAuthSignup = (
   signUpSchemaIn: SignUpSchemaIn,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(`http://localhost:8000/api/users/signup`, signUpSchemaIn, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/users/signup`,
+    signUpSchemaIn,
+    options
+  );
 };
 
 export const getUsersApiAuthSignupMutationOptions = <
@@ -101,11 +105,14 @@ export const usersApiAuthActivate = (
   token: string,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.get(`http://localhost:8000/api/users/activate/${token}`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/users/activate/${token}`,
+    options
+  );
 };
 
 export const getUsersApiAuthActivateQueryKey = (token: string) => {
-  return [`http://localhost:8000/api/users/activate/${token}`] as const;
+  return [`https://scicommons-backend-revamp.onrender.com/api/users/activate/${token}`] as const;
 };
 
 export const getUsersApiAuthActivateQueryOptions = <
@@ -170,7 +177,11 @@ export const usersApiAuthResendActivation = (
   emailSchema: EmailSchema,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(`http://localhost:8000/api/users/resend-activation`, emailSchema, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/users/resend-activation`,
+    emailSchema,
+    options
+  );
 };
 
 export const getUsersApiAuthResendActivationMutationOptions = <
@@ -241,7 +252,11 @@ export const usersApiAuthLoginUser = (
   logInSchemaIn: LogInSchemaIn,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<LogInSchemaOut>> => {
-  return axios.post(`http://localhost:8000/api/users/login`, logInSchemaIn, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/users/login`,
+    logInSchemaIn,
+    options
+  );
 };
 
 export const getUsersApiAuthLoginUserMutationOptions = <
@@ -312,7 +327,11 @@ export const usersApiAuthRequestReset = (
   emailSchema: EmailSchema,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(`http://localhost:8000/api/users/forgot-password`, emailSchema, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/users/forgot-password`,
+    emailSchema,
+    options
+  );
 };
 
 export const getUsersApiAuthRequestResetMutationOptions = <
@@ -383,10 +402,14 @@ export const usersApiAuthResetPassword = (
   params: UsersApiAuthResetPasswordParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<void>> => {
-  return axios.post(`http://localhost:8000/api/users/reset-password`, undefined, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/users/reset-password`,
+    undefined,
+    {
+      ...options,
+      params: { ...params, ...options?.params },
+    }
+  );
 };
 
 export const getUsersApiAuthResetPasswordMutationOptions = <

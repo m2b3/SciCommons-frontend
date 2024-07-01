@@ -27,13 +27,15 @@ export const communitiesApiAdminGetArticlesByStatus = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<AdminArticlesResponse>> => {
   return axios.get(
-    `http://localhost:8000/api/communities/${communityName}/admin-articles`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/admin-articles`,
     options
   );
 };
 
 export const getCommunitiesApiAdminGetArticlesByStatusQueryKey = (communityName: string) => {
-  return [`http://localhost:8000/api/communities/${communityName}/admin-articles`] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/admin-articles`,
+  ] as const;
 };
 
 export const getCommunitiesApiAdminGetArticlesByStatusQueryOptions = <
@@ -115,7 +117,7 @@ export const communitiesApiAdminManageArticle = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/${communityId}/manage-article/${articleId}/${action}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/manage-article/${articleId}/${action}`,
     undefined,
     options
   );
@@ -209,11 +211,16 @@ export const communitiesApiAdminGetCommunityMembers = (
   communityName: string,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<MembersResponse>> => {
-  return axios.get(`http://localhost:8000/api/communities/${communityName}/members`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/members`,
+    options
+  );
 };
 
 export const getCommunitiesApiAdminGetCommunityMembersQueryKey = (communityName: string) => {
-  return [`http://localhost:8000/api/communities/${communityName}/members`] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/members`,
+  ] as const;
 };
 
 export const getCommunitiesApiAdminGetCommunityMembersQueryOptions = <
@@ -302,7 +309,7 @@ export const communitiesApiAdminManageCommunityMember = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/${communityId}/manage-member/${userId}/${action}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/manage-member/${userId}/${action}`,
     undefined,
     options
   );

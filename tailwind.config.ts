@@ -204,7 +204,7 @@ const config: Config = {
         },
       });
     }),
-    require('@headlessui/tailwindcss')
+    require('@headlessui/tailwindcss'),
   ],
 };
 export default config;

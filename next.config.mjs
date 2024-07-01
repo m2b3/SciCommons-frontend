@@ -4,10 +4,6 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'source.unsplash.com',
-      },
-      {
-        protocol: 'https',
         hostname: 'gsoc2024.s3.amazonaws.com',
       },
       {

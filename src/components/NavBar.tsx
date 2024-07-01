@@ -32,12 +32,7 @@ const NavBar: React.FC = () => {
     <header className="sticky top-0 z-50 w-full bg-slate-100/20 backdrop-blur-[20px] sm:px-9">
       <nav className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
-          <Image
-            src="https://source.unsplash.com/random/400x402"
-            alt="Logo"
-            width={40}
-            height={40}
-          />
+          <Image src="https://picsum.photos/200/200" alt="Logo" width={40} height={40} />
         </div>
         <ul className="mx-auto flex space-x-4">
           {navLinks.map((link) => (
@@ -109,7 +104,7 @@ const ProfileDropdown: React.FC = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Image
-          src="https://source.unsplash.com/random/400x402"
+          src="https://picsum.photos/200/201"
           alt="Profile"
           width={40}
           height={40}

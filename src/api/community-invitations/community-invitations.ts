@@ -35,7 +35,7 @@ export const communitiesApiInvitationInviteRegisteredUsers = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/communities/${communityId}/invite-users`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/communities/${communityId}/invite-users`,
     invitePayload,
     options
   );
@@ -111,7 +111,7 @@ export const communitiesApiInvitationRespondToInvitation = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/invitations/${invitationId}/respond`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/invitations/${invitationId}/respond`,
     invitationResponseRequest,
     options
   );
@@ -187,7 +187,7 @@ export const communitiesApiInvitationSendInvitationsToUnregisteredUsers = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/communities/${communityId}/send-invitations`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/communities/${communityId}/send-invitations`,
     sendInvitationsPayload,
     options
   );
@@ -270,7 +270,7 @@ export const communitiesApiInvitationRespondToEmailInvitation = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/invitations/respond/${token}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/invitations/respond/${token}`,
     invitationResponseRequest,
     options
   );
@@ -346,11 +346,16 @@ export const communitiesApiInvitationGetCommunityInvitations = (
   communityId: number,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<InvitationDetails[]>> => {
-  return axios.get(`http://localhost:8000/api/communities/${communityId}/invitations`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitations`,
+    options
+  );
 };
 
 export const getCommunitiesApiInvitationGetCommunityInvitationsQueryKey = (communityId: number) => {
-  return [`http://localhost:8000/api/communities/${communityId}/invitations`] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitations`,
+  ] as const;
 };
 
 export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
@@ -432,7 +437,7 @@ export const communitiesApiInvitationGetCommunityInvitationDetails = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<CommunityInvitationDetails>> => {
   return axios.get(
-    `http://localhost:8000/api/communities/${communityId}/invitation-details/${invitationId}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitation-details/${invitationId}`,
     options
   );
 };
@@ -442,7 +447,7 @@ export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryKey = 
   invitationId: number
 ) => {
   return [
-    `http://localhost:8000/api/communities/${communityId}/invitation-details/${invitationId}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitation-details/${invitationId}`,
   ] as const;
 };
 

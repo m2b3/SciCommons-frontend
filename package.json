@@ -12,7 +12,8 @@
     "eslint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "prettier": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "prepare": "husky",
-    "generate-api": "npx orval"
+    "generate-api": "npx orval",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/tailwindcss": "^0.2.1",

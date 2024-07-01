@@ -26,11 +26,16 @@ export const communitiesApiJoinGetJoinRequests = (
   communityName: string,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<JoinRequestSchema[]>> => {
-  return axios.get(`http://localhost:8000/api/communities/${communityName}/join-requests`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/join-requests`,
+    options
+  );
 };
 
 export const getCommunitiesApiJoinGetJoinRequestsQueryKey = (communityName: string) => {
-  return [`http://localhost:8000/api/communities/${communityName}/join-requests`] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/join-requests`,
+  ] as const;
 };
 
 export const getCommunitiesApiJoinGetJoinRequestsQueryOptions = <
@@ -98,7 +103,7 @@ export const communitiesApiJoinJoinCommunity = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/${communityId}/join`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/join`,
     undefined,
     options
   );
@@ -175,7 +180,7 @@ export const communitiesApiJoinManageJoinRequest = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/communities/${communityId}/manage-join-request/${joinRequestId}/${action}`,
+    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/manage-join-request/${joinRequestId}/${action}`,
     undefined,
     options
   );

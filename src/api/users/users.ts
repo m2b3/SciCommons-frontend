@@ -31,14 +31,17 @@ export const usersApiGetMyArticles = (
   params?: UsersApiGetMyArticlesParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleDetails[]>> => {
-  return axios.get(`http://localhost:8000/api/users/my-articles`, {
+  return axios.get(`https://scicommons-backend-revamp.onrender.com/api/users/my-articles`, {
     ...options,
     params: { ...params, ...options?.params },
   });
 };
 
 export const getUsersApiGetMyArticlesQueryKey = (params?: UsersApiGetMyArticlesParams) => {
-  return [`http://localhost:8000/api/users/my-articles`, ...(params ? [params] : [])] as const;
+  return [
+    `https://scicommons-backend-revamp.onrender.com/api/users/my-articles`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getUsersApiGetMyArticlesQueryOptions = <
@@ -102,11 +105,14 @@ export const useUsersApiGetMyArticles = <
 export const usersApiGetNotifications = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<NotificationSchema[]>> => {
-  return axios.get(`http://localhost:8000/api/users/notifications`, options);
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/users/notifications`,
+    options
+  );
 };
 
 export const getUsersApiGetNotificationsQueryKey = () => {
-  return [`http://localhost:8000/api/users/notifications`] as const;
+  return [`https://scicommons-backend-revamp.onrender.com/api/users/notifications`] as const;
 };
 
 export const getUsersApiGetNotificationsQueryOptions = <
@@ -167,7 +173,7 @@ export const usersApiMarkNotificationAsRead = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
   return axios.post(
-    `http://localhost:8000/api/users/notifications/${notificationId}/mark-as-read`,
+    `https://scicommons-backend-revamp.onrender.com/api/users/notifications/${notificationId}/mark-as-read`,
     undefined,
     options
   );

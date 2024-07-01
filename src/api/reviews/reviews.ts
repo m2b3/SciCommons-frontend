@@ -34,10 +34,13 @@ export const articlesApiReviewGetReviews = (
   params?: ArticlesApiReviewGetReviewsParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<PaginatedReviewResponse>> => {
-  return axios.get(`http://localhost:8000/api/articles/articles/${articleId}/reviews/`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  return axios.get(
+    `https://scicommons-backend-revamp.onrender.com/api/articles/articles/${articleId}/reviews/`,
+    {
+      ...options,
+      params: { ...params, ...options?.params },
+    }
+  );
 };
 
 export const getArticlesApiReviewGetReviewsQueryKey = (
@@ -45,7 +48,7 @@ export const getArticlesApiReviewGetReviewsQueryKey = (
   params?: ArticlesApiReviewGetReviewsParams
 ) => {
   return [
-    `http://localhost:8000/api/articles/articles/${articleId}/reviews/`,
+    `https://scicommons-backend-revamp.onrender.com/api/articles/articles/${articleId}/reviews/`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -116,7 +119,11 @@ export const articlesApiReviewCreateReview = (
   createReviewDetails: CreateReviewDetails,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ReviewResponseSchema>> => {
-  return axios.post(`http://localhost:8000/api/articles/reviews/`, createReviewDetails, options);
+  return axios.post(
+    `https://scicommons-backend-revamp.onrender.com/api/articles/reviews/`,
+    createReviewDetails,
+    options
+  );
 };
 
 export const getArticlesApiReviewCreateReviewMutationOptions = <
@@ -189,7 +196,7 @@ export const articlesApiReviewEditReview = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ReviewResponseSchema>> => {
   return axios.put(
-    `http://localhost:8000/api/articles/reviews/${reviewId}/`,
+    `https://scicommons-backend-revamp.onrender.com/api/articles/reviews/${reviewId}/`,
     reviewEditSchema,
     options
   );
@@ -263,7 +270,10 @@ export const articlesApiReviewDeleteReview = (
   reviewId: number,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Message>> => {
-  return axios.delete(`http://localhost:8000/api/articles/reviews/${reviewId}/`, options);
+  return axios.delete(
+    `https://scicommons-backend-revamp.onrender.com/api/articles/reviews/${reviewId}/`,
+    options
+  );
 };
 
 export const getArticlesApiReviewDeleteReviewMutationOptions = <
