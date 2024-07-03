@@ -42,7 +42,7 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
 
   const { data, mutate, isSuccess, error, isPending } = useCommunitiesApiAdminManageCommunityMember(
     {
-      axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
 

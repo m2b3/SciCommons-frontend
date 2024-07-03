@@ -56,7 +56,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     error: updateError,
     isPending: isUpdatePending,
     isSuccess,
-  } = useArticlesApiUpdateArticle({ axios: axiosConfig });
+  } = useArticlesApiUpdateArticle({ request: axiosConfig });
 
   const onSubmit = (formData: FormValues) => {
     const dataToSend = {

@@ -32,7 +32,7 @@ export default function RegisteredUsersInvitation({
     communityId,
     invitationId,
     {
-      axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
 
@@ -43,7 +43,7 @@ export default function RegisteredUsersInvitation({
     isPending: isRespondPending,
     data: respondData,
   } = useCommunitiesApiInvitationRespondToInvitation({
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   useEffect(() => {

@@ -14,50 +14,51 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-import axios from 'axios';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { customInstance } from '.././custom-instance';
+import type { ErrorType } from '.././custom-instance';
 import type { JoinRequestSchema, Message } from '.././schemas';
+
+type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
 
 /**
  * @summary Get Join Requests
  */
 export const communitiesApiJoinGetJoinRequests = (
   communityName: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<JoinRequestSchema[]>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/join-requests`,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<JoinRequestSchema[]>(
+    { url: `/api/communities/${communityName}/join-requests`, method: 'GET', signal },
     options
   );
 };
 
 export const getCommunitiesApiJoinGetJoinRequestsQueryKey = (communityName: string) => {
-  return [
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/join-requests`,
-  ] as const;
+  return [`/api/communities/${communityName}/join-requests`] as const;
 };
 
 export const getCommunitiesApiJoinGetJoinRequestsQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityName: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCommunitiesApiJoinGetJoinRequestsQueryKey(communityName);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>> = ({
     signal,
-  }) => communitiesApiJoinGetJoinRequests(communityName, { signal, ...axiosOptions });
+  }) => communitiesApiJoinGetJoinRequests(communityName, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>,
@@ -69,21 +70,21 @@ export const getCommunitiesApiJoinGetJoinRequestsQueryOptions = <
 export type CommunitiesApiJoinGetJoinRequestsQueryResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>
 >;
-export type CommunitiesApiJoinGetJoinRequestsQueryError = AxiosError<Message>;
+export type CommunitiesApiJoinGetJoinRequestsQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Join Requests
  */
 export const useCommunitiesApiJoinGetJoinRequests = <
   TData = Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityName: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getCommunitiesApiJoinGetJoinRequestsQueryOptions(communityName, options);
@@ -100,17 +101,16 @@ export const useCommunitiesApiJoinGetJoinRequests = <
  */
 export const communitiesApiJoinJoinCommunity = (
   communityId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/join`,
-    undefined,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    { url: `/api/communities/${communityId}/join`, method: 'POST' },
     options
   );
 };
 
 export const getCommunitiesApiJoinJoinCommunityMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -119,14 +119,14 @@ export const getCommunitiesApiJoinJoinCommunityMutationOptions = <
     { communityId: number },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
   TError,
   { communityId: number },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
@@ -134,7 +134,7 @@ export const getCommunitiesApiJoinJoinCommunityMutationOptions = <
   > = (props) => {
     const { communityId } = props ?? {};
 
-    return communitiesApiJoinJoinCommunity(communityId, axiosOptions);
+    return communitiesApiJoinJoinCommunity(communityId, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -144,13 +144,13 @@ export type CommunitiesApiJoinJoinCommunityMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>
 >;
 
-export type CommunitiesApiJoinJoinCommunityMutationError = AxiosError<Message>;
+export type CommunitiesApiJoinJoinCommunityMutationError = ErrorType<Message>;
 
 /**
  * @summary Join Community
  */
 export const useCommunitiesApiJoinJoinCommunity = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -159,7 +159,7 @@ export const useCommunitiesApiJoinJoinCommunity = <
     { communityId: number },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
   TError,
@@ -177,17 +177,19 @@ export const communitiesApiJoinManageJoinRequest = (
   communityId: number,
   joinRequestId: number,
   action: 'approve' | 'reject',
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/manage-join-request/${joinRequestId}/${action}`,
-    undefined,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/communities/${communityId}/manage-join-request/${joinRequestId}/${action}`,
+      method: 'POST',
+    },
     options
   );
 };
 
 export const getCommunitiesApiJoinManageJoinRequestMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -196,14 +198,14 @@ export const getCommunitiesApiJoinManageJoinRequestMutationOptions = <
     { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
   TError,
   { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
@@ -211,7 +213,7 @@ export const getCommunitiesApiJoinManageJoinRequestMutationOptions = <
   > = (props) => {
     const { communityId, joinRequestId, action } = props ?? {};
 
-    return communitiesApiJoinManageJoinRequest(communityId, joinRequestId, action, axiosOptions);
+    return communitiesApiJoinManageJoinRequest(communityId, joinRequestId, action, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -221,13 +223,13 @@ export type CommunitiesApiJoinManageJoinRequestMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>
 >;
 
-export type CommunitiesApiJoinManageJoinRequestMutationError = AxiosError<Message>;
+export type CommunitiesApiJoinManageJoinRequestMutationError = ErrorType<Message>;
 
 /**
  * @summary Manage Join Request
  */
 export const useCommunitiesApiJoinManageJoinRequest = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -236,7 +238,7 @@ export const useCommunitiesApiJoinManageJoinRequest = <
     { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
   TError,

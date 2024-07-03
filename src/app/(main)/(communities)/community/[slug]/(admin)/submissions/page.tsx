@@ -34,14 +34,14 @@ const Submissions: React.FC = () => {
     error: manageArticleError,
     isPending: manageArticlePending,
   } = useCommunitiesApiAdminManageArticle({
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   const { data, isPending, error, refetch } = useCommunitiesApiAdminGetArticlesByStatus(
     params.slug,
     {
       query: { enabled: !!accessToken },
-      axios: axiosConfig,
+      request: axiosConfig,
     }
   );
 

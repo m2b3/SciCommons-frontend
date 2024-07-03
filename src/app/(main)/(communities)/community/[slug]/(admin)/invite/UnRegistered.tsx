@@ -30,7 +30,7 @@ const UnRegistered = () => {
 
   const { isPending, mutate, isSuccess, error } =
     useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers({
-      axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     });
 
   useEffect(() => {

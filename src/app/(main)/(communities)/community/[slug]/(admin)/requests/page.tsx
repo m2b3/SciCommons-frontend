@@ -23,7 +23,7 @@ const Requests = () => {
     params.slug,
     {
       query: { enabled: !!accessToken },
-      axios: axiosConfig,
+      request: axiosConfig,
     }
   );
 
@@ -33,7 +33,7 @@ const Requests = () => {
     isPending: isMutating,
     error: mutationError,
     isSuccess: isMutationSuccess,
-  } = useCommunitiesApiJoinManageJoinRequest({ axios: axiosConfig });
+  } = useCommunitiesApiJoinManageJoinRequest({ request: axiosConfig });
 
   const [filter, setFilter] = useState<string>('All');
 

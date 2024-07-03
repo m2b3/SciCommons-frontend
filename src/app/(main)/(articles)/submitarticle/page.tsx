@@ -28,7 +28,7 @@ const ArticleForm: React.FC = () => {
     isSuccess,
     isPending,
   } = useArticlesApiCreateArticle({
-    axios: {
+    request: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

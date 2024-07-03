@@ -23,7 +23,7 @@ const ArticleSettings = () => {
 
   const { data, isPending, error } = useArticlesApiGetArticle(params.slug, {
     query: { enabled: !!accessToken },
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   // Toast notifications for UI Feedback

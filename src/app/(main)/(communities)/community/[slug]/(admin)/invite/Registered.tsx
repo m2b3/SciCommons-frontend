@@ -28,7 +28,7 @@ const Registered = () => {
 
   const { isPending, mutate, data, isSuccess, error } =
     useCommunitiesApiInvitationInviteRegisteredUsers({
-      axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     });
 
   useEffect(() => {

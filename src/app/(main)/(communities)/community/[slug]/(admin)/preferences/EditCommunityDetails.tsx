@@ -53,7 +53,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     isPending: isUpdatePending,
     error,
   } = useCommunitiesApiUpdateCommunity({
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   const onSubmit = (formData: FormValues) => {

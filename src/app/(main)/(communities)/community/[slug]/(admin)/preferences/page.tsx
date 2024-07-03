@@ -21,7 +21,7 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
   // Get Community Details
   const { data, isPending, error, refetch } = useCommunitiesApiGetCommunity(params.slug, {
     query: { enabled: !!accessToken },
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   useEffect(() => {

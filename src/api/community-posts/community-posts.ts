@@ -14,9 +14,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-import axios from 'axios';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { customInstance } from '.././custom-instance';
+import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   ArticleDetails,
   ArticleResponseSchema,
@@ -24,6 +24,8 @@ import type {
   CommunitiesApiPostsGetCommunityArticlesParams,
   Message,
 } from '.././schemas';
+
+type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
 
 /**
  * Retrieves a list of articles associated with a specific community identified by
@@ -54,14 +56,12 @@ Returns:
 export const communitiesApiPostsGetCommunityArticles = (
   communityId: number,
   params?: CommunitiesApiPostsGetCommunityArticlesParams,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleDetails[]>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/community_articles`,
-    {
-      ...options,
-      params: { ...params, ...options?.params },
-    }
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ArticleDetails[]>(
+    { url: `/api/communities/${communityId}/community_articles`, method: 'GET', params, signal },
+    options
   );
 };
 
@@ -70,14 +70,14 @@ export const getCommunitiesApiPostsGetCommunityArticlesQueryKey = (
   params?: CommunitiesApiPostsGetCommunityArticlesParams
 ) => {
   return [
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/community_articles`,
+    `/api/communities/${communityId}/community_articles`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getCommunitiesApiPostsGetCommunityArticlesQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiPostsGetCommunityArticles>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   params?: CommunitiesApiPostsGetCommunityArticlesParams,
@@ -89,10 +89,10 @@ export const getCommunitiesApiPostsGetCommunityArticlesQueryOptions = <
         TData
       >
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -101,7 +101,7 @@ export const getCommunitiesApiPostsGetCommunityArticlesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof communitiesApiPostsGetCommunityArticles>>
   > = ({ signal }) =>
-    communitiesApiPostsGetCommunityArticles(communityId, params, { signal, ...axiosOptions });
+    communitiesApiPostsGetCommunityArticles(communityId, params, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof communitiesApiPostsGetCommunityArticles>>,
@@ -113,14 +113,14 @@ export const getCommunitiesApiPostsGetCommunityArticlesQueryOptions = <
 export type CommunitiesApiPostsGetCommunityArticlesQueryResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiPostsGetCommunityArticles>>
 >;
-export type CommunitiesApiPostsGetCommunityArticlesQueryError = AxiosError<Message>;
+export type CommunitiesApiPostsGetCommunityArticlesQueryError = ErrorType<Message>;
 
 /**
  * @summary Get articles in a community
  */
 export const useCommunitiesApiPostsGetCommunityArticles = <
   TData = Awaited<ReturnType<typeof communitiesApiPostsGetCommunityArticles>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   params?: CommunitiesApiPostsGetCommunityArticlesParams,
@@ -132,7 +132,7 @@ export const useCommunitiesApiPostsGetCommunityArticles = <
         TData
       >
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getCommunitiesApiPostsGetCommunityArticlesQueryOptions(
@@ -153,9 +153,9 @@ export const useCommunitiesApiPostsGetCommunityArticles = <
  */
 export const communitiesApiPostsCreateCommunityArticle = (
   communityName: string,
-  communitiesApiPostsCreateCommunityArticleBody: CommunitiesApiPostsCreateCommunityArticleBody,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleResponseSchema>> => {
+  communitiesApiPostsCreateCommunityArticleBody: BodyType<CommunitiesApiPostsCreateCommunityArticleBody>,
+  options?: SecondParameter<typeof customInstance>
+) => {
   const formData = new FormData();
   if (communitiesApiPostsCreateCommunityArticleBody.image_file !== undefined) {
     formData.append('image_file', communitiesApiPostsCreateCommunityArticleBody.image_file);
@@ -165,39 +165,43 @@ export const communitiesApiPostsCreateCommunityArticle = (
   }
   formData.append('details', JSON.stringify(communitiesApiPostsCreateCommunityArticleBody.details));
 
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityName}/create_community_article`,
-    formData,
+  return customInstance<ArticleResponseSchema>(
+    {
+      url: `/api/communities/${communityName}/create_community_article`,
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+    },
     options
   );
 };
 
 export const getCommunitiesApiPostsCreateCommunityArticleMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiPostsCreateCommunityArticle>>,
     TError,
-    { communityName: string; data: CommunitiesApiPostsCreateCommunityArticleBody },
+    { communityName: string; data: BodyType<CommunitiesApiPostsCreateCommunityArticleBody> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiPostsCreateCommunityArticle>>,
   TError,
-  { communityName: string; data: CommunitiesApiPostsCreateCommunityArticleBody },
+  { communityName: string; data: BodyType<CommunitiesApiPostsCreateCommunityArticleBody> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiPostsCreateCommunityArticle>>,
-    { communityName: string; data: CommunitiesApiPostsCreateCommunityArticleBody }
+    { communityName: string; data: BodyType<CommunitiesApiPostsCreateCommunityArticleBody> }
   > = (props) => {
     const { communityName, data } = props ?? {};
 
-    return communitiesApiPostsCreateCommunityArticle(communityName, data, axiosOptions);
+    return communitiesApiPostsCreateCommunityArticle(communityName, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -207,27 +211,27 @@ export type CommunitiesApiPostsCreateCommunityArticleMutationResult = NonNullabl
   Awaited<ReturnType<typeof communitiesApiPostsCreateCommunityArticle>>
 >;
 export type CommunitiesApiPostsCreateCommunityArticleMutationBody =
-  CommunitiesApiPostsCreateCommunityArticleBody;
-export type CommunitiesApiPostsCreateCommunityArticleMutationError = AxiosError<Message>;
+  BodyType<CommunitiesApiPostsCreateCommunityArticleBody>;
+export type CommunitiesApiPostsCreateCommunityArticleMutationError = ErrorType<Message>;
 
 /**
  * @summary Create an article in a community
  */
 export const useCommunitiesApiPostsCreateCommunityArticle = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiPostsCreateCommunityArticle>>,
     TError,
-    { communityName: string; data: CommunitiesApiPostsCreateCommunityArticleBody },
+    { communityName: string; data: BodyType<CommunitiesApiPostsCreateCommunityArticleBody> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiPostsCreateCommunityArticle>>,
   TError,
-  { communityName: string; data: CommunitiesApiPostsCreateCommunityArticleBody },
+  { communityName: string; data: BodyType<CommunitiesApiPostsCreateCommunityArticleBody> },
   TContext
 > => {
   const mutationOptions = getCommunitiesApiPostsCreateCommunityArticleMutationOptions(options);
@@ -240,17 +244,16 @@ export const useCommunitiesApiPostsCreateCommunityArticle = <
 export const communitiesApiPostsSubmitArticleToCommunity = (
   articleSlug: string,
   communityName: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleResponseSchema>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/submit-article/${articleSlug}/${communityName}`,
-    undefined,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<ArticleResponseSchema>(
+    { url: `/api/communities/submit-article/${articleSlug}/${communityName}`, method: 'POST' },
     options
   );
 };
 
 export const getCommunitiesApiPostsSubmitArticleToCommunityMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -259,14 +262,14 @@ export const getCommunitiesApiPostsSubmitArticleToCommunityMutationOptions = <
     { articleSlug: string; communityName: string },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiPostsSubmitArticleToCommunity>>,
   TError,
   { articleSlug: string; communityName: string },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiPostsSubmitArticleToCommunity>>,
@@ -274,7 +277,7 @@ export const getCommunitiesApiPostsSubmitArticleToCommunityMutationOptions = <
   > = (props) => {
     const { articleSlug, communityName } = props ?? {};
 
-    return communitiesApiPostsSubmitArticleToCommunity(articleSlug, communityName, axiosOptions);
+    return communitiesApiPostsSubmitArticleToCommunity(articleSlug, communityName, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -284,13 +287,13 @@ export type CommunitiesApiPostsSubmitArticleToCommunityMutationResult = NonNulla
   Awaited<ReturnType<typeof communitiesApiPostsSubmitArticleToCommunity>>
 >;
 
-export type CommunitiesApiPostsSubmitArticleToCommunityMutationError = AxiosError<Message>;
+export type CommunitiesApiPostsSubmitArticleToCommunityMutationError = ErrorType<Message>;
 
 /**
  * @summary Submit Article To Community
  */
 export const useCommunitiesApiPostsSubmitArticleToCommunity = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -299,7 +302,7 @@ export const useCommunitiesApiPostsSubmitArticleToCommunity = <
     { articleSlug: string; communityName: string },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiPostsSubmitArticleToCommunity>>,
   TError,

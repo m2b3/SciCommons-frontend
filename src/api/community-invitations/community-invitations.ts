@@ -14,9 +14,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-import axios from 'axios';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { customInstance } from '.././custom-instance';
+import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   CommunityInvitationDetails,
   InvitationDetails,
@@ -26,47 +26,53 @@ import type {
   SendInvitationsPayload,
 } from '.././schemas';
 
+type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 /**
  * @summary Invite Registered Users
  */
 export const communitiesApiInvitationInviteRegisteredUsers = (
   communityId: number,
-  invitePayload: InvitePayload,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/communities/${communityId}/invite-users`,
-    invitePayload,
+  invitePayload: BodyType<InvitePayload>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/communities/communities/${communityId}/invite-users`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: invitePayload,
+    },
     options
   );
 };
 
 export const getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
     TError,
-    { communityId: number; data: InvitePayload },
+    { communityId: number; data: BodyType<InvitePayload> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
   TError,
-  { communityId: number; data: InvitePayload },
+  { communityId: number; data: BodyType<InvitePayload> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
-    { communityId: number; data: InvitePayload }
+    { communityId: number; data: BodyType<InvitePayload> }
   > = (props) => {
     const { communityId, data } = props ?? {};
 
-    return communitiesApiInvitationInviteRegisteredUsers(communityId, data, axiosOptions);
+    return communitiesApiInvitationInviteRegisteredUsers(communityId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -75,27 +81,27 @@ export const getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions = <
 export type CommunitiesApiInvitationInviteRegisteredUsersMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>
 >;
-export type CommunitiesApiInvitationInviteRegisteredUsersMutationBody = InvitePayload;
-export type CommunitiesApiInvitationInviteRegisteredUsersMutationError = AxiosError<Message>;
+export type CommunitiesApiInvitationInviteRegisteredUsersMutationBody = BodyType<InvitePayload>;
+export type CommunitiesApiInvitationInviteRegisteredUsersMutationError = ErrorType<Message>;
 
 /**
  * @summary Invite Registered Users
  */
 export const useCommunitiesApiInvitationInviteRegisteredUsers = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
     TError,
-    { communityId: number; data: InvitePayload },
+    { communityId: number; data: BodyType<InvitePayload> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
   TError,
-  { communityId: number; data: InvitePayload },
+  { communityId: number; data: BodyType<InvitePayload> },
   TContext
 > => {
   const mutationOptions = getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions(options);
@@ -107,42 +113,46 @@ export const useCommunitiesApiInvitationInviteRegisteredUsers = <
  */
 export const communitiesApiInvitationRespondToInvitation = (
   invitationId: number,
-  invitationResponseRequest: InvitationResponseRequest,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/invitations/${invitationId}/respond`,
-    invitationResponseRequest,
+  invitationResponseRequest: BodyType<InvitationResponseRequest>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/communities/invitations/${invitationId}/respond`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: invitationResponseRequest,
+    },
     options
   );
 };
 
 export const getCommunitiesApiInvitationRespondToInvitationMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
     TError,
-    { invitationId: number; data: InvitationResponseRequest },
+    { invitationId: number; data: BodyType<InvitationResponseRequest> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
   TError,
-  { invitationId: number; data: InvitationResponseRequest },
+  { invitationId: number; data: BodyType<InvitationResponseRequest> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
-    { invitationId: number; data: InvitationResponseRequest }
+    { invitationId: number; data: BodyType<InvitationResponseRequest> }
   > = (props) => {
     const { invitationId, data } = props ?? {};
 
-    return communitiesApiInvitationRespondToInvitation(invitationId, data, axiosOptions);
+    return communitiesApiInvitationRespondToInvitation(invitationId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -151,27 +161,28 @@ export const getCommunitiesApiInvitationRespondToInvitationMutationOptions = <
 export type CommunitiesApiInvitationRespondToInvitationMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>
 >;
-export type CommunitiesApiInvitationRespondToInvitationMutationBody = InvitationResponseRequest;
-export type CommunitiesApiInvitationRespondToInvitationMutationError = AxiosError<Message>;
+export type CommunitiesApiInvitationRespondToInvitationMutationBody =
+  BodyType<InvitationResponseRequest>;
+export type CommunitiesApiInvitationRespondToInvitationMutationError = ErrorType<Message>;
 
 /**
  * @summary Respond To Invitation
  */
 export const useCommunitiesApiInvitationRespondToInvitation = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
     TError,
-    { invitationId: number; data: InvitationResponseRequest },
+    { invitationId: number; data: BodyType<InvitationResponseRequest> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
   TError,
-  { invitationId: number; data: InvitationResponseRequest },
+  { invitationId: number; data: BodyType<InvitationResponseRequest> },
   TContext
 > => {
   const mutationOptions = getCommunitiesApiInvitationRespondToInvitationMutationOptions(options);
@@ -183,45 +194,49 @@ export const useCommunitiesApiInvitationRespondToInvitation = <
  */
 export const communitiesApiInvitationSendInvitationsToUnregisteredUsers = (
   communityId: number,
-  sendInvitationsPayload: SendInvitationsPayload,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/communities/${communityId}/send-invitations`,
-    sendInvitationsPayload,
+  sendInvitationsPayload: BodyType<SendInvitationsPayload>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/communities/communities/${communityId}/send-invitations`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: sendInvitationsPayload,
+    },
     options
   );
 };
 
 export const getCommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
     TError,
-    { communityId: number; data: SendInvitationsPayload },
+    { communityId: number; data: BodyType<SendInvitationsPayload> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
   TError,
-  { communityId: number; data: SendInvitationsPayload },
+  { communityId: number; data: BodyType<SendInvitationsPayload> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
-    { communityId: number; data: SendInvitationsPayload }
+    { communityId: number; data: BodyType<SendInvitationsPayload> }
   > = (props) => {
     const { communityId, data } = props ?? {};
 
     return communitiesApiInvitationSendInvitationsToUnregisteredUsers(
       communityId,
       data,
-      axiosOptions
+      requestOptions
     );
   };
 
@@ -232,28 +247,28 @@ export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationRe
   Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>
 >;
 export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationBody =
-  SendInvitationsPayload;
+  BodyType<SendInvitationsPayload>;
 export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationError =
-  AxiosError<Message>;
+  ErrorType<Message>;
 
 /**
  * @summary Send Invitations To Unregistered Users
  */
 export const useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
     TError,
-    { communityId: number; data: SendInvitationsPayload },
+    { communityId: number; data: BodyType<SendInvitationsPayload> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
   TError,
-  { communityId: number; data: SendInvitationsPayload },
+  { communityId: number; data: BodyType<SendInvitationsPayload> },
   TContext
 > => {
   const mutationOptions =
@@ -266,42 +281,46 @@ export const useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers = <
  */
 export const communitiesApiInvitationRespondToEmailInvitation = (
   token: string,
-  invitationResponseRequest: InvitationResponseRequest,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/invitations/respond/${token}`,
-    invitationResponseRequest,
+  invitationResponseRequest: BodyType<InvitationResponseRequest>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/communities/invitations/respond/${token}`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: invitationResponseRequest,
+    },
     options
   );
 };
 
 export const getCommunitiesApiInvitationRespondToEmailInvitationMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
     TError,
-    { token: string; data: InvitationResponseRequest },
+    { token: string; data: BodyType<InvitationResponseRequest> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
   TError,
-  { token: string; data: InvitationResponseRequest },
+  { token: string; data: BodyType<InvitationResponseRequest> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
-    { token: string; data: InvitationResponseRequest }
+    { token: string; data: BodyType<InvitationResponseRequest> }
   > = (props) => {
     const { token, data } = props ?? {};
 
-    return communitiesApiInvitationRespondToEmailInvitation(token, data, axiosOptions);
+    return communitiesApiInvitationRespondToEmailInvitation(token, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -311,27 +330,27 @@ export type CommunitiesApiInvitationRespondToEmailInvitationMutationResult = Non
   Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>
 >;
 export type CommunitiesApiInvitationRespondToEmailInvitationMutationBody =
-  InvitationResponseRequest;
-export type CommunitiesApiInvitationRespondToEmailInvitationMutationError = AxiosError<Message>;
+  BodyType<InvitationResponseRequest>;
+export type CommunitiesApiInvitationRespondToEmailInvitationMutationError = ErrorType<Message>;
 
 /**
  * @summary Respond To Email Invitation
  */
 export const useCommunitiesApiInvitationRespondToEmailInvitation = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
     TError,
-    { token: string; data: InvitationResponseRequest },
+    { token: string; data: BodyType<InvitationResponseRequest> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
   TError,
-  { token: string; data: InvitationResponseRequest },
+  { token: string; data: BodyType<InvitationResponseRequest> },
   TContext
 > => {
   const mutationOptions =
@@ -344,23 +363,22 @@ export const useCommunitiesApiInvitationRespondToEmailInvitation = <
  */
 export const communitiesApiInvitationGetCommunityInvitations = (
   communityId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<InvitationDetails[]>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitations`,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<InvitationDetails[]>(
+    { url: `/api/communities/${communityId}/invitations`, method: 'GET', signal },
     options
   );
 };
 
 export const getCommunitiesApiInvitationGetCommunityInvitationsQueryKey = (communityId: number) => {
-  return [
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitations`,
-  ] as const;
+  return [`/api/communities/${communityId}/invitations`] as const;
 };
 
 export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   options?: {
@@ -371,10 +389,10 @@ export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
         TData
       >
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -383,7 +401,7 @@ export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>
   > = ({ signal }) =>
-    communitiesApiInvitationGetCommunityInvitations(communityId, { signal, ...axiosOptions });
+    communitiesApiInvitationGetCommunityInvitations(communityId, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
@@ -395,14 +413,14 @@ export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
 export type CommunitiesApiInvitationGetCommunityInvitationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>
 >;
-export type CommunitiesApiInvitationGetCommunityInvitationsQueryError = AxiosError<Message>;
+export type CommunitiesApiInvitationGetCommunityInvitationsQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Community Invitations
  */
 export const useCommunitiesApiInvitationGetCommunityInvitations = <
   TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   options?: {
@@ -413,7 +431,7 @@ export const useCommunitiesApiInvitationGetCommunityInvitations = <
         TData
       >
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions(
@@ -434,10 +452,15 @@ export const useCommunitiesApiInvitationGetCommunityInvitations = <
 export const communitiesApiInvitationGetCommunityInvitationDetails = (
   communityId: number,
   invitationId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<CommunityInvitationDetails>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitation-details/${invitationId}`,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CommunityInvitationDetails>(
+    {
+      url: `/api/communities/${communityId}/invitation-details/${invitationId}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
@@ -446,14 +469,12 @@ export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryKey = 
   communityId: number,
   invitationId: number
 ) => {
-  return [
-    `https://scicommons-backend-revamp.onrender.com/api/communities/${communityId}/invitation-details/${invitationId}`,
-  ] as const;
+  return [`/api/communities/${communityId}/invitation-details/${invitationId}`] as const;
 };
 
 export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   invitationId: number,
@@ -465,10 +486,10 @@ export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOption
         TData
       >
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -477,10 +498,12 @@ export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOption
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>
   > = ({ signal }) =>
-    communitiesApiInvitationGetCommunityInvitationDetails(communityId, invitationId, {
-      signal,
-      ...axiosOptions,
-    });
+    communitiesApiInvitationGetCommunityInvitationDetails(
+      communityId,
+      invitationId,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -497,14 +520,14 @@ export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOption
 export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>
 >;
-export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryError = AxiosError<Message>;
+export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Community Invitation Details
  */
 export const useCommunitiesApiInvitationGetCommunityInvitationDetails = <
   TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   invitationId: number,
@@ -516,7 +539,7 @@ export const useCommunitiesApiInvitationGetCommunityInvitationDetails = <
         TData
       >
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOptions(

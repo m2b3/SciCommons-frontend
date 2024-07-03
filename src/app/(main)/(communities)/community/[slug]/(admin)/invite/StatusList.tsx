@@ -18,7 +18,7 @@ const StatusList: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error, isPending } = useCommunitiesApiInvitationGetCommunityInvitations(1, {
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   useEffect(() => {

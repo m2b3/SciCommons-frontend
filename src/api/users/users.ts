@@ -14,9 +14,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-import axios from 'axios';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { customInstance } from '.././custom-instance';
+import type { ErrorType } from '.././custom-instance';
 import type {
   ArticleDetails,
   Message,
@@ -24,44 +24,44 @@ import type {
   UsersApiGetMyArticlesParams,
 } from '.././schemas';
 
+type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 /**
  * @summary Get My Articles
  */
 export const usersApiGetMyArticles = (
   params?: UsersApiGetMyArticlesParams,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleDetails[]>> => {
-  return axios.get(`https://scicommons-backend-revamp.onrender.com/api/users/my-articles`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ArticleDetails[]>(
+    { url: `/api/users/my-articles`, method: 'GET', params, signal },
+    options
+  );
 };
 
 export const getUsersApiGetMyArticlesQueryKey = (params?: UsersApiGetMyArticlesParams) => {
-  return [
-    `https://scicommons-backend-revamp.onrender.com/api/users/my-articles`,
-    ...(params ? [params] : []),
-  ] as const;
+  return [`/api/users/my-articles`, ...(params ? [params] : [])] as const;
 };
 
 export const getUsersApiGetMyArticlesQueryOptions = <
   TData = Awaited<ReturnType<typeof usersApiGetMyArticles>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersApiGetMyArticlesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof usersApiGetMyArticles>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getUsersApiGetMyArticlesQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetMyArticles>>> = ({ signal }) =>
-    usersApiGetMyArticles(params, { signal, ...axiosOptions });
+    usersApiGetMyArticles(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof usersApiGetMyArticles>>,
@@ -73,21 +73,21 @@ export const getUsersApiGetMyArticlesQueryOptions = <
 export type UsersApiGetMyArticlesQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersApiGetMyArticles>>
 >;
-export type UsersApiGetMyArticlesQueryError = AxiosError<Message>;
+export type UsersApiGetMyArticlesQueryError = ErrorType<Message>;
 
 /**
  * @summary Get My Articles
  */
 export const useUsersApiGetMyArticles = <
   TData = Awaited<ReturnType<typeof usersApiGetMyArticles>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersApiGetMyArticlesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof usersApiGetMyArticles>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getUsersApiGetMyArticlesQueryOptions(params, options);
@@ -103,34 +103,35 @@ export const useUsersApiGetMyArticles = <
  * @summary Get Notifications
  */
 export const usersApiGetNotifications = (
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<NotificationSchema[]>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/users/notifications`,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<NotificationSchema[]>(
+    { url: `/api/users/notifications`, method: 'GET', signal },
     options
   );
 };
 
 export const getUsersApiGetNotificationsQueryKey = () => {
-  return [`https://scicommons-backend-revamp.onrender.com/api/users/notifications`] as const;
+  return [`/api/users/notifications`] as const;
 };
 
 export const getUsersApiGetNotificationsQueryOptions = <
   TData = Awaited<ReturnType<typeof usersApiGetNotifications>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof usersApiGetNotifications>>, TError, TData>
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getUsersApiGetNotificationsQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetNotifications>>> = ({
     signal,
-  }) => usersApiGetNotifications({ signal, ...axiosOptions });
+  }) => usersApiGetNotifications(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof usersApiGetNotifications>>,
@@ -142,19 +143,19 @@ export const getUsersApiGetNotificationsQueryOptions = <
 export type UsersApiGetNotificationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersApiGetNotifications>>
 >;
-export type UsersApiGetNotificationsQueryError = AxiosError<Message>;
+export type UsersApiGetNotificationsQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Notifications
  */
 export const useUsersApiGetNotifications = <
   TData = Awaited<ReturnType<typeof usersApiGetNotifications>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof usersApiGetNotifications>>, TError, TData>
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getUsersApiGetNotificationsQueryOptions(options);
 
@@ -170,17 +171,16 @@ export const useUsersApiGetNotifications = <
  */
 export const usersApiMarkNotificationAsRead = (
   notificationId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<Message>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/users/notifications/${notificationId}/mark-as-read`,
-    undefined,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    { url: `/api/users/notifications/${notificationId}/mark-as-read`, method: 'POST' },
     options
   );
 };
 
 export const getUsersApiMarkNotificationAsReadMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -189,14 +189,14 @@ export const getUsersApiMarkNotificationAsReadMutationOptions = <
     { notificationId: number },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
   TError,
   { notificationId: number },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
@@ -204,7 +204,7 @@ export const getUsersApiMarkNotificationAsReadMutationOptions = <
   > = (props) => {
     const { notificationId } = props ?? {};
 
-    return usersApiMarkNotificationAsRead(notificationId, axiosOptions);
+    return usersApiMarkNotificationAsRead(notificationId, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -214,13 +214,13 @@ export type UsersApiMarkNotificationAsReadMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>
 >;
 
-export type UsersApiMarkNotificationAsReadMutationError = AxiosError<Message>;
+export type UsersApiMarkNotificationAsReadMutationError = ErrorType<Message>;
 
 /**
  * @summary Mark Notification As Read
  */
 export const useUsersApiMarkNotificationAsRead = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -229,7 +229,7 @@ export const useUsersApiMarkNotificationAsRead = <
     { notificationId: number },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiMarkNotificationAsRead>>,
   TError,

@@ -42,7 +42,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
       query: {
         enabled: open,
       },
-      axios: axiosConfig,
+      request: axiosConfig,
     }
   );
 

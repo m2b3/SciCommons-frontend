@@ -9,13 +9,13 @@ const NotificationPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, isPending, refetch } = useUsersApiGetNotifications({
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   console.log(data);
 
   const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   useEffect(() => {

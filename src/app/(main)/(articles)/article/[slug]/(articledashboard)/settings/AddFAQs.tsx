@@ -41,7 +41,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
   });
 
   const { mutate, error, isPending, isSuccess } = useArticlesApiUpdateArticle({
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   const onSubmit = (data: FAQ[]) => {

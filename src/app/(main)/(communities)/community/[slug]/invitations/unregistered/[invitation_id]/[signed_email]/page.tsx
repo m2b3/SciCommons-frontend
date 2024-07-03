@@ -30,7 +30,7 @@ export default function UnRegisteredUsersInvitation({
 
   const { data, isSuccess, error, isPending } =
     useCommunitiesApiInvitationGetCommunityInvitationDetails(communityId, invitationId, {
-      axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     });
 
   const {
@@ -40,7 +40,7 @@ export default function UnRegisteredUsersInvitation({
     isPending: isRespondPending,
     data: respondData,
   } = useCommunitiesApiInvitationRespondToEmailInvitation({
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   useEffect(() => {

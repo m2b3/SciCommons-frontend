@@ -30,7 +30,7 @@ const CommunityArticleForm: NextPage = () => {
     isSuccess,
     isPending,
   } = useCommunitiesApiPostsCreateCommunityArticle({
-    axios: {
+    request: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

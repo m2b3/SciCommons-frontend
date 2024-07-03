@@ -30,7 +30,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
     query: {
       enabled: !!accessToken,
     },
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   const articlesQuery = useCommunitiesApiPostsGetCommunityArticles(
@@ -40,7 +40,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
       query: {
         enabled: !!accessToken && !!communityQuery.data,
       },
-      axios: axiosConfig,
+      request: axiosConfig,
     }
   );
 

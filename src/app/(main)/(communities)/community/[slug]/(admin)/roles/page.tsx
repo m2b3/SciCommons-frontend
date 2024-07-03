@@ -29,7 +29,7 @@ const Roles: React.FC = () => {
       query: {
         enabled: !!accessToken,
       },
-      axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
 

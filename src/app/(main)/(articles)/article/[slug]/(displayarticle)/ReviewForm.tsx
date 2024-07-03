@@ -73,7 +73,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     mutate: createReview,
     error,
   } = useArticlesApiReviewCreateReview({
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   // Update a Review
@@ -82,7 +82,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     isPending: editPending,
     error: editError,
     mutate: editReview,
-  } = useArticlesApiReviewEditReview({ axios: axiosConfig });
+  } = useArticlesApiReviewEditReview({ request: axiosConfig });
 
   // Delete a Review
   const {
@@ -90,7 +90,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     isPending: deletePending,
     error: deleteError,
     mutate: deleteReview,
-  } = useArticlesApiReviewDeleteReview({ axios: axiosConfig });
+  } = useArticlesApiReviewDeleteReview({ request: axiosConfig });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const reviewData = {

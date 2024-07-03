@@ -30,7 +30,7 @@ const SubmitToCommunity = () => {
   } = useForm<FormValues>();
 
   const { mutate, isSuccess, isPending, error } = useCommunitiesApiPostsSubmitArticleToCommunity({
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   useEffect(() => {

@@ -14,9 +14,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-import axios from 'axios';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { customInstance } from '.././custom-instance';
+import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   ArticleDetails,
   ArticleResponseSchema,
@@ -26,13 +26,15 @@ import type {
   Message,
 } from '.././schemas';
 
+type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 /**
  * @summary Create Article
  */
 export const articlesApiCreateArticle = (
-  articlesApiCreateArticleBody: ArticlesApiCreateArticleBody,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleResponseSchema>> => {
+  articlesApiCreateArticleBody: BodyType<ArticlesApiCreateArticleBody>,
+  options?: SecondParameter<typeof customInstance>
+) => {
   const formData = new FormData();
   if (articlesApiCreateArticleBody.image_file !== undefined) {
     formData.append('image_file', articlesApiCreateArticleBody.image_file);
@@ -42,39 +44,43 @@ export const articlesApiCreateArticle = (
   }
   formData.append('details', JSON.stringify(articlesApiCreateArticleBody.details));
 
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/articles/articles/`,
-    formData,
+  return customInstance<ArticleResponseSchema>(
+    {
+      url: `/api/articles/articles/`,
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+    },
     options
   );
 };
 
 export const getArticlesApiCreateArticleMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof articlesApiCreateArticle>>,
     TError,
-    { data: ArticlesApiCreateArticleBody },
+    { data: BodyType<ArticlesApiCreateArticleBody> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof articlesApiCreateArticle>>,
   TError,
-  { data: ArticlesApiCreateArticleBody },
+  { data: BodyType<ArticlesApiCreateArticleBody> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof articlesApiCreateArticle>>,
-    { data: ArticlesApiCreateArticleBody }
+    { data: BodyType<ArticlesApiCreateArticleBody> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return articlesApiCreateArticle(data, axiosOptions);
+    return articlesApiCreateArticle(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -83,27 +89,27 @@ export const getArticlesApiCreateArticleMutationOptions = <
 export type ArticlesApiCreateArticleMutationResult = NonNullable<
   Awaited<ReturnType<typeof articlesApiCreateArticle>>
 >;
-export type ArticlesApiCreateArticleMutationBody = ArticlesApiCreateArticleBody;
-export type ArticlesApiCreateArticleMutationError = AxiosError<Message>;
+export type ArticlesApiCreateArticleMutationBody = BodyType<ArticlesApiCreateArticleBody>;
+export type ArticlesApiCreateArticleMutationError = ErrorType<Message>;
 
 /**
  * @summary Create Article
  */
 export const useArticlesApiCreateArticle = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof articlesApiCreateArticle>>,
     TError,
-    { data: ArticlesApiCreateArticleBody },
+    { data: BodyType<ArticlesApiCreateArticleBody> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof articlesApiCreateArticle>>,
   TError,
-  { data: ArticlesApiCreateArticleBody },
+  { data: BodyType<ArticlesApiCreateArticleBody> },
   TContext
 > => {
   const mutationOptions = getArticlesApiCreateArticleMutationOptions(options);
@@ -115,9 +121,9 @@ export const useArticlesApiCreateArticle = <
  */
 export const articlesApiUpdateArticle = (
   articleId: number,
-  articlesApiUpdateArticleBody: ArticlesApiUpdateArticleBody,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleResponseSchema>> => {
+  articlesApiUpdateArticleBody: BodyType<ArticlesApiUpdateArticleBody>,
+  options?: SecondParameter<typeof customInstance>
+) => {
   const formData = new FormData();
   if (articlesApiUpdateArticleBody.image_file !== undefined) {
     formData.append('image_file', articlesApiUpdateArticleBody.image_file);
@@ -127,39 +133,43 @@ export const articlesApiUpdateArticle = (
   }
   formData.append('details', JSON.stringify(articlesApiUpdateArticleBody.details));
 
-  return axios.put(
-    `https://scicommons-backend-revamp.onrender.com/api/articles/${articleId}`,
-    formData,
+  return customInstance<ArticleResponseSchema>(
+    {
+      url: `/api/articles/${articleId}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+    },
     options
   );
 };
 
 export const getArticlesApiUpdateArticleMutationOptions = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
     TError,
-    { articleId: number; data: ArticlesApiUpdateArticleBody },
+    { articleId: number; data: BodyType<ArticlesApiUpdateArticleBody> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
   TError,
-  { articleId: number; data: ArticlesApiUpdateArticleBody },
+  { articleId: number; data: BodyType<ArticlesApiUpdateArticleBody> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
-    { articleId: number; data: ArticlesApiUpdateArticleBody }
+    { articleId: number; data: BodyType<ArticlesApiUpdateArticleBody> }
   > = (props) => {
     const { articleId, data } = props ?? {};
 
-    return articlesApiUpdateArticle(articleId, data, axiosOptions);
+    return articlesApiUpdateArticle(articleId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -168,27 +178,27 @@ export const getArticlesApiUpdateArticleMutationOptions = <
 export type ArticlesApiUpdateArticleMutationResult = NonNullable<
   Awaited<ReturnType<typeof articlesApiUpdateArticle>>
 >;
-export type ArticlesApiUpdateArticleMutationBody = ArticlesApiUpdateArticleBody;
-export type ArticlesApiUpdateArticleMutationError = AxiosError<Message>;
+export type ArticlesApiUpdateArticleMutationBody = BodyType<ArticlesApiUpdateArticleBody>;
+export type ArticlesApiUpdateArticleMutationError = ErrorType<Message>;
 
 /**
  * @summary Update Article
  */
 export const useArticlesApiUpdateArticle = <
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
     TError,
-    { articleId: number; data: ArticlesApiUpdateArticleBody },
+    { articleId: number; data: BodyType<ArticlesApiUpdateArticleBody> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof articlesApiUpdateArticle>>,
   TError,
-  { articleId: number; data: ArticlesApiUpdateArticleBody },
+  { articleId: number; data: BodyType<ArticlesApiUpdateArticleBody> },
   TContext
 > => {
   const mutationOptions = getArticlesApiUpdateArticleMutationOptions(options);
@@ -200,38 +210,37 @@ export const useArticlesApiUpdateArticle = <
  */
 export const articlesApiGetArticle = (
   articleSlug: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleDetails>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/articles/article/${articleSlug}`,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ArticleDetails>(
+    { url: `/api/articles/article/${articleSlug}`, method: 'GET', signal },
     options
   );
 };
 
 export const getArticlesApiGetArticleQueryKey = (articleSlug: string) => {
-  return [
-    `https://scicommons-backend-revamp.onrender.com/api/articles/article/${articleSlug}`,
-  ] as const;
+  return [`/api/articles/article/${articleSlug}`] as const;
 };
 
 export const getArticlesApiGetArticleQueryOptions = <
   TData = Awaited<ReturnType<typeof articlesApiGetArticle>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   articleSlug: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticle>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getArticlesApiGetArticleQueryKey(articleSlug);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetArticle>>> = ({ signal }) =>
-    articlesApiGetArticle(articleSlug, { signal, ...axiosOptions });
+    articlesApiGetArticle(articleSlug, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!articleSlug, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof articlesApiGetArticle>>,
@@ -243,21 +252,21 @@ export const getArticlesApiGetArticleQueryOptions = <
 export type ArticlesApiGetArticleQueryResult = NonNullable<
   Awaited<ReturnType<typeof articlesApiGetArticle>>
 >;
-export type ArticlesApiGetArticleQueryError = AxiosError<Message>;
+export type ArticlesApiGetArticleQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Article
  */
 export const useArticlesApiGetArticle = <
   TData = Awaited<ReturnType<typeof articlesApiGetArticle>>,
-  TError = AxiosError<Message>,
+  TError = ErrorType<Message>,
 >(
   articleSlug: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticle>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getArticlesApiGetArticleQueryOptions(articleSlug, options);
@@ -290,42 +299,40 @@ Returns:
  */
 export const articlesApiGetPublicArticles = (
   params?: ArticlesApiGetPublicArticlesParams,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<ArticleDetails[]>> => {
-  return axios.get(`https://scicommons-backend-revamp.onrender.com/api/articles/`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ArticleDetails[]>(
+    { url: `/api/articles/`, method: 'GET', params, signal },
+    options
+  );
 };
 
 export const getArticlesApiGetPublicArticlesQueryKey = (
   params?: ArticlesApiGetPublicArticlesParams
 ) => {
-  return [
-    `https://scicommons-backend-revamp.onrender.com/api/articles/`,
-    ...(params ? [params] : []),
-  ] as const;
+  return [`/api/articles/`, ...(params ? [params] : [])] as const;
 };
 
 export const getArticlesApiGetPublicArticlesQueryOptions = <
   TData = Awaited<ReturnType<typeof articlesApiGetPublicArticles>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params?: ArticlesApiGetPublicArticlesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetPublicArticles>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getArticlesApiGetPublicArticlesQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetPublicArticles>>> = ({
     signal,
-  }) => articlesApiGetPublicArticles(params, { signal, ...axiosOptions });
+  }) => articlesApiGetPublicArticles(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof articlesApiGetPublicArticles>>,
@@ -337,21 +344,21 @@ export const getArticlesApiGetPublicArticlesQueryOptions = <
 export type ArticlesApiGetPublicArticlesQueryResult = NonNullable<
   Awaited<ReturnType<typeof articlesApiGetPublicArticles>>
 >;
-export type ArticlesApiGetPublicArticlesQueryError = AxiosError<unknown>;
+export type ArticlesApiGetPublicArticlesQueryError = ErrorType<unknown>;
 
 /**
  * @summary Get Public Articles
  */
 export const useArticlesApiGetPublicArticles = <
   TData = Awaited<ReturnType<typeof articlesApiGetPublicArticles>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params?: ArticlesApiGetPublicArticlesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetPublicArticles>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getArticlesApiGetPublicArticlesQueryOptions(params, options);

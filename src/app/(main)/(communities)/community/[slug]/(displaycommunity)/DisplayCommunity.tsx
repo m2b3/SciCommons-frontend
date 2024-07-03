@@ -46,7 +46,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const { mutate, data, isSuccess, error } = useCommunitiesApiJoinJoinCommunity({
-    axios: axiosConfig,
+    request: axiosConfig,
   });
 
   const handleJoin = () => {

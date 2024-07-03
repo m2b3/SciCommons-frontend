@@ -14,9 +14,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-import axios from 'axios';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { customInstance } from '.././custom-instance';
+import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   EmailSchema,
   LogInSchemaIn,
@@ -26,46 +26,52 @@ import type {
   UsersApiAuthResetPasswordParams,
 } from '.././schemas';
 
+type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 /**
  * @summary Signup
  */
 export const usersApiAuthSignup = (
-  signUpSchemaIn: SignUpSchemaIn,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/users/signup`,
-    signUpSchemaIn,
+  signUpSchemaIn: BodyType<SignUpSchemaIn>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<StatusMessageSchema>(
+    {
+      url: `/api/users/signup`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: signUpSchemaIn,
+    },
     options
   );
 };
 
 export const getUsersApiAuthSignupMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthSignup>>,
     TError,
-    { data: SignUpSchemaIn },
+    { data: BodyType<SignUpSchemaIn> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthSignup>>,
   TError,
-  { data: SignUpSchemaIn },
+  { data: BodyType<SignUpSchemaIn> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthSignup>>,
-    { data: SignUpSchemaIn }
+    { data: BodyType<SignUpSchemaIn> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return usersApiAuthSignup(data, axiosOptions);
+    return usersApiAuthSignup(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -74,24 +80,24 @@ export const getUsersApiAuthSignupMutationOptions = <
 export type UsersApiAuthSignupMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthSignup>>
 >;
-export type UsersApiAuthSignupMutationBody = SignUpSchemaIn;
-export type UsersApiAuthSignupMutationError = AxiosError<unknown>;
+export type UsersApiAuthSignupMutationBody = BodyType<SignUpSchemaIn>;
+export type UsersApiAuthSignupMutationError = ErrorType<unknown>;
 
 /**
  * @summary Signup
  */
-export const useUsersApiAuthSignup = <TError = AxiosError<unknown>, TContext = unknown>(options?: {
+export const useUsersApiAuthSignup = <TError = ErrorType<unknown>, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthSignup>>,
     TError,
-    { data: SignUpSchemaIn },
+    { data: BodyType<SignUpSchemaIn> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthSignup>>,
   TError,
-  { data: SignUpSchemaIn },
+  { data: BodyType<SignUpSchemaIn> },
   TContext
 > => {
   const mutationOptions = getUsersApiAuthSignupMutationOptions(options);
@@ -103,36 +109,37 @@ export const useUsersApiAuthSignup = <TError = AxiosError<unknown>, TContext = u
  */
 export const usersApiAuthActivate = (
   token: string,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.get(
-    `https://scicommons-backend-revamp.onrender.com/api/users/activate/${token}`,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<StatusMessageSchema>(
+    { url: `/api/users/activate/${token}`, method: 'GET', signal },
     options
   );
 };
 
 export const getUsersApiAuthActivateQueryKey = (token: string) => {
-  return [`https://scicommons-backend-revamp.onrender.com/api/users/activate/${token}`] as const;
+  return [`/api/users/activate/${token}`] as const;
 };
 
 export const getUsersApiAuthActivateQueryOptions = <
   TData = Awaited<ReturnType<typeof usersApiAuthActivate>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   token: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getUsersApiAuthActivateQueryKey(token);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiAuthActivate>>> = ({ signal }) =>
-    usersApiAuthActivate(token, { signal, ...axiosOptions });
+    usersApiAuthActivate(token, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!token, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof usersApiAuthActivate>>,
@@ -144,21 +151,21 @@ export const getUsersApiAuthActivateQueryOptions = <
 export type UsersApiAuthActivateQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthActivate>>
 >;
-export type UsersApiAuthActivateQueryError = AxiosError<unknown>;
+export type UsersApiAuthActivateQueryError = ErrorType<unknown>;
 
 /**
  * @summary Activate
  */
 export const useUsersApiAuthActivate = <
   TData = Awaited<ReturnType<typeof usersApiAuthActivate>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   token: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getUsersApiAuthActivateQueryOptions(token, options);
@@ -174,42 +181,46 @@ export const useUsersApiAuthActivate = <
  * @summary Resend Activation
  */
 export const usersApiAuthResendActivation = (
-  emailSchema: EmailSchema,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/users/resend-activation`,
-    emailSchema,
+  emailSchema: BodyType<EmailSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<StatusMessageSchema>(
+    {
+      url: `/api/users/resend-activation`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: emailSchema,
+    },
     options
   );
 };
 
 export const getUsersApiAuthResendActivationMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
     TError,
-    { data: EmailSchema },
+    { data: BodyType<EmailSchema> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
   TError,
-  { data: EmailSchema },
+  { data: BodyType<EmailSchema> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-    { data: EmailSchema }
+    { data: BodyType<EmailSchema> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return usersApiAuthResendActivation(data, axiosOptions);
+    return usersApiAuthResendActivation(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -218,27 +229,27 @@ export const getUsersApiAuthResendActivationMutationOptions = <
 export type UsersApiAuthResendActivationMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthResendActivation>>
 >;
-export type UsersApiAuthResendActivationMutationBody = EmailSchema;
-export type UsersApiAuthResendActivationMutationError = AxiosError<unknown>;
+export type UsersApiAuthResendActivationMutationBody = BodyType<EmailSchema>;
+export type UsersApiAuthResendActivationMutationError = ErrorType<unknown>;
 
 /**
  * @summary Resend Activation
  */
 export const useUsersApiAuthResendActivation = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
     TError,
-    { data: EmailSchema },
+    { data: BodyType<EmailSchema> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
   TError,
-  { data: EmailSchema },
+  { data: BodyType<EmailSchema> },
   TContext
 > => {
   const mutationOptions = getUsersApiAuthResendActivationMutationOptions(options);
@@ -249,42 +260,46 @@ export const useUsersApiAuthResendActivation = <
  * @summary Login User
  */
 export const usersApiAuthLoginUser = (
-  logInSchemaIn: LogInSchemaIn,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<LogInSchemaOut>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/users/login`,
-    logInSchemaIn,
+  logInSchemaIn: BodyType<LogInSchemaIn>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<LogInSchemaOut>(
+    {
+      url: `/api/users/login`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: logInSchemaIn,
+    },
     options
   );
 };
 
 export const getUsersApiAuthLoginUserMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
     TError,
-    { data: LogInSchemaIn },
+    { data: BodyType<LogInSchemaIn> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
   TError,
-  { data: LogInSchemaIn },
+  { data: BodyType<LogInSchemaIn> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
-    { data: LogInSchemaIn }
+    { data: BodyType<LogInSchemaIn> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return usersApiAuthLoginUser(data, axiosOptions);
+    return usersApiAuthLoginUser(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -293,27 +308,27 @@ export const getUsersApiAuthLoginUserMutationOptions = <
 export type UsersApiAuthLoginUserMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthLoginUser>>
 >;
-export type UsersApiAuthLoginUserMutationBody = LogInSchemaIn;
-export type UsersApiAuthLoginUserMutationError = AxiosError<unknown>;
+export type UsersApiAuthLoginUserMutationBody = BodyType<LogInSchemaIn>;
+export type UsersApiAuthLoginUserMutationError = ErrorType<unknown>;
 
 /**
  * @summary Login User
  */
 export const useUsersApiAuthLoginUser = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
     TError,
-    { data: LogInSchemaIn },
+    { data: BodyType<LogInSchemaIn> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
   TError,
-  { data: LogInSchemaIn },
+  { data: BodyType<LogInSchemaIn> },
   TContext
 > => {
   const mutationOptions = getUsersApiAuthLoginUserMutationOptions(options);
@@ -324,42 +339,46 @@ export const useUsersApiAuthLoginUser = <
  * @summary Request Reset
  */
 export const usersApiAuthRequestReset = (
-  emailSchema: EmailSchema,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<StatusMessageSchema>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/users/forgot-password`,
-    emailSchema,
+  emailSchema: BodyType<EmailSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<StatusMessageSchema>(
+    {
+      url: `/api/users/forgot-password`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: emailSchema,
+    },
     options
   );
 };
 
 export const getUsersApiAuthRequestResetMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
     TError,
-    { data: EmailSchema },
+    { data: BodyType<EmailSchema> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
   TError,
-  { data: EmailSchema },
+  { data: BodyType<EmailSchema> },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
-    { data: EmailSchema }
+    { data: BodyType<EmailSchema> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return usersApiAuthRequestReset(data, axiosOptions);
+    return usersApiAuthRequestReset(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -368,27 +387,27 @@ export const getUsersApiAuthRequestResetMutationOptions = <
 export type UsersApiAuthRequestResetMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthRequestReset>>
 >;
-export type UsersApiAuthRequestResetMutationBody = EmailSchema;
-export type UsersApiAuthRequestResetMutationError = AxiosError<unknown>;
+export type UsersApiAuthRequestResetMutationBody = BodyType<EmailSchema>;
+export type UsersApiAuthRequestResetMutationError = ErrorType<unknown>;
 
 /**
  * @summary Request Reset
  */
 export const useUsersApiAuthRequestReset = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
     TError,
-    { data: EmailSchema },
+    { data: BodyType<EmailSchema> },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
   TError,
-  { data: EmailSchema },
+  { data: BodyType<EmailSchema> },
   TContext
 > => {
   const mutationOptions = getUsersApiAuthRequestResetMutationOptions(options);
@@ -400,20 +419,16 @@ export const useUsersApiAuthRequestReset = <
  */
 export const usersApiAuthResetPassword = (
   params: UsersApiAuthResetPasswordParams,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<void>> => {
-  return axios.post(
-    `https://scicommons-backend-revamp.onrender.com/api/users/reset-password`,
-    undefined,
-    {
-      ...options,
-      params: { ...params, ...options?.params },
-    }
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<void>(
+    { url: `/api/users/reset-password`, method: 'POST', params },
+    options
   );
 };
 
 export const getUsersApiAuthResetPasswordMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -422,14 +437,14 @@ export const getUsersApiAuthResetPasswordMutationOptions = <
     { params: UsersApiAuthResetPasswordParams },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
   TError,
   { params: UsersApiAuthResetPasswordParams },
   TContext
 > => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
@@ -437,7 +452,7 @@ export const getUsersApiAuthResetPasswordMutationOptions = <
   > = (props) => {
     const { params } = props ?? {};
 
-    return usersApiAuthResetPassword(params, axiosOptions);
+    return usersApiAuthResetPassword(params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -447,13 +462,13 @@ export type UsersApiAuthResetPasswordMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthResetPassword>>
 >;
 
-export type UsersApiAuthResetPasswordMutationError = AxiosError<unknown>;
+export type UsersApiAuthResetPasswordMutationError = ErrorType<unknown>;
 
 /**
  * @summary Reset Password
  */
 export const useUsersApiAuthResetPassword = <
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -462,7 +477,7 @@ export const useUsersApiAuthResetPassword = <
     { params: UsersApiAuthResetPasswordParams },
     TContext
   >;
-  axios?: AxiosRequestConfig;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
   TError,

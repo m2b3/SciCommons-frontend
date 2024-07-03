@@ -46,7 +46,7 @@ const CreateCommunity = () => {
     isSuccess,
     error,
   } = useCommunitiesApiCreateCommunity({
-    axios: {
+    request: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

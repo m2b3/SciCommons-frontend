@@ -33,7 +33,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
     isPending: isUpdatePending,
     error,
   } = useCommunitiesApiUpdateCommunity({
-    axios: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   const { fields, append, remove } = useFieldArray({
