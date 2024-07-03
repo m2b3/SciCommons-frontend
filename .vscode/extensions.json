@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint", // ESLint for linting JavaScript and TypeScript
+    "esbenp.prettier-vscode", // Prettier for code formatting
+    "dsznajder.es7-react-js-snippets", // React and Redux code snippets
+    "formulahendry.auto-rename-tag", // Automatically rename paired HTML/XML tags
+    "ecmel.vscode-html-css", // HTML and CSS support for VS Code
+    "streetsidesoftware.code-spell-checker", // Spell checker for code
+    "visualstudioexptteam.vscodeintellicode", // AI-assisted code suggestions
+    "eamodio.gitlens", // GitLens for Git version control
+    "EditorConfig.EditorConfig", // EditorConfig support
+    "orta.vscode-jest", // Jest support for testing
+    "aaron-bond.better-comments" // Highlights comments
+  ]
+}
