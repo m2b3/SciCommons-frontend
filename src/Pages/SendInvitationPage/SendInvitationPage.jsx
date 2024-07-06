@@ -16,7 +16,7 @@ function SendInvitationPage({ community }) {
   const [users, setUsers] = useState([]);
   const [value, setValue] = React.useState();
   const [subject, setSubject] = useState('');
-  const referralLink = `http://localhost:3000/invitation/private/${community?.referral_id}`;
+  const referralLink = `https://www.scicommons.org/invitation/private/${community?.referral_id}`;
   const { token } = useGlobalContext();
   // const [community, setCommunity] = useState(null);
 
