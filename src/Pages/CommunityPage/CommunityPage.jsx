@@ -257,34 +257,38 @@ const CommunityPage = () => {
                 </span>
               </div>
             </div>
-            <div className="mt-8 flex flex-row justify-end">
-              {!isAdminCommunity && (
-                <button
-                  className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    if (token === null) {
-                      navigate('/login');
-                    } else if (community?.access === 'public') {
-                      handleJoinCommunity();
-                    } else {
-                      navigate(`/join-community/${community.Community_name}`);
-                    }
-                  }}>
-                  {community?.access === 'public' ? 'Join Community' : 'Request to Join'}
-                </button>
-              )}
-              <button
-                className={`${
-                  subscribed
-                    ? 'bg-gray-400 text-gray-700 cursor-default'
-                    : 'bg-red-500 hover:bg-red-600 text-white'
-                } rounded-xl p-1 md:py-2 md:px-4`}
-                style={{ cursor: 'pointer' }}
-                onClick={handleSubscribe}>
-                {getButtonLabel()}
-              </button>
-            </div>
+            {community?.access !== 'private' && (
+              <div className="mt-8 flex flex-row justify-end">
+                {!isAdminCommunity && !community?.isMember && (
+                  <button
+                    className="bg-teal-500 text-white md:px-4 md:py-2 rounded-xl mr-3 p-1"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      if (token === null) {
+                        navigate('/login');
+                      } else if (community?.access === 'public') {
+                        handleJoinCommunity();
+                      } else {
+                        navigate(`/join-community/${community.Community_name}`);
+                      }
+                    }}>
+                    {community?.access === 'public' ? 'Join Community' : 'Request to Join'}
+                  </button>
+                )}
+                {!community?.isSubscribed && (
+                  <button
+                    className={`${
+                      subscribed
+                        ? 'bg-gray-400 text-gray-700 cursor-default'
+                        : 'bg-red-500 hover:bg-red-600 text-white'
+                    } rounded-xl p-1 md:py-2 md:px-4`}
+                    style={{ cursor: 'pointer' }}
+                    onClick={handleSubscribe}>
+                    {getButtonLabel()}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex flex-col items-center justify-center w-full bg-gray-50 mb-5">
             <Articles community={community} />
