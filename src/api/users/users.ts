@@ -18,9 +18,9 @@ import type {
 import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
-  ArticleDetails,
   Message,
   NotificationSchema,
+  PaginatedArticlesResponse,
   ReactionCountOut,
   ReactionIn,
   UsersApiGetMyArticlesParams,
@@ -36,7 +36,7 @@ export const usersApiGetMyArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<ArticleDetails[]>(
+  return customInstance<PaginatedArticlesResponse>(
     { url: `/api/users/my-articles`, method: 'GET', params, signal },
     options
   );

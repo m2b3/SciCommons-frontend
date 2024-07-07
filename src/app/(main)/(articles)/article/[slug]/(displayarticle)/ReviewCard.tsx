@@ -3,9 +3,14 @@ import { FC, useState } from 'react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { MessageCircle, Pencil, ThumbsDown, ThumbsUp } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 import { ReviewSchema } from '@/api/schemas';
+import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import { useAuthStore } from '@/stores/authStore';
+import { Reaction } from '@/types';
 
+import ReviewComments from './ReviewComments';
 import ReviewForm from './ReviewForm';
 
 interface ReviewCardProps {
@@ -19,6 +24,37 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
 
   const [edit, setEdit] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState<number>(0);
+  const [displayComments, setDisplayComments] = useState<boolean>(false);
+
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  // Todo: Too many requests
+  const { data, refetch: refetchReactions } = useUsersApiGetReactionCount(
+    'articles.review',
+    Number(review.id),
+    {
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    }
+  );
+
+  const { mutate } = useUsersApiPostReaction({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onSuccess: () => {
+        refetchReactions();
+      },
+      onError: (error) => {
+        toast.error(error.response?.data.message || 'An error occurred');
+      },
+    },
+  });
+
+  const handleReaction = (reaction: Reaction) => {
+    if (reaction === 'upvote')
+      mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: 1 } });
+    else if (reaction === 'downvote')
+      mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: -1 } });
+  };
 
   const currentVersion =
     selectedVersion === 0
@@ -99,18 +135,53 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           <div className="flex items-center justify-between">
             <div className="flex space-x-4 text-gray-500">
               <div className="flex items-center">
-                <ThumbsUp className="mr-1 h-4 w-4" />
-                <span>{100}</span>
+                {data?.data.user_reaction === 1 ? (
+                  <button
+                    onClick={() => handleReaction('upvote')}
+                    className="text-green-500 hover:text-green-700"
+                  >
+                    <ThumbsUp className="mr-1 h-4 w-4" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleReaction('upvote')}
+                    className="text-gray-500 hover:text-green-500"
+                  >
+                    <ThumbsUp className="mr-1 h-4 w-4" />
+                  </button>
+                )}
+                <span>{data?.data.likes}</span>
               </div>
+
               <div className="flex items-center">
-                <ThumbsDown className="mr-1 h-4 w-4" />
-                <span>{0}</span>
+                {data?.data.user_reaction === -1 ? (
+                  <button
+                    onClick={() => handleReaction('downvote')}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <ThumbsDown className="mr-1 h-4 w-4" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleReaction('downvote')}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    <ThumbsDown className="mr-1 h-4 w-4" />
+                  </button>
+                )}
+                <span>{data?.data.dislikes}</span>
               </div>
             </div>
             <div className="flex items-center space-x-2 text-gray-500">
               <div className="flex items-center">
                 <MessageCircle className="mr-1 h-4 w-4" />
-                <span>{10} replies</span>
+                {/* Toggle Comments */}
+                <button
+                  onClick={() => setDisplayComments(!displayComments)}
+                  className="hover:underline focus:outline-none"
+                >
+                  {review.comments_count} comments
+                </button>
               </div>
               <button className="rounded bg-blue-500 px-3 py-1 font-semibold text-white">
                 Reply
@@ -118,6 +189,9 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div>
           </div>
         </div>
+      )}
+      {displayComments && (
+        <ReviewComments reviewId={Number(review.id)} displayComments={displayComments} />
       )}
     </>
   );

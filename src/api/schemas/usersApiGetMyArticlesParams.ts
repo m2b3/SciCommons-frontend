@@ -8,4 +8,6 @@ import type { StatusFilter } from './statusFilter';
 
 export type UsersApiGetMyArticlesParams = {
   status_filter?: StatusFilter | null;
+  page?: number;
+  limit?: number;
 };

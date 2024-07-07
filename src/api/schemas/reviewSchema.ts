@@ -11,6 +11,7 @@ import type { UserOut } from './userOut';
 
 export interface ReviewSchema {
   article_id: number;
+  comments_count?: number;
   content: string;
   created_at: string;
   deleted_at?: ReviewSchemaDeletedAt;

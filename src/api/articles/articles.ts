@@ -18,12 +18,13 @@ import type {
 import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
-  ArticleDetails,
+  ArticleOut,
   ArticleResponseSchema,
   ArticlesApiCreateArticleBody,
   ArticlesApiGetPublicArticlesParams,
   ArticlesApiUpdateArticleBody,
   Message,
+  PaginatedArticlesResponse,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
@@ -213,7 +214,7 @@ export const articlesApiGetArticle = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<ArticleDetails>(
+  return customInstance<ArticleOut>(
     { url: `/api/articles/article/${articleSlug}`, method: 'GET', signal },
     options
   );
@@ -302,7 +303,7 @@ export const articlesApiGetPublicArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<ArticleDetails[]>(
+  return customInstance<PaginatedArticlesResponse>(
     { url: `/api/articles/`, method: 'GET', params, signal },
     options
   );

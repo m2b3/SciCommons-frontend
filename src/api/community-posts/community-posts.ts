@@ -18,39 +18,16 @@ import type {
 import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
-  ArticleDetails,
   ArticleResponseSchema,
   CommunitiesApiPostsCreateCommunityArticleBody,
   CommunitiesApiPostsGetCommunityArticlesParams,
   Message,
+  PaginatedArticlesResponse,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
 
 /**
- * Retrieves a list of articles associated with a specific community identified by
-its id. The endpoint filters articles based on community visibility rules:
-
-This endpoint supports filtering articles by search keywords, sorting
-(latest, popular, older), and minimum rating.
-
-Parameters:
-    request (HttpRequest): The standard HttpRequest object.
-    community_id (str): The id of the community for which to retrieve articles.
-    search (str, optional): Keyword to filter articles based on their titles.
-    Defaults to None.
-    sort (str, equal to):
-        - 'latest' - Orders articles by newest first.
-        - 'popular' - Orders articles by popularity.
-        - 'older' - Orders articles by oldest first.
-    rating (int, optional): Filters articles that have a rating greater than
-    or equal to the specified value.
-
-Returns:
-    List[ArticleSchema]: A list of articles that meet the criteria, serialized
-    by ArticleSchema.
-    HTTP 404: If the specified community does not exist.
-    HTTP 500: If there is any other error during the retrieval process.
  * @summary Get articles in a community
  */
 export const communitiesApiPostsGetCommunityArticles = (
@@ -59,7 +36,7 @@ export const communitiesApiPostsGetCommunityArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<ArticleDetails[]>(
+  return customInstance<PaginatedArticlesResponse>(
     { url: `/api/communities/${communityId}/community_articles`, method: 'GET', params, signal },
     options
   );

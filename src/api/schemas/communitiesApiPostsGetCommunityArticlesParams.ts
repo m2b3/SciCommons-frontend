@@ -9,4 +9,6 @@ export type CommunitiesApiPostsGetCommunityArticlesParams = {
   search?: string | null;
   sort?: string | null;
   rating?: number | null;
+  page?: number;
+  limit?: number;
 };

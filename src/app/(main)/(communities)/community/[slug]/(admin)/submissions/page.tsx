@@ -18,6 +18,7 @@ type Action = 'unpublish' | 'publish' | 'approve' | 'reject' | 'remove';
 
 type ActiveTab = 'Published' | 'UnPublished' | 'Submitted';
 
+// Todo: Optimize the code
 const Submissions: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ slug: string }>();
@@ -102,25 +103,13 @@ const Submissions: React.FC = () => {
                 <button
                   key={article.id}
                   className="absolute bottom-4 right-4 rounded-lg bg-green-500 px-4 py-2 text-xs text-white"
-                  onClick={handleAction('unpublish', article.id)}
+                  onClick={handleAction('unpublish', Number(article.id))}
                 >
                   {manageArticlePending && action === 'unpublish' && articleId === article.id
                     ? 'Unpublishing...'
                     : 'Unpublish'}
                 </button>
-                <ArticleCard
-                  key={article.id}
-                  slug={article.slug}
-                  title={article.title}
-                  abstract={article.abstract}
-                  authors={article.authors.map((author) => author.label).join(', ')}
-                  community={'Community'}
-                  tags={article.keywords.map((keyword) => keyword.label)}
-                  ratings={0}
-                  comments={0}
-                  discussions={0}
-                  imageUrl={article.article_image_url || 'https://picsum.photos/200/200'}
-                />
+                <ArticleCard key={article.id} article={article} />
               </div>
             ))}
         </div>
@@ -140,7 +129,7 @@ const Submissions: React.FC = () => {
                 <div className="absolute bottom-4 right-4 flex space-x-2">
                   <button
                     className="rounded-lg bg-green-500 px-4 py-2 text-xs text-white"
-                    onClick={handleAction('publish', article.id)}
+                    onClick={handleAction('publish', Number(article.id))}
                   >
                     {manageArticlePending && action === 'publish' && articleId === article.id
                       ? 'Publishing...'
@@ -148,26 +137,14 @@ const Submissions: React.FC = () => {
                   </button>
                   <button
                     className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white"
-                    onClick={handleAction('remove', article.id)}
+                    onClick={handleAction('remove', Number(article.id))}
                   >
                     {manageArticlePending && action === 'remove' && articleId === article.id
                       ? 'Removing...'
                       : 'Remove'}
                   </button>
                 </div>
-                <ArticleCard
-                  key={article.id}
-                  slug={article.slug}
-                  title={article.title}
-                  abstract={article.abstract}
-                  authors={article.authors.map((author) => author.label).join(', ')}
-                  community={'Community'}
-                  tags={article.keywords.map((keyword) => keyword.label)}
-                  ratings={0}
-                  comments={0}
-                  discussions={0}
-                  imageUrl={article.article_image_url || 'https://picsum.photos/200/200'}
-                />
+                <ArticleCard key={article.id} article={article} />
               </div>
             ))}
         </div>
@@ -187,7 +164,7 @@ const Submissions: React.FC = () => {
                 <div className="absolute bottom-4 right-4 flex space-x-2">
                   <button
                     className="rounded-lg bg-green-500 px-4 py-2 text-xs text-white hover:bg-green-600"
-                    onClick={handleAction('approve', article.id)}
+                    onClick={handleAction('approve', Number(article.id))}
                   >
                     {manageArticlePending && action === 'approve' && articleId === article.id
                       ? 'Approving...'
@@ -195,26 +172,14 @@ const Submissions: React.FC = () => {
                   </button>
                   <button
                     className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white"
-                    onClick={handleAction('reject', article.id)}
+                    onClick={handleAction('reject', Number(article.id))}
                   >
                     {manageArticlePending && action === 'reject' && articleId === article.id
                       ? 'Rejecting...'
                       : 'Reject'}
                   </button>
                 </div>
-                <ArticleCard
-                  key={article.id}
-                  slug={article.slug}
-                  title={article.title}
-                  abstract={article.abstract}
-                  authors={article.authors.map((author) => author.label).join(', ')}
-                  community={'Community'}
-                  tags={article.keywords.map((keyword) => keyword.label)}
-                  ratings={0}
-                  comments={0}
-                  discussions={0}
-                  imageUrl={article.article_image_url || 'https://picsum.photos/200/200'}
-                />
+                <ArticleCard key={article.id} article={article} />
               </div>
             ))}
         </div>

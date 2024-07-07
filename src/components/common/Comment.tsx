@@ -17,7 +17,7 @@ import {
   Trash2,
 } from 'lucide-react';
 
-import { CommentOutId } from '@/api/schemas';
+import { CommentOutId, ContentTypeEnum } from '@/api/schemas';
 import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -38,6 +38,7 @@ export interface CommentData {
   upvotes: number;
   replies: CommentData[];
   is_author?: boolean;
+  review_version?: boolean;
   isNew?: boolean;
 }
 
@@ -48,6 +49,7 @@ export interface CommentProps extends CommentData {
   onAddReply: (parentId: number, content: string) => void;
   onUpdateComment: (id: number, content: string) => void;
   onDeleteComment: (id: number) => void;
+  contentType: ContentTypeEnum;
 }
 
 type Reaction = 'upvote' | 'downvote' | 'award';
@@ -66,13 +68,14 @@ const Comment: React.FC<CommentProps> = ({
   onUpdateComment,
   onDeleteComment,
   isNew,
+  contentType,
 }) => {
   dayjs.extend(relativeTime);
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
   // Todo: Too many requests
-  const { data, refetch } = useUsersApiGetReactionCount('posts.comment', Number(id), {
+  const { data, refetch } = useUsersApiGetReactionCount(contentType, Number(id), {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -130,9 +133,9 @@ const Comment: React.FC<CommentProps> = ({
 
   const handleReaction = (reaction: Reaction) => {
     if (reaction === 'upvote' && id)
-      mutate({ data: { content_type: 'posts.comment', object_id: id, vote: 1 } });
+      mutate({ data: { content_type: contentType, object_id: id, vote: 1 } });
     else if (reaction === 'downvote' && id)
-      mutate({ data: { content_type: 'posts.comment', object_id: id, vote: -1 } });
+      mutate({ data: { content_type: contentType, object_id: id, vote: -1 } });
   };
 
   return (
@@ -249,6 +252,7 @@ const Comment: React.FC<CommentProps> = ({
               onAddReply={onAddReply}
               onUpdateComment={onUpdateComment}
               onDeleteComment={onDeleteComment}
+              contentType={contentType}
             />
           </div>
         )}

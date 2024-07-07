@@ -6,9 +6,10 @@
  */
 import type { ArticleOut } from './articleOut';
 
-export interface AdminArticlesResponse {
-  community_id: number;
-  published: ArticleOut[];
-  submitted: ArticleOut[];
-  unpublished: ArticleOut[];
+export interface PaginatedArticlesResponse {
+  items: ArticleOut[];
+  num_pages: number;
+  page: number;
+  page_size: number;
+  total: number;
 }

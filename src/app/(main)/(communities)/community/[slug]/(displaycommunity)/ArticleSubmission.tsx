@@ -84,27 +84,15 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
             {isPending &&
               Array.from({ length: 5 }).map((_, index) => <ArticleCardSkeleton key={index} />)}
 
-            {data && data.data.length === 0 && (
+            {data && data.data.items.length === 0 && (
               <p className="text-center text-gray-500">You have no articles to submit</p>
             )}
             {data &&
-              data.data.map((article) => (
+              data.data.items.map((article) => (
                 <div key={article.id} className="relative">
-                  <ArticleCard
-                    key={article.id}
-                    slug={article.slug}
-                    title={article.title}
-                    abstract={article.abstract}
-                    authors={article.authors.map((author) => author.label).join(', ')}
-                    imageUrl={article.article_image_url || 'https://picsum.photos/200/200'}
-                    community={'Community'}
-                    tags={article.keywords.map((keyword) => keyword.label)}
-                    ratings={0}
-                    comments={0}
-                    discussions={0}
-                  />
+                  <ArticleCard key={article.id} article={article} />
                   <button
-                    onClick={() => handleSubmitArticle(article.slug)}
+                    onClick={() => handleSubmitArticle(String(article.slug))}
                     className="absolute bottom-4 right-4 w-auto rounded-md bg-green-500 px-2 py-1 text-sm text-white hover:bg-green-600"
                   >
                     Submit

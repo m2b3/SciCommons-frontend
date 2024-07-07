@@ -6,31 +6,33 @@ import { ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import {
-  usePostsApiCreateComment,
-  usePostsApiDeleteComment,
-  usePostsApiListPostComments,
-  usePostsApiUpdateComment,
-} from '@/api/posts/posts';
+  useArticlesApiReviewCreateComment,
+  useArticlesApiReviewDeleteComment,
+  useArticlesApiReviewListReviewComments,
+  useArticlesApiReviewUpdateComment,
+} from '@/api/reviews/reviews';
 import { ContentTypeEnum } from '@/api/schemas';
 import { CommentData } from '@/components/common/Comment';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import { useAuthStore } from '@/stores/authStore';
 
-interface PostCommentsProps {
-  postId: number;
+interface ReviewCommentsProps {
+  reviewId: number;
+  displayComments: boolean;
 }
 
 // Todo 1: Fix the issue with highlighting new comments
 // Todo 2: Add Generic Types for the comments
 // Todo 3: Add ToolTip for depth select
 
-const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
+const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayComments }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
-  const { data, refetch, isPending } = usePostsApiListPostComments(postId, {
+  const { data, refetch, isPending } = useArticlesApiReviewListReviewComments(reviewId, {
+    query: { enabled: displayComments },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -40,7 +42,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   //   }
   // }, [accessToken, refetch]);
 
-  const { mutate: createComment, data: newComment } = usePostsApiCreateComment({
+  const { mutate: createComment, data: newComment } = useArticlesApiReviewCreateComment({
     mutation: {
       onSuccess: () => {
         refetch();
@@ -55,7 +57,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
     },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
-  const { mutate: UpdateComment, data: updatedComment } = usePostsApiUpdateComment({
+  const { mutate: UpdateComment, data: updatedComment } = useArticlesApiReviewUpdateComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
@@ -70,7 +72,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
       },
     },
   });
-  const { mutate: deleteComment } = usePostsApiDeleteComment({
+  const { mutate: deleteComment } = useArticlesApiReviewDeleteComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
@@ -98,11 +100,11 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   };
 
   const addNewComment = (content: string) => {
-    createComment({ postId, data: { content } });
+    createComment({ reviewId, data: { content } });
   };
 
   const addReply = (parentId: number, content: string) => {
-    createComment({ postId, data: { content, parent_id: parentId } });
+    createComment({ reviewId, data: { content, parent_id: parentId } });
 
     const addReplyToComment = (comment: CommentData): CommentData => {
       if (comment.id === parentId && newComment) {
@@ -156,7 +158,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl bg-white">
+    <div className="bg-white">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
@@ -215,7 +217,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
             onAddReply={addReply}
             onUpdateComment={updateComment}
             onDeleteComment={deleteCommentbyId}
-            contentType={ContentTypeEnum.postscomment}
+            contentType={ContentTypeEnum.articlesreviewcomment}
           />
         </>
       )}
@@ -223,4 +225,4 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   );
 };
 
-export default PostComments;
+export default ReviewComments;
