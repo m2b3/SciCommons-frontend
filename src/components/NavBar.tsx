@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import Cookies from 'js-cookie';
 import { Bell, LogOut, NotebookTabs, User } from 'lucide-react';
@@ -17,16 +19,36 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
 import useStore from '@/hooks/useStore';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
+  const [activeTab, setActiveTab] = useState('');
+  const pathname = usePathname();
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/articles', label: 'Articles' },
     { href: '/communities', label: 'Communities' },
     { href: '/posts', label: 'Posts' },
   ];
+
+  // Todo: Refactor this and Activate tabs when the required page is matched.
+  useEffect(() => {
+    switch (true) {
+      case pathname.includes('articles') || pathname.includes('article'):
+        setActiveTab('Articles');
+        break;
+      case pathname.includes('posts') || pathname.includes('post'):
+        setActiveTab('Posts');
+        break;
+      case pathname.includes('communities') || pathname.includes('community'):
+        setActiveTab('Communities');
+        break;
+      default:
+        setActiveTab('Home');
+    }
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-slate-100/20 backdrop-blur-[20px] sm:px-9">
@@ -36,10 +58,13 @@ const NavBar: React.FC = () => {
         </div>
         <ul className="mx-auto flex space-x-4">
           {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className="text-gray-800 hover:text-gray-600">
-                {link.label}
-              </Link>
+            <li
+              key={link.href}
+              className={cn('rounded-full px-2 py-1 text-sm hover:bg-functional-green/10', {
+                'bg-functional-green/10 font-bold text-functional-green': link.label === activeTab,
+              })}
+            >
+              <Link href={link.href}>{link.label}</Link>
             </li>
           ))}
         </ul>
@@ -83,7 +108,9 @@ const CreateDropdown: React.FC = () => {
         <DropdownMenuItem>
           <Link href="/createcommunity">Create Community</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Create Post</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/posts/createpost">Create Post</Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -91,6 +118,7 @@ const CreateDropdown: React.FC = () => {
 
 const ProfileDropdown: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -104,11 +132,11 @@ const ProfileDropdown: React.FC = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Image
-          src="https://picsum.photos/200/201"
+          src={`https:picsum.photos/200/200?random=${Math.random()}`}
           alt="Profile"
           width={40}
           height={40}
-          className="cursor-pointer rounded-full border-2 border-gray-300"
+          className="cursor-pointer rounded-full"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -124,11 +152,16 @@ const ProfileDropdown: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem>
           <div className="flex items-center space-x-2">
-            Dark Mode <Switch className="ml-2" />
+            Dark Mode{' '}
+            <Switch
+              className="ml-2"
+              checked={theme === 'dark'}
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            />
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <button onClick={handleLogout} className="flex items-center">
+          <button onClick={handleLogout} className="flex items-center text-functional-red">
             <LogOut size={16} className="mr-2" />
             Logout
           </button>

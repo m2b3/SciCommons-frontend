@@ -26,3 +26,5 @@ export enum Action {
   DemoteReviewer = 'demote_reviewer',
   Remove = 'remove',
 }
+
+export type Reaction = 'upvote' | 'downvote';

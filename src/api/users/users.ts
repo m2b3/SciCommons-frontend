@@ -16,11 +16,13 @@ import type {
 } from '@tanstack/react-query';
 
 import { customInstance } from '.././custom-instance';
-import type { ErrorType } from '.././custom-instance';
+import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   ArticleDetails,
   Message,
   NotificationSchema,
+  ReactionCountOut,
+  ReactionIn,
   UsersApiGetMyArticlesParams,
 } from '.././schemas';
 
@@ -91,6 +93,186 @@ export const useUsersApiGetMyArticles = <
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getUsersApiGetMyArticlesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Post Reaction
+ */
+export const usersApiPostReaction = (
+  reactionIn: BodyType<ReactionIn>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/users/reactions`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: reactionIn,
+    },
+    options
+  );
+};
+
+export const getUsersApiPostReactionMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiPostReaction>>,
+    TError,
+    { data: BodyType<ReactionIn> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usersApiPostReaction>>,
+  TError,
+  { data: BodyType<ReactionIn> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usersApiPostReaction>>,
+    { data: BodyType<ReactionIn> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return usersApiPostReaction(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UsersApiPostReactionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiPostReaction>>
+>;
+export type UsersApiPostReactionMutationBody = BodyType<ReactionIn>;
+export type UsersApiPostReactionMutationError = ErrorType<Message>;
+
+/**
+ * @summary Post Reaction
+ */
+export const useUsersApiPostReaction = <TError = ErrorType<Message>, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiPostReaction>>,
+    TError,
+    { data: BodyType<ReactionIn> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof usersApiPostReaction>>,
+  TError,
+  { data: BodyType<ReactionIn> },
+  TContext
+> => {
+  const mutationOptions = getUsersApiPostReactionMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * @summary Get Reaction Count
+ */
+export const usersApiGetReactionCount = (
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review',
+  objectId: number,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ReactionCountOut>(
+    { url: `/api/users/reaction_count/${contentType}/${objectId}/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getUsersApiGetReactionCountQueryKey = (
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review',
+  objectId: number
+) => {
+  return [`/api/users/reaction_count/${contentType}/${objectId}/`] as const;
+};
+
+export const getUsersApiGetReactionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiGetReactionCount>>,
+  TError = ErrorType<unknown>,
+>(
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review',
+  objectId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiGetReactionCount>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getUsersApiGetReactionCountQueryKey(contentType, objectId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetReactionCount>>> = ({
+    signal,
+  }) => usersApiGetReactionCount(contentType, objectId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(contentType && objectId),
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof usersApiGetReactionCount>>, TError, TData> & {
+    queryKey: QueryKey;
+  };
+};
+
+export type UsersApiGetReactionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiGetReactionCount>>
+>;
+export type UsersApiGetReactionCountQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get Reaction Count
+ */
+export const useUsersApiGetReactionCount = <
+  TData = Awaited<ReturnType<typeof usersApiGetReactionCount>>,
+  TError = ErrorType<unknown>,
+>(
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review',
+  objectId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiGetReactionCount>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiGetReactionCountQueryOptions(contentType, objectId, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

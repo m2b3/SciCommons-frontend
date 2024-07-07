@@ -26,15 +26,15 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           rating: review.rating,
           content: review.content,
           subject: review.subject,
-          edited_at: review.updated_at,
+          created_at: review.updated_at,
         }
-      : review.history[selectedVersion - 1];
+      : review.versions[selectedVersion - 1];
 
   return (
     <>
       {edit ? (
         <ReviewForm
-          reviewId={review.id}
+          reviewId={review.id || 0}
           articleId={review.article_id}
           edit={edit}
           setEdit={setEdit}
@@ -79,14 +79,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   className="rounded border-gray-300 p-1"
                 >
                   <option value={0}>Latest</option>
-                  {review.history.map((version, index) => (
+                  {review.versions.map((version, index) => (
                     <option key={index + 1} value={index + 1}>
-                      {dayjs(version.edited_at).format('MMM D, YYYY ')}
+                      {dayjs(version.created_at).format('MMM D, YYYY ')}
                     </option>
                   ))}
                 </select>
               </div>
-              ({dayjs(currentVersion.edited_at).fromNow()})
+              ({dayjs(currentVersion.created_at).fromNow()})
             </div>
           </div>
           <h3 className="mb-2 text-lg font-semibold">{currentVersion.subject}</h3>

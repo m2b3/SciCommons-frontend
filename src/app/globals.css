@@ -57,6 +57,151 @@ body {
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
+
+    /* color palette */
+
+    /* Neutral */
+    --neutral-0: 255, 255, 255;
+    --neutral-50: 250, 250, 250;
+    --neutral-100: 245, 245, 245;
+    --neutral-150: 242, 242, 242;
+    --neutral-200: 229, 229, 229;
+    --neutral-300: 212, 212, 212;
+    --neutral-400: 163, 163, 163;
+    --neutral-500: 115, 115, 115;
+    --neutral-600: 82, 82, 82;
+    --neutral-650: 61, 61, 61;
+    --neutral-700: 64, 64, 64;
+    --neutral-750: 46, 46, 46;
+    --neutral-800: 38, 38, 38;
+    --neutral-850: 31, 31, 31;
+    --neutral-900: 23, 23, 23;
+    --neutral-950: 10, 10, 10;
+
+    /* Blue */
+    --blue-100: 235, 244, 255;
+    --blue-200: 184, 215, 255;
+    --blue-300: 133, 185, 255;
+    --blue-400: 71, 145, 255;
+    --blue-450: 61, 132, 255;
+    --blue-500: 46, 137, 255;
+    --blue-600: 41, 111, 204;
+    --blue-700: 61, 99, 153;
+    --blue-800: 52, 65, 82;
+
+    /* Functional Green */
+    --Functional-Green-Green: 47, 201, 109;
+    --Functional-Green-GreenLight: 217, 246, 229;
+    --Functional-Green-Greencontrast: 166, 226, 190;
+
+    /* Functional Blue */
+    --Functional-Blue-Blue: 62, 146, 255;
+    --Functional-Blue-BlueLight: 222, 235, 252;
+    --Functional-Blue-Bluecontrast: 168, 201, 243;
+
+    /* Functional Yellow */
+    --Functional-Yellow-Yellow: 252, 181, 42;
+    --Functional-Yellow-YellowLight: 255, 245, 224;
+    --Functional-Yellow-Yellowcontrast: 255, 227, 173;
+
+    /* Functional Red */
+    --Functional-Red-Red: 255, 91, 86;
+    --Functional-Red-RedLight: 255, 225, 224;
+    --Functional-Red-Redcontrast: 255, 186, 184;
+
+    /* Common Light */
+    --Common-Background: var(--neutral-50);
+    --Common-CardBackground: var(--neutral-0);
+    --Common-Minimal: var(--neutral-150);
+    --Common-Contrast: var(--neutral-200);
+    --Common-HeavyContrast: var(--neutral-300);
+
+    /* Accessory Light */
+    --Accessory-Accessory1: var(--neutral-0);
+    --Accessory-Accessory2: var(--neutral-50);
+    --Accessory-Accessory3: var(--neutral-100);
+    --Accessory-Accessory4: var(--neutral-150);
+    --Accessory-Accessory5: var(--neutral-200);
+    --Accessory-Accessory6: var(--neutral-300);
+    --Accessory-Accessory7: var(--neutral-400);
+
+    /* Text Light */
+    --Text-Primary: var(--neutral-800);
+    --Text-Secondary: var(--neutral-400);
+    --Text-Tertiary: var(--neutral-300);
+
+    /* Berry Theme Light */
+    --Berry-Base: var(--blue-450);
+    --Berry-Background: var(--blue-100);
+    --Berry-Border: var(--blue-200);
+    --Berry-Contrast: var(--blue-300);
+    --Berry-DisplayHeading: var(--blue-700);
+
+    /* Candy background Gradient */
+    --candy-background-berry: linear-gradient(
+      180deg,
+      rgba(85, 187, 255, 0.08) 0%,
+      rgba(85, 187, 255, 0.24) 100%
+    );
+    --candy-background-jelly: linear-gradient(
+      180deg,
+      rgba(255, 112, 184, 0.08) 0%,
+      rgba(255, 112, 184, 0.24) 100%
+    );
+    --candy-background-kiwi: linear-gradient(
+      180deg,
+      rgba(69, 217, 128, 0.08) 0%,
+      rgba(69, 217, 128, 0.24) 100%
+    );
+    --candy-background-lemon: linear-gradient(
+      180deg,
+      rgba(255, 238, 0, 0.08) 0%,
+      rgba(255, 238, 0, 0.24) 100%
+    );
+    --candy-background-plum: linear-gradient(
+      180deg,
+      rgba(141, 112, 255, 0.08) 0%,
+      rgba(141, 112, 255, 0.24) 100%
+    );
+    --candy-background-mint: linear-gradient(
+      180deg,
+      rgba(85, 187, 255, 0.08) 0%,
+      rgba(85, 187, 255, 0.24) 100%
+    );
+    --candy-background-tango: linear-gradient(
+      180deg,
+      rgba(255, 147, 46, 0.08) 0%,
+      rgba(255, 147, 46, 0.24) 100%
+    );
+    --candy-background-cherry: linear-gradient(
+      180deg,
+      rgba(255, 87, 82, 0.08) 0%,
+      rgba(255, 87, 82, 0.24) 100%
+    );
+
+    /* Candy Button Bg Gradient */
+    --candy-buttonbg-berry: linear-gradient(180deg, #5291ff 0%, #4589fe 100%);
+    --candy-buttonbg-jelly: linear-gradient(180deg, #ff70b8 0%, #ff57ac 100%);
+    --candy-buttonbg-kiwi: linear-gradient(180deg, #45d980 0%, #2acb6b 100%);
+    --candy-buttonbg-lemon: linear-gradient(180deg, #ffd502 0%, #f5cc00 100%);
+    --candy-buttonbg-plum: linear-gradient(180deg, #8d7aff 0%, #735cff 100%);
+    --candy-buttonbg-mint: linear-gradient(180deg, #5bf 0%, #29a9ff 100%);
+    --candy-buttonbg-tango: linear-gradient(180deg, #ff932e 0%, #ff7d03 100%);
+    --candy-buttonbg-cherry: linear-gradient(180deg, #ff5752 0%, #ff4039 100%);
+
+    /* Candy Text */
+    --candy-text-berry: #3d84ff;
+    --candy-text-jelly: #ff70b8;
+    --candy-text-kiwi: #37d277;
+    --candy-text-lemon: #f5be00;
+    --candy-text-plum: #8d70ff;
+    --candy-text-mint: #5bf;
+    --candy-text-tango: #ff932e;
+    --candy-text-cherry: #ff5752;
+    --candy-text-lychee: #ff5c92;
+
+    /* Loading */
+    --loading: #f2f2f2;
   }
 
   .dark {
@@ -93,6 +238,37 @@ body {
     --ring: 216 34% 17%;
 
     --radius: 0.5rem;
+
+    /* Common Dark */
+    --Common-Background: var(--neutral-800);
+    --Common-CardBackground: var(--neutral-750);
+    --Common-Minimal: var(--neutral-650);
+    --Common-Contrast: var(--neutral-600);
+    --Common-HeavyContrast: var(--neutral-600);
+
+    /* Accessory Dark */
+    --Accessory-Accessory1: var(--neutral-950);
+    --Accessory-Accessory2: var(--neutral-900);
+    --Accessory-Accessory3: var(--neutral-850);
+    --Accessory-Accessory4: var(--neutral-800);
+    --Accessory-Accessory5: var(--neutral-700);
+    --Accessory-Accessory6: var(--neutral-600);
+    --Accessory-Accessory7: var(--neutral-500);
+
+    /* Text Dark */
+    --Text-Primary: var(--neutral-200);
+    --Text-Secondary: var(--neutral-500);
+    --Text-tertiary: var(--neutral-600);
+
+    /* Berry Theme Dark */
+    --Berry-Base: var(--blue-400);
+    --Berry-Background: var(--blue-800);
+    --Berry-Border: var(--blue-700);
+    --Berry-Contrast: var(--blue-600);
+    --Berry-DisplayHeading: var(--blue-200);
+
+    /* Loading */
+    --loading: #3d3d3d;
   }
 }
 
@@ -116,4 +292,24 @@ body {
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+/* Gyro Slider CSS */
+.gyroSlider-carousel {
+  position: relative;
+  /* height: 1rem; */
+  perspective: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  top: 5%;
+}
+
+.gyroSlider-container {
+  position: absolute;
+  transform: rotateY(calc(var(--offset) * 50deg)) scaleY(calc(1 + var(--abs-offset) * -0.2))
+    translateZ(calc(var(--abs-offset) * -30rem)) translateX(calc(var(--direction) * -8rem));
+  filter: blur(calc(var(--abs-offset) * 0.5rem));
+  transition: all 0.3s ease-out;
 }

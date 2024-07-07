@@ -120,6 +120,93 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+
+        // Custom Colors
+        neutral: {
+          0: 'rgba(var(--neutral-0))',
+          50: 'rgba(var(--neutral-50))',
+          100: 'rgba(var(--neutral-100))',
+          150: 'rgba(var(--neutral-150))',
+          200: 'rgba(var(--neutral-200))',
+          300: 'rgba(var(--neutral-300))',
+          400: 'rgba(var(--neutral-400))',
+          500: 'rgba(var(--neutral-500))',
+          600: 'rgba(var(--neutral-600))',
+          650: 'rgba(var(--neutral-650))',
+          700: 'rgba(var(--neutral-700))',
+          750: 'rgba(var(--neutral-750))',
+          800: 'rgba(var(--neutral-800))',
+          850: 'rgba(var(--neutral-850))',
+          900: 'rgba(var(--neutral-900))',
+          950: 'rgba(var(--neutral-950))',
+        },
+        blue: {
+          100: 'rgba(var(--blue-100))',
+          200: 'rgba(var(--blue-200))',
+          300: 'rgba(var(--blue-300))',
+          400: 'rgba(var(--blue-400))',
+          450: 'rgba(var(--blue-450))',
+          500: 'rgba(var(--blue-500))',
+          600: 'rgba(var(--blue-600))',
+          700: 'rgba(var(--blue-700))',
+          800: 'rgba(var(--blue-800))',
+        },
+        functional: {
+          green: 'rgba(var(--Functional-Green-Green))',
+          greenLight: 'rgba(var(--Functional-Green-GreenLight))',
+          greenContrast: 'rgba(var(--Functional-Green-Greencontrast))',
+          blue: 'rgba(var(--Functional-Blue-Blue))',
+          blueLight: 'rgba(var(--Functional-Blue-BlueLight))',
+          blueContrast: 'rgba(var(--Functional-Blue-Bluecontrast))',
+          yellow: 'rgba(var(--Functional-Yellow-Yellow))',
+          yellowLight: 'rgba(var(--Functional-Yellow-YellowLight))',
+          yellowContrast: 'rgba(var(--Functional-Yellow-Yellowcontrast))',
+          red: 'rgba(var(--Functional-Red-Red))',
+          redLight: 'rgba(var(--Functional-Red-RedLight))',
+          redContrast: 'rgba(var(--Functional-Red-Redcontrast))',
+        },
+        common: {
+          background: 'rgba(var(--Common-Background))',
+          cardBackground: 'rgba(var(--Common-CardBackground))',
+          minimal: 'rgba(var(--Common-Minimal))',
+          contrast: 'rgba(var(--Common-Contrast))',
+          heavyContrast: 'rgba(var(--Common-HeavyContrast))',
+        },
+        accessory: {
+          accessory1: 'rgba(var(--Accessory-Accessory1))',
+          accessory2: 'rgba(var(--Accessory-Accessory2))',
+          accessory3: 'rgba(var(--Accessory-Accessory3))',
+          accessory4: 'rgba(var(--Accessory-Accessory4))',
+          accessory5: 'rgba(var(--Accessory-Accessory5))',
+          accessory6: 'rgba(var(--Accessory-Accessory6))',
+          accessory7: 'rgba(var(--Accessory-Accessory7))',
+        },
+        text: {
+          primary: 'rgba(var(--Text-Primary))',
+          secondary: 'rgba(var(--Text-Secondary))',
+          tertiary: 'rgba(var(--Text-Tertiary))',
+        },
+        berry: {
+          base: 'rgba(var(--Berry-Base))',
+          background: 'rgba(var(--Berry-Background))',
+          border: 'rgba(var(--Berry-Border))',
+          contrast: 'rgba(var(--Berry-Contrast))',
+          displayHeading: 'rgba(var(--Berry-DisplayHeading))',
+        },
+        /* Candy Text */
+        'candy-text': {
+          berry: '#3d84ff',
+          jelly: '#ff70b8',
+          kiwi: '#37d277',
+          lemon: '#f5be00',
+          plum: '#8d70ff',
+          mint: '#5bf',
+          tango: '#ff932e',
+          cherry: '#ff5752',
+          lychee: '#ff5c92',
+        },
+        // Loading
+        loading: 'var(--loading)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -128,6 +215,14 @@ const config: Config = {
         'tremor-small': '0.375rem',
         'tremor-default': '0.5rem',
         'tremor-full': '9999px',
+
+        // Custom Radius
+        'common-lg': '10px',
+        'common-xl': '20px',
+      },
+      aspectRatio: {
+        '4/3': '4 / 3',
+        '3/4': '3 / 4',
       },
       keyframes: {
         'accordion-down': {
@@ -156,6 +251,9 @@ const config: Config = {
         'dark-tremor-input': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
         'dark-tremor-card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
         'dark-tremor-dropdown': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+
+        // common shadow
+        common: '0px 6px 20px 0px rgba(0, 0, 0, 0.03)',
       },
       fontSize: {
         'tremor-label': ['0.75rem', { lineHeight: '1rem' }],

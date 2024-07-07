@@ -4,17 +4,23 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { ReviewHistorySchema } from './reviewHistorySchema';
+import type { ReviewSchemaDeletedAt } from './reviewSchemaDeletedAt';
+import type { ReviewSchemaId } from './reviewSchemaId';
+import type { ReviewVersionSchema } from './reviewVersionSchema';
+import type { UserOut } from './userOut';
 
 export interface ReviewSchema {
   article_id: number;
   content: string;
   created_at: string;
-  history: ReviewHistorySchema[];
-  id: number;
+  deleted_at?: ReviewSchemaDeletedAt;
+  id?: ReviewSchemaId;
   is_author?: boolean;
   rating: number;
+  /** @maxLength 255 */
   subject: string;
   updated_at: string;
-  user_id: number;
+  user: UserOut;
+  version?: number;
+  versions: ReviewVersionSchema[];
 }

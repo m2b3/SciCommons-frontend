@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
-import { useArticlesApiReviewGetReviews } from '@/api/reviews/reviews';
+import { useArticlesApiReviewListReviews } from '@/api/reviews/reviews';
 import DisplayArticleSkeletonLoader from '@/components/loaders/DisplayArticleSkeletonLoader';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { useAuthStore } from '@/stores/authStore';
@@ -61,7 +61,7 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
     error: reviewsError,
     isPending: reviewsIsPending,
     refetch: reviewsRefetch,
-  } = useArticlesApiReviewGetReviews(
+  } = useArticlesApiReviewListReviews(
     data?.data.id || 0,
     {},
     {
@@ -90,8 +90,8 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
           <ReviewForm articleId={data?.data.id || 0} refetch={reviewsRefetch} />
           {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
           {reviewsData &&
-            reviewsData.data.reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} refetch={reviewsRefetch} />
+            reviewsData.data.items.map((item) => (
+              <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
             ))}
         </div>
       ),

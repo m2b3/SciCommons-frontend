@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   useArticlesApiReviewCreateReview,
   useArticlesApiReviewDeleteReview,
-  useArticlesApiReviewEditReview,
+  useArticlesApiReviewUpdateReview,
 } from '@/api/reviews/reviews';
 import FormInput from '@/components/FormInput';
 import LabeledTooltip from '@/components/LabeledToolTip';
@@ -82,7 +82,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     isPending: editPending,
     error: editError,
     mutate: editReview,
-  } = useArticlesApiReviewEditReview({ request: axiosConfig });
+  } = useArticlesApiReviewUpdateReview({ request: axiosConfig });
 
   // Delete a Review
   const {
@@ -103,7 +103,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     } else if (action === 'delete' && reviewId) {
       deleteReview({ reviewId: reviewId });
     } else {
-      createReview({ data: reviewData });
+      createReview({ articleId, data: reviewData });
     }
   };
 

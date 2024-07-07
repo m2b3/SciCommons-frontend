@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ThemeProvider } from 'next-themes';
 import { Inter } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 
@@ -25,7 +26,14 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
           <Toaster />
         </body>
       </html>

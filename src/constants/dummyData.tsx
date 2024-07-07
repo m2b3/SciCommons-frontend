@@ -465,3 +465,39 @@ export const communityStats = {
     { date: '2024-06-06', articles: 20 },
   ],
 };
+
+export const posts = [
+  {
+    id: 1,
+    username: 'John Doe',
+    profilePicture: 'https://picsum.photos/40/40',
+    createdTime: '1 hour ago',
+    title: 'Beautiful Sunset',
+    content:
+      'I captured this stunning sunset at the beach today. The colors were absolutely breathtaking!',
+    image: 'https://picsum.photos/500/300',
+    likes: 42,
+    comments: 12,
+  },
+  {
+    id: 2,
+    username: 'Jane Smith',
+    profilePicture: 'https://picsum.photos/40/40',
+    createdTime: '3 hours ago',
+    title: 'My New Recipe',
+    content: "Just tried this amazing new pasta recipe. It's so delicious and easy to make!",
+    likes: 28,
+    comments: 7,
+  },
+  {
+    id: 3,
+    username: 'Bob Johnson',
+    profilePicture: 'https://picsum.photos/40/40',
+    createdTime: 'Yesterday',
+    title: 'Hiking Adventure',
+    content: 'Went on an incredible hike this weekend. The views were spectacular!',
+    image: 'https://picsum.photos/500/300',
+    likes: 56,
+    comments: 15,
+  },
+];

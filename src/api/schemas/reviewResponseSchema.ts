@@ -4,12 +4,17 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ReviewResponseSchemaId } from './reviewResponseSchemaId';
 
 export interface ReviewResponseSchema {
+  article: number;
   content: string;
   created_at: string;
-  id: number;
+  id?: ReviewResponseSchemaId;
   rating: number;
+  /** @maxLength 255 */
   subject: string;
   updated_at: string;
+  user: number;
+  version?: number;
 }
