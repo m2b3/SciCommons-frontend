@@ -1,41 +1,33 @@
 import { FileText, UserCheck, Users } from 'lucide-react';
 
+import { CommunitySchema } from '@/api/schemas';
+
 interface CommunityStatsProps {
-  members: number;
-  articlesPublished: number;
-  moderators: number;
-  reviewers: number;
-  articlesReviewed: number;
+  community: CommunitySchema;
 }
 
-const CommunityStats: React.FC<CommunityStatsProps> = ({
-  members,
-  articlesPublished,
-  moderators,
-  reviewers,
-  articlesReviewed,
-}) => {
+const CommunityStats: React.FC<CommunityStatsProps> = ({ community }) => {
   return (
     <div className="rounded-md bg-white p-4 shadow-md">
       <h2 className="mb-4 text-xl font-semibold">Community Stats</h2>
       <div className="flex flex-col space-y-4">
         <div className="flex items-center">
           <Users className="mr-2 h-5 w-5" />
-          <span>{members} Members</span>
+          <span>{community.num_members} Members</span>
         </div>
         <div className="flex items-center">
           <FileText className="mr-2 h-5 w-5" />
-          <span>Published {articlesPublished} Articles so far</span>
+          <span>Published {community.num_published_articles} Articles so far</span>
         </div>
         <div className="flex items-center">
           <UserCheck className="mr-2 h-5 w-5" />
           <span>
-            {moderators} Moderators & {reviewers} Reviewers
+            {community.num_moderators} Moderators & {community.num_reviewers} Reviewers
           </span>
         </div>
         <div className="flex items-center">
           <FileText className="mr-2 h-5 w-5" />
-          <span>{articlesReviewed} articles have been reviewed</span>
+          <span>{community.num_articles} articles have been reviewed</span>
         </div>
       </div>
     </div>

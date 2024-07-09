@@ -7,9 +7,9 @@
 import type { CommunityType } from './communityType';
 import type { Tag } from './tag';
 
-export interface UpdateCommunityDetails {
+export interface CreateCommunityDetails {
   description: string;
-  rules: string[];
+  name: string;
   tags: Tag[];
   type: CommunityType;
 }

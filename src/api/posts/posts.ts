@@ -22,8 +22,9 @@ import type {
   CommentOut,
   CommentUpdateSchema,
   Message,
+  PaginatedPostsResponse,
+  PostCreateSchema,
   PostOut,
-  PostSchema,
   PostsApiListPostsParams,
   ReactionSchema,
 } from '.././schemas';
@@ -34,7 +35,7 @@ type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
  * @summary Create Post
  */
 export const postsApiCreatePost = (
-  postSchema: BodyType<PostSchema>,
+  postCreateSchema: BodyType<PostCreateSchema>,
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<PostOut>(
@@ -42,7 +43,7 @@ export const postsApiCreatePost = (
       url: `/api/posts/`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      data: postSchema,
+      data: postCreateSchema,
     },
     options
   );
@@ -55,21 +56,21 @@ export const getPostsApiCreatePostMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postsApiCreatePost>>,
     TError,
-    { data: BodyType<PostSchema> },
+    { data: BodyType<PostCreateSchema> },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof postsApiCreatePost>>,
   TError,
-  { data: BodyType<PostSchema> },
+  { data: BodyType<PostCreateSchema> },
   TContext
 > => {
   const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof postsApiCreatePost>>,
-    { data: BodyType<PostSchema> }
+    { data: BodyType<PostCreateSchema> }
   > = (props) => {
     const { data } = props ?? {};
 
@@ -82,7 +83,7 @@ export const getPostsApiCreatePostMutationOptions = <
 export type PostsApiCreatePostMutationResult = NonNullable<
   Awaited<ReturnType<typeof postsApiCreatePost>>
 >;
-export type PostsApiCreatePostMutationBody = BodyType<PostSchema>;
+export type PostsApiCreatePostMutationBody = BodyType<PostCreateSchema>;
 export type PostsApiCreatePostMutationError = ErrorType<Message>;
 
 /**
@@ -92,14 +93,14 @@ export const usePostsApiCreatePost = <TError = ErrorType<Message>, TContext = un
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postsApiCreatePost>>,
     TError,
-    { data: BodyType<PostSchema> },
+    { data: BodyType<PostCreateSchema> },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof postsApiCreatePost>>,
   TError,
-  { data: BodyType<PostSchema> },
+  { data: BodyType<PostCreateSchema> },
   TContext
 > => {
   const mutationOptions = getPostsApiCreatePostMutationOptions(options);
@@ -114,7 +115,10 @@ export const postsApiListPosts = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<PostOut[]>({ url: `/api/posts/`, method: 'GET', params, signal }, options);
+  return customInstance<PaginatedPostsResponse>(
+    { url: `/api/posts/`, method: 'GET', params, signal },
+    options
+  );
 };
 
 export const getPostsApiListPostsQueryKey = (params?: PostsApiListPostsParams) => {
@@ -123,7 +127,7 @@ export const getPostsApiListPostsQueryKey = (params?: PostsApiListPostsParams) =
 
 export const getPostsApiListPostsQueryOptions = <
   TData = Awaited<ReturnType<typeof postsApiListPosts>>,
-  TError = ErrorType<Message>,
+  TError = ErrorType<unknown>,
 >(
   params?: PostsApiListPostsParams,
   options?: {
@@ -148,14 +152,14 @@ export const getPostsApiListPostsQueryOptions = <
 export type PostsApiListPostsQueryResult = NonNullable<
   Awaited<ReturnType<typeof postsApiListPosts>>
 >;
-export type PostsApiListPostsQueryError = ErrorType<Message>;
+export type PostsApiListPostsQueryError = ErrorType<unknown>;
 
 /**
  * @summary List Posts
  */
 export const usePostsApiListPosts = <
   TData = Awaited<ReturnType<typeof postsApiListPosts>>,
-  TError = ErrorType<Message>,
+  TError = ErrorType<unknown>,
 >(
   params?: PostsApiListPostsParams,
   options?: {
@@ -237,83 +241,6 @@ export const usePostsApiGetPost = <
 };
 
 /**
- * @summary Update Post
- */
-export const postsApiUpdatePost = (
-  postId: number,
-  postSchema: BodyType<PostSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<PostOut>(
-    {
-      url: `/api/posts/${postId}/`,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      data: postSchema,
-    },
-    options
-  );
-};
-
-export const getPostsApiUpdatePostMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postsApiUpdatePost>>,
-    TError,
-    { postId: number; data: BodyType<PostSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postsApiUpdatePost>>,
-  TError,
-  { postId: number; data: BodyType<PostSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postsApiUpdatePost>>,
-    { postId: number; data: BodyType<PostSchema> }
-  > = (props) => {
-    const { postId, data } = props ?? {};
-
-    return postsApiUpdatePost(postId, data, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PostsApiUpdatePostMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postsApiUpdatePost>>
->;
-export type PostsApiUpdatePostMutationBody = BodyType<PostSchema>;
-export type PostsApiUpdatePostMutationError = ErrorType<Message>;
-
-/**
- * @summary Update Post
- */
-export const usePostsApiUpdatePost = <TError = ErrorType<Message>, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postsApiUpdatePost>>,
-    TError,
-    { postId: number; data: BodyType<PostSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof postsApiUpdatePost>>,
-  TError,
-  { postId: number; data: BodyType<PostSchema> },
-  TContext
-> => {
-  const mutationOptions = getPostsApiUpdatePostMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-/**
  * @summary Delete Post
  */
 export const postsApiDeletePost = (
@@ -378,6 +305,83 @@ export const usePostsApiDeletePost = <TError = ErrorType<string>, TContext = unk
   TContext
 > => {
   const mutationOptions = getPostsApiDeletePostMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * @summary Update Post
+ */
+export const postsApiUpdatePost = (
+  postId: number,
+  postCreateSchema: BodyType<PostCreateSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<PostOut>(
+    {
+      url: `/api/posts/${postId}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: postCreateSchema,
+    },
+    options
+  );
+};
+
+export const getPostsApiUpdatePostMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postsApiUpdatePost>>,
+    TError,
+    { postId: number; data: BodyType<PostCreateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postsApiUpdatePost>>,
+  TError,
+  { postId: number; data: BodyType<PostCreateSchema> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postsApiUpdatePost>>,
+    { postId: number; data: BodyType<PostCreateSchema> }
+  > = (props) => {
+    const { postId, data } = props ?? {};
+
+    return postsApiUpdatePost(postId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostsApiUpdatePostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postsApiUpdatePost>>
+>;
+export type PostsApiUpdatePostMutationBody = BodyType<PostCreateSchema>;
+export type PostsApiUpdatePostMutationError = ErrorType<Message>;
+
+/**
+ * @summary Update Post
+ */
+export const usePostsApiUpdatePost = <TError = ErrorType<Message>, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postsApiUpdatePost>>,
+    TError,
+    { postId: number; data: BodyType<PostCreateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postsApiUpdatePost>>,
+  TError,
+  { postId: number; data: BodyType<PostCreateSchema> },
+  TContext
+> => {
+  const mutationOptions = getPostsApiUpdatePostMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

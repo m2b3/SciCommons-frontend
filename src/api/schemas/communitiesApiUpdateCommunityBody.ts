@@ -4,12 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { CommunityUpdateSchema } from './communityUpdateSchema';
 
 export type CommunitiesApiUpdateCommunityBody = {
   banner_pic_file?: Blob;
-  description: string;
+  payload: CommunityUpdateSchema;
   profile_pic_file?: Blob;
-  rules: string[];
-  tags: string;
-  type: string;
 };

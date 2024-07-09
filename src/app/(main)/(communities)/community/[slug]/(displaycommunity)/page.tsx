@@ -102,21 +102,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
       <div className="flex flex-col md:flex-row">
         <div className="p-2 md:w-2/3">
           {isPending && <DisplayCommunitySkeletonLoader />}
-          {data && (
-            <DisplayCommunity
-              communityId={data.data.id}
-              profileImage={data.data.profile_pic_url || '/auth/register.png'}
-              coverImage="/auth/register.png"
-              communityName={data.data.name}
-              description={data.data.description}
-              members={200}
-              articlesPublished={10}
-              is_admin={data.data.is_admin}
-              is_member={data.data.is_member}
-              refetch={refetch}
-              join_request_status={data.data.join_request_status}
-            />
-          )}
+          {data && <DisplayCommunity community={data.data} refetch={refetch} />}
         </div>
         <div className="flex flex-col gap-2 p-2 md:w-1/3">
           {isPending && (
@@ -128,13 +114,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
 
           {data && (
             <>
-              <CommunityStats
-                members={data.data.num_members}
-                articlesPublished={data.data.num_published_articles}
-                moderators={data.data.num_moderators}
-                reviewers={data.data.num_reviewers}
-                articlesReviewed={data.data.num_articles}
-              />
+              <CommunityStats community={data.data} />
               {data.data.rules.length === 0 ? (
                 <div className="rounded-md bg-white p-6 shadow-md">
                   <h2 className="mb-4 text-xl font-semibold">No Rules</h2>

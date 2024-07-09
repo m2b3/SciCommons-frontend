@@ -21,9 +21,13 @@ import type {
   Message,
   NotificationSchema,
   PaginatedArticlesResponse,
+  PaginatedHashtagOut,
+  PaginatedPostsResponse,
   ReactionCountOut,
   ReactionIn,
+  UsersApiGetHashtagsParams,
   UsersApiGetMyArticlesParams,
+  UsersApiListMyPostsParams,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
@@ -421,4 +425,150 @@ export const useUsersApiMarkNotificationAsRead = <
   const mutationOptions = getUsersApiMarkNotificationAsReadMutationOptions(options);
 
   return useMutation(mutationOptions);
+};
+/**
+ * Get a list of hashtags from the database.
+ * @summary Get Hashtags
+ */
+export const usersApiGetHashtags = (
+  params?: UsersApiGetHashtagsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedHashtagOut>(
+    { url: `/api/users/hashtags/`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersApiGetHashtagsQueryKey = (params?: UsersApiGetHashtagsParams) => {
+  return [`/api/users/hashtags/`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersApiGetHashtagsQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiGetHashtags>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersApiGetHashtagsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiGetHashtags>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiGetHashtagsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetHashtags>>> = ({ signal }) =>
+    usersApiGetHashtags(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiGetHashtags>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiGetHashtagsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiGetHashtags>>
+>;
+export type UsersApiGetHashtagsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get Hashtags
+ */
+export const useUsersApiGetHashtags = <
+  TData = Awaited<ReturnType<typeof usersApiGetHashtags>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersApiGetHashtagsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiGetHashtags>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiGetHashtagsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary List My Posts
+ */
+export const usersApiListMyPosts = (
+  params?: UsersApiListMyPostsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedPostsResponse>(
+    { url: `/api/users/my-posts`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersApiListMyPostsQueryKey = (params?: UsersApiListMyPostsParams) => {
+  return [`/api/users/my-posts`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersApiListMyPostsQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiListMyPosts>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersApiListMyPostsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiListMyPosts>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiListMyPostsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiListMyPosts>>> = ({ signal }) =>
+    usersApiListMyPosts(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiListMyPosts>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiListMyPostsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiListMyPosts>>
+>;
+export type UsersApiListMyPostsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List My Posts
+ */
+export const useUsersApiListMyPosts = <
+  TData = Awaited<ReturnType<typeof usersApiListMyPosts>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersApiListMyPostsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiListMyPosts>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiListMyPostsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
 };

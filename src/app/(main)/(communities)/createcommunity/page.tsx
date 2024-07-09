@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -39,16 +39,20 @@ const CreateCommunity = () => {
   const router = useRouter();
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const {
-    data,
-    mutate: createCommunity,
-    isPending,
-    isSuccess,
-    error,
-  } = useCommunitiesApiCreateCommunity({
+  const { mutate: createCommunity, isPending } = useCommunitiesApiCreateCommunity({
     request: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+      },
+    },
+    mutation: {
+      onSuccess: (data) => {
+        toast.success('Community created successfully! Redirecting to community page...');
+        router.push(`/community/${data.data.id}`);
+      },
+      onError: (error) => {
+        console.error('Error submitting article:', error);
+        toast.error(`${error.response?.data.message || 'An error occurred'}`);
       },
     },
   });
@@ -64,22 +68,6 @@ const CreateCommunity = () => {
     },
     mode: 'onChange',
   });
-
-  useEffect(() => {
-    if (error) {
-      console.error('Error submitting article:', error);
-      toast.error(
-        `Error submitting article: ${(error?.response?.data as { detail?: string })?.detail || 'An error occurred'}`
-      );
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Community created successfully! Redirecting to community page...');
-      router.push(`/community/${data.data.id}`);
-    }
-  }, [isSuccess, data, router]);
 
   const options: { name: string; description: string; value: OptionType }[] = [
     {
@@ -103,11 +91,14 @@ const CreateCommunity = () => {
     const dataToSend = {
       name: data.name,
       description: data.description,
-      tags: JSON.stringify(data.tags),
+      tags: data.tags.map((tag) => ({ value: tag.value, label: tag.label })),
       type: data.type,
-      profile_image_file: data.profileImage ? data.profileImage.file : undefined,
     };
-    createCommunity({ data: dataToSend });
+    const profile_image_file = data.profileImage ? data.profileImage.file : undefined;
+
+    createCommunity({
+      data: { payload: { details: dataToSend }, profile_image_file: profile_image_file },
+    });
   };
 
   return (

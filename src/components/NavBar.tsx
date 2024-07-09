@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
@@ -24,7 +24,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
-  const [activeTab, setActiveTab] = useState('');
   const pathname = usePathname();
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -32,23 +31,6 @@ const NavBar: React.FC = () => {
     { href: '/communities', label: 'Communities' },
     { href: '/posts', label: 'Posts' },
   ];
-
-  // Todo: Refactor this and Activate tabs when the required page is matched.
-  useEffect(() => {
-    switch (true) {
-      case pathname.includes('articles') || pathname.includes('article'):
-        setActiveTab('Articles');
-        break;
-      case pathname.includes('posts') || pathname.includes('post'):
-        setActiveTab('Posts');
-        break;
-      case pathname.includes('communities') || pathname.includes('community'):
-        setActiveTab('Communities');
-        break;
-      default:
-        setActiveTab('Home');
-    }
-  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-slate-100/20 backdrop-blur-[20px] sm:px-9">
@@ -61,7 +43,7 @@ const NavBar: React.FC = () => {
             <li
               key={link.href}
               className={cn('rounded-full px-2 py-1 text-sm hover:bg-functional-green/10', {
-                'bg-functional-green/10 font-bold text-functional-green': link.label === activeTab,
+                'bg-functional-green/10 font-bold text-functional-green': link.href === pathname,
               })}
             >
               <Link href={link.href}>{link.label}</Link>

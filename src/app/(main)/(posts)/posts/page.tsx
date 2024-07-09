@@ -21,7 +21,7 @@ const PostList = () => {
         </Link>
       </div>
       {isPending && Array.from({ length: 5 }).map((_, index) => <PostSkeleton key={index} />)}
-      {data?.data.map((post) => <Post key={post.id} {...post} />)}
+      {data?.data.items.map((post) => <Post key={post.id} {...post} />)}
     </div>
   );
 };

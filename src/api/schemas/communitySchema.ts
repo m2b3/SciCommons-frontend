@@ -4,8 +4,32 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { CommunitySchemaBannerPicUrl } from './communitySchemaBannerPicUrl';
+import type { CommunitySchemaCreatedAt } from './communitySchemaCreatedAt';
+import type { CommunitySchemaJoinRequestStatus } from './communitySchemaJoinRequestStatus';
+import type { CommunitySchemaProfilePicUrl } from './communitySchemaProfilePicUrl';
+import type { CommunityType } from './communityType';
+import type { Tag } from './tag';
 
 export interface CommunitySchema {
+  banner_pic_url: CommunitySchemaBannerPicUrl;
+  created_at: CommunitySchemaCreatedAt;
+  description: string;
   id: number;
-  status: string;
+  is_admin?: boolean;
+  is_member?: boolean;
+  is_moderator?: boolean;
+  is_reviewer?: boolean;
+  join_request_status?: CommunitySchemaJoinRequestStatus;
+  name: string;
+  num_articles: number;
+  num_members: number;
+  num_moderators: number;
+  num_published_articles: number;
+  num_reviewers: number;
+  profile_pic_url: CommunitySchemaProfilePicUrl;
+  rules: string[];
+  slug: string;
+  tags: Tag[];
+  type: CommunityType;
 }

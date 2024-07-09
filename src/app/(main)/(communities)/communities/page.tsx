@@ -13,7 +13,7 @@ const Communities = () => {
         {isPending &&
           Array.from({ length: 5 }, (_, index) => <CommunityCardSkeleton key={index} />)}
         {data &&
-          data.data.communities.map((community, index) => (
+          data.data.items.map((community, index) => (
             <CommunityCard
               key={index}
               imageUrl={community.profile_pic_url || '/auth/register.png'}

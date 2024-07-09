@@ -5,10 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PostsApiListPostsParams = {
+export type UsersApiGetHashtagsParams = {
+  sort?: 'popular' | 'recent' | 'alphabetical';
+  search?: string;
   page?: number;
-  size?: number;
-  sort_by?: string;
-  sort_order?: string;
-  hashtags?: string[] | null;
+  per_page?: number;
 };

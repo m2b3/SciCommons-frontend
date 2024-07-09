@@ -5,7 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PostsApiListPostsParams = {
+export type UsersApiListMyPostsParams = {
   page?: number;
   size?: number;
   sort_by?: string;

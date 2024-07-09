@@ -11,35 +11,17 @@ import toast from 'react-hot-toast';
 
 import '@/api/communities/communities';
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
+import { CommunitySchema } from '@/api/schemas';
 import { useAuthStore } from '@/stores/authStore';
 
 import ArticleSubmission from './ArticleSubmission';
 
 interface DisplayCommunityProps {
-  communityId: number;
-  profileImage: string;
-  coverImage: string;
-  communityName: string;
-  description: string;
-  members: number;
-  articlesPublished: number;
-  is_admin?: boolean;
-  is_member?: boolean;
-  join_request_status?: string | null;
+  community: CommunitySchema;
   refetch: () => void;
 }
 
-const DisplayCommunity: React.FC<DisplayCommunityProps> = ({
-  communityId,
-  profileImage,
-  coverImage,
-  communityName,
-  description,
-  is_admin,
-  is_member,
-  join_request_status,
-  refetch,
-}) => {
+const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch }) => {
   const params = useParams<{ slug: string }>();
 
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -50,7 +32,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({
   });
 
   const handleJoin = () => {
-    mutate({ communityId });
+    mutate({ communityId: community.id });
   };
 
   useEffect(() => {
@@ -66,13 +48,18 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow-md">
       <div className="relative h-52 w-full">
-        <Image src={coverImage} alt="Community Cover" layout="fill" objectFit="cover" />
+        <Image
+          src={community.banner_pic_url || 'https://picsum.photos/200/300'}
+          alt="Community Cover"
+          layout="fill"
+          objectFit="cover"
+        />
       </div>
       <div className="relative p-4">
         <div className="absolute left-4 top-0 -translate-y-1/2 transform">
           <div className="relative h-24 w-24">
             <Image
-              src={profileImage}
+              src={community.profile_pic_url || 'https://picsum.photos/200/300'}
               alt="Profile"
               layout="fill"
               objectFit="cover"
@@ -81,8 +68,8 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({
           </div>
         </div>
         <div className="mt-12">
-          <h2 className="text-2xl font-bold">{communityName}</h2>
-          <p className="mt-2 text-gray-600">{description}</p>
+          <h2 className="text-2xl font-bold">{community.name}</h2>
+          <p className="mt-2 text-gray-600">{community.description}</p>
         </div>
         <div className="absolute right-4 top-4">
           <button className="flex items-center space-x-2 rounded-md bg-gray-200 px-3 py-1 text-gray-700 hover:bg-gray-300">
@@ -93,31 +80,37 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({
       </div>
       <div className="flex items-center justify-between px-2">
         <div className="ml-auto flex items-center justify-end space-x-4 p-4">
-          {is_admin && (
+          {community.is_admin && (
             <>
-              <ArticleSubmission communityName={communityName} />
+              <ArticleSubmission communityName={community.name} />
               <Link href={`/community/${params.slug}/dashboard`}>
                 <button className="rounded-full bg-black px-4 py-2 text-white">Dashboard</button>
               </Link>
             </>
           )}
-          {!is_admin && is_member && (
+          {!community.is_admin && community.is_member && (
             <>
-              <ArticleSubmission communityName={communityName} />
+              <ArticleSubmission communityName={community.name} />
               <button className="rounded-full bg-gray-200 px-4 py-2 text-gray-700">Joined</button>
             </>
           )}
-          {!is_admin && !is_member && join_request_status === 'pending' && (
-            <button className="rounded-full bg-gray-200 px-4 py-2 text-gray-700">Requested</button>
-          )}
-          {!is_admin && !is_member && join_request_status !== 'pending' && (
-            <button
-              onClick={() => handleJoin()}
-              className="rounded-full bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-            >
-              Join Community
-            </button>
-          )}
+          {!community.is_admin &&
+            !community.is_member &&
+            community.join_request_status === 'pending' && (
+              <button className="rounded-full bg-gray-200 px-4 py-2 text-gray-700">
+                Requested
+              </button>
+            )}
+          {!community.is_admin &&
+            !community.is_member &&
+            community.join_request_status !== 'pending' && (
+              <button
+                onClick={() => handleJoin()}
+                className="rounded-full bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+              >
+                Join Community
+              </button>
+            )}
         </div>
       </div>
     </div>

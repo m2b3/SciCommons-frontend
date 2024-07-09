@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
-import { CommunityDetails } from '@/api/schemas';
+import { CommunitySchema } from '@/api/schemas';
 import FormInput from '@/components/FormInput';
 import ImageUpload from '@/components/ImageUpload';
 import LabeledTooltip from '@/components/LabeledToolTip';
@@ -27,7 +27,7 @@ interface FormValues {
 }
 
 interface EditCommunityDetailsProps {
-  data: AxiosResponse<CommunityDetails> | undefined;
+  data: AxiosResponse<CommunitySchema> | undefined;
   isPending: boolean;
   refetch?: () => void;
 }
@@ -47,27 +47,36 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const {
-    mutate,
-    isSuccess,
-    isPending: isUpdatePending,
-    error,
-  } = useCommunitiesApiUpdateCommunity({
+  const { mutate, isPending: isUpdatePending } = useCommunitiesApiUpdateCommunity({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onSuccess: () => {
+        toast.success('Community Details updated successfully');
+        refetch && refetch();
+      },
+      onError: (error) => {
+        toast.error(`Error: ${error.response?.data.message}`);
+      },
+    },
   });
 
   const onSubmit = (formData: FormValues) => {
     if (data) {
       const dataToSend = {
         description: formData.description,
-        tags: JSON.stringify(formData.tags),
-        ...(formData.profileImage && { profile_pic_file: formData.profileImage.file }),
-        ...(formData.bannerImage && { banner_pic_file: formData.bannerImage.file }),
+        tags: formData.tags,
         type: formData.type,
         rules: data.data.rules,
       };
 
-      mutate({ communityId: Number(data.data.id), data: dataToSend });
+      mutate({
+        communityId: Number(data.data.id),
+        data: {
+          payload: { details: dataToSend },
+          profile_pic_file: formData.profileImage ? formData.profileImage.file : undefined,
+          banner_pic_file: formData.bannerImage ? formData.bannerImage.file : undefined,
+        },
+      });
     }
   };
 
@@ -93,21 +102,11 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     if (data) {
       reset({
         description: data.data.description,
-        tags: JSON.parse(data.data.tags),
+        tags: data.data.tags.map((tag) => ({ label: tag.label, value: tag.value })),
         type: data.data.type as OptionType,
       });
     }
   }, [data, reset]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Community Details updated successfully');
-      refetch && refetch();
-    }
-    if (error) {
-      toast.error(`Error: ${error.response?.data.message}`);
-    }
-  }, [isSuccess, refetch, error]);
 
   return (
     <div className="my-4 rounded bg-white px-8 py-4 shadow">
