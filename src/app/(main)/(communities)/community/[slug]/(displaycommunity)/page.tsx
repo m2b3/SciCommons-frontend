@@ -68,24 +68,12 @@ const Community = ({ params }: { params: { slug: string } }) => {
           <div className="flex flex-col space-y-4">
             {articlesIsPending &&
               Array.from({ length: 5 }, (_, index) => <ArticleCardSkeleton key={index} />)}
-            {articlesData && articlesData.data.length === 0 && (
+            {articlesData && articlesData.data.items.length === 0 && (
               <p className="text-center text-gray-500">No articles found</p>
             )}
             {articlesData &&
-              articlesData.data.map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  title={article.title}
-                  abstract={article.abstract}
-                  authors={article.authors.map((author) => author.label).join(', ')}
-                  community={'Community'}
-                  tags={article.keywords.map((keyword) => keyword.label)}
-                  ratings={0}
-                  comments={0}
-                  discussions={0}
-                  imageUrl={article.article_image_url || 'https://picsum.photos/200/200'}
-                  slug={article.slug}
-                />
+              articlesData.data.items.map((article) => (
+                <ArticleCard key={article.id} article={article} />
               ))}
           </div>
         </div>

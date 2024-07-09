@@ -95,24 +95,24 @@ const Post = (post: PostOut) => {
           <button className="flex items-center space-x-1 transition hover:text-blue-500">
             {data?.data?.user_reaction === 1 ? (
               <ThumbsUp
-                size={16}
+                size={20}
                 className="text-blue-500"
                 onClick={() => handleReaction('upvote')}
               />
             ) : (
-              <ThumbsUp size={16} onClick={() => handleReaction('upvote')} />
+              <ThumbsUp size={20} onClick={() => handleReaction('upvote')} />
             )}
             <span className="text-xs">{data?.data?.likes}</span>
           </button>
           <button className="flex items-center space-x-1 transition hover:text-red-500">
             {data?.data.user_reaction === -1 ? (
               <ThumbsDown
-                size={16}
+                size={20}
                 className="text-red-500"
                 onClick={() => handleReaction('downvote')}
               />
             ) : (
-              <ThumbsDown size={16} onClick={() => handleReaction('downvote')} />
+              <ThumbsDown size={20} onClick={() => handleReaction('downvote')} />
             )}
           </button>
           <button className="flex items-center space-x-1 text-xs transition hover:text-green-500">

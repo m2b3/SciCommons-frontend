@@ -65,8 +65,8 @@ const ArticleSettings = () => {
                 value: keyword.value,
               }))}
               submissionType={data.data.submission_type}
-              defaultImageURL={data.data.article_image_url}
-              articleId={data.data.id}
+              defaultImageURL={data.data.article_image_url || ''}
+              articleId={Number(data.data.id)}
             />
           )}
         </div>
@@ -85,7 +85,7 @@ const ArticleSettings = () => {
             value: keyword.value,
           }))}
           submissionType={data.data.submission_type}
-          articleId={data.data.id}
+          articleId={Number(data.data.id)}
         />
       )}
     </div>

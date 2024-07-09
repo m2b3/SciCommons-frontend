@@ -1,3 +1,5 @@
+import { ContentTypeEnum } from '@/api/schemas';
+
 import Comment, { CommentData } from './Comment';
 
 interface RenderCommentsProps {
@@ -8,6 +10,7 @@ interface RenderCommentsProps {
   onAddReply: (parentId: number, content: string) => void;
   onUpdateComment: (id: number, content: string) => void;
   onDeleteComment: (id: number) => void;
+  contentType: ContentTypeEnum;
 }
 
 const RenderComments: React.FC<RenderCommentsProps> = ({
@@ -18,6 +21,7 @@ const RenderComments: React.FC<RenderCommentsProps> = ({
   onAddReply,
   onUpdateComment,
   onDeleteComment,
+  contentType,
 }) => {
   return (
     <>
@@ -31,6 +35,7 @@ const RenderComments: React.FC<RenderCommentsProps> = ({
           onAddReply={onAddReply}
           onUpdateComment={onUpdateComment}
           onDeleteComment={onDeleteComment}
+          contentType={contentType}
         />
       ))}
     </>

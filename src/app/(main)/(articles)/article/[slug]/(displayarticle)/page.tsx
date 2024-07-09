@@ -18,15 +18,6 @@ import RelevantArticles from './RelevantArticles';
 import ReviewCard, { ReviewCardSkeleton } from './ReviewCard';
 import ReviewForm from './ReviewForm';
 
-const statsData = {
-  likes: '1.2k',
-  views: '2k',
-  reviews: '3k',
-  comments: '4k',
-  discussions: '10',
-  publishedDate: '13th Mar, 2021 (3 years ago)',
-};
-
 const articlesData = [
   {
     imageUrl: 'https://picsum.photos/200/201',
@@ -141,21 +132,12 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
                 .map((keyword: { value: string; label: string }) => keyword.label)
                 .join(', ')}
               articleLink={data.data.article_pdf_file_url ? data.data.article_pdf_file_url : ''}
-              slug={data.data.slug}
+              slug={String(data.data.slug)}
               isSubmitter={data.data.is_submitter || false}
             />
           )}
         </div>
-        <div className="p-2 md:w-1/3">
-          <ArticleStats
-            likes={statsData.likes}
-            views={statsData.views}
-            reviews={statsData.reviews}
-            comments={statsData.comments}
-            discussions={statsData.discussions}
-            publishedDate={statsData.publishedDate}
-          />
-        </div>
+        <div className="p-2 md:w-1/3">{data && <ArticleStats article={data.data} />}</div>
       </div>
       <div className="flex flex-col md:flex-row">
         <div className="p-2 md:w-2/3">
