@@ -155,7 +155,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl bg-white">
+    <div className="mx-auto max-w-2xl">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
@@ -164,7 +164,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
       {isPending &&
         Array.from({ length: 5 }).map((_, index) => (
           <div
-            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300"
+            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-800"
             key={index}
           ></div>
         ))}
@@ -172,13 +172,16 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
         <>
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <label htmlFor="depth-select" className="flex items-center text-sm font-medium">
+              <label
+                htmlFor="depth-select"
+                className="flex items-center text-sm font-medium text-gray-500"
+              >
                 <Layers size={16} className="mr-1" />
                 <span>Depth:</span>
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-white p-1 text-sm"
+                className="rounded border p-1 text-sm text-gray-700 dark:text-gray-300"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >

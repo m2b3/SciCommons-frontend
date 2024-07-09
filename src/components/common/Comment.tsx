@@ -19,6 +19,7 @@ import {
 
 import { CommentOutId } from '@/api/schemas';
 import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
 
 import CommentInput from './CommentInput';
@@ -93,6 +94,7 @@ const Comment: React.FC<CommentProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [highlight, setHighlight] = useState(isNew);
   const hasReplies = replies && replies.length > 0;
+  const imageData = useIdenticon(40);
 
   useEffect(() => {
     setIsCollapsed(depth >= maxDepth || isAllCollapsed);
@@ -141,7 +143,7 @@ const Comment: React.FC<CommentProps> = ({
     >
       <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300">
         <Image
-          src={author.profile_pic_url || 'https://picsum.photos/200/200'}
+          src={author.profile_pic_url || `data:image/png;base64,${imageData}`}
           alt={author.username}
           width={32}
           height={32}
@@ -149,7 +151,7 @@ const Comment: React.FC<CommentProps> = ({
         />
       </div>
       {hasReplies && !isCollapsed && (
-        <div className="absolute bottom-1 left-2 top-10 w-[1px] bg-gray-200"></div>
+        <div className="absolute bottom-1 left-2 top-10 w-[1px] bg-gray-300" />
       )}
       <div className="flex-grow">
         <div className="flex items-center justify-between">
@@ -162,8 +164,10 @@ const Comment: React.FC<CommentProps> = ({
                 {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
               </button>
             )}
-            <span className="text-base font-semibold">{author.username}</span>
-            <span className="text-sm text-gray-500">• {dayjs(created_at).fromNow()}</span>
+            <span className="font-semibold text-gray-950 dark:text-gray-300">
+              {author.username}
+            </span>
+            <span className="text-sm text-gray-400">• {dayjs(created_at).fromNow()}</span>
           </div>
           {is_author && (
             <div className="flex items-center space-x-2">

@@ -12,7 +12,9 @@ export interface PostOut {
   comments_count?: number;
   content: string;
   created_at: string;
+  hashtags?: string[];
   id?: PostOutId;
+  is_author?: boolean;
   /** @maxLength 200 */
   title: string;
   upvotes?: number;

@@ -51,6 +51,7 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.5",
     "react-hot-toast": "^2.4.1",
+    "react-loader-spinner": "^6.1.6",
     "react-quill": "^2.0.0",
     "tailwind-merge": "^2.3.0",
     "zustand": "^4.5.2"

@@ -6,6 +6,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from 'react-hot-toast';
 
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
+import BottomBar from '@/components/BottomBar';
 
 import './globals.css';
 
@@ -34,6 +35,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
+          <BottomBar />
           <Toaster />
         </body>
       </html>
