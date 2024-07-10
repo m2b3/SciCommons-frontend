@@ -21,163 +21,12 @@ import type {
   CommunitiesApiCreateCommunityBody,
   CommunitiesApiListCommunitiesParams,
   CommunitiesApiUpdateCommunityBody,
-  CommunityDetails,
-  CreateCommunityResponse,
+  CommunitySchema,
   Message,
-  PaginatedCommunitySchema,
+  PaginatedCommunities,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
-
-/**
- * @summary Get Community
- */
-export const communitiesApiGetCommunity = (
-  communityName: string,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
-) => {
-  return customInstance<CommunityDetails>(
-    { url: `/api/communities/community/${communityName}/`, method: 'GET', signal },
-    options
-  );
-};
-
-export const getCommunitiesApiGetCommunityQueryKey = (communityName: string) => {
-  return [`/api/communities/community/${communityName}/`] as const;
-};
-
-export const getCommunitiesApiGetCommunityQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunity>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getCommunitiesApiGetCommunityQueryKey(communityName);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiGetCommunity>>> = ({
-    signal,
-  }) => communitiesApiGetCommunity(communityName, requestOptions, signal);
-
-  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type CommunitiesApiGetCommunityQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiGetCommunity>>
->;
-export type CommunitiesApiGetCommunityQueryError = ErrorType<Message>;
-
-/**
- * @summary Get Community
- */
-export const useCommunitiesApiGetCommunity = <
-  TData = Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunity>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiGetCommunityQueryOptions(communityName, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-};
-
-/**
- * @summary List Communities
- */
-export const communitiesApiListCommunities = (
-  params?: CommunitiesApiListCommunitiesParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
-) => {
-  return customInstance<PaginatedCommunitySchema>(
-    { url: `/api/communities/`, method: 'GET', params, signal },
-    options
-  );
-};
-
-export const getCommunitiesApiListCommunitiesQueryKey = (
-  params?: CommunitiesApiListCommunitiesParams
-) => {
-  return [`/api/communities/`, ...(params ? [params] : [])] as const;
-};
-
-export const getCommunitiesApiListCommunitiesQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,
-  TError = ErrorType<Message>,
->(
-  params?: CommunitiesApiListCommunitiesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiListCommunities>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getCommunitiesApiListCommunitiesQueryKey(params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiListCommunities>>> = ({
-    signal,
-  }) => communitiesApiListCommunities(params, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiListCommunities>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type CommunitiesApiListCommunitiesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiListCommunities>>
->;
-export type CommunitiesApiListCommunitiesQueryError = ErrorType<Message>;
-
-/**
- * @summary List Communities
- */
-export const useCommunitiesApiListCommunities = <
-  TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,
-  TError = ErrorType<Message>,
->(
-  params?: CommunitiesApiListCommunitiesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiListCommunities>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiListCommunitiesQueryOptions(params, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-};
 
 /**
  * @summary Create Community
@@ -187,17 +36,14 @@ export const communitiesApiCreateCommunity = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   const formData = new FormData();
-  formData.append('name', communitiesApiCreateCommunityBody.name);
-  formData.append('description', communitiesApiCreateCommunityBody.description);
-  formData.append('tags', communitiesApiCreateCommunityBody.tags);
-  formData.append('type', communitiesApiCreateCommunityBody.type);
   if (communitiesApiCreateCommunityBody.profile_image_file !== undefined) {
     formData.append('profile_image_file', communitiesApiCreateCommunityBody.profile_image_file);
   }
+  formData.append('payload', JSON.stringify(communitiesApiCreateCommunityBody.payload));
 
-  return customInstance<CreateCommunityResponse>(
+  return customInstance<CommunitySchema>(
     {
-      url: `/api/communities/`,
+      url: `/api/communities/communities/`,
       method: 'POST',
       headers: { 'Content-Type': 'multipart/form-data' },
       data: formData,
@@ -268,6 +114,156 @@ export const useCommunitiesApiCreateCommunity = <
   return useMutation(mutationOptions);
 };
 /**
+ * @summary List Communities
+ */
+export const communitiesApiListCommunities = (
+  params?: CommunitiesApiListCommunitiesParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedCommunities>(
+    { url: `/api/communities/`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getCommunitiesApiListCommunitiesQueryKey = (
+  params?: CommunitiesApiListCommunitiesParams
+) => {
+  return [`/api/communities/`, ...(params ? [params] : [])] as const;
+};
+
+export const getCommunitiesApiListCommunitiesQueryOptions = <
+  TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,
+  TError = ErrorType<Message>,
+>(
+  params?: CommunitiesApiListCommunitiesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiListCommunities>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getCommunitiesApiListCommunitiesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiListCommunities>>> = ({
+    signal,
+  }) => communitiesApiListCommunities(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof communitiesApiListCommunities>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type CommunitiesApiListCommunitiesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesApiListCommunities>>
+>;
+export type CommunitiesApiListCommunitiesQueryError = ErrorType<Message>;
+
+/**
+ * @summary List Communities
+ */
+export const useCommunitiesApiListCommunities = <
+  TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,
+  TError = ErrorType<Message>,
+>(
+  params?: CommunitiesApiListCommunitiesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiListCommunities>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getCommunitiesApiListCommunitiesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Get Community
+ */
+export const communitiesApiGetCommunity = (
+  communityName: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CommunitySchema>(
+    { url: `/api/communities/community/${communityName}/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getCommunitiesApiGetCommunityQueryKey = (communityName: string) => {
+  return [`/api/communities/community/${communityName}/`] as const;
+};
+
+export const getCommunitiesApiGetCommunityQueryOptions = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
+  TError = ErrorType<Message>,
+>(
+  communityName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunity>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getCommunitiesApiGetCommunityQueryKey(communityName);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiGetCommunity>>> = ({
+    signal,
+  }) => communitiesApiGetCommunity(communityName, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type CommunitiesApiGetCommunityQueryResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesApiGetCommunity>>
+>;
+export type CommunitiesApiGetCommunityQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get Community
+ */
+export const useCommunitiesApiGetCommunity = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetCommunity>>,
+  TError = ErrorType<Message>,
+>(
+  communityName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiGetCommunity>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getCommunitiesApiGetCommunityQueryOptions(communityName, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
  * @summary Update Community
  */
 export const communitiesApiUpdateCommunity = (
@@ -276,21 +272,18 @@ export const communitiesApiUpdateCommunity = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   const formData = new FormData();
-  formData.append('description', communitiesApiUpdateCommunityBody.description);
-  formData.append('type', communitiesApiUpdateCommunityBody.type);
-  formData.append('tags', communitiesApiUpdateCommunityBody.tags);
-  communitiesApiUpdateCommunityBody.rules.forEach((value) => formData.append('rules', value));
   if (communitiesApiUpdateCommunityBody.profile_pic_file !== undefined) {
     formData.append('profile_pic_file', communitiesApiUpdateCommunityBody.profile_pic_file);
   }
   if (communitiesApiUpdateCommunityBody.banner_pic_file !== undefined) {
     formData.append('banner_pic_file', communitiesApiUpdateCommunityBody.banner_pic_file);
   }
+  formData.append('payload', JSON.stringify(communitiesApiUpdateCommunityBody.payload));
 
   return customInstance<Message>(
     {
       url: `/api/communities/${communityId}/`,
-      method: 'PATCH',
+      method: 'PUT',
       headers: { 'Content-Type': 'multipart/form-data' },
       data: formData,
     },

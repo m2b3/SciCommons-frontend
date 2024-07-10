@@ -6,11 +6,11 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
-import { CommunityDetails } from '@/api/schemas';
+import { CommunitySchema } from '@/api/schemas';
 import { useAuthStore } from '@/stores/authStore';
 
 interface AddRulesProps {
-  data: AxiosResponse<CommunityDetails> | undefined;
+  data: AxiosResponse<CommunitySchema> | undefined;
   isPending: boolean;
 }
 
@@ -27,13 +27,17 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const {
-    mutate,
-    isSuccess,
-    isPending: isUpdatePending,
-    error,
-  } = useCommunitiesApiUpdateCommunity({
+  // Todo: Optimize this code to use a single mutation (add rules and update community details in a single mutation)
+  const { mutate, isPending: isUpdatePending } = useCommunitiesApiUpdateCommunity({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onSuccess: () => {
+        toast.success('Community Details updated successfully');
+      },
+      onError: (error) => {
+        toast.error(`${error.response?.data.message}`);
+      },
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -49,8 +53,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
         type: data.data.type,
         rules: rules.map((rule) => rule.rule),
       };
-      // console.log(dataToSend);
-      mutate({ communityId: data.data.id, data: dataToSend });
+      mutate({ communityId: data.data.id, data: { payload: { details: dataToSend } } });
     }
   };
 
@@ -62,18 +65,6 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
       });
     }
   }, [data, reset]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Community details updated successfully!');
-    }
-  }, [isSuccess]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(`Error: ${error.response?.data.message}`);
-    }
-  }, [error]);
 
   return (
     <div className="my-4 rounded bg-white px-8 py-4 shadow">

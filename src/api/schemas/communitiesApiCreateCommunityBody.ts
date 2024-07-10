@@ -4,11 +4,9 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { CommunityCreateSchema } from './communityCreateSchema';
 
 export type CommunitiesApiCreateCommunityBody = {
-  description: string;
-  name: string;
+  payload: CommunityCreateSchema;
   profile_image_file?: Blob;
-  tags: string;
-  type: string;
 };
