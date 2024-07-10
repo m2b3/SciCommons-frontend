@@ -22,11 +22,11 @@ const BottomBar = () => {
   const [activeTab, setActiveTab] = useState('');
 
   const navLinks = [
-    { name: 'Home', icon: <Home size={18} /> },
-    { name: 'Communities', icon: <Users size={18} /> },
-    { name: '', icon: <CreateDropdown /> },
-    { name: 'Articles', icon: <Newspaper size={18} /> },
-    { name: 'Posts', icon: <NotebookPen size={18} /> },
+    { name: 'Home', route: '/', icon: <Home size={18} /> },
+    { name: 'Communities', route: '/communities', icon: <Users size={18} /> },
+    { name: '', route: '', icon: <CreateDropdown /> },
+    { name: 'Articles', route: '/articles', icon: <Newspaper size={18} /> },
+    { name: 'Posts', route: '/posts', icon: <NotebookPen size={18} /> },
   ];
 
   useEffect(() => {
@@ -55,7 +55,8 @@ const BottomBar = () => {
               link.name === activeTab,
             'text-gray-500': link.name !== activeTab,
           })}
-          onClick={() => router.push(`/${link.name.toLowerCase()}`)}
+          // onClick={() => router.push(`/${link.name.toLowerCase()}`)}
+          onClick={() => link.name && router.push(link.route)}
         >
           {link.icon}
           <p className="mt-1 text-xs">{link.name}</p>

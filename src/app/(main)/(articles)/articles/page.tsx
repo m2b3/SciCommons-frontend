@@ -13,7 +13,7 @@ const Articles = () => {
       <div className="flex min-h-screen flex-col space-y-4">
         {isPending && Array.from({ length: 5 }, (_, index) => <ArticleCardSkeleton key={index} />)}
         {data &&
-          data.data.items.map((article) => <ArticleCard key={article.id} article={article} />)}
+          data?.data?.items?.map((article) => <ArticleCard key={article.id} article={article} />)}
       </div>
     </div>
   );
