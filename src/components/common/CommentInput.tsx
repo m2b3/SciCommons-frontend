@@ -3,6 +3,8 @@ import React from 'react';
 import { Send } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
+
 interface CommentInputProps {
   onSubmit: (content: string) => void;
   placeholder: string;
@@ -43,7 +45,12 @@ const CommentInput: React.FC<CommentInputProps> = ({
           maxLength: { value: 500, message: 'Content must not exceed 500 characters' },
         })}
         placeholder={placeholder}
-        className={`w-full resize-none rounded-md border p-2 ${errors.content ? 'border-red-500' : ''}`}
+        className={cn(
+          'w-full rounded-common-lg bg-white px-3 py-2 text-black ring-1 ring-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-gray-950 dark:text-white dark:ring-gray-700 focus:dark:ring-green-500',
+          {
+            'border-red-500': errors.content,
+          }
+        )}
         rows={3}
       />
       {errors.content && <p className="mt-1 text-sm text-red-500">{errors.content.message}</p>}

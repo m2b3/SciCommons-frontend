@@ -10,5 +10,5 @@ export type PostsApiListPostsParams = {
   size?: number;
   sort_by?: string;
   sort_order?: string;
-  hashtags?: string[] | null;
+  hashtags?: string;
 };

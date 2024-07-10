@@ -37,13 +37,13 @@ const Home = () => {
   return (
     <div>
       <NavBar />
-      <div className="flex h-screen flex-col items-center justify-center">
+      <div className="flex h-[calc(100vh-120px)] flex-col items-center justify-center md:h-[calc(100vh-60px)]">
         <TypewriterEffectSmooth words={words} />
-        <p className="mb-6 max-w-3xl text-center text-xs text-neutral-600 dark:text-neutral-200 sm:text-base">
+        <p className="mb-6 max-w-3xl px-4 text-center text-xs text-neutral-600 dark:text-neutral-200 sm:text-base">
           Be part of the change. Join our open platform to review, rate, and access research freely.
           Improve research quality and accessibility with community-driven peer review.
         </p>
-        <div className="flex flex-col space-x-0 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+        <div className="flex flex-row items-center space-x-4">
           <Link href="/articles">
             <button className="h-10 w-40 rounded-xl border border-transparent bg-black text-sm text-white dark:border-white">
               Explore
@@ -73,15 +73,15 @@ const Home = () => {
           <Accordion type="single" collapsible className="max-w-[600px]">
             {faqs.map((faq, i) => (
               <AccordionItem
-                className="border-b border-common-contrast px-0 py-1"
+                className="border-b border-gray-200 px-0 py-1 dark:border-gray-800"
                 key={i}
                 value={faq?.ques}
               >
                 <AccordionTrigger className="w-full p-5" defaultIconNeeded={true}>
-                  <span className="text-text-primary">{faq?.ques}</span>
+                  <span className="text-gray-700 dark:text-gray-400">{faq?.ques}</span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
-                  <span className="text-text-secondary">{faq?.ans}</span>
+                  <span className="text-gray-500">{faq?.ans}</span>
                 </AccordionContent>
               </AccordionItem>
             ))}

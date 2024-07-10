@@ -5,10 +5,10 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import Cookies from 'js-cookie';
-import { Bell, LogOut, NotebookTabs, User } from 'lucide-react';
+import { Bell, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import {
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
+import useIdenticon from '@/hooks/useIdenticons';
 import useStore from '@/hooks/useStore';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -25,6 +26,7 @@ import { useAuthStore } from '@/stores/authStore';
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
   const pathname = usePathname();
+  const router = useRouter();
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/articles', label: 'Articles' },
@@ -33,18 +35,29 @@ const NavBar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-slate-100/20 backdrop-blur-[20px] sm:px-9">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-slate-100/20 backdrop-blur-[50px] dark:border-gray-700 dark:bg-slate-300/10 sm:px-9">
       <nav className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
-          <Image src="https://picsum.photos/200/200" alt="Logo" width={40} height={40} />
+          <MoveLeft
+            className="mr-4 size-5 cursor-pointer text-primary"
+            strokeWidth={1.5}
+            onClick={() => {
+              router.back();
+            }}
+          />
+          <Image src="/logo.png" alt="Logo" width={60} height={40} />
         </div>
-        <ul className="mx-auto flex space-x-4">
-          {navLinks.map((link) => (
+        <ul className="mx-auto hidden space-x-1 md:flex">
+          {navLinks?.map((link) => (
             <li
               key={link.href}
-              className={cn('rounded-full px-2 py-1 text-sm hover:bg-functional-green/10', {
-                'bg-functional-green/10 font-bold text-functional-green': link.href === pathname,
-              })}
+              className={cn(
+                'rounded-full px-3 py-1 text-sm text-black hover:bg-functional-green/10 dark:text-white',
+                {
+                  'bg-functional-green/10 font-bold text-green-400 dark:text-green-400':
+                    link.href === pathname,
+                }
+              )}
             >
               <Link href={link.href}>{link.label}</Link>
             </li>
@@ -52,15 +65,20 @@ const NavBar: React.FC = () => {
         </ul>
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">
-            <CreateDropdown />
+            <div className="hidden md:block">
+              <CreateDropdown />
+            </div>
             <Link href="/notifications">
-              <Bell className="h-8 w-8 cursor-pointer rounded-full p-1 text-gray-800 hover:bg-gray-200 hover:text-gray-600" />
+              <Bell className="h-9 w-9 cursor-pointer rounded-full p-2 text-gray-800 hover:bg-gray-200 hover:text-gray-600 dark:text-gray-500 hover:dark:bg-gray-700" />
             </Link>
             <ProfileDropdown />
           </div>
         ) : (
           <div className="flex items-center space-x-4">
-            <Link href="/auth/login" className="text-gray-800 hover:text-gray-600">
+            <Link
+              href="/auth/login"
+              className="text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-500"
+            >
               <button>Login</button>
             </Link>
             <Link href="/auth/register" className="text-gray-800 hover:text-gray-600">
@@ -79,8 +97,9 @@ const CreateDropdown: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="rounded-full border-2 border-green-500 px-4 py-2 text-green-500 transition-colors duration-300 hover:bg-green-500 hover:text-white">
-          + Create
+        <button className="flex items-center gap-1 rounded-full border-2 border-green-500 px-4 py-2 text-green-500 transition-colors duration-300 hover:bg-green-500 hover:text-white">
+          <Plus size={18} />
+          Create
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -101,6 +120,7 @@ const CreateDropdown: React.FC = () => {
 const ProfileDropdown: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
   const { theme, setTheme } = useTheme();
+  const imageData = useIdenticon(40);
 
   const handleLogout = () => {
     logout();
@@ -114,7 +134,7 @@ const ProfileDropdown: React.FC = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Image
-          src={`https:picsum.photos/200/200?random=${Math.random()}`}
+          src={`data:image/png;base64,${imageData}`}
           alt="Profile"
           width={40}
           height={40}

@@ -16,7 +16,7 @@ const navLinks = [
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-200 dark:bg-gray-800">
+    <footer className="bg-gray-200 pb-16 dark:bg-gray-800 md:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="md:flex md:items-center md:justify-between">
           {/* Social Media Links */}
