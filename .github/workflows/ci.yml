@@ -11,7 +11,7 @@ on:
     - cron: '0 0 * * 1' # Runs every Monday at midnight UTC
 
 jobs:
-  lint-and-test:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,6 +34,22 @@ jobs:
 
       - name: Check for TypeScript errors
         run: yarn tsc --noEmit
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.11.1
+
+      - name: Install dependencies
+        run: yarn install
 
       - name: Run tests
         run: yarn test
