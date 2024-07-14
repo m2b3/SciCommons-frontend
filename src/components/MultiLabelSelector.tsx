@@ -31,9 +31,9 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
   }) => {
     return (
       <div>
-        <label className="mb-2 flex items-center text-sm font-medium text-gray-700">
+        <label className="mb-2 flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
-          <span className="ml-2 cursor-pointer text-gray-400">
+          <span className="ml-2 cursor-pointer text-gray-400 dark:text-gray-500">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>

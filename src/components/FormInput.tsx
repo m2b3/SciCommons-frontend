@@ -6,20 +6,21 @@ import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// Updated interface to include info
+// Todo: use `useFormContext` to avoid passing `errors` and `register` as props
+
 interface InputProps<TFieldValues extends FieldValues> {
   label?: string;
-  name: keyof TFieldValues; // Ensure name is a key of the form values
   type: string;
-  placeholder: string;
-  register: UseFormRegister<TFieldValues>;
-  requiredMessage: string;
+  placeholder?: string;
+  requiredMessage?: string;
   patternMessage?: string;
   patternValue?: RegExp;
   minLengthValue?: number;
   minLengthMessage?: string;
   maxLengthValue?: number;
   maxLengthMessage?: string;
+  name: keyof TFieldValues; // Ensure name is a key of the form values
+  register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
   readOnly?: boolean; // Optional boolean to enable/disable editing
   info?: string; // Optional info text for the tooltip
@@ -40,9 +41,9 @@ const FormInput = <TFieldValues extends FieldValues>({
   maxLengthValue,
   maxLengthMessage,
   errors,
-  readOnly = false, // Default to true if not provided
+  readOnly = false,
   info,
-  textArea = false, // Default to false if not provided
+  textArea = false,
 }: InputProps<TFieldValues>): JSX.Element => {
   const error = errors[name];
   const commonProps = {
@@ -50,7 +51,7 @@ const FormInput = <TFieldValues extends FieldValues>({
     placeholder,
     readOnly,
     ...register(name as Path<TFieldValues>, {
-      required: requiredMessage,
+      required: requiredMessage ? { value: true, message: requiredMessage } : undefined,
       pattern:
         patternValue && patternMessage
           ? { value: patternValue, message: patternMessage }
@@ -65,15 +66,17 @@ const FormInput = <TFieldValues extends FieldValues>({
           : undefined,
     }),
     className: clsx(
-      'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-brand focus:border-brand sm:text-sm',
-      error && !readOnly ? 'border-red-500' : 'border-gray-300'
+      'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-brand focus:border-brand res-text-sm',
+      error && !readOnly ? 'border-red-500' : 'border-gray-300',
+      'dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:focus:ring-brand dark:focus:border-brand',
+      readOnly ? 'bg-gray-100 dark:bg-gray-700' : ''
     ),
   };
   return (
-    <div className="">
+    <div className="w-full">
       {label && (
         <div className="mb-2 flex items-center space-x-2">
-          <span className="text-sm font-medium text-gray-700">{label}</span>
+          <span className="font-medium text-gray-700 res-text-sm dark:text-gray-300">{label}</span>
           {info && (
             <TooltipProvider>
               <Tooltip>
@@ -91,7 +94,9 @@ const FormInput = <TFieldValues extends FieldValues>({
         </div>
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
-      {error && !readOnly && <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>}
+      {error && !readOnly && (
+        <p className="mt-2 text-red-600 res-text-sm dark:text-red-400">{String(error.message)}</p>
+      )}
     </div>
   );
 };

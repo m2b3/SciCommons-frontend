@@ -14,7 +14,7 @@ const PostListContent = () => {
   const searchParams = useSearchParams();
   const [hashtag, setHashtag] = useState<string>('');
 
-  const queryParams = hashtag ? { hashtags: hashtag } : undefined;
+  const queryParams = hashtag ? { hashtag: hashtag } : undefined;
   const { data, isPending } = usePostsApiListPosts(queryParams);
 
   useEffect(() => {

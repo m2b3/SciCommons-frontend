@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 
 import { Toaster } from 'react-hot-toast';
+import { Toaster as SonnerToaster } from 'sonner';
 
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
 import BottomBar from '@/components/BottomBar';
@@ -42,6 +43,7 @@ export default function RootLayout({
           </ThemeProvider>
           <BottomBar />
           <Toaster />
+          <SonnerToaster richColors />
         </body>
       </html>
     </ReactQueryClientProvider>

@@ -34,7 +34,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   );
 
   const { data: userPostData, isPending: userPostDataPending } = usePostsApiListPosts({
-    hashtags: data?.data?.hashtags && data?.data?.hashtags[0],
+    hashtag: data?.data?.hashtags && data?.data?.hashtags[0],
   });
 
   // Todo: Try using useState Hook

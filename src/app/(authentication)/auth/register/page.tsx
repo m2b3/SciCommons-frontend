@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/FormInput';
+import Button from '@/components/common/Button';
+import { ErrorMessage } from '@/constants';
 
 interface IFormInput {
   username: string;
@@ -34,46 +35,30 @@ const RegisterForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const { isSuccess, isError, error, isPending, mutate: signUp } = useUsersApiAuthSignup();
+  const { isPending, mutate: signUp } = useUsersApiAuthSignup({
+    mutation: {
+      onSuccess: () => {
+        toast.success('Registration successful! Please check your email to verify your account.');
+        router.push('/auth/signupsuccess');
+      },
+      onError: (err) => {
+        toast.error(err.response?.data.message || ErrorMessage);
+      },
+    },
+  });
 
   const onSubmit = (data: IFormInput) => {
     signUp({ data });
   };
 
-  // display toast message on successful registration
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success(
-        'Registration successful! Please check your email to verify your account. Redirecting....',
-        {
-          position: 'bottom-right',
-        }
-      );
-      // redirect to the success page
-      router.push('/auth/signupsuccess');
-    }
-  }, [isSuccess, router]);
-
-  // display toast message on error
-  useEffect(() => {
-    if (isError) {
-      toast.error(
-        `Error: ${(error as { response: { data: { detail: string } } })?.response?.data?.detail || 'An error occurred'}`,
-        {
-          position: 'bottom-right',
-        }
-      );
-    }
-  }, [isError, error]);
-
   return (
     <div className="flex h-screen flex-col md:flex-row">
       {/* Left side */}
       <div className="relative md:w-1/2">
-        <Image src="/auth/register.png" alt="Background" layout="fill" objectFit="cover" />
+        <Image src="/auth/register.jpg" alt="Background" layout="fill" objectFit="cover" />
         <div className="absolute inset-0 hidden items-center justify-center md:flex">
           <div className="max-w-md rounded-xl bg-white bg-opacity-[0.25] p-4 shadow-lg backdrop-blur-sm md:p-8">
-            <p className="text-base font-medium text-gray-800 md:text-lg lg:text-xl">
+            <p className="font-medium text-gray-800 res-text-base md:text-lg lg:text-xl">
               Join a global community of researchers and enthusiasts, united by a shared passion for
               scientific discovery. Connect with peers, share your insights, and unlock the power of
               collective knowledge. Together, we can build a better future.
@@ -84,10 +69,10 @@ const RegisterForm: React.FC = () => {
 
       {/* Right side */}
       <div className="flex flex-col justify-center bg-white px-12 py-12 dark:bg-gray-800 md:w-1/2 md:p-12">
-        <h1 className="mb-4 text-2xl font-bold text-gray-800 dark:text-white md:text-3xl lg:text-4xl">
+        <h1 className="mb-4 font-bold text-gray-800 res-heading-lg dark:text-white">
           Join the Science Revolution
         </h1>
-        <p className="mb-8 text-gray-800 dark:text-gray-300">
+        <p className="rest-text-sm mb-8 hidden text-gray-800 dark:text-gray-300 md:block">
           Sign up to access an online hub of research papers, comments, and ratings, and engage with
           a global community of researchers.
         </p>
@@ -155,24 +140,11 @@ const RegisterForm: React.FC = () => {
             patternMessage="The passwords do not match"
             patternValue={new RegExp(watch('password'))}
           />
-
-          <button
-            type="submit"
-            className={clsx(
-              'flex w-full justify-center rounded-md border border-transparent bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
-              {
-                'hover:bg-brand-dark': !isPending,
-                'cursor-not-allowed opacity-50': isPending,
-              }
-            )}
-            disabled={isPending}
-          >
-            {isPending // Default values shown
-              ? 'Loading...'
-              : 'Sign Up'}
-          </button>
+          <Button type="submit" isPending={isPending}>
+            Sign Up
+          </Button>
         </form>
-        <p className="mt-8 text-gray-800 dark:text-gray-300">
+        <p className="mt-8 text-gray-800 res-text-sm dark:text-gray-300">
           Already have an account?{' '}
           <Link href="/auth/login" className="text-brand hover:underline">
             Login

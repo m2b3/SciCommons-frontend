@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/FormInput';
+import Button from '@/components/common/Button';
+import { ErrorMessage } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ILoginForm {
@@ -32,43 +33,29 @@ const LoginForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const { error, data, isSuccess, isPending, mutate: logInUser } = useUsersApiAuthLoginUser();
+  const { isPending, mutate: logInUser } = useUsersApiAuthLoginUser({
+    mutation: {
+      onSuccess: (data) => {
+        toast.success('Logged in successfully');
+        setAccessToken(data.data.token);
+        router.push('/');
+      },
+      onError: (err) => {
+        toast.error(err.response?.data.message || ErrorMessage);
+      },
+    },
+  });
 
   const onSubmit = (data: ILoginForm) => {
     logInUser({ data });
   };
 
-  useEffect(() => {
-    if (error) {
-      console.log(error);
-      toast.error(
-        `Error: ${(error.response?.data as { message: string })?.message ?? error.message}`,
-        {
-          position: 'bottom-right',
-        }
-      );
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Login successful!', {
-        position: 'bottom-right',
-      });
-
-      // console.log('Data:', data.data.token);
-      setAccessToken(data.data.token);
-
-      router.push('/');
-    }
-  }, [isSuccess, router, setAccessToken, data]);
-
   return (
     <div className="flex h-screen flex-col dark:bg-gray-900 md:flex-row">
       {/* Left side */}
       <div className="flex h-full flex-col justify-center p-12 md:w-1/2">
-        <h1 className="mb-4 text-4xl font-bold">Good to See You Again!</h1>
-        <p className="mb-8 text-gray-600 dark:text-gray-400">
+        <h1 className="mb-4 font-bold res-heading-lg dark:text-gray-200">Good to See You Again!</h1>
+        <p className="mb-8 hidden text-gray-600 res-text-sm dark:text-gray-400 md:block">
           Join a vibrant community of researchers, share your latest work, and receive valuable
           feedback. Log in now to start rating and commenting on scientific articles, and take your
           research to the next level.
@@ -95,41 +82,28 @@ const LoginForm: React.FC = () => {
             errors={errors}
           />
           {/* Remember me and forgot password */}
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex items-center justify-between res-text-sm">
             <div className="flex items-center">
               <input
                 id="remember_me"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-400"
               />
-              <label
-                htmlFor="remember_me"
-                className="ml-2 block text-sm text-gray-900 dark:text-gray-400"
-              >
+              <label htmlFor="remember_me" className="ml-2 block text-gray-900 dark:text-gray-400">
                 Remember me
               </label>
             </div>
-            <div className="text-sm">
+            <div className="">
               <Link href="/auth/forgotpassword" className="text-green-500 hover:text-green-400">
                 Forgot your password?
               </Link>
             </div>
           </div>
-          <button
-            type="submit"
-            className={clsx(
-              'flex w-full justify-center rounded-md border border-transparent bg-brand px-4 py-2 font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
-              {
-                'hover:bg-brand-dark': !isPending,
-                'cursor-not-allowed opacity-50': isPending,
-              }
-            )}
-            disabled={isPending}
-          >
-            {isPending ? 'Loading...' : 'Login'}
-          </button>
+          <Button type="submit" isPending={isPending}>
+            Login
+          </Button>
         </form>
-        <div className="mt-4">
+        <div className="mt-4 res-text-sm">
           <p className="text-gray-600 dark:text-gray-400">
             Don&apos;t have an account?{' '}
             <Link href="/auth/register" className="text-green-500">
@@ -146,12 +120,12 @@ const LoginForm: React.FC = () => {
       </div>
       {/* Right side */}
       <div className="relative hidden h-full bg-cover bg-center md:block md:w-1/2">
-        <Image src="/auth/login.png" alt="Background" layout="fill" objectFit="cover" />
+        <Image src="/auth/login.jpg" alt="Background" layout="fill" objectFit="cover" />
         <div className="absolute inset-0 mb-12 hidden items-end justify-center md:flex">
           <div className="max-w-md rounded-xl bg-white bg-opacity-[0.25] p-2 shadow-lg backdrop-blur-sm md:p-6">
-            <p className="text-sm font-medium text-gray-800 md:text-base lg:text-lg">
-              &quot;When something is important enough, you do it even if the odds are not in your
-              favor.&quot;- Elon Musk
+            <p className="font-medium text-gray-800 res-text-lg">
+              &quot;Advancing science thrives on collaboration and open access to knowledge.&quot; -
+              Anonymous
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 import colors from 'tailwindcss/colors';
 import plugin from 'tailwindcss/plugin';
+import { PluginAPI } from 'tailwindcss/types/config';
 
 const config: Config = {
   darkMode: ['class'],
@@ -303,6 +304,45 @@ const config: Config = {
       });
     }),
     require('@headlessui/tailwindcss'),
+    plugin(function ({ addUtilities }: PluginAPI) {
+      const newUtilities = {
+        '.res-text-xs': {
+          '@apply text-xs md:text-sm': {},
+        },
+        '.res-text-sm': {
+          '@apply text-sm md:text-base': {},
+        },
+        '.res-text-base': {
+          '@apply text-base md:text-lg': {},
+        },
+        '.res-text-lg': {
+          '@apply text-lg md:text-xl': {},
+        },
+        '.res-text-xl': {
+          '@apply text-xl md:text-2xl': {},
+        },
+        '.res-heading-xs': {
+          '@apply text-base sm:text-lg md:text-xl': {},
+        },
+        '.res-heading-sm': {
+          '@apply text-lg sm:text-xl md:text-2xl': {},
+        },
+        '.res-heading-base': {
+          '@apply text-xl sm:text-2xl md:text-3xl': {},
+        },
+        '.res-heading-lg': {
+          '@apply text-2xl sm:text-3xl md:text-4xl': {},
+        },
+        '.res-heading-xl': {
+          '@apply text-3xl sm:text-4xl md:text-5xl': {},
+        },
+        '.res-heading-2xl': {
+          '@apply text-4xl sm:text-5xl md:text-6xl': {},
+        },
+      };
+
+      addUtilities(newUtilities);
+    }),
   ],
 };
 export default config;

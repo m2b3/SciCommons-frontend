@@ -1,59 +1,327 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import SearchBar from '@/components/SearchBar';
-import CommunityCard from '@/components/communities/CommunityCard';
-import TabNavigation from '@/components/ui/tab-navigation';
-import { communityData } from '@/constants/dummyData';
+import { LucideIcon } from 'lucide-react';
+import {
+  Award,
+  Book,
+  Bookmark,
+  ChevronDown,
+  FileText,
+  MessageCircle,
+  MessageSquare,
+  Star,
+  Users,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
-import { Posts } from './TabContent';
-import UserProfileStats from './UserProfileStats';
+import {
+  useUsersApiGetArticles,
+  useUsersApiGetMyCommunities,
+  useUsersApiGetMyFavorites,
+  useUsersApiGetMyPosts,
+  useUsersApiGetUserStats,
+} from '@/api/users/users';
+import { ErrorMessage } from '@/constants';
+import useIdenticon from '@/hooks/useIdenticons';
+import { useAuthStore } from '@/stores/authStore';
 
-const MyContributions: React.FC = () => {
-  const tabs = [
-    {
-      title: 'Articles',
-      content: (
-        <div className="flex flex-col space-y-4">
-          <SearchBar />
-          {/* {articles.map((article, index) => (
-            <ArticleCard key={index} {...article} />
-          ))} */}
-        </div>
-      ),
-    },
-    {
-      title: 'Communities',
-      content: (
-        <div className="flex flex-col space-y-4">
-          {communityData.map((community, index) => (
-            <CommunityCard key={index} {...community} />
-          ))}
-        </div>
-      ),
-    },
-    { title: 'Posts', content: <Posts /> },
-    { title: 'Bookmarks', content: <Posts /> },
-  ];
+import ContributionCard, { ContributionCardSkeleton } from './ContributionCard';
+import ItemCard, { ItemCardProps } from './ItemCard';
+import ProfileHeader, { ProfileHeaderSkeleton } from './ProfileHeader';
+import ReputationBadge, { ReputationBadgeSkeleton } from './ReputationBadge';
+import TabButton from './TabButton';
+
+interface UserData {
+  name: string;
+  image: string;
+  bio: string;
+  location: string;
+  website: string;
+  reputationLevel: string;
+  reputationScore: number;
+  contributions: Array<{
+    icon: LucideIcon;
+    title: string;
+    count: number;
+    description: string;
+  }>;
+  articles: Array<{
+    icon: LucideIcon;
+    title: string;
+    subtitle: string;
+    iconColor: string;
+  }>;
+  communities: Array<{
+    icon: LucideIcon;
+    title: string;
+    subtitle: string; // Add this line
+    iconColor: string;
+    role: string;
+    memberCount: number;
+  }>;
+  posts: Array<{
+    icon: LucideIcon;
+    title: string;
+    subtitle: string;
+    iconColor: string;
+  }>;
+  favorites: Array<{
+    icon: LucideIcon;
+    title: string;
+    subtitle: string;
+    iconColor: string;
+    type: string;
+  }>;
+  bookmarks: Array<{
+    icon: LucideIcon;
+    title: string;
+    subtitle: string;
+    iconColor: string;
+    type: string;
+  }>;
+}
+
+const ContributionsPage: React.FC = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const requestConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const imageData = useIdenticon(50);
+
+  const { data, isPending, error } = useUsersApiGetUserStats({
+    request: requestConfig,
+  });
+
+  const { data: articlesData, error: articlesDataError } = useUsersApiGetArticles({
+    request: requestConfig,
+  });
+
+  const { data: communitiesData, error: communitiesDataError } = useUsersApiGetMyCommunities({
+    request: requestConfig,
+  });
+
+  const { data: postsData, error: postsDataError } = useUsersApiGetMyPosts({
+    request: requestConfig,
+  });
+
+  const { data: favoritesData, error: favoritesDataError } = useUsersApiGetMyFavorites({
+    request: requestConfig,
+  });
+
+  const [activeTab, setActiveTab] = useState<
+    'articles' | 'communities' | 'posts' | 'favorites' | 'bookmarks'
+  >('articles');
+  const [isTabsOpen, setIsTabsOpen] = useState(false);
+
+  const userData: UserData | undefined = data && {
+    name: data.data.username,
+    image: data.data.profile_pic_url || `data:image/png;base64,${imageData}`,
+    bio: data.data.bio || 'No bio provided',
+    location: 'Boston, MA',
+    website: data.data.home_page_url || 'https://x.com',
+    reputationLevel: data.data.reputation_level,
+    reputationScore: data.data.reputation_score,
+    contributions: [
+      {
+        icon: FileText,
+        title: 'Articles',
+        count: data.data.contributed_articles,
+        description: 'Submitted, reviewed, or commented',
+      },
+      {
+        icon: Users,
+        title: 'Communities',
+        count: data.data.communities_joined,
+        description: 'Member or creator',
+      },
+      {
+        icon: Book,
+        title: 'Posts',
+        count: data.data.contributed_posts,
+        description: 'Created or commented',
+      },
+      {
+        icon: Award,
+        title: 'Awards',
+        count: 0,
+        description: 'For outstanding contributions',
+      },
+    ],
+    articles:
+      articlesData?.data.map((article) => ({
+        icon:
+          article.status === 'Submitted'
+            ? FileText
+            : article.status === 'Commented'
+              ? MessageCircle
+              : MessageSquare,
+        title: article.title,
+        subtitle: `${article.status} on ${article.date}`,
+        iconColor: 'bg-green-100 text-green-600',
+      })) || [],
+    communities:
+      communitiesData?.data.map((community) => ({
+        icon: Users,
+        title: community.name,
+        subtitle: `${community.role} · ${community.members_count} members`,
+        iconColor: 'bg-purple-100 text-purple-600',
+        role: community.role,
+        memberCount: community.members_count,
+      })) || [],
+    posts:
+      postsData?.data.map((post) => ({
+        icon: post.action === 'Created' ? Book : MessageCircle,
+        title: post.title,
+        subtitle: `${post.action} on ${post.created_at} · ${post.likes_count} likes`,
+        iconColor: 'bg-indigo-100 text-indigo-600',
+      })) || [],
+    favorites:
+      favoritesData?.data.map((favorite) => ({
+        icon: Star,
+        title: favorite.title,
+        subtitle: favorite.details,
+        iconColor:
+          favorite.type === 'Article'
+            ? 'bg-blue-100 text-blue-600'
+            : favorite.type === 'Community'
+              ? 'bg-green-100 text-green-600'
+              : 'bg-yellow-100 text-yellow-600',
+        type: favorite.type,
+      })) || [],
+    bookmarks: [
+      {
+        icon: Bookmark,
+        title: 'Machine Learning for Predictive Healthcare',
+        subtitle: 'Article by Prof. Sarah Lee',
+        iconColor: 'bg-blue-100 text-blue-600',
+        type: 'Article',
+      },
+      {
+        icon: Bookmark,
+        title: 'The Future of Personalized Medicine',
+        subtitle: 'Post by FutureMed · 876 likes',
+        iconColor: 'bg-yellow-100 text-yellow-600',
+        type: 'Post',
+      },
+      {
+        icon: Bookmark,
+        title: 'Emerging Trends in Biotechnology',
+        subtitle: 'Article by Dr. Michael Chen',
+        iconColor: 'bg-blue-100 text-blue-600',
+        type: 'Article',
+      },
+    ],
+  };
+
+  const tabContent: Record<typeof activeTab, Array<ItemCardProps>> = {
+    articles: userData?.articles || [],
+    communities: userData?.communities || [],
+    posts: userData?.posts || [],
+    favorites: userData?.favorites || [],
+    bookmarks: userData?.bookmarks || [],
+  };
+
+  useEffect(() => {
+    if (
+      error ||
+      articlesDataError ||
+      communitiesDataError ||
+      postsDataError ||
+      favoritesDataError
+    ) {
+      toast.error(
+        error?.response?.data.message ||
+          articlesDataError?.response?.data.message ||
+          communitiesDataError?.response?.data.message ||
+          postsDataError?.response?.data.message ||
+          favoritesDataError?.response?.data.message ||
+          ErrorMessage
+      );
+    }
+  }, [error, articlesDataError, communitiesDataError, postsDataError, favoritesDataError]);
 
   return (
-    <div className="container mx-auto p-4">
-      <UserProfileStats
-        reputationScore={10}
-        goldMedals={2}
-        silverMedals={4}
-        bronzeMedals={8}
-        ratedArticles={9}
-        commentedArticles={10}
-        articlesPublished={42}
-        communitiesInvolved={5}
-        profileImageUrl="/auth/login.png"
-      />
+    <div className="bg-gray-100 text-black res-text-sm dark:bg-gray-900 dark:text-white">
+      {isPending && (
+        <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <ProfileHeaderSkeleton />
+          <ReputationBadgeSkeleton />
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <ContributionCardSkeleton key={index} />
+            ))}
+          </div>
+        </div>
+      )}
+      {data && userData && articlesData && communitiesData && postsData && favoritesData && (
+        <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <ProfileHeader
+              name={userData.name}
+              image={userData.image}
+              bio={userData.bio}
+              location={userData.location}
+              website={userData.website}
+            />
 
-      <TabNavigation tabs={tabs} />
+            <ReputationBadge level={userData.reputationLevel} score={userData.reputationScore} />
+
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {userData.contributions?.map((contribution, index) => (
+                <ContributionCard key={index} {...contribution} />
+              ))}
+            </div>
+
+            <div className="mt-8">
+              <div className="sm:hidden">
+                <button
+                  className="flex w-full items-center justify-between rounded-lg bg-white px-4 py-2 text-left font-semibold text-gray-800 shadow"
+                  onClick={() => setIsTabsOpen(!isTabsOpen)}
+                >
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                  <ChevronDown
+                    className={`h-5 w-5 transition-transform ${isTabsOpen ? 'rotate-180 transform' : ''}`}
+                  />
+                </button>
+                {isTabsOpen && (
+                  <div className="mt-2 overflow-hidden rounded-lg bg-white shadow">
+                    {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
+                      <button
+                        key={tab}
+                        className="w-full px-4 py-2 text-left font-semibold text-gray-800 hover:bg-gray-100"
+                        onClick={() => {
+                          setActiveTab(tab);
+                          setIsTabsOpen(false);
+                        }}
+                      >
+                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="mb-4 hidden space-x-2 overflow-x-auto sm:flex">
+                {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
+                  <TabButton key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab)}>
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </TabButton>
+                ))}
+              </div>
+
+              <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-700 sm:p-6">
+                <h2 className="mb-4 text-xl font-semibold">
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                </h2>
+                {tabContent[activeTab].map((item, index) => (
+                  <ItemCard key={index} {...item} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default MyContributions;
+export default ContributionsPage;

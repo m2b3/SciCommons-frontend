@@ -3,10 +3,15 @@
 import React from 'react';
 
 import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
 
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
+import { useUsersApiAuthResetPassword } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/FormInput';
+import Button from '@/components/common/Button';
+import { ErrorMessage } from '@/constants';
 
 interface IResetPasswordForm {
   password: string;
@@ -14,6 +19,9 @@ interface IResetPasswordForm {
 }
 
 const ResetPasswordForm: React.FC = () => {
+  const router = useRouter();
+  const params = useParams<{ token: string }>();
+
   const {
     register,
     handleSubmit,
@@ -23,19 +31,36 @@ const ResetPasswordForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: IResetPasswordForm) => {
-    console.log(data);
-    // Here, you should have the logic to send the new password to your backend
+  const { mutate, isPending } = useUsersApiAuthResetPassword({
+    mutation: {
+      onSuccess: () => {
+        toast.success('Password reset successfully');
+        router.push('/auth/login');
+      },
+      onError: (err) => {
+        toast.error(err.response?.data.message || ErrorMessage);
+      },
+    },
+  });
+
+  const onSubmit = (data: IResetPasswordForm) => {
+    mutate({
+      data: {
+        password: data.password,
+        confirm_password: data.confirmPassword,
+        token: params.token,
+      },
+    });
   };
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
-      <div className="w-full max-w-md rounded-md bg-white p-6 shadow-md dark:bg-gray-900">
+      <div className="w-full max-w-md rounded-md p-6 res-text-sm md:bg-white md:shadow-md md:dark:bg-gray-900">
         <div className="mb-6 text-center">
           <div className="flex items-center justify-center">
             <Image src="/auth/resetpassword.png" alt="logo" width={80} height={80} />
           </div>
-          <h1 className="mt-4 text-2xl font-bold"> Reset Password</h1>
+          <h1 className="mt-4 font-bold res-text-xl"> Reset Password</h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">
             {' '}
             Enter your new password and confirm it to reset your password.
@@ -67,12 +92,9 @@ const ResetPasswordForm: React.FC = () => {
             patternMessage="The passwords do not match"
             patternValue={new RegExp(watch('password'))}
           />
-          <button
-            type="submit"
-            className="mt-4 flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          >
+          <Button type="submit" isPending={isPending}>
             Reset Password
-          </button>
+          </Button>
         </form>
       </div>
     </div>

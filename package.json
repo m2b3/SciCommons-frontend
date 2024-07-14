@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -56,6 +56,7 @@
     "react-hot-toast": "^2.4.1",
     "react-loader-spinner": "^6.1.6",
     "react-quill": "^2.0.0",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "zustand": "^4.5.2"
   },

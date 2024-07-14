@@ -1,62 +1,75 @@
 import React from 'react';
 
+import { FieldErrors, useFormContext } from 'react-hook-form';
+
+import FormInput from '@/components/FormInput';
+
+import { IProfileForm } from './page';
+
 interface PersonalLinksProps {
-  homePage: string;
-  linkedIn: string;
-  github: string;
-  googleScholar: string;
+  errors: FieldErrors<IProfileForm>;
+  editMode: boolean;
 }
 
-const PersonalLinks: React.FC<PersonalLinksProps> = ({
-  homePage,
-  linkedIn,
-  github,
-  googleScholar,
-}) => {
+const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
+  const { register } = useFormContext();
+
   return (
-    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white p-6 shadow-md">
-      <h2 className="text-2xl font-bold">Personal Links</h2>
-      <p className="mt-2 text-gray-600">
+    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+      <h2 className="font-bold res-text-xl">Personal Links</h2>
+      <p className="mt-2 text-gray-600 dark:text-gray-300">
         These are the professional profiles you have provided. We have verified them to ensure the
         legitimacy of your account.
       </p>
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
-          <label className="block text-gray-700">Home Page URL</label>
-          <input
-            type="text"
-            value={homePage}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            readOnly
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700">LinkedIn URL</label>
-          <input
-            type="text"
-            value={linkedIn}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            readOnly
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700">Github URL</label>
-          <input
-            type="text"
-            value={github}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            readOnly
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700">GoogleScholar URL</label>
-          <input
-            type="text"
-            value={googleScholar}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            readOnly
-          />
-        </div>
+        <FormInput
+          label="Home Page URL"
+          placeholder="https://example.com"
+          name="homePage"
+          type="url"
+          register={register}
+          errors={errors}
+          patternValue={/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/}
+          patternMessage="Invalid URL format"
+          requiredMessage="Home page URL is required"
+          readOnly={!editMode}
+        />
+        <FormInput
+          label="LinkedIn URL"
+          placeholder="https://linkedin.com/in/username"
+          name="linkedIn"
+          type="url"
+          register={register}
+          errors={errors}
+          patternValue={/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/}
+          patternMessage="Invalid LinkedIn URL"
+          requiredMessage="LinkedIn URL is required"
+          readOnly={!editMode}
+        />
+        <FormInput
+          label="Github URL"
+          placeholder="https://github.com/username"
+          name="github"
+          type="url"
+          register={register}
+          errors={errors}
+          patternValue={/^https:\/\/github\.com\/.*$/}
+          patternMessage="Invalid GitHub URL"
+          requiredMessage="GitHub URL is required"
+          readOnly={!editMode}
+        />
+        <FormInput
+          label="GoogleScholar URL"
+          placeholder="https://scholar.google.com/citations?user=..."
+          name="googleScholar"
+          type="url"
+          register={register}
+          errors={errors}
+          patternValue={/^https:\/\/scholar\.google\.com\/.*$/}
+          patternMessage="Invalid Google Scholar URL"
+          requiredMessage="Google Scholar URL is required"
+          readOnly={!editMode}
+        />
       </div>
     </div>
   );
