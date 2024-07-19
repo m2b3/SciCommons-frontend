@@ -5,6 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useArticlesApiUpdateArticle } from '@/api/articles/articles';
+import { ArticleUpdateSchema } from '@/api/schemas';
 import FormInput from '@/components/FormInput';
 import ImageUpload from '@/components/ImageUpload';
 import MultiLabelSelector from '@/components/MultiLabelSelector';
@@ -59,7 +60,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
   } = useArticlesApiUpdateArticle({ request: axiosConfig });
 
   const onSubmit = (formData: FormValues) => {
-    const dataToSend = {
+    const dataToSend: ArticleUpdateSchema = {
       payload: {
         title: formData.title,
         abstract: formData.abstract,
@@ -67,10 +68,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
           value: author.value,
           label: author.label,
         })),
-        keywords: formData.keywords.map((keyword) => ({
-          value: keyword.value,
-          label: keyword.label,
-        })),
+        keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
       },
     };

@@ -5,6 +5,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useArticlesApiUpdateArticle } from '@/api/articles/articles';
+import { ArticleUpdateSchema } from '@/api/schemas';
 import { Option } from '@/components/ui/multiple-selector';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -45,7 +46,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
   });
 
   const onSubmit = (data: FAQ[]) => {
-    const dataToSend = {
+    const dataToSend: ArticleUpdateSchema = {
       payload: {
         title: title,
         abstract: abstract,
@@ -53,10 +54,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
           value: author.value,
           label: author.label,
         })),
-        keywords: keywords.map((keyword) => ({
-          value: keyword.value,
-          label: keyword.label,
-        })),
+        keywords: keywords.map((keyword) => keyword.value),
         submission_type: submissionType,
         faqs: data,
       },

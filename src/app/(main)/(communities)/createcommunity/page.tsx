@@ -9,6 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiCreateCommunity } from '@/api/communities/communities';
+import { CreateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/FormInput';
 import ImageUpload from '@/components/ImageUpload';
 import LabeledTooltip from '@/components/LabeledToolTip';
@@ -48,7 +49,7 @@ const CreateCommunity = () => {
     mutation: {
       onSuccess: (data) => {
         toast.success('Community created successfully! Redirecting to community page...');
-        router.push(`/community/${data.data.id}`);
+        router.push(`/community/${data.data.slug}`);
       },
       onError: (error) => {
         console.error('Error submitting article:', error);
@@ -88,10 +89,10 @@ const CreateCommunity = () => {
   ];
 
   const onSubmit = (data: FormValues) => {
-    const dataToSend = {
+    const dataToSend: CreateCommunityDetails = {
       name: data.name,
       description: data.description,
-      tags: data.tags.map((tag) => ({ value: tag.value, label: tag.label })),
+      tags: data.tags.map((tag) => tag.value),
       type: data.type,
     };
     const profile_image_file = data.profileImage ? data.profileImage.file : undefined;

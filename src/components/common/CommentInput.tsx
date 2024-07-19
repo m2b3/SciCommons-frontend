@@ -1,19 +1,23 @@
 import React from 'react';
 
 import { Send } from 'lucide-react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
+import { Ratings } from '@/components/ui/ratings';
 import { cn } from '@/lib/utils';
 
 interface CommentInputProps {
-  onSubmit: (content: string) => void;
+  onSubmit: (content: string, rating?: number) => void;
   placeholder: string;
   buttonText: string;
   initialContent?: string;
+  initialRating?: number;
+  isReview?: boolean;
 }
 
 interface FormInputs {
   content: string;
+  rating?: number;
 }
 
 const CommentInput: React.FC<CommentInputProps> = ({
@@ -21,23 +25,48 @@ const CommentInput: React.FC<CommentInputProps> = ({
   placeholder,
   buttonText,
   initialContent = '',
+  initialRating = 0,
+  isReview = false,
 }) => {
   const {
     register,
     handleSubmit,
+    control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormInputs>({
-    defaultValues: { content: initialContent },
+    defaultValues: { content: initialContent, rating: initialRating },
   });
 
   const onSubmitForm: SubmitHandler<FormInputs> = (data) => {
-    onSubmit(data.content);
-    reset({ content: '' });
+    onSubmit(data.content, data.rating);
+    reset({ content: '', rating: 0 });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="mb-4 mt-2">
+      {isReview && (
+        <Controller
+          name="rating"
+          control={control}
+          rules={{
+            validate: (value) => ((value ?? 0) > 0 ? true : 'A valid rating must be given'),
+          }}
+          render={({ field }) => (
+            <>
+              <Ratings
+                rating={field.value || 0}
+                onRatingChange={(newRating) => setValue('rating', newRating)}
+                readonly={false}
+              />
+              {errors.rating && (
+                <p className="mt-1 text-sm text-red-500">{errors.rating.message}</p>
+              )}
+            </>
+          )}
+        />
+      )}
       <textarea
         {...register('content', {
           required: 'Content is required',

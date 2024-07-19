@@ -5,35 +5,33 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ArticleOutArticleImageUrl } from './articleOutArticleImageUrl';
-import type { ArticleOutArticlePdfFileUrl } from './articleOutArticlePdfFileUrl';
-import type { ArticleOutCommunity } from './articleOutCommunity';
+import type { ArticleOutArticleLink } from './articleOutArticleLink';
+import type { ArticleOutCommunityArticleStatus } from './articleOutCommunityArticleStatus';
 import type { ArticleOutId } from './articleOutId';
 import type { ArticleOutSlug } from './articleOutSlug';
 import type { FAQSchema } from './fAQSchema';
 import type { SubmissionType } from './submissionType';
 import type { Tag } from './tag';
-import type { UserOut } from './userOut';
+import type { UserStats } from './userStats';
 
 export interface ArticleOut {
   abstract: string;
   article_image_url?: ArticleOutArticleImageUrl;
-  article_pdf_file_url?: ArticleOutArticlePdfFileUrl;
+  article_link?: ArticleOutArticleLink;
+  article_pdf_urls: string[];
   authors: Tag[];
-  community: ArticleOutCommunity;
+  community_article_status: ArticleOutCommunityArticleStatus;
   created_at: string;
   faqs: FAQSchema[];
   id?: ArticleOutId;
   is_submitter: boolean;
-  keywords: Tag[];
-  published?: boolean;
+  keywords: string[];
   slug?: ArticleOutSlug;
-  /** @maxLength 10 */
-  status?: string;
   submission_type: SubmissionType;
   /** @maxLength 255 */
   title: string;
   total_comments: number;
   total_reviews: number;
   updated_at: string;
-  user: UserOut;
+  user: UserStats;
 }

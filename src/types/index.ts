@@ -11,9 +11,10 @@ export interface SubmitArticleFormValues {
   title: string;
   abstract: string;
   keywords: Option[];
+  article_link?: string;
   authors: Option[];
   imageFile: FileObj;
-  pdfFile: FileObj;
+  pdfFiles: FileObj[];
   submissionType: 'Public' | 'Private';
 }
 

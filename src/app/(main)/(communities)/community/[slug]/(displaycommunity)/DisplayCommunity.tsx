@@ -11,13 +11,13 @@ import toast from 'react-hot-toast';
 
 import '@/api/communities/communities';
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
-import { CommunitySchema } from '@/api/schemas';
+import { CommunityOut } from '@/api/schemas';
 import { useAuthStore } from '@/stores/authStore';
 
 import ArticleSubmission from './ArticleSubmission';
 
 interface DisplayCommunityProps {
-  community: CommunitySchema;
+  community: CommunityOut;
   refetch: () => void;
 }
 

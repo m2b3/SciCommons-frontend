@@ -5,14 +5,17 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ReviewCommentOutId } from './reviewCommentOutId';
-import type { UserOut } from './userOut';
+import type { ReviewCommentOutRating } from './reviewCommentOutRating';
+import type { UserStats } from './userStats';
 
 export interface ReviewCommentOut {
-  author: UserOut;
+  anonymous_name?: string;
+  author: UserStats;
   content: string;
   created_at: string;
   id?: ReviewCommentOutId;
   is_author?: boolean;
+  rating?: ReviewCommentOutRating;
   replies: ReviewCommentOut[];
   upvotes: number;
 }

@@ -5,10 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { PostOutId } from './postOutId';
-import type { UserOut } from './userOut';
+import type { UserStats } from './userStats';
 
 export interface PostOut {
-  author: UserOut;
+  author: UserStats;
   comments_count?: number;
   content: string;
   created_at: string;

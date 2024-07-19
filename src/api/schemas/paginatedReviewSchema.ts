@@ -4,10 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { ReviewSchema } from './reviewSchema';
+import type { ReviewOut } from './reviewOut';
 
 export interface PaginatedReviewSchema {
-  items: ReviewSchema[];
+  items: ReviewOut[];
   page: number;
   size: number;
   total: number;

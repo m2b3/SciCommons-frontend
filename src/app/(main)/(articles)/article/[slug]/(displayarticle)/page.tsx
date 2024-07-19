@@ -6,17 +6,17 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
-import { useArticlesApiReviewListReviews } from '@/api/reviews/reviews';
-import DisplayArticleSkeletonLoader from '@/components/loaders/DisplayArticleSkeletonLoader';
+import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
+import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
+import DiscussionForum from '@/components/articles/DiscussionForum';
+import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
+import DisplayFAQs from '@/components/articles/DisplayFAQs';
+import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
+import ReviewForm from '@/components/articles/ReviewForm';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { useAuthStore } from '@/stores/authStore';
 
-import ArticleStats from './ArticleStats';
-import DisplayArticle from './DisplayArticle';
-import DisplayFAQs from './DisplayFAQs';
 import RelevantArticles from './RelevantArticles';
-import ReviewCard, { ReviewCardSkeleton } from './ReviewCard';
-import ReviewForm from './ReviewForm';
 
 const articlesData = [
   {
@@ -42,17 +42,21 @@ const articlesData = [
 const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const { data, error, isPending } = useArticlesApiGetArticle(params.slug, {
-    query: { enabled: !!accessToken },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, error, isPending } = useArticlesApiGetArticle(
+    params.slug,
+    {},
+    {
+      query: { enabled: !!accessToken },
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    }
+  );
 
   const {
     data: reviewsData,
     error: reviewsError,
     isPending: reviewsIsPending,
     refetch: reviewsRefetch,
-  } = useArticlesApiReviewListReviews(
+  } = useArticlesReviewApiListReviews(
     data?.data.id || 0,
     {},
     {
@@ -89,19 +93,7 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
     },
     {
       title: 'Discussions',
-      content: (
-        <div className="flex flex-col space-y-4">
-          <p className="text-gray-700">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce viverra, erat vitae
-            condimentum luctus, velit purus lacinia nunc, id suscipit mi purus et odio. Vestibulum
-            ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed
-            convallis, neque in placerat egestas, libero diam finibus turpis, a ultricies justo
-            tortor nec purus. Sed convallis, neque in placerat egestas, libero diam finibus turpis,
-            a ultricies justo tortor nec purus. Sed convallis, neque in placerat egestas, libero
-            diam finibus turpis, a ultricies justo tortor nec purus.
-          </p>
-        </div>
-      ),
+      content: <DiscussionForum articleId={data?.data.id || 0} />,
     },
     {
       title: 'FAQs',
@@ -119,25 +111,14 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
     <div className="container mx-auto flex flex-col space-y-2 p-4">
       <div className="flex flex-col md:flex-row">
         <div className="p-2 md:w-2/3">
-          {isPending && <DisplayArticleSkeletonLoader />}
-          {data && (
-            <DisplayArticle
-              imageUrl={data.data.article_image_url ? data.data.article_image_url : ''}
-              title={data.data.title}
-              abstract={data.data.abstract}
-              authors={data.data.authors
-                .map((author: { value: string; label: string }) => author.label)
-                .join(', ')}
-              keywords={data.data.keywords
-                .map((keyword: { value: string; label: string }) => keyword.label)
-                .join(', ')}
-              articleLink={data.data.article_pdf_file_url ? data.data.article_pdf_file_url : ''}
-              slug={String(data.data.slug)}
-              isSubmitter={data.data.is_submitter || false}
-            />
-          )}
+          {isPending && <DisplayArticleSkeleton />}
+          {data && <DisplayArticle article={data.data} />}
         </div>
-        <div className="p-2 md:w-1/3">{data && <ArticleStats article={data.data} />}</div>
+        <div className="p-2 md:w-1/3">
+          {isPending && <ArticleStatsSkeleton />}
+
+          {data && <ArticleStats article={data.data} />}
+        </div>
       </div>
       <div className="flex flex-col md:flex-row">
         <div className="p-2 md:w-2/3">

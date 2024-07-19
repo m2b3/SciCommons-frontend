@@ -4,10 +4,11 @@ import { useParams, useSearchParams } from 'next/navigation';
 
 import clsx from 'clsx';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
-import { useCommunitiesApiPostsSubmitArticleToCommunity } from '@/api/community-posts/community-posts';
+import { useCommunitiesApiArticlesSubmitArticle } from '@/api/community-articles/community-articles';
 import FormInput from '@/components/FormInput';
+import { ErrorMessage } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 
 interface FormValues {
@@ -29,7 +30,7 @@ const SubmitToCommunity = () => {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const { mutate, isSuccess, isPending, error } = useCommunitiesApiPostsSubmitArticleToCommunity({
+  const { mutate, isSuccess, isPending, error } = useCommunitiesApiArticlesSubmitArticle({
     request: axiosConfig,
   });
 
@@ -40,7 +41,18 @@ const SubmitToCommunity = () => {
   }, [communityName, reset]);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    mutate({ articleSlug: params.slug, communityName: data.communityName });
+    mutate(
+      { articleSlug: params.slug, communityName: data.communityName },
+      {
+        onSuccess: () => {
+          reset();
+          toast.success('Article submitted successfully');
+        },
+        onError: (error) => {
+          toast.error(`${error.response?.data.message}` || ErrorMessage);
+        },
+      }
+    );
   };
 
   // Toast messages for success and error

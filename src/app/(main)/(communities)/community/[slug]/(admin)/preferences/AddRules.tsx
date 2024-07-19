@@ -6,11 +6,11 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
-import { CommunitySchema } from '@/api/schemas';
+import { CommunityOut } from '@/api/schemas';
 import { useAuthStore } from '@/stores/authStore';
 
 interface AddRulesProps {
-  data: AxiosResponse<CommunitySchema> | undefined;
+  data: AxiosResponse<CommunityOut> | undefined;
   isPending: boolean;
 }
 

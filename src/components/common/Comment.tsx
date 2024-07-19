@@ -17,7 +17,7 @@ import {
   Trash2,
 } from 'lucide-react';
 
-import { CommentOutId, ContentTypeEnum } from '@/api/schemas';
+import { ContentTypeEnum } from '@/api/schemas';
 import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
@@ -32,7 +32,7 @@ export interface UserData {
 }
 
 export interface CommentData {
-  id?: CommentOutId;
+  id: number;
   author: UserData;
   created_at: string;
   content: string;
@@ -47,8 +47,8 @@ export interface CommentProps extends CommentData {
   depth: number;
   maxDepth: number;
   isAllCollapsed: boolean;
-  onAddReply: (parentId: number, content: string) => void;
-  onUpdateComment: (id: number, content: string) => void;
+  onAddReply: (parentId: number, content: string, rating?: number) => void;
+  onUpdateComment: (id: number, content: string, rating?: number) => void;
   onDeleteComment: (id: number) => void;
   contentType: ContentTypeEnum;
 }
@@ -70,6 +70,7 @@ const Comment: React.FC<CommentProps> = ({
   onDeleteComment,
   isNew,
   contentType,
+  review_version,
 }) => {
   dayjs.extend(relativeTime);
 
@@ -111,16 +112,16 @@ const Comment: React.FC<CommentProps> = ({
     }
   }, [isNew]);
 
-  const handleAddReply = (replyContent: string) => {
+  const handleAddReply = (replyContent: string, rating?: number) => {
     if (id) {
-      onAddReply(id, replyContent);
+      onAddReply(id, replyContent, rating);
       setIsReplying(false);
     }
   };
 
-  const handleUpdateComment = (updatedContent: string) => {
+  const handleUpdateComment = (updatedContent: string, rating?: number) => {
     if (id) {
-      onUpdateComment(id, updatedContent);
+      onUpdateComment(id, updatedContent, rating);
       setIsEditing(false);
     }
   };
@@ -192,6 +193,7 @@ const Comment: React.FC<CommentProps> = ({
             placeholder="Edit your comment..."
             buttonText="Update"
             initialContent={content}
+            isReview={review_version}
           />
         ) : (
           <p className="mt-1 text-sm">{content}</p>
@@ -244,6 +246,7 @@ const Comment: React.FC<CommentProps> = ({
             onSubmit={handleAddReply}
             placeholder="Write your reply..."
             buttonText="Post Reply"
+            isReview={review_version}
           />
         )}
         {hasReplies && !isCollapsed && (

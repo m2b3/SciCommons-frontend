@@ -1,77 +1,68 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import {
-  useCommunitiesApiAdminGetArticlesByStatus,
-  useCommunitiesApiAdminManageArticle,
-} from '@/api/community-admin/community-admin';
+  useCommunitiesApiArticlesListCommunityArticlesByStatus,
+  useCommunitiesApiArticlesManageArticle,
+} from '@/api/community-articles/community-articles';
+import { ArticleOut, ArticleStatus } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import TabComponent from '@/components/communities/TabComponent';
 import { useAuthStore } from '@/stores/authStore';
 
-type Action = 'unpublish' | 'publish' | 'approve' | 'reject' | 'remove';
+import ArticleAssessmentDetails from './ArticleAssessmentDetails';
 
-type ActiveTab = 'Published' | 'UnPublished' | 'Submitted';
+type Action = 'approve' | 'reject' | 'publish';
 
-// Todo: Optimize the code
 const Submissions: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ slug: string }>();
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
-  const [activeTab, setActiveTab] = React.useState<ActiveTab>('Published');
-  const [action, setAction] = React.useState<Action>('unpublish');
-  const [articleId, setArticleId] = React.useState<number>(0);
+  const [activeTab, setActiveTab] = useState<ArticleStatus>('submitted');
+  // Set communityId and articleId`
+  const [selectedIds, setSelectedIds] = useState<{ communityId: number; articleId: number }>();
+  const [actionInProgress, setActionInProgress] = useState<{
+    action: Action;
+    articleId: number | null;
+  }>({ action: 'approve', articleId: null });
 
-  const {
-    data: manageArticleData,
-    mutate,
-    isSuccess,
-    error: manageArticleError,
-    isPending: manageArticlePending,
-  } = useCommunitiesApiAdminManageArticle({
+  const { data, isPending, error, refetch } =
+    useCommunitiesApiArticlesListCommunityArticlesByStatus(
+      params.slug,
+      { status: activeTab.toLowerCase() as ArticleStatus },
+      {
+        query: { enabled: !!accessToken },
+        request: axiosConfig,
+      }
+    );
+
+  const { mutate } = useCommunitiesApiArticlesManageArticle({
     request: axiosConfig,
+    mutation: {
+      onMutate: (data) => {
+        setActionInProgress({ action: data.action, articleId: data.articleId });
+      },
+      onSuccess: (data) => {
+        refetch();
+        toast.success(`${data.data.message}`);
+        setActionInProgress({ action: 'approve', articleId: null });
+      },
+      onError: (error) => {
+        toast.error(`${error.response?.data.message}`);
+        setActionInProgress({ action: 'approve', articleId: null });
+      },
+    },
   });
 
-  const { data, isPending, error, refetch } = useCommunitiesApiAdminGetArticlesByStatus(
-    params.slug,
-    {
-      query: { enabled: !!accessToken },
-      request: axiosConfig,
-    }
-  );
-
-  const handleAction = (action: Action, articleId: number) => () => {
-    if (data) {
-      setAction(action);
-      setArticleId(articleId);
-
-      mutate({
-        communityId: data.data.community_id,
-        articleId: articleId,
-        action: action,
-      });
-    }
+  const handleAction = (action: Action, articleId: number, communityId: number) => {
+    mutate({ communityId, articleId, action });
   };
-
-  // Toast messages for success and error
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success(`${manageArticleData.data.message}`);
-      refetch();
-    }
-  }, [isSuccess, refetch, manageArticleData]);
-
-  useEffect(() => {
-    if (manageArticleError) {
-      toast.error(`${manageArticleError.response?.data.message}`);
-    }
-  }, [manageArticleError]);
 
   useEffect(() => {
     if (error) {
@@ -79,111 +70,134 @@ const Submissions: React.FC = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    refetch();
+  }, [activeTab, refetch]);
+
+  const renderActionButtons = (article: ArticleOut) => {
+    if (activeTab === 'submitted') {
+      return (
+        <>
+          <button
+            className="mr-2 rounded-lg bg-green-500 px-4 py-2 text-xs text-white"
+            onClick={() =>
+              handleAction(
+                'approve',
+                Number(article.id),
+                Number(article.community_article_status?.community.id)
+              )
+            }
+            disabled={
+              actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
+            }
+          >
+            {actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
+              ? 'Approving...'
+              : 'Approve'}
+          </button>
+          <button
+            className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white"
+            onClick={() =>
+              handleAction(
+                'reject',
+                Number(article.id),
+                Number(article.community_article_status?.community.id)
+              )
+            }
+            disabled={
+              actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
+            }
+          >
+            {actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
+              ? 'Rejecting...'
+              : 'Reject'}
+          </button>
+        </>
+      );
+    } else if (activeTab === 'accepted') {
+      return (
+        <button
+          className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
+          onClick={() =>
+            handleAction(
+              'publish',
+              Number(article.id),
+              Number(article.community_article_status?.community.id)
+            )
+          }
+          disabled={
+            actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
+          }
+        >
+          {actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
+            ? 'Publishing...'
+            : 'Publish'}
+        </button>
+      );
+    }
+    return null;
+  };
+
+  const renderArticles = () => {
+    if (isPending) {
+      return Array.from({ length: 4 }).map((_, index) => <ArticleCardSkeleton key={index} />);
+    }
+
+    if (data && data.data.items.length === 0) {
+      return (
+        <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg">
+          <h1 className="text-lg font-semibold text-gray-500">No articles found</h1>
+        </div>
+      );
+    }
+
+    return (
+      data &&
+      data.data.items.map((article, index) => (
+        <div className="relative flex flex-col gap-2 bg-white p-2" key={index}>
+          <div className="absolute bottom-4 right-4">
+            {activeTab === 'under_review' ? (
+              <button
+                className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
+                onClick={() =>
+                  setSelectedIds({
+                    communityId: Number(article.community_article_status?.community.id),
+                    articleId: Number(article.id),
+                  })
+                }
+              >
+                View Details
+              </button>
+            ) : (
+              renderActionButtons(article)
+            )}
+          </div>
+          <ArticleCard article={article} />
+        </div>
+      ))
+    );
+  };
+
   return (
     <div className="flex flex-col">
       <div className="self-start">
-        <TabComponent<ActiveTab>
-          tabs={['Published', 'UnPublished', 'Submitted']}
+        <TabComponent
+          tabs={['submitted', 'under_review', 'accepted', 'published', 'rejected']}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
       </div>
-      {activeTab === 'Published' && (
-        <div className="my-4 flex flex-col space-y-4">
-          {isPending &&
-            Array.from({ length: 4 }).map((_, index) => <ArticleCardSkeleton key={index} />)}
-          {data && data.data.published.length === 0 && (
-            <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg">
-              <h1 className="text-lg font-semibold text-gray-500">No articles published</h1>
-            </div>
-          )}
-          {data &&
-            data.data.published.map((article, index) => (
-              <div className="relative flex flex-col gap-2 bg-white p-2" key={index}>
-                <button
-                  key={article.id}
-                  className="absolute bottom-4 right-4 rounded-lg bg-green-500 px-4 py-2 text-xs text-white"
-                  onClick={handleAction('unpublish', Number(article.id))}
-                >
-                  {manageArticlePending && action === 'unpublish' && articleId === article.id
-                    ? 'Unpublishing...'
-                    : 'Unpublish'}
-                </button>
-                <ArticleCard key={article.id} article={article} />
-              </div>
-            ))}
-        </div>
-      )}
-      {activeTab === 'UnPublished' && (
-        <div className="my-4 flex flex-col space-y-4">
-          {isPending &&
-            Array.from({ length: 4 }).map((_, index) => <ArticleCardSkeleton key={index} />)}
-          {data && data.data.unpublished.length === 0 && (
-            <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg">
-              <h1 className="text-lg font-semibold text-gray-500">No articles published</h1>
-            </div>
-          )}
-          {data &&
-            data.data.unpublished.map((article) => (
-              <div className="relative flex flex-col gap-2 bg-white p-2" key={article.id}>
-                <div className="absolute bottom-4 right-4 flex space-x-2">
-                  <button
-                    className="rounded-lg bg-green-500 px-4 py-2 text-xs text-white"
-                    onClick={handleAction('publish', Number(article.id))}
-                  >
-                    {manageArticlePending && action === 'publish' && articleId === article.id
-                      ? 'Publishing...'
-                      : 'Publish'}
-                  </button>
-                  <button
-                    className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white"
-                    onClick={handleAction('remove', Number(article.id))}
-                  >
-                    {manageArticlePending && action === 'remove' && articleId === article.id
-                      ? 'Removing...'
-                      : 'Remove'}
-                  </button>
-                </div>
-                <ArticleCard key={article.id} article={article} />
-              </div>
-            ))}
-        </div>
-      )}
-      {activeTab === 'Submitted' && (
-        <div className="my-4 flex flex-col space-y-4">
-          {isPending &&
-            Array.from({ length: 4 }).map((_, index) => <ArticleCardSkeleton key={index} />)}
-          {data && data.data.submitted.length === 0 && (
-            <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg">
-              <h1 className="text-lg font-semibold text-gray-500">No articles submitted</h1>
-            </div>
-          )}
-          {data &&
-            data.data.submitted.map((article) => (
-              <div className="relative flex flex-col gap-2 bg-white p-2" key={article.id}>
-                <div className="absolute bottom-4 right-4 flex space-x-2">
-                  <button
-                    className="rounded-lg bg-green-500 px-4 py-2 text-xs text-white hover:bg-green-600"
-                    onClick={handleAction('approve', Number(article.id))}
-                  >
-                    {manageArticlePending && action === 'approve' && articleId === article.id
-                      ? 'Approving...'
-                      : 'Approve'}
-                  </button>
-                  <button
-                    className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white"
-                    onClick={handleAction('reject', Number(article.id))}
-                  >
-                    {manageArticlePending && action === 'reject' && articleId === article.id
-                      ? 'Rejecting...'
-                      : 'Reject'}
-                  </button>
-                </div>
-                <ArticleCard key={article.id} article={article} />
-              </div>
-            ))}
-        </div>
-      )}
+      <div className="my-4 flex flex-col space-y-4">
+        {activeTab === 'under_review' && selectedIds ? (
+          <ArticleAssessmentDetails
+            articleId={selectedIds.articleId}
+            communityId={selectedIds.communityId}
+            onBack={() => setSelectedIds(undefined)}
+          />
+        ) : (
+          renderArticles()
+        )}
+      </div>
     </div>
   );
 };

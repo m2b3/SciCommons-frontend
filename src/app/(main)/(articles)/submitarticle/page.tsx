@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useArticlesApiCreateArticle } from '@/api/articles/articles';
+import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
 import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
@@ -15,22 +16,24 @@ import { SubmitArticleFormValues } from '@/types';
 
 const ArticleForm: React.FC = () => {
   const router = useRouter();
-  const params = useParams<{ slug: string }>();
 
   const { articleData } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const {
-    data,
-    mutate: submitArticle,
-    error,
-    isSuccess,
-    isPending,
-  } = useArticlesApiCreateArticle({
+  const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
     request: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+      },
+    },
+    mutation: {
+      onSuccess: (data) => {
+        toast.success('Article submitted successfully! Redirecting....');
+        router.push(`/article/${data.data.slug}`);
+      },
+      onError: (error) => {
+        toast.error(`${error.response?.data.message}`);
       },
     },
   });
@@ -56,12 +59,27 @@ const ArticleForm: React.FC = () => {
         title: articleData.title,
         authors: articleData.authors.map((author) => ({ label: author, value: author })),
         abstract: articleData.abstract,
+        article_link: articleData.link,
       });
     }
   }, [articleData, reset]);
 
+  // reset fields when the active tab changes
+  useEffect(() => {
+    reset({
+      title: '',
+      authors: [],
+      abstract: '',
+      article_link: '',
+      keywords: [],
+      imageFile: undefined,
+      pdfFiles: undefined,
+      submissionType: 'Public',
+    });
+  }, [activeTab, reset]);
+
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
-    const dataToSend = {
+    const dataToSend: ArticleCreateSchema = {
       payload: {
         title: formData.title,
         abstract: formData.abstract,
@@ -69,32 +87,20 @@ const ArticleForm: React.FC = () => {
           value: author.value,
           label: author.label,
         })),
-        keywords: formData.keywords.map((keyword) => ({
-          value: keyword.value,
-          label: keyword.label,
-        })),
+        article_link: formData.article_link || '',
+        keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
+        community_name: null,
       },
     };
     const image_file = formData.imageFile ? formData.imageFile.file : undefined;
-    const pdf_file = formData.pdfFile ? formData.pdfFile.file : undefined;
+    // map pdfFiles if both pdf file and pdfFiles are present
+    const pdf_files = formData.pdfFiles
+      ? formData.pdfFiles.map((pdfFile) => pdfFile && pdfFile.file).filter(Boolean)
+      : [];
 
-    submitArticle({ data: { details: dataToSend, image_file, pdf_file } });
+    submitArticle({ data: { details: dataToSend, image_file, pdf_files } });
   };
-
-  // Toasts to show success and error messages
-  useEffect(() => {
-    if (error) {
-      toast.error(`${error.response?.data.message}`);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Article submitted successfully! Redirecting....');
-      router.push(`/article/${data.data.slug}`);
-    }
-  }, [isSuccess, data, router, params.slug]);
 
   return (
     <div className="container py-4">

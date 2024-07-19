@@ -2,6 +2,7 @@
 
 import { useCommunitiesApiListCommunities } from '@/api/communities/communities';
 import SearchBar from '@/components/SearchBar';
+import EmptyState from '@/components/common/EmptyState';
 import CommunityCard, { CommunityCardSkeleton } from '@/components/communities/CommunityCard';
 
 const Communities = () => {
@@ -12,6 +13,12 @@ const Communities = () => {
       <div className="flex flex-col space-y-4">
         {isPending &&
           Array.from({ length: 5 }, (_, index) => <CommunityCardSkeleton key={index} />)}
+        {data && data.data.items.length === 0 && (
+          <EmptyState
+            content="No Communities Found"
+            subcontent="No communities found. Please try again later."
+          />
+        )}
         {data &&
           data.data.items.map((community, index) => (
             <CommunityCard

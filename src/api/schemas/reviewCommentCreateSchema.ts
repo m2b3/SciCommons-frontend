@@ -10,4 +10,5 @@ export interface ReviewCommentCreateSchema {
   content: string;
   /** ID of the parent review comment if it's a reply */
   parent_id?: ReviewCommentCreateSchemaParentId;
+  rating: number;
 }

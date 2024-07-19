@@ -5,7 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ReviewCommentUpdateSchemaContent } from './reviewCommentUpdateSchemaContent';
+import type { ReviewCommentUpdateSchemaRating } from './reviewCommentUpdateSchemaRating';
 
 export interface ReviewCommentUpdateSchema {
   content: ReviewCommentUpdateSchemaContent;
+  rating: ReviewCommentUpdateSchemaRating;
 }

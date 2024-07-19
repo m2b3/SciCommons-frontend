@@ -24,7 +24,11 @@ const CommentEditor = <TFieldValues extends FieldValues>({
   } = useController({
     name,
     control,
-    rules: { required: 'Comment is required' },
+    // Display error if the comment length is less than 50 characters and also comment is required
+    rules: {
+      required: 'Comment is required',
+      minLength: { value: 50, message: 'Comment must be at least 50 characters' },
+    },
   });
 
   const editor = useEditor({

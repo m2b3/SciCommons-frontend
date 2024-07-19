@@ -7,9 +7,10 @@ import { useParams, useRouter } from 'next/navigation';
 
 import { MoveLeft } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
-import { useCommunitiesApiPostsCreateCommunityArticle } from '@/api/community-posts/community-posts';
+import { useArticlesApiCreateArticle } from '@/api/articles/articles';
+import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
 import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
@@ -23,16 +24,22 @@ const CommunityArticleForm: NextPage = () => {
 
   const params = useParams<{ slug: string }>();
 
-  const {
-    data,
-    mutate: submitArticle,
-    error,
-    isSuccess,
-    isPending,
-  } = useCommunitiesApiPostsCreateCommunityArticle({
+  const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
     request: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+      },
+    },
+    mutation: {
+      onSuccess: (data) => {
+        toast.success(
+          "Article has been successfully submitted. You'll notified once it's approved.",
+          { duration: Infinity, action: { label: 'Undo', onClick: () => {} } }
+        );
+        router.push(`/article/${data.data.slug}`);
+      },
+      onError: (error) => {
+        toast.error(`${error.response?.data.message}`);
       },
     },
   });
@@ -64,7 +71,7 @@ const CommunityArticleForm: NextPage = () => {
   }, [articleData, reset]);
 
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
-    const dataToSend = {
+    const dataToSend: ArticleCreateSchema = {
       payload: {
         title: formData.title,
         abstract: formData.abstract,
@@ -72,35 +79,20 @@ const CommunityArticleForm: NextPage = () => {
           value: author.value,
           label: author.label,
         })),
-        keywords: formData.keywords.map((keyword) => ({
-          value: keyword.value,
-          label: keyword.label,
-        })),
+        article_link: formData.article_link || undefined,
+        keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
+        community_name: params.slug,
       },
     };
     const image_file = formData.imageFile ? formData.imageFile.file : undefined;
-    const pdf_file = formData.pdfFile ? formData.pdfFile.file : undefined;
+    // map pdfFiles if both pdf file and pdfFiles are present
+    const pdf_files = formData.pdfFiles
+      ? formData.pdfFiles.map((pdfFile) => pdfFile && pdfFile.file).filter(Boolean)
+      : [];
 
-    submitArticle({
-      communityName: params.slug,
-      data: { details: dataToSend, image_file, pdf_file },
-    });
+    submitArticle({ data: { details: dataToSend, image_file, pdf_files } });
   };
-
-  // Toasts to show success and error messages
-  useEffect(() => {
-    if (error) {
-      toast.error(`${error.response?.data.message}`);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Article submitted successfully! Redirecting....');
-      router.push(`/article/${data.data.slug}/submit`);
-    }
-  }, [isSuccess, data, router]);
 
   return (
     <div className="container py-4">

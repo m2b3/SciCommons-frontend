@@ -3,7 +3,7 @@ import React from 'react';
 interface ContributionCardProps {
   icon: React.FC;
   title: string;
-  count: number;
+  count: number | undefined | null;
   description: string;
 }
 

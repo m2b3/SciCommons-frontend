@@ -9,13 +9,20 @@ import { ArticleOut } from '@/api/schemas';
 
 interface ArticleCardProps {
   article: ArticleOut;
+  forCommunity?: boolean;
 }
 
-const ArticleCard: FC<ArticleCardProps> = ({ article }) => {
+const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
   return (
     <div className="flex rounded-lg border bg-white p-4 shadow-lg res-text-sm dark:bg-gray-800">
       <div className="min-w-0 flex-grow pr-4">
-        <Link href={`/article/${article.slug}`}>
+        <Link
+          href={
+            forCommunity
+              ? `/community/${article.community_article_status?.community.name}/articles/${article.slug}`
+              : `/article/${article.slug}`
+          }
+        >
           <h2 className="truncate font-semibold text-gray-900 res-text-lg hover:underline dark:text-gray-100">
             {article.title}
           </h2>
@@ -27,7 +34,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article }) => {
           Authors: {article.authors.map((author) => author.label).join(', ')}
         </p>
         <p className="mt-1 truncate text-gray-500 dark:text-gray-400">
-          Published Community/Journal: {article.community?.name}
+          Published Community/Journal: {article.community_article_status?.community.name}
         </p>
         <div className="mt-2 flex flex-wrap">
           {article.keywords.map((keyword, index) => (
@@ -35,7 +42,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article }) => {
               key={index}
               className="mb-2 mr-2 rounded bg-gray-200 px-2.5 py-0.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-200"
             >
-              {keyword.value}
+              {keyword}
             </span>
           ))}
         </div>

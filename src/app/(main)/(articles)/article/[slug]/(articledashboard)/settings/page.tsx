@@ -21,10 +21,14 @@ const ArticleSettings = () => {
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
 
-  const { data, isPending, error } = useArticlesApiGetArticle(params.slug, {
-    query: { enabled: !!accessToken },
-    request: axiosConfig,
-  });
+  const { data, isPending, error } = useArticlesApiGetArticle(
+    params.slug,
+    {},
+    {
+      query: { enabled: !!accessToken },
+      request: axiosConfig,
+    }
+  );
 
   // Toast notifications for UI Feedback
   useEffect(() => {
@@ -61,8 +65,8 @@ const ArticleSettings = () => {
                 value: author.value,
               }))}
               keywords={data.data.keywords.map((keyword) => ({
-                label: keyword.label,
-                value: keyword.value,
+                label: keyword,
+                value: keyword,
               }))}
               submissionType={data.data.submission_type}
               defaultImageURL={data.data.article_image_url || ''}
@@ -81,8 +85,8 @@ const ArticleSettings = () => {
             value: author.value,
           }))}
           keywords={data.data.keywords.map((keyword) => ({
-            label: keyword.label,
-            value: keyword.value,
+            label: keyword,
+            value: keyword,
           }))}
           submissionType={data.data.submission_type}
           articleId={Number(data.data.id)}

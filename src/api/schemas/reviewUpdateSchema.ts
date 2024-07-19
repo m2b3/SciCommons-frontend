@@ -4,10 +4,12 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ReviewUpdateSchemaContent } from './reviewUpdateSchemaContent';
+import type { ReviewUpdateSchemaRating } from './reviewUpdateSchemaRating';
+import type { ReviewUpdateSchemaSubject } from './reviewUpdateSchemaSubject';
 
 export interface ReviewUpdateSchema {
-  content: string;
-  rating: number;
-  /** @maxLength 255 */
-  subject: string;
+  content: ReviewUpdateSchemaContent;
+  rating: ReviewUpdateSchemaRating;
+  subject: ReviewUpdateSchemaSubject;
 }

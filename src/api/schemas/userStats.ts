@@ -5,15 +5,18 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UserStatsBio } from './userStatsBio';
+import type { UserStatsCommunitiesJoined } from './userStatsCommunitiesJoined';
+import type { UserStatsContributedArticles } from './userStatsContributedArticles';
+import type { UserStatsContributedPosts } from './userStatsContributedPosts';
 import type { UserStatsHomePageUrl } from './userStatsHomePageUrl';
 import type { UserStatsId } from './userStatsId';
 import type { UserStatsProfilePicUrl } from './userStatsProfilePicUrl';
 
 export interface UserStats {
   bio?: UserStatsBio;
-  communities_joined: number;
-  contributed_articles: number;
-  contributed_posts: number;
+  communities_joined?: UserStatsCommunitiesJoined;
+  contributed_articles?: UserStatsContributedArticles;
+  contributed_posts?: UserStatsContributedPosts;
   home_page_url?: UserStatsHomePageUrl;
   id?: UserStatsId;
   profile_pic_url?: UserStatsProfilePicUrl;

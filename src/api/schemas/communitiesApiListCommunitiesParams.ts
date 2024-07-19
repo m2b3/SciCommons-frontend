@@ -7,5 +7,5 @@
 
 export type CommunitiesApiListCommunitiesParams = {
   page?: number;
-  limit?: number;
+  per_page?: number;
 };

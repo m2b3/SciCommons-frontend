@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useUsersApiAuthActivate } from '@/api/users-auth/users-auth';
 import { ErrorMessage } from '@/constants';
@@ -21,10 +21,7 @@ const ActivateAccount = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success('Account activated successfully! Redirecting to login page...', {
-        position: 'bottom-right',
-        duration: 10000,
-      });
+      toast.success('Account activated successfully! Redirecting to login page...');
 
       const timer = setInterval(() => {
         setCountdown((prev) => prev - 1);

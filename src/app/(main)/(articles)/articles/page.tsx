@@ -1,11 +1,21 @@
 'use client';
 
-import { useArticlesApiGetPublicArticles } from '@/api/articles/articles';
+import { useEffect } from 'react';
+
+import { toast } from 'sonner';
+
+import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import SearchBar from '@/components/SearchBar';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 
 const Articles = () => {
-  const { data, isPending } = useArticlesApiGetPublicArticles();
+  const { data, isPending, error } = useArticlesApiGetArticles();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${error.response?.data.message}`);
+    }
+  }, [error]);
 
   return (
     <div className="container mx-auto space-y-4 p-4">

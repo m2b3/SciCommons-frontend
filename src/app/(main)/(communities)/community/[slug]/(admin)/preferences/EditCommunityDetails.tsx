@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
-import { CommunitySchema } from '@/api/schemas';
+import { CommunityOut, UpdateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/FormInput';
 import ImageUpload from '@/components/ImageUpload';
 import LabeledTooltip from '@/components/LabeledToolTip';
@@ -27,7 +27,7 @@ interface FormValues {
 }
 
 interface EditCommunityDetailsProps {
-  data: AxiosResponse<CommunitySchema> | undefined;
+  data: AxiosResponse<CommunityOut> | undefined;
   isPending: boolean;
   refetch?: () => void;
 }
@@ -62,9 +62,9 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   const onSubmit = (formData: FormValues) => {
     if (data) {
-      const dataToSend = {
+      const dataToSend: UpdateCommunityDetails = {
         description: formData.description,
-        tags: formData.tags,
+        tags: formData.tags.map((tag) => tag.value),
         type: formData.type,
         rules: data.data.rules,
       };
@@ -102,7 +102,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     if (data) {
       reset({
         description: data.data.description,
-        tags: data.data.tags.map((tag) => ({ label: tag.label, value: tag.value })),
+        tags: data.data.tags.map((tag) => ({ label: tag, value: tag })),
         type: data.data.type as OptionType,
       });
     }

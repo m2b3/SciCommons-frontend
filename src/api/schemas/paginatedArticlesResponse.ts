@@ -10,6 +10,6 @@ export interface PaginatedArticlesResponse {
   items: ArticleOut[];
   num_pages: number;
   page: number;
-  page_size: number;
+  per_page: number;
   total: number;
 }

@@ -4,8 +4,6 @@ import { render, screen } from '@testing-library/react';
 
 import FormInput from '@/components/FormInput';
 
-// No need to mock the tooltip components anymore
-
 describe('FormInput', () => {
   const mockRegister = jest.fn();
   const mockErrors = {};
@@ -58,7 +56,7 @@ describe('FormInput', () => {
       />
     );
     expect(mockRegister).toHaveBeenCalledWith('testInput', {
-      required: 'This field is required',
+      required: { value: true, message: 'This field is required' },
       pattern: { value: /test/, message: 'Invalid pattern' },
       minLength: { value: 5, message: 'Too short' },
       maxLength: { value: 10, message: 'Too long' },

@@ -31,7 +31,7 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
       // Fetching from arXiv
       const arxivId = query.split(':')[1];
       apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
-    } else if (query.startsWith('PMID:')) {
+    } else if (query.startsWith(' :')) {
       // Fetching from PubMed
       const pmid = query.split(':')[1];
       apiUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`;

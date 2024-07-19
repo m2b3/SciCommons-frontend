@@ -11,10 +11,11 @@ import {
   usePostsApiListPostComments,
   usePostsApiUpdateComment,
 } from '@/api/posts/posts';
-import { ContentTypeEnum } from '@/api/schemas';
+import { CommentOut, ContentTypeEnum } from '@/api/schemas';
 import { CommentData } from '@/components/common/Comment';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
+import convertToCommentData from '@/lib/convertPostcomment';
 import { useAuthStore } from '@/stores/authStore';
 
 interface PostCommentsProps {
@@ -40,7 +41,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   //   }
   // }, [accessToken, refetch]);
 
-  const { mutate: createComment, data: newComment } = usePostsApiCreateComment({
+  const { mutate: createComment } = usePostsApiCreateComment({
     mutation: {
       onSuccess: () => {
         refetch();
@@ -86,7 +87,12 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
     },
   });
 
-  const [comments, setComments] = useState<CommentData[]>(data?.data || []);
+  const [comments, setComments] = useState<CommentData[]>(() => {
+    if (Array.isArray(data?.data)) {
+      return data.data.map((comment: CommentOut) => convertToCommentData(comment));
+    }
+    return [];
+  });
 
   const handleDepthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const depth = parseInt(e.target.value);
@@ -104,17 +110,17 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   const addReply = (parentId: number, content: string) => {
     createComment({ postId, data: { content, parent_id: parentId } });
 
-    const addReplyToComment = (comment: CommentData): CommentData => {
-      if (comment.id === parentId && newComment) {
-        return { ...comment, replies: [newComment.data, ...comment.replies] };
-      }
-      if (comment.replies) {
-        return { ...comment, replies: comment.replies.map(addReplyToComment) };
-      }
-      return comment;
-    };
+    // const addReplyToComment = (comment: CommentData): CommentData => {
+    //   if (comment.id === parentId && newComment) {
+    //     return { ...comment, replies: [newComment.data, ...comment.replies] };
+    //   }
+    //   if (comment.replies) {
+    //     return { ...comment, replies: comment.replies.map(addReplyToComment) };
+    //   }
+    //   return comment;
+    // };
 
-    setComments(comments.map(addReplyToComment));
+    // setComments(comments.map(addReplyToComment));
   };
 
   const updateComment = (commentId: number, updatedContent: string) => {
@@ -136,23 +142,24 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   const deleteCommentbyId = (commentId: number) => {
     deleteComment({ commentId });
 
-    const removeComment = (comment: CommentData): CommentData => {
-      if (comment.id === commentId) {
-        return {
-          author: { username: 'Deleted User', profile_pic_url: null, id: 0 },
-          created_at: '',
-          content: '',
-          upvotes: 0,
-          replies: [],
-        };
-      }
-      if (comment.replies) {
-        return { ...comment, replies: comment.replies.filter(Boolean).map(removeComment) };
-      }
-      return comment;
-    };
+    // const removeComment = (comment: CommentData): CommentData => {
+    //   if (comment.id === commentId) {
+    //     return {
+    //       id: 0,
+    //       author: { username: 'Deleted User', profile_pic_url: null, id: 0 },
+    //       created_at: '',
+    //       content: '',
+    //       upvotes: 0,
+    //       replies: [],
+    //     };
+    //   }
+    //   if (comment.replies) {
+    //     return { ...comment, replies: comment.replies.filter(Boolean).map(removeComment) };
+    //   }
+    //   return comment;
+    // };
 
-    setComments(comments.filter(Boolean).map(removeComment));
+    // setComments(comments.filter(Boolean).map(removeComment));
   };
 
   return (
@@ -212,7 +219,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
             </button>
           </div>
           <RenderComments
-            comments={data.data}
+            comments={data.data.map((comment: CommentOut) => convertToCommentData(comment))}
             maxDepth={maxDepth}
             isAllCollapsed={isAllCollapsed}
             onAddReply={addReply}

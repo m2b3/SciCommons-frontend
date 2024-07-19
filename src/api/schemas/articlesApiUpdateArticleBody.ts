@@ -9,5 +9,4 @@ import type { ArticleUpdateSchema } from './articleUpdateSchema';
 export type ArticlesApiUpdateArticleBody = {
   details: ArticleUpdateSchema;
   image_file?: Blob;
-  pdf_file?: Blob;
 };

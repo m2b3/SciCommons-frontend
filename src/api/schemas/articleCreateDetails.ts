@@ -4,13 +4,17 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ArticleCreateDetailsArticleLink } from './articleCreateDetailsArticleLink';
+import type { ArticleCreateDetailsCommunityName } from './articleCreateDetailsCommunityName';
 import type { ArticleCreateDetailsSubmissionType } from './articleCreateDetailsSubmissionType';
 import type { Tag } from './tag';
 
 export interface ArticleCreateDetails {
   abstract: string;
+  article_link?: ArticleCreateDetailsArticleLink;
   authors: Tag[];
-  keywords: Tag[];
+  community_name?: ArticleCreateDetailsCommunityName;
+  keywords: string[];
   submission_type: ArticleCreateDetailsSubmissionType;
   title: string;
 }

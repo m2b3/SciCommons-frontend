@@ -21,7 +21,7 @@ import type {
   CommunitiesApiCreateCommunityBody,
   CommunitiesApiListCommunitiesParams,
   CommunitiesApiUpdateCommunityBody,
-  CommunitySchema,
+  CommunityOut,
   Message,
   PaginatedCommunities,
 } from '.././schemas';
@@ -41,7 +41,7 @@ export const communitiesApiCreateCommunity = (
   }
   formData.append('payload', JSON.stringify(communitiesApiCreateCommunityBody.payload));
 
-  return customInstance<CommunitySchema>(
+  return customInstance<CommunityOut>(
     {
       url: `/api/communities/communities/`,
       method: 'POST',
@@ -197,7 +197,7 @@ export const communitiesApiGetCommunity = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<CommunitySchema>(
+  return customInstance<CommunityOut>(
     { url: `/api/communities/community/${communityName}/`, method: 'GET', signal },
     options
   );
@@ -280,7 +280,7 @@ export const communitiesApiUpdateCommunity = (
   }
   formData.append('payload', JSON.stringify(communitiesApiUpdateCommunityBody.payload));
 
-  return customInstance<Message>(
+  return customInstance<CommunityOut>(
     {
       url: `/api/communities/${communityId}/`,
       method: 'PUT',

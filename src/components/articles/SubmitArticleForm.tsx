@@ -42,6 +42,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
   setActiveTab,
 }) => {
   const pathname = usePathname();
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
       {/* Select the tab to upload a file or search for an article */}
@@ -63,10 +64,10 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
         <div className="mt-4 transition-all duration-300">
           {activeTab === 'upload' && (
             <Controller
-              name="pdfFile"
+              name="pdfFiles"
               control={control}
-              rules={{ required: 'PDF file is required' }}
-              render={({}) => <FileUpload name={'pdfFile'} control={control} />}
+              rules={{ required: 'PDF files are required' }}
+              render={({}) => <FileUpload name={'pdfFiles'} control={control} />}
             />
           )}
           {activeTab === 'search' && <SearchComponent />}
@@ -105,9 +106,15 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
             value={value}
             onChange={onChange}
             fieldState={fieldState}
+            disabled={activeTab === 'search'}
           />
         )}
       />
+      {activeTab === 'search' && (
+        <p className="text-sm text-gray-500">
+          You cannot edit the authors when searching for articles.
+        </p>
+      )}
       <FormInput<SubmitArticleFormValues>
         label="Abstract"
         name="abstract"
@@ -120,6 +127,30 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
         textArea={true}
         readOnly={activeTab === 'search'}
       />
+      {activeTab === 'search' && (
+        <p className="text-sm text-gray-500">
+          You cannot edit the abstract when searching for articles.
+        </p>
+      )}
+      {/* Display Article Link if activeTab === 'search' */}
+      {activeTab === 'search' && (
+        <>
+          <FormInput<SubmitArticleFormValues>
+            label="Article Link"
+            name="article_link"
+            type="text"
+            placeholder="Enter the link to the article"
+            register={register}
+            requiredMessage="Article link is required"
+            info="Provide a link to the article you want to submit."
+            errors={errors}
+            readOnly={activeTab === 'search'}
+          />
+          <p className="text-sm text-gray-500">
+            You cannot edit the article link when searching for articles.
+          </p>
+        </>
+      )}
       <Controller
         name="keywords"
         control={control}

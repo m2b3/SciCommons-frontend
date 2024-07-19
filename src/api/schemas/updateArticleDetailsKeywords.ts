@@ -4,6 +4,5 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { Tag } from './tag';
 
-export type UpdateArticleDetailsKeywords = Tag[] | null;
+export type UpdateArticleDetailsKeywords = string[] | null;

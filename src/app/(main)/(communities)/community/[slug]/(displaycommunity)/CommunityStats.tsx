@@ -1,9 +1,9 @@
 import { FileText, UserCheck, Users } from 'lucide-react';
 
-import { CommunitySchema } from '@/api/schemas';
+import { CommunityOut } from '@/api/schemas';
 
 interface CommunityStatsProps {
-  community: CommunitySchema;
+  community: CommunityOut;
 }
 
 const CommunityStats: React.FC<CommunityStatsProps> = ({ community }) => {

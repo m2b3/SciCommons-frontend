@@ -10,6 +10,7 @@
     "eamodio.gitlens", // GitLens for Git version control
     "EditorConfig.EditorConfig", // EditorConfig support
     "orta.vscode-jest", // Jest support for testing
-    "aaron-bond.better-comments" // Highlights comments
+    "aaron-bond.better-comments", // Highlights comments
+    "bradlc.vscode-tailwindcss" // Tailwind CSS IntelliSense
   ]
 }

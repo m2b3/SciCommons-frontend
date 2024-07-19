@@ -18,7 +18,14 @@ const GifReloader = ({ gifUrl, interval }: { gifUrl: string; interval: number })
 
   return (
     <div>
-      <Image src={gifSrc} alt="Looping GIF" width={150} height={150} className="h-24 w-24" />
+      <Image
+        src={gifSrc}
+        alt="Looping GIF"
+        width={150}
+        height={150}
+        className="h-24 w-24"
+        unoptimized
+      />
     </div>
   );
 };

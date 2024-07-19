@@ -44,7 +44,7 @@ interface UserData {
   contributions: Array<{
     icon: LucideIcon;
     title: string;
-    count: number;
+    count: number | null | undefined;
     description: string;
   }>;
   articles: Array<{

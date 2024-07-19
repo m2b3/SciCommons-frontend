@@ -4,11 +4,31 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { CommunityOutBannerPicUrl } from './communityOutBannerPicUrl';
+import type { CommunityOutCreatedAt } from './communityOutCreatedAt';
+import type { CommunityOutJoinRequestStatus } from './communityOutJoinRequestStatus';
 import type { CommunityOutProfilePicUrl } from './communityOutProfilePicUrl';
+import type { CommunityType } from './communityType';
 
 export interface CommunityOut {
+  banner_pic_url?: CommunityOutBannerPicUrl;
+  created_at?: CommunityOutCreatedAt;
   description: string;
   id: number;
+  is_admin?: boolean;
+  is_member?: boolean;
+  is_moderator?: boolean;
+  is_reviewer?: boolean;
+  join_request_status?: CommunityOutJoinRequestStatus;
   name: string;
-  profile_pic_url: CommunityOutProfilePicUrl;
+  num_articles: number;
+  num_members: number;
+  num_moderators: number;
+  num_published_articles: number;
+  num_reviewers: number;
+  profile_pic_url?: CommunityOutProfilePicUrl;
+  rules: string[];
+  slug: string;
+  tags: string[];
+  type: CommunityType;
 }
