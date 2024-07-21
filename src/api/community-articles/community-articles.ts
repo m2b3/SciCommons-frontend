@@ -306,7 +306,7 @@ export const communitiesApiArticlesGetArticleStatus = (
 ) => {
   return customInstance<ArticleStatusSchema>(
     {
-      url: `/api/communities/communities/${communityId}/articles/${articleId}/status/`,
+      url: `/api/communities/communities/${communityId}/community-articles/${articleId}/status/`,
       method: 'GET',
       signal,
     },
@@ -318,12 +318,14 @@ export const getCommunitiesApiArticlesGetArticleStatusQueryKey = (
   communityId: number,
   articleId: number
 ) => {
-  return [`/api/communities/communities/${communityId}/articles/${articleId}/status/`] as const;
+  return [
+    `/api/communities/communities/${communityId}/community-articles/${articleId}/status/`,
+  ] as const;
 };
 
 export const getCommunitiesApiArticlesGetArticleStatusQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiArticlesGetArticleStatus>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   articleId: number,
@@ -364,14 +366,14 @@ export const getCommunitiesApiArticlesGetArticleStatusQueryOptions = <
 export type CommunitiesApiArticlesGetArticleStatusQueryResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiArticlesGetArticleStatus>>
 >;
-export type CommunitiesApiArticlesGetArticleStatusQueryError = ErrorType<unknown>;
+export type CommunitiesApiArticlesGetArticleStatusQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Article Status
  */
 export const useCommunitiesApiArticlesGetArticleStatus = <
   TData = Awaited<ReturnType<typeof communitiesApiArticlesGetArticleStatus>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   communityId: number,
   articleId: number,
@@ -494,14 +496,14 @@ export const useCommunitiesApiArticlesGetAssignedArticles = <
  * @summary Get Assessment Details
  */
 export const communitiesApiArticlesGetAssessmentDetails = (
-  communityId: number,
+  communityName: string,
   articleId: number,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<AssessorArticleSchema>(
     {
-      url: `/api/communities/communities/${communityId}/articles/${articleId}/assessment/`,
+      url: `/api/communities/communities/${communityName}/community-articles/${articleId}/assessment/`,
       method: 'GET',
       signal,
     },
@@ -510,17 +512,19 @@ export const communitiesApiArticlesGetAssessmentDetails = (
 };
 
 export const getCommunitiesApiArticlesGetAssessmentDetailsQueryKey = (
-  communityId: number,
+  communityName: string,
   articleId: number
 ) => {
-  return [`/api/communities/communities/${communityId}/articles/${articleId}/assessment/`] as const;
+  return [
+    `/api/communities/communities/${communityName}/community-articles/${articleId}/assessment/`,
+  ] as const;
 };
 
 export const getCommunitiesApiArticlesGetAssessmentDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiArticlesGetAssessmentDetails>>,
   TError = ErrorType<Message>,
 >(
-  communityId: number,
+  communityName: string,
   articleId: number,
   options?: {
     query?: Partial<
@@ -537,17 +541,17 @@ export const getCommunitiesApiArticlesGetAssessmentDetailsQueryOptions = <
 
   const queryKey =
     queryOptions?.queryKey ??
-    getCommunitiesApiArticlesGetAssessmentDetailsQueryKey(communityId, articleId);
+    getCommunitiesApiArticlesGetAssessmentDetailsQueryKey(communityName, articleId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof communitiesApiArticlesGetAssessmentDetails>>
   > = ({ signal }) =>
-    communitiesApiArticlesGetAssessmentDetails(communityId, articleId, requestOptions, signal);
+    communitiesApiArticlesGetAssessmentDetails(communityName, articleId, requestOptions, signal);
 
   return {
     queryKey,
     queryFn,
-    enabled: !!(communityId && articleId),
+    enabled: !!(communityName && articleId),
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof communitiesApiArticlesGetAssessmentDetails>>,
@@ -568,7 +572,7 @@ export const useCommunitiesApiArticlesGetAssessmentDetails = <
   TData = Awaited<ReturnType<typeof communitiesApiArticlesGetAssessmentDetails>>,
   TError = ErrorType<Message>,
 >(
-  communityId: number,
+  communityName: string,
   articleId: number,
   options?: {
     query?: Partial<
@@ -582,7 +586,7 @@ export const useCommunitiesApiArticlesGetAssessmentDetails = <
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getCommunitiesApiArticlesGetAssessmentDetailsQueryOptions(
-    communityId,
+    communityName,
     articleId,
     options
   );
@@ -605,7 +609,7 @@ export const communitiesApiArticlesSubmitAssessment = (
 ) => {
   return customInstance<Message>(
     {
-      url: `/api/communities/communities/${communityId}/articles/${articleId}/submit-assessment/`,
+      url: `/api/communities/communities/${communityId}/community-articles/${articleId}/submit-assessment/`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: assessmentSubmissionSchema,

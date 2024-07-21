@@ -1,7 +1,6 @@
 'use client';
 
-// Todo: Render this component on server side
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
@@ -13,37 +12,17 @@ import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/Articl
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
 import DisplayFAQs from '@/components/articles/DisplayFAQs';
+import RelevantArticles from '@/components/articles/RelevantArticles';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { useAuthStore } from '@/stores/authStore';
 
-import RelevantArticles from './RelevantArticles';
-
-const articlesData = [
-  {
-    imageUrl: 'https://picsum.photos/200/201',
-    title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    likes: '1.1k',
-    reviews: '2k',
-  },
-  {
-    imageUrl: 'https://picsum.photos/200/201',
-    title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    likes: '1.1k',
-    reviews: '2k',
-  },
-  {
-    imageUrl: 'https://picsum.photos/200/202',
-    title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    likes: '1.1k',
-    reviews: '2k',
-  },
-];
-
 const CommunityArticleDisplayPage = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
+
+  const [isRightHovered, setIsRightHovered] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params.articleSlug,
@@ -61,7 +40,7 @@ const CommunityArticleDisplayPage = () => {
     refetch: reviewsRefetch,
   } = useArticlesReviewApiListReviews(
     data?.data.id || 0,
-    {},
+    { community_id: data?.data.community_article_status?.community.id || 0 },
     {
       query: { enabled: !!accessToken && !!data },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -85,7 +64,11 @@ const CommunityArticleDisplayPage = () => {
       title: 'Reviews',
       content: (
         <div className="flex flex-col gap-2">
-          <ReviewForm articleId={data?.data.id || 0} refetch={reviewsRefetch} forCommunity />
+          <ReviewForm
+            articleId={data?.data.id || 0}
+            refetch={reviewsRefetch}
+            communityId={data?.data.community_article_status?.community.id}
+          />
           {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
           {reviewsData &&
             reviewsData.data.items.map((item) => (
@@ -96,7 +79,12 @@ const CommunityArticleDisplayPage = () => {
     },
     {
       title: 'Discussions',
-      content: <DiscussionForum articleId={data?.data.id || 0} />,
+      content: (
+        <DiscussionForum
+          articleId={data?.data.id || 0}
+          communityId={data?.data.community_article_status?.community.id}
+        />
+      ),
     },
     {
       title: 'FAQs',
@@ -111,24 +99,49 @@ const CommunityArticleDisplayPage = () => {
   }, [error]);
 
   return (
-    <div className="container mx-auto flex flex-col space-y-2 p-4">
-      <div className="flex flex-col md:flex-row">
-        <div className="p-2 md:w-2/3">
-          {isPending && <DisplayArticleSkeleton />}
-          {data && <DisplayArticle article={data.data} />}
+    <div className="container mx-auto">
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        <div className="p-4">
+          {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
         </div>
-        <div className="p-2 md:w-1/3">
-          {isPending && <ArticleStatsSkeleton />}
-
-          {data && <ArticleStats article={data.data} />}
+        {data && (
+          <div className="p-4">
+            <TabNavigation tabs={tabs} />
+          </div>
+        )}
+        <div className="p-4">
+          <RelevantArticles
+            articleId={data?.data.id || 0}
+            communityId={data?.data.community_article_status?.community.id || 0}
+          />
         </div>
       </div>
-      <div className="flex flex-col md:flex-row">
-        <div className="p-2 md:w-2/3">
-          <TabNavigation tabs={tabs} />
+
+      {/* Desktop Layout */}
+      <div className="hidden h-screen lg:flex">
+        {/* Left side */}
+        <div className="scrollbar-hide w-2/3 overflow-y-auto p-4">
+          {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
+          {data && (
+            <div className="mt-4">
+              <TabNavigation tabs={tabs} />
+            </div>
+          )}
         </div>
-        <div className="p-2 md:w-1/3">
-          <RelevantArticles articles={articlesData} />
+
+        {/* Right side */}
+        <div
+          className={`w-1/3 p-4 transition-all duration-300 ${
+            isRightHovered ? 'custom-scrollbar overflow-y-auto' : 'overflow-y-hidden'
+          }`}
+          onMouseEnter={() => setIsRightHovered(true)}
+          onMouseLeave={() => setIsRightHovered(false)}
+        >
+          <div className="mb-4">
+            {isPending ? <ArticleStatsSkeleton /> : data && <ArticleStats article={data.data} />}
+          </div>
+          <RelevantArticles articleId={data?.data.id || 0} />
         </div>
       </div>
     </div>

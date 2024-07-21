@@ -14,4 +14,6 @@ export const ContentTypeEnum = {
   postscomment: 'posts.comment',
   articlesreviewcomment: 'articles.reviewcomment',
   articlesreview: 'articles.review',
+  articlesdiscussion: 'articles.discussion',
+  articlesdiscussioncomment: 'articles.discussioncomment',
 } as const;

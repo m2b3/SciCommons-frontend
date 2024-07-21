@@ -7,8 +7,9 @@
 
 export type PostsApiListPostsParams = {
   page?: number;
-  size?: number;
+  per_page?: number;
   sort_by?: string;
   sort_order?: string;
   hashtag?: string | null;
+  search?: string | null;
 };

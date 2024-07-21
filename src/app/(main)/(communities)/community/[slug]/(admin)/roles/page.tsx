@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 
-import { useCommunitiesApiAdminGetCommunityMembers } from '@/api/community-admin/community-admin';
+import { useCommunitiesMembersApiGetCommunityMembers } from '@/api/community-members/community-members';
 import TabComponent from '@/components/communities/TabComponent';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -19,11 +19,12 @@ type ActiveTab = 'Members' | 'Moderators' | 'Reviewers' | 'Admins';
 // Todo: 2. Optimize the code to reduce the number of lines
 const Roles: React.FC = () => {
   const params = useParams<{ slug: string }>();
+
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Members');
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const { data, error, isPending, refetch } = useCommunitiesApiAdminGetCommunityMembers(
+  const { data, error, isPending, refetch } = useCommunitiesMembersApiGetCommunityMembers(
     params.slug,
     {
       query: {
@@ -67,7 +68,7 @@ const Roles: React.FC = () => {
                 }
                 reviewedArticles={item.articles_published}
                 submittedArticles={item.articles_published}
-                profilePicture={'/auth/register.png'}
+                profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
                 refetch={refetch}
@@ -95,7 +96,7 @@ const Roles: React.FC = () => {
                 }
                 reviewedArticles={item.articles_published}
                 submittedArticles={item.articles_published}
-                profilePicture={'/auth/register.png'}
+                profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
                 refetch={refetch}
@@ -123,7 +124,7 @@ const Roles: React.FC = () => {
                 }
                 reviewedArticles={item.articles_published}
                 submittedArticles={item.articles_published}
-                profilePicture={'/auth/register.png'}
+                profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
                 refetch={refetch}
@@ -146,7 +147,7 @@ const Roles: React.FC = () => {
                 }
                 reviewedArticles={item.articles_published}
                 submittedArticles={item.articles_published}
-                profilePicture={'/auth/register.png'}
+                profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
                 refetch={refetch}

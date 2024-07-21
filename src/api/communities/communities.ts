@@ -114,7 +114,7 @@ export const useCommunitiesApiCreateCommunity = <
   return useMutation(mutationOptions);
 };
 /**
- * @summary List Communities
+ * @summary Get Communities
  */
 export const communitiesApiListCommunities = (
   params?: CommunitiesApiListCommunitiesParams,
@@ -166,7 +166,7 @@ export type CommunitiesApiListCommunitiesQueryResult = NonNullable<
 export type CommunitiesApiListCommunitiesQueryError = ErrorType<Message>;
 
 /**
- * @summary List Communities
+ * @summary Get Communities
  */
 export const useCommunitiesApiListCommunities = <
   TData = Awaited<ReturnType<typeof communitiesApiListCommunities>>,

@@ -116,22 +116,50 @@ const Submissions: React.FC = () => {
       );
     } else if (activeTab === 'accepted') {
       return (
+        <div className="flex space-x-2">
+          <button
+            className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
+            onClick={() =>
+              setSelectedIds({
+                communityId: Number(article.community_article_status?.community.id),
+                articleId: Number(article.id),
+              })
+            }
+          >
+            View Details
+          </button>
+
+          <button
+            className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
+            onClick={() =>
+              handleAction(
+                'publish',
+                Number(article.id),
+                Number(article.community_article_status?.community.id)
+              )
+            }
+            disabled={
+              actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
+            }
+          >
+            {actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
+              ? 'Publishing...'
+              : 'Publish'}
+          </button>
+        </div>
+      );
+    } else if (activeTab === 'under_review') {
+      return (
         <button
           className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
           onClick={() =>
-            handleAction(
-              'publish',
-              Number(article.id),
-              Number(article.community_article_status?.community.id)
-            )
-          }
-          disabled={
-            actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
+            setSelectedIds({
+              communityId: Number(article.community_article_status?.community.id),
+              articleId: Number(article.id),
+            })
           }
         >
-          {actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
-            ? 'Publishing...'
-            : 'Publish'}
+          View Details
         </button>
       );
     }
@@ -152,29 +180,15 @@ const Submissions: React.FC = () => {
     }
 
     return (
-      data &&
-      data.data.items.map((article, index) => (
-        <div className="relative flex flex-col gap-2 bg-white p-2" key={index}>
-          <div className="absolute bottom-4 right-4">
-            {activeTab === 'under_review' ? (
-              <button
-                className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
-                onClick={() =>
-                  setSelectedIds({
-                    communityId: Number(article.community_article_status?.community.id),
-                    articleId: Number(article.id),
-                  })
-                }
-              >
-                View Details
-              </button>
-            ) : (
-              renderActionButtons(article)
-            )}
-          </div>
-          <ArticleCard article={article} />
-        </div>
-      ))
+      <div className="flex min-h-screen max-w-6xl flex-col space-y-4">
+        {data &&
+          data.data.items.map((article, index) => (
+            <div className="relative flex flex-col gap-2 p-2" key={index}>
+              <div className="absolute bottom-4 right-4">{renderActionButtons(article)}</div>
+              <ArticleCard article={article} />
+            </div>
+          ))}
+      </div>
     );
   };
 
@@ -188,7 +202,9 @@ const Submissions: React.FC = () => {
         />
       </div>
       <div className="my-4 flex flex-col space-y-4">
-        {activeTab === 'under_review' && selectedIds ? (
+        {/* When activeTab is either under_review or accepted & selectedIds is available */}
+        {/* Render the ArticleAssessmentDetails component */}
+        {selectedIds ? (
           <ArticleAssessmentDetails
             articleId={selectedIds.articleId}
             communityId={selectedIds.communityId}

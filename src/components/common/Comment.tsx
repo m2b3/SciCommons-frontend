@@ -22,6 +22,7 @@ import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/user
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
 
+import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
 import RenderComments from './RenderComments';
 
@@ -39,6 +40,10 @@ export interface CommentData {
   upvotes: number;
   replies: CommentData[];
   is_author?: boolean;
+  // Review specific
+  anonymous_name?: string;
+  rating?: number;
+  isReview?: boolean;
   review_version?: boolean;
   isNew?: boolean;
 }
@@ -65,12 +70,14 @@ const Comment: React.FC<CommentProps> = ({
   maxDepth,
   isAllCollapsed,
   is_author,
+  rating,
+  isReview = false,
+  anonymous_name,
   onAddReply,
   onUpdateComment,
   onDeleteComment,
   isNew,
   contentType,
-  review_version,
 }) => {
   dayjs.extend(relativeTime);
 
@@ -146,6 +153,9 @@ const Comment: React.FC<CommentProps> = ({
       className={`relative mb-4 flex space-x-2 ${depth === 0 ? 'border-b pb-4' : ''} ${highlight ? 'bg-yellow-100 transition-colors duration-1000' : ''}`}
     >
       <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300">
+        {hasReplies && !isCollapsed && (
+          <div className="absolute bottom-1 left-2 top-10 w-[1px] bg-gray-300" />
+        )}
         <Image
           src={author.profile_pic_url || `data:image/png;base64,${imageData}`}
           alt={author.username}
@@ -154,24 +164,29 @@ const Comment: React.FC<CommentProps> = ({
           className="rounded-full"
         />
       </div>
-      {hasReplies && !isCollapsed && (
-        <div className="absolute bottom-1 left-2 top-10 w-[1px] bg-gray-300" />
-      )}
+
       <div className="flex-grow">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {hasReplies && (
-              <button
-                onClick={() => setIsCollapsed(!isCollapsed)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-              </button>
+          <div>
+            <div className="flex items-center space-x-2">
+              {hasReplies && (
+                <button
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                </button>
+              )}
+              <span className="font-semibold text-gray-950 dark:text-gray-300">
+                {anonymous_name || author.username}
+              </span>
+              <span className="text-sm text-gray-400">• {dayjs(created_at).fromNow()}</span>
+            </div>
+            {rating && !isEditing && (
+              <div>
+                <Ratings rating={rating} size={12} variant="yellow" readonly />
+              </div>
             )}
-            <span className="font-semibold text-gray-950 dark:text-gray-300">
-              {author.username}
-            </span>
-            <span className="text-sm text-gray-400">• {dayjs(created_at).fromNow()}</span>
           </div>
           {is_author && (
             <div className="flex items-center space-x-2">
@@ -193,7 +208,8 @@ const Comment: React.FC<CommentProps> = ({
             placeholder="Edit your comment..."
             buttonText="Update"
             initialContent={content}
-            isReview={review_version}
+            initialRating={rating}
+            isReview={isReview}
           />
         ) : (
           <p className="mt-1 text-sm">{content}</p>
@@ -246,7 +262,7 @@ const Comment: React.FC<CommentProps> = ({
             onSubmit={handleAddReply}
             placeholder="Write your reply..."
             buttonText="Post Reply"
-            isReview={review_version}
+            isReview={isReview}
           />
         )}
         {hasReplies && !isCollapsed && (

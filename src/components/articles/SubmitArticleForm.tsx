@@ -82,8 +82,6 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
         requiredMessage="Title is required"
         minLengthValue={10}
         minLengthMessage="Title must be at least 10 characters"
-        maxLengthValue={100}
-        maxLengthMessage="Title must not exceed 100 characters"
         info="Please provide a clear and concise title for your article."
         errors={errors}
         readOnly={activeTab === 'search'}

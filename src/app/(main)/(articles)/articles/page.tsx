@@ -1,30 +1,85 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
+import { FileX2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
-import SearchBar from '@/components/SearchBar';
+import { ArticleOut } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
+import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 
-const Articles = () => {
-  const { data, isPending, error } = useArticlesApiGetArticles();
+interface ArticlesResponse {
+  data: {
+    items: ArticleOut[];
+    num_pages: number;
+    total: number;
+  };
+}
+
+const Articles: React.FC = () => {
+  const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useState<string>('');
+  const [articles, setArticles] = useState<ArticleOut[]>([]);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const loadingType = LoadingType.PAGINATION;
+
+  const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>({
+    page: page,
+    per_page: 10,
+    search: search,
+  });
 
   useEffect(() => {
     if (error) {
       toast.error(`${error.response?.data.message}`);
     }
-  }, [error]);
+    if (data) {
+      if (page === 1 || loadingType === LoadingType.PAGINATION) {
+        setArticles(data.data.items);
+      } else {
+        setArticles((prevArticles) => [...prevArticles, ...data.data.items]);
+      }
+      setTotalItems(data.data.total);
+      setTotalPages(data.data.num_pages);
+    }
+  }, [data, error, page, loadingType]);
+
+  const handleSearch = useCallback((term: string) => {
+    setSearch(term);
+    setPage(1);
+    setArticles([]);
+  }, []);
+
+  const handleLoadMore = useCallback((newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const renderArticle = useCallback((article: ArticleOut) => <ArticleCard article={article} />, []);
+
+  const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
-    <div className="container mx-auto space-y-4 p-4">
-      <SearchBar />
-      <div className="flex min-h-screen flex-col space-y-4">
-        {isPending && Array.from({ length: 5 }, (_, index) => <ArticleCardSkeleton key={index} />)}
-        {data &&
-          data?.data?.items?.map((article) => <ArticleCard key={article.id} article={article} />)}
-      </div>
+    <div className="container mx-auto p-4">
+      <SearchableList<ArticleOut>
+        onSearch={handleSearch}
+        onLoadMore={handleLoadMore}
+        renderItem={renderArticle}
+        renderSkeleton={renderSkeleton}
+        isLoading={isPending}
+        items={articles}
+        totalItems={totalItems}
+        totalPages={totalPages}
+        currentPage={page}
+        loadingType={loadingType}
+        searchPlaceholder="Search articles..."
+        emptyStateContent="No Articles Found"
+        emptyStateSubcontent="Try searching for something else"
+        emptyStateLogo={<FileX2 size={64} />}
+      />
     </div>
   );
 };

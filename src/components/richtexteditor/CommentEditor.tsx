@@ -4,11 +4,10 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import { EditorContent, Editor as TipTapEditor, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Control, FieldValues, Path, useController } from 'react-hook-form';
+import { Control, FieldValues, Path, useController, useWatch } from 'react-hook-form';
 
 import MenuBar from './MenuBar';
 
-// Todo: unable to set the content empty after the review is submitted
 interface CommentEditorProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>;
   control: Control<TFieldValues>;
@@ -24,11 +23,15 @@ const CommentEditor = <TFieldValues extends FieldValues>({
   } = useController({
     name,
     control,
-    // Display error if the comment length is less than 50 characters and also comment is required
     rules: {
       required: 'Comment is required',
       minLength: { value: 50, message: 'Comment must be at least 50 characters' },
     },
+  });
+
+  const content = useWatch({
+    control,
+    name,
   });
 
   const editor = useEditor({
@@ -60,6 +63,12 @@ const CommentEditor = <TFieldValues extends FieldValues>({
       editorRef.current = editor;
     }
   }, [editor]);
+
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content || '');
+    }
+  }, [content, editor]);
 
   return !editorLoaded ? (
     <div className="h-24 animate-pulse rounded bg-gray-200"></div>

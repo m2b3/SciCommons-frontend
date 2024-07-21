@@ -3,7 +3,7 @@ import { FC } from 'react';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Calendar, Eye, Heart, MessageCircle, MessageSquare, Star } from 'lucide-react';
+import { Calendar, Clock, Eye, MessageCircle, MessageSquare, Star, ThumbsUp } from 'lucide-react';
 
 import { ArticleOut } from '@/api/schemas';
 import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
@@ -42,56 +42,54 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
       });
   };
 
+  const formatDate = (date: string) => {
+    return `${dayjs(date).format('Do MMM, YYYY')} (${dayjs(date).fromNow()})`;
+  };
+
   return (
-    <div className="rounded-lg border p-4 shadow-sm">
-      <h3 className="mb-4 text-lg font-bold">Article Stats</h3>
-      <div className="space-y-4 text-gray-700">
+    <div className="rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-lg font-bold dark:text-white">Article Stats</h3>
+      <div className="space-y-4 text-gray-700 dark:text-gray-300">
         <div className="flex space-x-4">
           <div className="flex items-center">
-            {/* Fill it if the user is already liked (data.data.user_reaction === 1) */}
-            {data?.data.user_reaction === 1 ? (
-              <Heart
-                className="mr-2 h-5 w-5 cursor-pointer text-red-500"
-                onClick={() => handleReaction('upvote')}
-              />
-            ) : (
-              <Heart
-                className="mr-2 h-5 w-5 cursor-pointer"
-                onClick={() => handleReaction('upvote')}
-              />
-            )}
-
+            <ThumbsUp
+              className={`mr-2 h-5 w-5 cursor-pointer ${
+                data?.data.user_reaction === 1
+                  ? 'text-blue-500'
+                  : 'text-gray-400 dark:text-gray-500'
+              }`}
+              onClick={() => handleReaction('upvote')}
+            />
             <span>{data?.data.likes} likes</span>
           </div>
           <div className="flex items-center">
-            <Eye className="mr-2 h-5 w-5" />
+            <Eye className="mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             <span>0 views</span>
           </div>
         </div>
         <div className="flex items-center">
-          <Star className="mr-2 h-5 w-5" />
+          <Star className="mr-2 h-5 w-5 text-yellow-400" />
           <span>{article.total_reviews} Reviews and Ratings</span>
         </div>
         <div className="flex space-x-4">
           <div className="flex items-center">
-            <MessageCircle className="mr-2 h-5 w-5" />
+            <MessageCircle className="mr-2 h-5 w-5 text-green-500" />
             <span>{article.total_comments} comments</span>
           </div>
           <div className="flex items-center">
-            <MessageSquare className="mr-2 h-5 w-5" />
-            <span>{0} discussions</span>
+            <MessageSquare className="mr-2 h-5 w-5 text-purple-500" />
+            <span>{article.total_discussions} discussions</span>
           </div>
         </div>
-        <div className="flex items-center">
-          <Calendar className="mr-2 h-5 w-5" />
-          <span>Published On</span>
+        <div className="flex items-center space-x-2">
+          <Calendar className="h-5 w-5 flex-shrink-0 text-red-500" />
+          <span className="font-semibold">Published:</span>
+          <span className="text-gray-500 dark:text-gray-400">{formatDate(article.created_at)}</span>
         </div>
-        <div className="ml-7 text-gray-500">
-          {/* Ex: 13th Mar, 2021 (3 years ago) */}
-          <span>
-            {dayjs(article.created_at).format('Do MMM, YYYY')} (
-            {dayjs(article.created_at).fromNow()})
-          </span>
+        <div className="flex items-center space-x-2">
+          <Clock className="h-5 w-5 flex-shrink-0 text-blue-500" />
+          <span className="font-semibold">Updated:</span>
+          <span className="text-gray-500 dark:text-gray-400">{formatDate(article.updated_at)}</span>
         </div>
       </div>
     </div>
@@ -102,39 +100,42 @@ export default ArticleStats;
 
 export const ArticleStatsSkeleton = () => {
   return (
-    <div className="animate-pulse rounded-lg border p-4 shadow-sm">
-      <div className="mb-4 h-6 w-32 rounded bg-gray-200"></div>
+    <div className="animate-pulse rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="mb-4 h-6 w-32 rounded bg-gray-200 dark:bg-gray-700"></div>
       <div className="space-y-4">
         <div className="flex space-x-4">
           <div className="flex items-center">
-            <Heart className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-16 rounded bg-gray-200"></div>
+            <ThumbsUp className="mr-2 h-5 w-5 text-gray-300 dark:text-gray-600" />
+            <div className="h-4 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
           <div className="flex items-center">
-            <Eye className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-16 rounded bg-gray-200"></div>
+            <Eye className="mr-2 h-5 w-5 text-gray-300 dark:text-gray-600" />
+            <div className="h-4 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
         </div>
         <div className="flex items-center">
-          <Star className="mr-2 h-5 w-5 text-gray-300" />
-          <div className="h-4 w-40 rounded bg-gray-200"></div>
+          <Star className="mr-2 h-5 w-5 text-gray-300 dark:text-gray-600" />
+          <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
         <div className="flex space-x-4">
           <div className="flex items-center">
-            <MessageCircle className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-24 rounded bg-gray-200"></div>
+            <MessageCircle className="mr-2 h-5 w-5 text-gray-300 dark:text-gray-600" />
+            <div className="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
           <div className="flex items-center">
-            <MessageSquare className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-24 rounded bg-gray-200"></div>
+            <MessageSquare className="mr-2 h-5 w-5 text-gray-300 dark:text-gray-600" />
+            <div className="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
         </div>
-        <div className="flex items-center">
-          <Calendar className="mr-2 h-5 w-5 text-gray-300" />
-          <div className="h-4 w-24 rounded bg-gray-200"></div>
+        <div className="flex items-center space-x-2">
+          <Calendar className="h-5 w-5 flex-shrink-0 text-gray-300 dark:text-gray-600" />
+          <div className="h-4 w-20 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
-        <div className="ml-7">
-          <div className="h-4 w-48 rounded bg-gray-200"></div>
+        <div className="flex items-center space-x-2">
+          <Clock className="h-5 w-5 flex-shrink-0 text-gray-300 dark:text-gray-600" />
+          <div className="h-4 w-20 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
       </div>
     </div>

@@ -3,18 +3,12 @@ import Link from 'next/link';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {
-  Bookmark,
-  MessageCircle,
-  MoreHorizontal,
-  Share2,
-  ThumbsDown,
-  ThumbsUp,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
+import { MessageCircle, MoreHorizontal, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { PostOut } from '@/api/schemas';
 import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import TruncateText from '@/components/common/TruncateText';
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -52,7 +46,7 @@ const Post = (post: PostOut) => {
   };
 
   return (
-    <div className="mb-6 overflow-hidden rounded-common-xl border border-gray-100 bg-gray-50 shadow-md dark:border-gray-800 dark:bg-gray-900">
+    <div className="mb-6 overflow-hidden rounded-common-xl border border-gray-100 shadow-md dark:border-gray-800 dark:bg-gray-900">
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -72,9 +66,6 @@ const Post = (post: PostOut) => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <button className="text-gray-500 transition hover:text-blue-500">
-              <Bookmark size={20} />
-            </button>
             <button className="text-gray-500 transition hover:text-gray-700">
               <MoreHorizontal size={20} />
             </button>
@@ -83,7 +74,9 @@ const Post = (post: PostOut) => {
         <Link href={`/posts/${post.id}`}>
           <h2 className="mb-2 cursor-pointer text-xl font-bold text-primary">{post?.title}</h2>
         </Link>
-        <p className="mb-4 text-gray-600 dark:text-gray-400">{post?.content}</p>
+        <div className="mb-4">
+          <TruncateText text={post?.content} maxLines={3} />
+        </div>
 
         {post?.hashtags && post?.hashtags?.length > 0 && (
           <div className="mb-4 flex w-full flex-wrap gap-1">

@@ -5,41 +5,43 @@ import Link from 'next/link';
 
 import { FileText, Users } from 'lucide-react';
 
+import { CommunityOut } from '@/api/schemas';
+import useIdenticon from '@/hooks/useIdenticons';
+
 interface CommunityCardProps {
-  imageUrl: string;
-  title: string;
-  description: string;
-  membersCount: number;
-  articlesCount: number;
+  community: CommunityOut;
 }
 
-const CommunityCard: FC<CommunityCardProps> = ({
-  imageUrl,
-  title,
-  description,
-  membersCount,
-  articlesCount,
-}) => {
+const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
+  const imageData = useIdenticon(60);
+
   return (
     <div className="flex flex-col items-start rounded-lg border border-gray-200 bg-white p-4 shadow-sm res-text-sm dark:border-gray-700 dark:bg-gray-800 sm:flex-row">
       <div className="relative mb-4 h-16 w-16 flex-shrink-0 sm:mb-0 sm:mr-4">
-        <Image src={imageUrl} alt={title} fill className="rounded-full object-cover" />
+        <Image
+          src={community.profile_pic_url || `data:image/svg+xml;utf8,${imageData}`}
+          alt={community.name}
+          fill
+          className="rounded-full object-cover"
+        />
       </div>
       <div className="min-w-0 flex-1">
-        <Link href={`/community/${encodeURIComponent(title)}`}>
+        <Link href={`/community/${encodeURIComponent(community.name)}`}>
           <h3 className="mb-2 truncate font-bold text-gray-900 res-text-base hover:underline dark:text-gray-100">
-            {title}
+            {community.name}
           </h3>
         </Link>
-        <p className="mb-4 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">{description}</p>
+        <p className="mb-4 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">
+          {community.description}
+        </p>
         <div className="flex flex-wrap items-center gap-4 text-gray-500 dark:text-gray-400">
           <div className="flex items-center">
             <Users className="mr-1 h-4 w-4" />
-            <span>{membersCount} Members</span>
+            <span>{community.num_members} Members</span>
           </div>
           <div className="flex items-center">
             <FileText className="mr-1 h-4 w-4" />
-            <span>Published {articlesCount} Articles</span>
+            <span>Published {community.num_articles} Articles</span>
           </div>
         </div>
       </div>

@@ -1,9 +1,8 @@
-// pages/index.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import clsx from 'clsx';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import {
   useArticlesReviewApiCreateReview,
@@ -14,6 +13,7 @@ import FormInput from '@/components/FormInput';
 import LabeledTooltip from '@/components/LabeledToolTip';
 import CommentEditor from '@/components/richtexteditor/CommentEditor';
 import { Ratings } from '@/components/ui/ratings';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import { ReviewCardSkeleton } from './ReviewCard';
@@ -33,8 +33,7 @@ interface ReviewFormProps {
   edit?: boolean;
   setEdit?: (edit: boolean) => void;
   refetch?: () => void;
-  communityId?: number;
-  forCommunity?: boolean;
+  communityId?: number | null;
 }
 
 type ActionType = 'create' | 'edit' | 'delete';
@@ -70,31 +69,18 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     },
     mode: 'onChange',
   });
-  // Create a Review
-  const {
-    isSuccess,
-    isPending,
-    mutate: createReview,
-    error,
-  } = useArticlesReviewApiCreateReview({
+
+  const { isPending, mutate: createReview } = useArticlesReviewApiCreateReview({
     request: axiosConfig,
   });
 
-  // Update a Review
-  const {
-    isSuccess: editSuccess,
-    isPending: editPending,
-    error: editError,
-    mutate: editReview,
-  } = useArticlesReviewApiUpdateReview({ request: axiosConfig });
+  const { isPending: editPending, mutate: editReview } = useArticlesReviewApiUpdateReview({
+    request: axiosConfig,
+  });
 
-  // Delete a Review
-  const {
-    isSuccess: deleteSuccess,
-    isPending: deletePending,
-    error: deleteError,
-    mutate: deleteReview,
-  } = useArticlesReviewApiDeleteReview({ request: axiosConfig });
+  const { isPending: deletePending, mutate: deleteReview } = useArticlesReviewApiDeleteReview({
+    request: axiosConfig,
+  });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const reviewData = {
@@ -103,47 +89,50 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     };
 
     if (action === 'edit' && reviewId) {
-      editReview({ data: reviewData, reviewId: reviewId });
+      editReview(
+        { data: reviewData, reviewId: reviewId },
+        {
+          onSuccess: () => {
+            toast.success('Review updated successfully');
+            refetch && refetch();
+            setEdit && setEdit(false);
+          },
+          onError: (error) => {
+            showErrorToast(error);
+          },
+        }
+      );
     } else if (action === 'delete' && reviewId) {
-      deleteReview({ reviewId: reviewId });
+      deleteReview(
+        { reviewId: reviewId },
+        {
+          onSuccess: () => {
+            toast.success('Review deleted successfully');
+            refetch && refetch();
+            setEdit && setEdit(false);
+          },
+          onError: (error) => {
+            showErrorToast(error);
+          },
+        }
+      );
     } else {
-      createReview({ articleId, data: reviewData, params: { community_id: communityId } });
+      createReview(
+        { articleId, data: reviewData, params: { community_id: communityId } },
+        {
+          onSuccess: () => {
+            reset();
+            refetch && refetch();
+            toast.success('Review submitted successfully');
+          },
+          onError: (error) => {
+            reset();
+            showErrorToast(error);
+          },
+        }
+      );
     }
   };
-
-  // Toast Notifications for UI feedback
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      refetch && refetch();
-      toast.success('Review submitted successfully');
-    }
-    if (error) {
-      toast.error(`${error.response?.data.message}`);
-    }
-  }, [error, reset, isSuccess, refetch]);
-
-  useEffect(() => {
-    if (editSuccess) {
-      toast.success('Review updated successfully');
-      refetch && refetch();
-      setEdit && setEdit(false);
-    }
-    if (editError) {
-      toast.error(`${editError.response?.data.message}`);
-    }
-  }, [editError, editSuccess, setEdit, refetch]);
-
-  useEffect(() => {
-    if (deleteSuccess) {
-      toast.success('Review deleted successfully');
-      refetch && refetch();
-      setEdit && setEdit(false);
-    }
-    if (deleteError) {
-      toast.error(`${deleteError.response?.data.message}`);
-    }
-  }, [deleteError, deleteSuccess, setEdit, refetch]);
 
   return (
     <>
@@ -152,7 +141,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mb-4 flex flex-col gap-4 rounded-lg border p-4 shadow-sm"
+          className="mb-4 flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
         >
           <div className="">
             <LabeledTooltip label="Rate this article" info="Rate this article" />
@@ -168,7 +157,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                     readonly={false}
                   />
                   {errors.rating && (
-                    <p className="mt-1 text-sm text-red-500">{errors.rating.message}</p>
+                    <p className="mt-1 text-sm text-red-500 dark:text-red-400">
+                      {errors.rating.message}
+                    </p>
                   )}
                 </>
               )}
@@ -194,7 +185,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <button
                 type="submit"
                 className={clsx(
-                  'self-end rounded bg-black px-4 py-2 text-sm text-white',
+                  'self-end rounded bg-blue-600 px-4 py-2 text-sm text-white dark:bg-blue-500',
                   editPending && 'cursor-not-allowed opacity-50'
                 )}
                 onClick={() => setAction('edit')}
@@ -204,17 +195,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <button
                 type="submit"
                 className={clsx(
-                  'self-end rounded bg-red-500 px-4 py-2 text-sm text-white',
+                  'self-end rounded bg-red-600 px-4 py-2 text-sm text-white dark:bg-red-500',
                   deletePending && 'cursor-not-allowed opacity-50'
                 )}
                 onClick={() => setAction('delete')}
               >
                 {deletePending ? 'Deleting...' : 'Delete'}
               </button>
-              {/* Cancel Button */}
               <button
                 type="button"
-                className="self-end rounded bg-gray-500 px-4 py-2 text-sm text-white"
+                className="self-end rounded bg-gray-500 px-4 py-2 text-sm text-white dark:bg-gray-600"
                 onClick={() => setEdit && setEdit(false)}
               >
                 Cancel
@@ -225,20 +215,20 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <button
                 type="submit"
                 className={clsx(
-                  'self-start rounded bg-black px-4 py-2 text-sm text-white',
+                  'self-start rounded bg-blue-600 px-4 py-2 text-sm text-white dark:bg-blue-500',
                   isPending && 'cursor-not-allowed opacity-50'
                 )}
                 onClick={() => setAction('create')}
               >
                 {isPending ? 'Submitting...' : 'Submit Review'}
               </button>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
                 By clicking Submit Review, you agree to our{' '}
-                <a href="#" className="text-blue-500">
+                <a href="#" className="text-blue-600 dark:text-blue-400">
                   terms of service
                 </a>{' '}
                 and{' '}
-                <a href="#" className="text-blue-500">
+                <a href="#" className="text-blue-600 dark:text-blue-400">
                   privacy policy
                 </a>
                 .

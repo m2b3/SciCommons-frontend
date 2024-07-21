@@ -547,7 +547,7 @@ export const articlesDiscussionApiListDiscussionComments = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedDiscussionSchema>(
+  return customInstance<DiscussionCommentOut[]>(
     { url: `/api/articles/discussions/${discussionId}/comments/`, method: 'GET', params, signal },
     options
   );

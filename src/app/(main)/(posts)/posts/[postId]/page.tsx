@@ -1,20 +1,35 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { FileX2, MessageCircle, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import {
+  Bookmark,
+  FileX2,
+  MessageCircle,
+  MoreHorizontal,
+  Share2,
+  ThumbsDown,
+  ThumbsUp,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 import { usePostsApiGetPost, usePostsApiListPosts } from '@/api/posts/posts';
 import { PostOut } from '@/api/schemas';
+import {
+  useUsersCommonApiGetBookmarkStatus,
+  useUsersCommonApiToggleBookmark,
+} from '@/api/users-common-api/users-common-api';
 import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
 import RedditStyleComments from '@/components/common/PostComments';
+import TruncateText from '@/components/common/TruncateText';
 import Hashtag from '@/components/posts/Hashtag';
 import Post, { PostSkeleton } from '@/components/posts/Post';
 import useIdenticon from '@/hooks/useIdenticons';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
@@ -22,37 +37,53 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   dayjs.extend(relativeTime);
 
   const accessToken = useAuthStore((state) => state.accessToken);
+  const requestConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   const { data, isLoading } = usePostsApiGetPost(params.postId);
   const imageData = useIdenticon(40);
 
-  const { data: reactions, refetch } = useUsersApiGetReactionCount(
+  const { data: reactions, refetch: refetchLikes } = useUsersApiGetReactionCount(
     'posts.post',
     Number(params.postId),
     {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: requestConfig,
     }
   );
 
+  // BookMarkStats
+  const { data: bookMarkStats, refetch: refetchBookMark } = useUsersCommonApiGetBookmarkStatus(
+    'posts.post',
+    params.postId,
+    {
+      request: requestConfig,
+    }
+  );
+
+  // Likes/Dislikes
   const { data: userPostData, isPending: userPostDataPending } = usePostsApiListPosts({
     hashtag: data?.data?.hashtags && data?.data?.hashtags[0],
   });
-
-  // Todo: Try using useState Hook
-  useEffect(() => {
-    if (accessToken) {
-      console.log(accessToken);
-      refetch();
-    }
-  }, [accessToken, refetch]);
 
   const { mutate } = useUsersApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
-        refetch();
+        refetchLikes();
       },
       onError: (error) => {
         console.error(error);
+      },
+    },
+  });
+
+  const { mutate: toggleBookmark } = useUsersCommonApiToggleBookmark({
+    request: requestConfig,
+    mutation: {
+      onSuccess: (data) => {
+        toast.success(`${data.data.message}`);
+        refetchBookMark();
+      },
+      onError: (error) => {
+        showErrorToast(error);
       },
     },
   });
@@ -70,23 +101,55 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
         {isLoading && <PostDetailSkeleton />}
         {data && (
           <div className="x-auto min-h-screen w-full max-w-[720px] border-gray-100 bg-gray-50 p-6 shadow-common dark:border-gray-800 dark:bg-white/5 sm:min-h-fit sm:rounded-common-xl sm:border">
-            <div className="mb-4 flex items-center">
-              <Image
-                src={data.data.author.profile_pic_url || `data:image/png;base64,${imageData}`}
-                alt={data.data.author.username}
-                className="mr-3 h-10 w-10 rounded-full"
-                width={40}
-                height={40}
-              />
-              <div>
-                <h2 className="font-semibold text-gray-950 dark:text-gray-300">
-                  {data.data.author.username}
-                </h2>
-                <p className="text-sm text-gray-400">{dayjs(data.data.created_at).fromNow()}</p>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex items-center">
+                <Image
+                  src={data.data.author.profile_pic_url || `data:image/png;base64,${imageData}`}
+                  alt={data.data.author.username}
+                  className="mr-3 h-10 w-10 rounded-full"
+                  width={40}
+                  height={40}
+                />
+                <div>
+                  <h2 className="font-semibold text-gray-950 dark:text-gray-300">
+                    {data.data.author.username}
+                  </h2>
+                  <p className="text-sm text-gray-400">{dayjs(data.data.created_at).fromNow()}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {/* Bookmark */}
+                <button className="text-gray-500 transition hover:text-blue-500">
+                  {bookMarkStats?.data.is_bookmarked ? (
+                    <Bookmark
+                      size={20}
+                      className="text-blue-500"
+                      onClick={() =>
+                        toggleBookmark({
+                          data: { content_type: 'posts.post', object_id: params.postId },
+                        })
+                      }
+                    />
+                  ) : (
+                    <Bookmark
+                      size={20}
+                      onClick={() =>
+                        toggleBookmark({
+                          data: { content_type: 'posts.post', object_id: params.postId },
+                        })
+                      }
+                    />
+                  )}
+                </button>
+                <button className="text-gray-500 transition hover:text-gray-700">
+                  <MoreHorizontal size={20} />
+                </button>
               </div>
             </div>
             <h1 className="mb-2 text-xl font-bold text-primary">{data.data.title}</h1>
-            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">{data.data.content}</p>
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+              <TruncateText text={data.data.content} maxLines={3} />
+            </p>
             {data?.data?.hashtags && data?.data?.hashtags?.length > 0 && (
               <div className="mb-4 flex w-full flex-wrap gap-1">
                 {data?.data?.hashtags?.map((hashtag) => (
@@ -95,6 +158,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
               </div>
             )}
             <div className="mb-6 flex items-center space-x-4 text-gray-500">
+              {/* Reactions */}
               <button className="flex items-center space-x-1 transition hover:text-blue-500">
                 {reactions?.data.user_reaction === 1 ? (
                   <ThumbsUp

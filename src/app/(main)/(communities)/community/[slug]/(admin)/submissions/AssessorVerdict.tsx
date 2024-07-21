@@ -3,12 +3,14 @@ import React from 'react';
 import Image from 'next/image';
 
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { CheckCircle2, Clock, XCircle } from 'lucide-react';
 
 import { AssessorSchema } from '@/api/schemas';
 import useIdenticon from '@/hooks/useIdenticons';
 
 const AssessorVerdict = ({ assessor }: { assessor: AssessorSchema }) => {
+  dayjs.extend(relativeTime);
   const imageData = useIdenticon(40);
   const getStatusStyle = () => {
     switch (assessor.approved) {
@@ -45,12 +47,14 @@ const AssessorVerdict = ({ assessor }: { assessor: AssessorSchema }) => {
           />
           <div>
             <h3 className="font-semibold">{assessor.assessor.username}</h3>
-            <p className="text-sm text-gray-500">{dayjs(assessor.assessed_at).fromNow()}</p>
+            <p className="text-sm text-gray-500">
+              Assigned {dayjs(assessor.assessed_at).fromNow()}
+            </p>
           </div>
         </div>
         <div className={`flex items-center rounded-full px-3 py-1 text-sm ${getStatusStyle()}`}>
           {getStatusIcon()}
-          {status}
+          {assessor.approved ? 'Approved' : assessor.approved === false ? 'Rejected' : 'Pending'}
         </div>
       </div>
       <p className="text-gray-700">{assessor.comments}</p>

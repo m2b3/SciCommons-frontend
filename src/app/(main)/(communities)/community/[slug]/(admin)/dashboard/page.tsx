@@ -5,8 +5,7 @@ import React from 'react';
 import { Card, LineChart, Title } from '@tremor/react';
 import { FilePlus, FileText, Users } from 'lucide-react';
 
-import ArticleHighlightCard from '@/components/articles/ArticleHighlightCard';
-import { articlesData, communityStats } from '@/constants/dummyData';
+import { communityStats } from '@/constants/dummyData';
 
 const CommunityDashboard = () => {
   const community = communityStats;
@@ -59,13 +58,13 @@ const CommunityDashboard = () => {
       {/* List of Recently Published Articles */}
       <section className="mb-6">
         <h2 className="mb-4 text-xl font-semibold">Recently Published Articles</h2>
-        <div className="rounded bg-white p-4 shadow">
+        {/* <div className="rounded bg-white p-4 shadow">
           <ul>
             {articlesData.map((article, index) => (
               <ArticleHighlightCard key={index} {...article} />
             ))}
           </ul>
-        </div>
+        </div> */}
       </section>
 
       <h2 className="mb-4 text-xl font-semibold">Community Articles Stats</h2>

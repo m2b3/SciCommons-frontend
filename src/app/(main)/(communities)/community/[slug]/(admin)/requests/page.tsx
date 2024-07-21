@@ -95,7 +95,7 @@ const Requests = () => {
           {isPending &&
             Array.from({ length: 3 }).map((_, index) => <RequestListItemSkeleton key={index} />)}
           {filteredItems && filteredItems.length === 0 && (
-            <p className="text-gray-500">No items found.</p>
+            <p className="text-gray-500">No Join Requests found</p>
           )}
           {filteredItems &&
             filteredItems.map((item) => (

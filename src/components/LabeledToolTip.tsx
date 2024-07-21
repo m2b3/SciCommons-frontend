@@ -12,7 +12,7 @@ interface LabeledTooltipProps {
 const LabeledTooltip: React.FC<LabeledTooltipProps> = ({ label, info }) => {
   return (
     <div className="mb-2 flex items-center space-x-2">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="font-medium text-gray-700 dark:text-gray-300">{label}</span>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

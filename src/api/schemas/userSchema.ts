@@ -5,11 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UserSchemaJoinedAt } from './userSchemaJoinedAt';
+import type { UserSchemaProfilePicUrl } from './userSchemaProfilePicUrl';
 
 export interface UserSchema {
   articles_published: number;
   email: string;
   id: number;
   joined_at: UserSchemaJoinedAt;
+  profile_pic_url: UserSchemaProfilePicUrl;
   username: string;
 }

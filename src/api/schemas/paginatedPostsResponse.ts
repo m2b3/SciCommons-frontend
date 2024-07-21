@@ -8,7 +8,8 @@ import type { PostOut } from './postOut';
 
 export interface PaginatedPostsResponse {
   items: PostOut[];
+  num_pages: number;
   page: number;
-  size: number;
+  per_page: number;
   total: number;
 }

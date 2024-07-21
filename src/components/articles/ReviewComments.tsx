@@ -138,32 +138,33 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
   const deleteCommentbyId = (commentId: number) => {
     deleteComment({ commentId });
 
-    const removeComment = (comment: CommentData): CommentData => {
-      if (comment.id === commentId) {
-        return {
-          id: 0,
-          author: { username: 'Deleted User', profile_pic_url: null, id: 0 },
-          created_at: '',
-          content: '',
-          upvotes: 0,
-          replies: [],
-        };
-      }
-      if (comment.replies) {
-        return { ...comment, replies: comment.replies.filter(Boolean).map(removeComment) };
-      }
-      return comment;
-    };
+    // const removeComment = (comment: CommentData): CommentData => {
+    //   if (comment.id === commentId) {
+    //     return {
+    //       id: 0,
+    //       author: { username: 'Deleted User', profile_pic_url: null, id: 0 },
+    //       created_at: '',
+    //       content: '',
+    //       upvotes: 0,
+    //       replies: [],
+    //     };
+    //   }
+    //   if (comment.replies) {
+    //     return { ...comment, replies: comment.replies.filter(Boolean).map(removeComment) };
+    //   }
+    //   return comment;
+    // };
 
-    setComments(comments.filter(Boolean).map(removeComment));
+    // setComments(comments.filter(Boolean).map(removeComment));
   };
 
   return (
-    <div className="bg-white">
+    <div className="rounded-md bg-white p-4 text-gray-900 dark:bg-gray-800 dark:text-gray-100">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
         buttonText="Post Comment"
+        isReview
       />
       {isPending &&
         Array.from({ length: 5 }).map((_, index) => (
@@ -172,7 +173,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
             key={index}
           ></div>
         ))}
-      {data && (
+      {data && data.data.length > 0 && (
         <>
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center space-x-2">

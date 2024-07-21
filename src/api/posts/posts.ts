@@ -127,7 +127,7 @@ export const getPostsApiListPostsQueryKey = (params?: PostsApiListPostsParams) =
 
 export const getPostsApiListPostsQueryOptions = <
   TData = Awaited<ReturnType<typeof postsApiListPosts>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: PostsApiListPostsParams,
   options?: {
@@ -152,14 +152,14 @@ export const getPostsApiListPostsQueryOptions = <
 export type PostsApiListPostsQueryResult = NonNullable<
   Awaited<ReturnType<typeof postsApiListPosts>>
 >;
-export type PostsApiListPostsQueryError = ErrorType<unknown>;
+export type PostsApiListPostsQueryError = ErrorType<Message>;
 
 /**
  * @summary List Posts
  */
 export const usePostsApiListPosts = <
   TData = Awaited<ReturnType<typeof postsApiListPosts>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: PostsApiListPostsParams,
   options?: {

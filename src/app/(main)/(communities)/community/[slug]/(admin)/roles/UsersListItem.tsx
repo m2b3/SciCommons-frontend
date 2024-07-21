@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Image from 'next/image';
 
 import { CheckCircle, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import { useCommunitiesApiAdminManageCommunityMember } from '@/api/community-admin/community-admin';
+import { useCommunitiesMembersApiManageCommunityMember } from '@/api/community-members/community-members';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import useIdenticon from '@/hooks/useIdenticons';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Action } from '@/types';
 
@@ -21,7 +23,7 @@ interface UsersListItemProps {
   memberSince: string;
   reviewedArticles: number;
   submittedArticles: number;
-  profilePicture?: string;
+  profilePicture?: string | null;
   userId: number;
   activeTab: string;
   refetch: () => void;
@@ -39,36 +41,36 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
   refetch,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
+  const imageData = useIdenticon(60);
 
-  const { data, mutate, isSuccess, error, isPending } = useCommunitiesApiAdminManageCommunityMember(
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  const { mutate, isPending } = useCommunitiesMembersApiManageCommunityMember({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
 
   const handleAction = (action: Action) => {
-    mutate({
-      communityId,
-      userId,
-      action,
-    });
+    mutate(
+      {
+        communityId,
+        userId,
+        action,
+      },
+      {
+        onSuccess: (data) => {
+          toast.success(`${data.data.message}`);
+          refetch();
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      }
+    );
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success(`${data.data.message}`);
-      refetch();
-    }
-    if (error) {
-      toast.error(`${error.response?.data.message}`);
-    }
-  }, [isSuccess, error, data, refetch]);
 
   return (
     <div className="mb-2 flex items-center justify-between rounded-md border bg-white p-4 shadow-md">
       <div className="flex items-center">
         <Image
-          src={profilePicture ? profilePicture : '/images/default-profile.png'}
+          src={profilePicture || `data:image/png;base64,${imageData}`}
           alt={name}
           width={48}
           height={48}

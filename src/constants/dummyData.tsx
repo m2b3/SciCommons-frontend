@@ -244,6 +244,24 @@ export const RelevantCommunities = [
     members: '100',
     articlesPublished: 13,
   },
+  {
+    image: 'https://picsum.photos/202',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    members: '100',
+    articlesPublished: 13,
+  },
+  {
+    image: 'https://picsum.photos/202',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    members: '100',
+    articlesPublished: 13,
+  },
+  {
+    image: 'https://picsum.photos/202',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    members: '100',
+    articlesPublished: 13,
+  },
 ];
 
 export const JoinRequests: {

@@ -793,7 +793,9 @@ export const usersApiGetReactionCount = (
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
-    | 'articles.review',
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
   objectId: number,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
@@ -810,7 +812,9 @@ export const getUsersApiGetReactionCountQueryKey = (
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
-    | 'articles.review',
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
   objectId: number
 ) => {
   return [`/api/users/reaction_count/${contentType}/${objectId}/`] as const;
@@ -825,7 +829,9 @@ export const getUsersApiGetReactionCountQueryOptions = <
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
-    | 'articles.review',
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
   objectId: number,
   options?: {
     query?: Partial<
@@ -870,7 +876,9 @@ export const useUsersApiGetReactionCount = <
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
-    | 'articles.review',
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
   objectId: number,
   options?: {
     query?: Partial<

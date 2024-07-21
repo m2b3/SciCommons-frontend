@@ -8,6 +8,7 @@ import type { CommunityOut } from './communityOut';
 
 export interface PaginatedCommunities {
   items: CommunityOut[];
+  num_pages: number;
   page: number;
   per_page: number;
   total: number;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import toast from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ import { RelevantCommunities } from '@/constants/dummyData';
 import useStore from '@/hooks/useStore';
 import { useAuthStore } from '@/stores/authStore';
 
-import AssessmentsList from './(moderators)/AssessmentsList';
+import AssessmentsList from '../assessments/[assessmentId]/AssessmentsList';
 import CommunityArticles from './CommunityArticles';
 import CommunityRules, { CommunityRulesSkeleton } from './CommunityRules';
 import CommunityStats, { CommunityStatsSkeleton } from './CommunityStats';
@@ -24,6 +24,10 @@ const Community = ({ params }: { params: { slug: string } }) => {
   const accessToken = useStore(useAuthStore, (state) => state.accessToken);
 
   const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
+
+  const [isRightHovered, setIsRightHovered] = React.useState(false);
+  const leftSideRef = useRef<HTMLDivElement>(null);
+  const rightSideRef = useRef<HTMLDivElement>(null);
 
   const communityQuery = useCommunitiesApiGetCommunity(params.slug, {
     request: axiosConfig,
@@ -68,24 +72,56 @@ const Community = ({ params }: { params: { slug: string } }) => {
       ]
     : [];
 
-  return (
-    <div className="container mx-auto flex flex-col space-y-2 p-4">
-      <div className="flex flex-col md:flex-row">
-        <div className="p-2 md:w-2/3">
-          {isPending && <DisplayCommunitySkeletonLoader />}
-          {data && <DisplayCommunity community={data.data} refetch={refetch} />}
-        </div>
-        <div className="flex flex-col gap-2 p-2 md:w-1/3">
-          {isPending && (
-            <>
-              <CommunityStatsSkeleton />
-              <CommunityRulesSkeleton />
-            </>
-          )}
+  useEffect(() => {
+    const handleScroll = (e: WheelEvent) => {
+      if (window.innerWidth >= 1024) {
+        // Only apply this behavior for lg screens and up
+        const leftSide = leftSideRef.current;
+        const rightSide = rightSideRef.current;
 
-          {data && (
-            <>
+        if (rightSide && rightSide.contains(e.target as Node)) {
+          // If scrolling inside the right side, do nothing
+          return;
+        }
+
+        if (leftSide) {
+          const { scrollTop, scrollHeight, clientHeight } = leftSide;
+
+          if (e.deltaY > 0 && scrollTop + clientHeight < scrollHeight) {
+            // Scrolling down and left side has more to scroll
+            e.preventDefault();
+            leftSide.scrollTop += e.deltaY;
+          } else if (e.deltaY < 0 && scrollTop > 0) {
+            // Scrolling up and left side is not at the top
+            e.preventDefault();
+            leftSide.scrollTop += e.deltaY;
+          }
+          // If left side is at the top or bottom, allow normal page scroll
+        }
+      }
+    };
+
+    window.addEventListener('wheel', handleScroll, { passive: false });
+    return () => window.removeEventListener('wheel', handleScroll);
+  }, []);
+
+  return (
+    <div className="container mx-auto">
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        <div className="p-4">
+          {isPending ? (
+            <DisplayCommunitySkeletonLoader />
+          ) : (
+            data && <DisplayCommunity community={data.data} refetch={refetch} />
+          )}
+        </div>
+        {data && (
+          <>
+            {/* <div className="p-4">
               <CommunityStats community={data.data} />
+            </div> */}
+            {/* <div className="p-4">
               {data.data.rules.length === 0 ? (
                 <div className="rounded-md bg-white p-6 shadow-md">
                   <h2 className="mb-4 text-xl font-semibold">No Rules</h2>
@@ -94,33 +130,97 @@ const Community = ({ params }: { params: { slug: string } }) => {
               ) : (
                 <CommunityRules rules={data.data.rules} />
               )}
-            </>
-          )}
-        </div>
-      </div>
-      {data && (
-        <div className="flex flex-col md:flex-row">
-          <div className="p-2 md:w-2/3">
-            <TabNavigation tabs={tabs} />
-          </div>
-          <div className="p-2 md:w-1/3">
-            <div className="rounded-md bg-white p-6 shadow-md">
-              <h2 className="mb-4 text-xl font-semibold">Relevant Communities</h2>
-              <div className="flex flex-col gap-8">
-                {RelevantCommunities.map((community, index) => (
-                  <CommunityHighlightCard
-                    key={index}
-                    image={community.image}
-                    description={community.description}
-                    members={community.members}
-                    articlesPublished={community.articlesPublished}
-                  />
-                ))}
+            </div> */}
+            <div className="p-4">
+              <TabNavigation tabs={tabs} />
+            </div>
+            <div className="p-4">
+              <div className="rounded-md bg-white p-6 shadow-md dark:bg-gray-800">
+                <h2 className="mb-4 text-xl font-semibold">Relevant Communities</h2>
+                <div className="flex flex-col gap-8">
+                  {RelevantCommunities.map((community, index) => (
+                    <CommunityHighlightCard
+                      key={index}
+                      image={community.image}
+                      description={community.description}
+                      members={community.members}
+                      articlesPublished={community.articlesPublished}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
+          </>
+        )}
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:block">
+        <div className="flex">
+          {/* Left side */}
+          <div ref={leftSideRef} className="scrollbar-hide h-screen w-2/3 overflow-y-auto p-4">
+            {isPending ? (
+              <DisplayCommunitySkeletonLoader />
+            ) : (
+              data && <DisplayCommunity community={data.data} refetch={refetch} />
+            )}
+            {data && (
+              <div className="mt-4">
+                <TabNavigation tabs={tabs} />
+              </div>
+            )}
+          </div>
+
+          {/* Right side */}
+          <div
+            ref={rightSideRef}
+            className={`h-screen w-1/3 p-4 transition-all duration-300 ${
+              isRightHovered ? 'custom-scrollbar overflow-y-auto' : 'overflow-y-hidden'
+            }`}
+            onMouseEnter={() => setIsRightHovered(true)}
+            onMouseLeave={() => setIsRightHovered(false)}
+          >
+            {isPending ? (
+              <>
+                <CommunityStatsSkeleton />
+                <CommunityRulesSkeleton />
+              </>
+            ) : (
+              data && (
+                <>
+                  <div className="mb-4">
+                    <CommunityStats community={data.data} />
+                  </div>
+                  {data.data.rules.length === 0 ? (
+                    <div className="mb-4 rounded-md bg-white p-6 shadow-md">
+                      <h2 className="mb-4 text-xl font-semibold">No Rules</h2>
+                      <p className="text-gray-700">Rules have not been set for this community.</p>
+                    </div>
+                  ) : (
+                    <div className="mb-4">
+                      <CommunityRules rules={data.data.rules} />
+                    </div>
+                  )}
+                  <div className="rounded-md bg-white p-6 shadow-md">
+                    <h2 className="mb-4 text-xl font-semibold">Relevant Communities</h2>
+                    <div className="flex flex-col gap-8">
+                      {RelevantCommunities.map((community, index) => (
+                        <CommunityHighlightCard
+                          key={index}
+                          image={community.image}
+                          description={community.description}
+                          members={community.members}
+                          articlesPublished={community.articlesPublished}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

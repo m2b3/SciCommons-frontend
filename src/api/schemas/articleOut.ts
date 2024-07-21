@@ -31,6 +31,7 @@ export interface ArticleOut {
   /** @maxLength 255 */
   title: string;
   total_comments: number;
+  total_discussions: number;
   total_reviews: number;
   updated_at: string;
   user: UserStats;
