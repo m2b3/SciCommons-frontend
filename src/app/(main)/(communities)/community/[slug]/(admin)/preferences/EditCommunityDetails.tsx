@@ -67,6 +67,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
         tags: formData.tags.map((tag) => tag.value),
         type: formData.type,
         rules: data.data.rules,
+        about: data.data.about,
       };
 
       mutate({

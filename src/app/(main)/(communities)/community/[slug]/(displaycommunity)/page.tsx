@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 
+import { YooptaContentValue } from '@yoopta/editor';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
@@ -13,6 +14,7 @@ import useStore from '@/hooks/useStore';
 import { useAuthStore } from '@/stores/authStore';
 
 import AssessmentsList from '../assessments/[assessmentId]/AssessmentsList';
+import CommunityAbout from './CommunityAbout';
 import CommunityArticles from './CommunityArticles';
 import CommunityRules, { CommunityRulesSkeleton } from './CommunityRules';
 import CommunityStats, { CommunityStatsSkeleton } from './CommunityStats';
@@ -49,17 +51,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
         },
         {
           title: 'About',
-          content: (
-            <div className="flex flex-col space-y-4">
-              <p className="text-gray-700">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce viverra, erat vitae
-                condimentum luctus, velit purus lacinia nunc, id suscipit mi purus et odio.
-                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-                curae; Sed convallis, neque in placerat egestas, libero diam finibus turpis, a
-                ultricies justo tortor nec purus.
-              </p>
-            </div>
-          ),
+          content: <CommunityAbout about={data.data.about as YooptaContentValue} />,
         },
         ...(data.data.is_moderator || data.data.is_reviewer
           ? [

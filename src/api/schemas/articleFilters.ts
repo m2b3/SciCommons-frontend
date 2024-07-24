@@ -4,10 +4,12 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ArticleFiltersArticleId } from './articleFiltersArticleId';
 import type { ArticleFiltersCommunityId } from './articleFiltersCommunityId';
 import type { FilterType } from './filterType';
 
 export interface ArticleFilters {
+  article_id?: ArticleFiltersArticleId;
   community_id?: ArticleFiltersCommunityId;
   filter_type: FilterType;
   limit?: number;

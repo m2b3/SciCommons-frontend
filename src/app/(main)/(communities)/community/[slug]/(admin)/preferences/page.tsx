@@ -2,10 +2,9 @@
 
 import React, { useEffect } from 'react';
 
-import toast from 'react-hot-toast';
-
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import TabComponent from '@/components/communities/TabComponent';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import About from './About';
@@ -27,8 +26,7 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     if (error) {
-      console.log(error);
-      toast.error(`Error: ${error.response?.data.message}`);
+      showErrorToast(error);
     }
   }, [error]);
 
@@ -45,7 +43,7 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
         <EditCommunityDetails data={data} isPending={isPending} refetch={refetch} />
       )}
       {activeTab === 'Rules' && <AddRules data={data} isPending={isPending} />}
-      {activeTab === 'About' && <About />}
+      {activeTab === 'About' && <About data={data} />}
     </div>
   );
 };

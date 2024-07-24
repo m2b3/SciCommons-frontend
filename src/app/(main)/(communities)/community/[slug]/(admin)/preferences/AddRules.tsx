@@ -52,6 +52,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
         tags: data.data.tags,
         type: data.data.type,
         rules: rules.map((rule) => rule.rule),
+        about: data.data.about,
       };
       mutate({ communityId: data.data.id, data: { payload: { details: dataToSend } } });
     }

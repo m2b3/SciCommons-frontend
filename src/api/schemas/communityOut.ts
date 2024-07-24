@@ -4,6 +4,7 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { CommunityOutAbout } from './communityOutAbout';
 import type { CommunityOutBannerPicUrl } from './communityOutBannerPicUrl';
 import type { CommunityOutCreatedAt } from './communityOutCreatedAt';
 import type { CommunityOutJoinRequestStatus } from './communityOutJoinRequestStatus';
@@ -11,6 +12,7 @@ import type { CommunityOutProfilePicUrl } from './communityOutProfilePicUrl';
 import type { CommunityType } from './communityType';
 
 export interface CommunityOut {
+  about: CommunityOutAbout;
   banner_pic_url?: CommunityOutBannerPicUrl;
   created_at?: CommunityOutCreatedAt;
   description: string;

@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
 
   return (
     <>
-      <div className="fixed left-0 top-10 hidden h-screen w-64 overflow-y-auto border-r bg-white p-4 md:block">
+      <div className="fixed left-0 top-10 hidden h-screen overflow-y-auto border-r p-4 md:block md:w-64 md:bg-white">
         <div className="flex flex-col space-y-2 py-4">
           <Link
             href={baseHref}
@@ -50,10 +50,10 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
           ))}
         </div>
       </div>
-      <div className="fixed left-0 top-10 z-50 min-h-screen bg-white md:hidden">
+      <div className="fixed left-0 top-10 z-10 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <button className="p-4">
+            <button className="px-2 py-4">
               <Menu size={24} />
             </button>
           </SheetTrigger>
