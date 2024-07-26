@@ -93,7 +93,6 @@ const About: React.FC<AboutProps> = ({ data }) => {
       <div className="my-4 w-full bg-white p-16" ref={selectionRef}>
         <YooptaEditor
           editor={editor}
-          // @ts-expect-error Property 'plugins' does not exist on type 'Props'.
           plugins={plugins}
           tools={TOOLS}
           marks={MARKS}

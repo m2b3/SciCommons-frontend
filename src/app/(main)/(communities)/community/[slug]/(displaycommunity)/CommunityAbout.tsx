@@ -36,7 +36,6 @@ const CommunityAbout: React.FC<CommunityAboutProps> = ({ about }) => {
       <YooptaEditor
         editor={editor}
         value={about}
-        // @ts-expect-error Property 'plugins' does not exist on type 'Props'.
         plugins={plugins}
         style={{ width: '100%' }}
         readOnly
