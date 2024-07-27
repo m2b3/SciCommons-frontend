@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { useUsersCommonApiGetRelevantArticles } from '@/api/users-common-api/users-common-api';
+import { useArticlesApiGetRelevantArticles } from '@/api/articles/articles';
 import ArticleHighlightCard, {
   ArticleHighlightCardSkeleton,
 } from '@/components/articles/ArticleHighlightCard';
@@ -14,7 +14,8 @@ interface RelevantArticlesProps {
 const RelevantArticles: FC<RelevantArticlesProps> = ({ articleId }) => {
   console.log(articleId);
   const accessToken = useAuthStore((state) => state.accessToken);
-  const { data, isPending } = useUsersCommonApiGetRelevantArticles(
+  const { data, isPending } = useArticlesApiGetRelevantArticles(
+    articleId,
     { filter_type: 'recent' },
     { request: { headers: { Authorization: `Bearer ${accessToken}` } } }
   );
@@ -25,8 +26,7 @@ const RelevantArticles: FC<RelevantArticlesProps> = ({ articleId }) => {
       {isPending &&
         Array.from({ length: 3 }).map((_, index) => <ArticleHighlightCardSkeleton key={index} />)}
       {data && data.data.length === 0 && (
-        <div className="rounded-md bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-xl font-semibold">No Articles</h2>
+        <div className="rounded-md bg-white py-4">
           <p className="text-gray-700">No relevant articles found.</p>
         </div>
       )}

@@ -7,7 +7,10 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { ChevronDown, ChevronUp, MessageSquare, MoreVertical, Share2 } from 'lucide-react';
 
 import { DiscussionOut } from '@/api/schemas';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -24,7 +27,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
   const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(40);
 
-  const { data, refetch: refetchReactions } = useUsersApiGetReactionCount(
+  const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.discussion',
     Number(discussion.id),
     {
@@ -32,7 +35,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
     }
   );
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {

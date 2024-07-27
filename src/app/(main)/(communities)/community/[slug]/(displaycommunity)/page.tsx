@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 import { YooptaContentValue } from '@yoopta/editor';
 import toast from 'react-hot-toast';
 
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
-import CommunityHighlightCard from '@/components/communities/CommunityHighlightCard';
+import SplitScreenLayout from '@/components/common/SplitScreenLayout';
 import DisplayCommunitySkeletonLoader from '@/components/loaders/DisplayCommunitySkeletonLoader';
 import TabNavigation from '@/components/ui/tab-navigation';
-import { RelevantCommunities } from '@/constants/dummyData';
 import useStore from '@/hooks/useStore';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -19,17 +18,11 @@ import CommunityArticles from './CommunityArticles';
 import CommunityRules, { CommunityRulesSkeleton } from './CommunityRules';
 import CommunityStats, { CommunityStatsSkeleton } from './CommunityStats';
 import DisplayCommunity from './DisplayCommunity';
-
-// Todo: Fix the issue of accessToken for non-logged in users (Important)
+import RelevantCommunities from './RelevantCommunities';
 
 const Community = ({ params }: { params: { slug: string } }) => {
   const accessToken = useStore(useAuthStore, (state) => state.accessToken);
-
   const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
-
-  const [isRightHovered, setIsRightHovered] = React.useState(false);
-  const leftSideRef = useRef<HTMLDivElement>(null);
-  const rightSideRef = useRef<HTMLDivElement>(null);
 
   const communityQuery = useCommunitiesApiGetCommunity(params.slug, {
     request: axiosConfig,
@@ -64,38 +57,50 @@ const Community = ({ params }: { params: { slug: string } }) => {
       ]
     : [];
 
-  useEffect(() => {
-    const handleScroll = (e: WheelEvent) => {
-      if (window.innerWidth >= 1024) {
-        // Only apply this behavior for lg screens and up
-        const leftSide = leftSideRef.current;
-        const rightSide = rightSideRef.current;
+  const LeftSide = (
+    <>
+      {isPending ? (
+        <DisplayCommunitySkeletonLoader />
+      ) : (
+        data && <DisplayCommunity community={data.data} refetch={refetch} />
+      )}
+      {data && (
+        <div className="mt-4">
+          <TabNavigation tabs={tabs} />
+        </div>
+      )}
+    </>
+  );
 
-        if (rightSide && rightSide.contains(e.target as Node)) {
-          // If scrolling inside the right side, do nothing
-          return;
-        }
-
-        if (leftSide) {
-          const { scrollTop, scrollHeight, clientHeight } = leftSide;
-
-          if (e.deltaY > 0 && scrollTop + clientHeight < scrollHeight) {
-            // Scrolling down and left side has more to scroll
-            e.preventDefault();
-            leftSide.scrollTop += e.deltaY;
-          } else if (e.deltaY < 0 && scrollTop > 0) {
-            // Scrolling up and left side is not at the top
-            e.preventDefault();
-            leftSide.scrollTop += e.deltaY;
-          }
-          // If left side is at the top or bottom, allow normal page scroll
-        }
-      }
-    };
-
-    window.addEventListener('wheel', handleScroll, { passive: false });
-    return () => window.removeEventListener('wheel', handleScroll);
-  }, []);
+  const RightSide = (
+    <>
+      {isPending ? (
+        <div className="shadow-md">
+          <CommunityStatsSkeleton />
+          <CommunityRulesSkeleton />
+        </div>
+      ) : (
+        data && (
+          <>
+            <div className="mb-4">
+              <CommunityStats community={data.data} />
+            </div>
+            {data.data.rules.length === 0 ? (
+              <div className="mb-4 rounded-md border-2 bg-white p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold">No Rules</h2>
+                <p className="text-gray-700">Rules have not been set for this community.</p>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <CommunityRules rules={data.data.rules} />
+              </div>
+            )}
+            <RelevantCommunities communityId={data.data.id} />
+          </>
+        )
+      )}
+    </>
+  );
 
   return (
     <div className="container mx-auto">
@@ -110,37 +115,11 @@ const Community = ({ params }: { params: { slug: string } }) => {
         </div>
         {data && (
           <>
-            {/* <div className="p-4">
-              <CommunityStats community={data.data} />
-            </div> */}
-            {/* <div className="p-4">
-              {data.data.rules.length === 0 ? (
-                <div className="rounded-md bg-white p-6 shadow-md">
-                  <h2 className="mb-4 text-xl font-semibold">No Rules</h2>
-                  <p className="text-gray-700">Rules have not been set for this community.</p>
-                </div>
-              ) : (
-                <CommunityRules rules={data.data.rules} />
-              )}
-            </div> */}
             <div className="p-4">
               <TabNavigation tabs={tabs} />
             </div>
             <div className="p-4">
-              <div className="rounded-md bg-white p-6 shadow-md dark:bg-gray-800">
-                <h2 className="mb-4 text-xl font-semibold">Relevant Communities</h2>
-                <div className="flex flex-col gap-8">
-                  {RelevantCommunities.map((community, index) => (
-                    <CommunityHighlightCard
-                      key={index}
-                      image={community.image}
-                      description={community.description}
-                      members={community.members}
-                      articlesPublished={community.articlesPublished}
-                    />
-                  ))}
-                </div>
-              </div>
+              <RelevantCommunities communityId={data.data.id} />
             </div>
           </>
         )}
@@ -148,70 +127,12 @@ const Community = ({ params }: { params: { slug: string } }) => {
 
       {/* Desktop Layout */}
       <div className="hidden lg:block">
-        <div className="flex">
-          {/* Left side */}
-          <div ref={leftSideRef} className="scrollbar-hide h-screen w-2/3 overflow-y-auto p-4">
-            {isPending ? (
-              <DisplayCommunitySkeletonLoader />
-            ) : (
-              data && <DisplayCommunity community={data.data} refetch={refetch} />
-            )}
-            {data && (
-              <div className="mt-4">
-                <TabNavigation tabs={tabs} />
-              </div>
-            )}
-          </div>
-
-          {/* Right side */}
-          <div
-            ref={rightSideRef}
-            className={`h-screen w-1/3 p-4 transition-all duration-300 ${
-              isRightHovered ? 'custom-scrollbar overflow-y-auto' : 'overflow-y-hidden'
-            }`}
-            onMouseEnter={() => setIsRightHovered(true)}
-            onMouseLeave={() => setIsRightHovered(false)}
-          >
-            {isPending ? (
-              <>
-                <CommunityStatsSkeleton />
-                <CommunityRulesSkeleton />
-              </>
-            ) : (
-              data && (
-                <>
-                  <div className="mb-4">
-                    <CommunityStats community={data.data} />
-                  </div>
-                  {data.data.rules.length === 0 ? (
-                    <div className="mb-4 rounded-md bg-white p-6 shadow-md">
-                      <h2 className="mb-4 text-xl font-semibold">No Rules</h2>
-                      <p className="text-gray-700">Rules have not been set for this community.</p>
-                    </div>
-                  ) : (
-                    <div className="mb-4">
-                      <CommunityRules rules={data.data.rules} />
-                    </div>
-                  )}
-                  <div className="rounded-md bg-white p-6 shadow-md">
-                    <h2 className="mb-4 text-xl font-semibold">Relevant Communities</h2>
-                    <div className="flex flex-col gap-8">
-                      {RelevantCommunities.map((community, index) => (
-                        <CommunityHighlightCard
-                          key={index}
-                          image={community.image}
-                          description={community.description}
-                          members={community.members}
-                          articlesPublished={community.articlesPublished}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )
-            )}
-          </div>
-        </div>
+        <SplitScreenLayout
+          leftSide={LeftSide}
+          rightSide={RightSide}
+          leftWidth="w-2/3"
+          rightWidth="w-1/3"
+        />
       </div>
     </div>
   );

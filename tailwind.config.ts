@@ -304,6 +304,7 @@ const config: Config = {
       });
     }),
     require('@headlessui/tailwindcss'),
+    // require('nightwind'),
     plugin(function ({ addUtilities }: PluginAPI) {
       const newUtilities = {
         '.res-text-xs': {

@@ -7418,6 +7418,11 @@ nextjs-toploader@^1.6.12:
     nprogress "^0.2.0"
     prop-types "^15.8.1"
 
+nightwind@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/nightwind/-/nightwind-1.1.13.tgz#111fe63546eaf5cadc2efe38372ffd2740302c13"
+  integrity sha512-ipTD+u64LXa03wDf1v0EawdsFC6vtS4xzzXknRd50BBtckDYzZAendkE+4VjSLrwQcTpk0XphWxFk4ORIDdrOg==
+
 nimma@0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/nimma/-/nimma-0.2.2.tgz#48d00f837d17b4baa23beec22ac1380f152f15ef"

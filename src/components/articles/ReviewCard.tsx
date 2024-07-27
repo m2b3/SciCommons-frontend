@@ -8,7 +8,10 @@ import { MessageCircle, Pencil, ThumbsDown, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { ReviewOut } from '@/api/schemas';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
@@ -33,7 +36,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   // Todo: Too many requests
-  const { data, refetch: refetchReactions } = useUsersApiGetReactionCount(
+  const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.review',
     Number(review.id),
     {
@@ -41,7 +44,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     }
   );
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {

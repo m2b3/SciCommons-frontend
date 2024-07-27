@@ -12,6 +12,7 @@ import DisplayFAQs from '@/components/articles/DisplayFAQs';
 import RelevantArticles from '@/components/articles/RelevantArticles';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
+import EmptyState from '@/components/common/EmptyState';
 import SplitScreenLayout from '@/components/common/SplitScreenLayout';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -59,6 +60,12 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
             <div className="flex flex-col gap-2">
               <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
+              {reviewsData?.data.items.length === 0 && (
+                <EmptyState
+                  content="No reviews yet"
+                  subcontent="Be the first to review this article"
+                />
+              )}
               {reviewsData?.data.items.map((item) => (
                 <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
               ))}

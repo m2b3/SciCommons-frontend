@@ -14,7 +14,10 @@ import {
 } from 'lucide-react';
 
 import { useArticlesDiscussionApiGetDiscussion } from '@/api/discussions/discussions';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -43,7 +46,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
     }
   }, [error]);
 
-  const { data: reactions, refetch: refetchReactions } = useUsersApiGetReactionCount(
+  const { data: reactions, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.discussion',
     Number(discussionId),
     {
@@ -51,7 +54,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
     }
   );
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {

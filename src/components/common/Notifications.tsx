@@ -5,15 +5,18 @@ import React, { useEffect } from 'react';
 import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
 import { useAuthStore } from '@/stores/authStore';
 
-const NotificationPage: React.FC = () => {
+interface NotificationsProps {
+  article_slug?: string;
+}
+
+const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const { data, isPending, refetch } = useUsersApiGetNotifications(
-    {},
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  const query_params = article_slug ? { article_slug } : {};
+
+  const { data, isPending, refetch } = useUsersApiGetNotifications(query_params, {
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
 
   const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -28,23 +31,6 @@ const NotificationPage: React.FC = () => {
   const markAsRead = (id: number) => {
     mutate({ notificationId: id });
   };
-
-  //   const markAsRead = async (id: number) => {
-  //     try {
-  //       await axios.post(`/api/notifications/${id}/mark-as-read`);
-  //       setNotifications(
-  //         notifications.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
-  //       );
-  //     } catch (error) {
-  //       console.error('Failed to mark notification as read:', error);
-  //     }
-  //   };
-
-  // const markAsRead = (id: number) => {
-  //   setNotifications(
-  //     notifications.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
-  //   );
-  // };
 
   return (
     <div className="mx-auto min-h-screen max-w-4xl p-4">
@@ -94,7 +80,7 @@ const NotificationPage: React.FC = () => {
   );
 };
 
-export default NotificationPage;
+export default Notifications;
 
 const NotificationCardSkeletonLoader: React.FC = () => {
   return (

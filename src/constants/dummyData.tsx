@@ -342,25 +342,6 @@ export const sampleArticle = {
     { date: '2024-06-07', likes: 60 },
   ],
   averageRating: 4.5,
-  audienceDemographics: {
-    location: [
-      { country: 'USA', percentage: 50 },
-      { country: 'India', percentage: 20 },
-      { country: 'UK', percentage: 10 },
-      { country: 'Canada', percentage: 10 },
-      { country: 'Australia', percentage: 10 },
-    ],
-    ageGroup: [
-      { ageRange: '18-24', percentage: 30 },
-      { ageRange: '25-34', percentage: 40 },
-      { ageRange: '35-44', percentage: 20 },
-      { ageRange: '45-54', percentage: 10 },
-    ],
-    genderDistribution: [
-      { gender: 'Male', percentage: 60 },
-      { gender: 'Female', percentage: 40 },
-    ],
-  },
 };
 
 const communityArticle = {

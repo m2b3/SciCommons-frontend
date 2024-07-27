@@ -24,7 +24,13 @@ import type {
   BookmarkToggleResponseSchema,
   BookmarkToggleSchema,
   Message,
+  PaginatedHashtagOut,
+  PaginatedPostsResponse,
+  ReactionCountOut,
+  ReactionIn,
+  UsersCommonApiGetHashtagsParams,
   UsersCommonApiGetRelevantArticlesParams,
+  UsersCommonApiListMyPostsParams,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
@@ -361,6 +367,352 @@ export const useUsersCommonApiGetRelevantArticles = <
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getUsersCommonApiGetRelevantArticlesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Post Reaction
+ */
+export const usersCommonApiPostReaction = (
+  reactionIn: BodyType<ReactionIn>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    {
+      url: `/api/users/reactions`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: reactionIn,
+    },
+    options
+  );
+};
+
+export const getUsersCommonApiPostReactionMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersCommonApiPostReaction>>,
+    TError,
+    { data: BodyType<ReactionIn> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usersCommonApiPostReaction>>,
+  TError,
+  { data: BodyType<ReactionIn> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usersCommonApiPostReaction>>,
+    { data: BodyType<ReactionIn> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return usersCommonApiPostReaction(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UsersCommonApiPostReactionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersCommonApiPostReaction>>
+>;
+export type UsersCommonApiPostReactionMutationBody = BodyType<ReactionIn>;
+export type UsersCommonApiPostReactionMutationError = ErrorType<Message>;
+
+/**
+ * @summary Post Reaction
+ */
+export const useUsersCommonApiPostReaction = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersCommonApiPostReaction>>,
+    TError,
+    { data: BodyType<ReactionIn> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof usersCommonApiPostReaction>>,
+  TError,
+  { data: BodyType<ReactionIn> },
+  TContext
+> => {
+  const mutationOptions = getUsersCommonApiPostReactionMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * @summary Get Reaction Count
+ */
+export const usersCommonApiGetReactionCount = (
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
+  objectId: number,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ReactionCountOut>(
+    { url: `/api/users/reaction_count/${contentType}/${objectId}/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getUsersCommonApiGetReactionCountQueryKey = (
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
+  objectId: number
+) => {
+  return [`/api/users/reaction_count/${contentType}/${objectId}/`] as const;
+};
+
+export const getUsersCommonApiGetReactionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>,
+  TError = ErrorType<unknown>,
+>(
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
+  objectId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getUsersCommonApiGetReactionCountQueryKey(contentType, objectId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>> = ({
+    signal,
+  }) => usersCommonApiGetReactionCount(contentType, objectId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(contentType && objectId),
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersCommonApiGetReactionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>
+>;
+export type UsersCommonApiGetReactionCountQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get Reaction Count
+ */
+export const useUsersCommonApiGetReactionCount = <
+  TData = Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>,
+  TError = ErrorType<unknown>,
+>(
+  contentType:
+    | 'articles.article'
+    | 'posts.post'
+    | 'posts.comment'
+    | 'articles.reviewcomment'
+    | 'articles.review'
+    | 'articles.discussion'
+    | 'articles.discussioncomment',
+  objectId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersCommonApiGetReactionCountQueryOptions(
+    contentType,
+    objectId,
+    options
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Get a list of hashtags from the database.
+ * @summary Get Hashtags
+ */
+export const usersCommonApiGetHashtags = (
+  params?: UsersCommonApiGetHashtagsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedHashtagOut>(
+    { url: `/api/users/hashtags/`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersCommonApiGetHashtagsQueryKey = (params?: UsersCommonApiGetHashtagsParams) => {
+  return [`/api/users/hashtags/`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersCommonApiGetHashtagsQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersCommonApiGetHashtags>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersCommonApiGetHashtagsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiGetHashtags>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersCommonApiGetHashtagsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersCommonApiGetHashtags>>> = ({
+    signal,
+  }) => usersCommonApiGetHashtags(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersCommonApiGetHashtags>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersCommonApiGetHashtagsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersCommonApiGetHashtags>>
+>;
+export type UsersCommonApiGetHashtagsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get Hashtags
+ */
+export const useUsersCommonApiGetHashtags = <
+  TData = Awaited<ReturnType<typeof usersCommonApiGetHashtags>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersCommonApiGetHashtagsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiGetHashtags>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersCommonApiGetHashtagsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary List My Posts
+ */
+export const usersCommonApiListMyPosts = (
+  params?: UsersCommonApiListMyPostsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedPostsResponse>(
+    { url: `/api/users/my-posts`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersCommonApiListMyPostsQueryKey = (params?: UsersCommonApiListMyPostsParams) => {
+  return [`/api/users/my-posts`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersCommonApiListMyPostsQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersCommonApiListMyPosts>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersCommonApiListMyPostsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiListMyPosts>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersCommonApiListMyPostsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersCommonApiListMyPosts>>> = ({
+    signal,
+  }) => usersCommonApiListMyPosts(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersCommonApiListMyPosts>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersCommonApiListMyPostsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersCommonApiListMyPosts>>
+>;
+export type UsersCommonApiListMyPostsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List My Posts
+ */
+export const useUsersCommonApiListMyPosts = <
+  TData = Awaited<ReturnType<typeof usersCommonApiListMyPosts>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersCommonApiListMyPostsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiListMyPosts>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersCommonApiListMyPostsQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

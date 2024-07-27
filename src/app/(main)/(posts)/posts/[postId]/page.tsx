@@ -21,9 +21,10 @@ import { usePostsApiGetPost, usePostsApiListPosts } from '@/api/posts/posts';
 import { PostOut } from '@/api/schemas';
 import {
   useUsersCommonApiGetBookmarkStatus,
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
   useUsersCommonApiToggleBookmark,
 } from '@/api/users-common-api/users-common-api';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
 import RedditStyleComments from '@/components/common/PostComments';
 import TruncateText from '@/components/common/TruncateText';
 import Hashtag from '@/components/posts/Hashtag';
@@ -41,7 +42,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   const { data, isLoading } = usePostsApiGetPost(params.postId);
   const imageData = useIdenticon(40);
 
-  const { data: reactions, refetch: refetchLikes } = useUsersApiGetReactionCount(
+  const { data: reactions, refetch: refetchLikes } = useUsersCommonApiGetReactionCount(
     'posts.post',
     Number(params.postId),
     {
@@ -63,7 +64,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
     hashtag: data?.data?.hashtags && data?.data?.hashtags[0],
   });
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {

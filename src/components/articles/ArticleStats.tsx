@@ -6,7 +6,10 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { Calendar, Clock, Eye, MessageCircle, MessageSquare, Star, ThumbsUp } from 'lucide-react';
 
 import { ArticleOut } from '@/api/schemas';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleStatsProps {
@@ -19,11 +22,15 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const { data, refetch } = useUsersApiGetReactionCount('articles.article', Number(article.id), {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, refetch } = useUsersCommonApiGetReactionCount(
+    'articles.article',
+    Number(article.id),
+    {
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    }
+  );
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {

@@ -7,7 +7,10 @@ import { MessageCircle, MoreHorizontal, Share2, ThumbsDown, ThumbsUp } from 'luc
 import { toast } from 'sonner';
 
 import { PostOut } from '@/api/schemas';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import TruncateText from '@/components/common/TruncateText';
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
@@ -22,11 +25,11 @@ const Post = (post: PostOut) => {
   const imageData = useIdenticon(40);
 
   // Todo: Too many requests
-  const { data, refetch } = useUsersApiGetReactionCount('posts.post', Number(post.id), {
+  const { data, refetch } = useUsersCommonApiGetReactionCount('posts.post', Number(post.id), {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {

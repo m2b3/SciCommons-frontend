@@ -19,9 +19,12 @@ import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   CommunitiesApiCreateCommunityBody,
+  CommunitiesApiGetRelevantCommunitiesParams,
   CommunitiesApiListCommunitiesParams,
   CommunitiesApiUpdateCommunityBody,
+  CommunityBasicOut,
   CommunityOut,
+  CommunityStatsResponse,
   Message,
   PaginatedCommunities,
 } from '.././schemas';
@@ -425,4 +428,183 @@ export const useCommunitiesApiDeleteCommunity = <
   const mutationOptions = getCommunitiesApiDeleteCommunityMutationOptions(options);
 
   return useMutation(mutationOptions);
+};
+/**
+ * @summary Get Relevant Communities
+ */
+export const communitiesApiGetRelevantCommunities = (
+  communityId: number,
+  params?: CommunitiesApiGetRelevantCommunitiesParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CommunityBasicOut[]>(
+    { url: `/api/communities/${communityId}/relevant-communities`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getCommunitiesApiGetRelevantCommunitiesQueryKey = (
+  communityId: number,
+  params?: CommunitiesApiGetRelevantCommunitiesParams
+) => {
+  return [
+    `/api/communities/${communityId}/relevant-communities`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getCommunitiesApiGetRelevantCommunitiesQueryOptions = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>,
+  TError = ErrorType<Message>,
+>(
+  communityId: number,
+  params?: CommunitiesApiGetRelevantCommunitiesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCommunitiesApiGetRelevantCommunitiesQueryKey(communityId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>
+  > = ({ signal }) =>
+    communitiesApiGetRelevantCommunities(communityId, params, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type CommunitiesApiGetRelevantCommunitiesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>
+>;
+export type CommunitiesApiGetRelevantCommunitiesQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get Relevant Communities
+ */
+export const useCommunitiesApiGetRelevantCommunities = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>,
+  TError = ErrorType<Message>,
+>(
+  communityId: number,
+  params?: CommunitiesApiGetRelevantCommunitiesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof communitiesApiGetRelevantCommunities>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getCommunitiesApiGetRelevantCommunitiesQueryOptions(
+    communityId,
+    params,
+    options
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Get Community Dashboard
+ */
+export const communitiesApiGetCommunityDashboard = (
+  communitySlug: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CommunityStatsResponse>(
+    { url: `/api/communities/${communitySlug}/dashboard`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getCommunitiesApiGetCommunityDashboardQueryKey = (communitySlug: string) => {
+  return [`/api/communities/${communitySlug}/dashboard`] as const;
+};
+
+export const getCommunitiesApiGetCommunityDashboardQueryOptions = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>,
+  TError = ErrorType<Message>,
+>(
+  communitySlug: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCommunitiesApiGetCommunityDashboardQueryKey(communitySlug);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>> = ({
+    signal,
+  }) => communitiesApiGetCommunityDashboard(communitySlug, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!communitySlug, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type CommunitiesApiGetCommunityDashboardQueryResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>
+>;
+export type CommunitiesApiGetCommunityDashboardQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get Community Dashboard
+ */
+export const useCommunitiesApiGetCommunityDashboard = <
+  TData = Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>,
+  TError = ErrorType<Message>,
+>(
+  communitySlug: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof communitiesApiGetCommunityDashboard>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getCommunitiesApiGetCommunityDashboardQueryOptions(communitySlug, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
 };

@@ -8,7 +8,6 @@ import type { UsersCommonApiGetRelevantArticlesFilterType } from './usersCommonA
 
 export type UsersCommonApiGetRelevantArticlesParams = {
   filter_type: UsersCommonApiGetRelevantArticlesFilterType;
-  article_id?: number | null;
   limit?: number;
   offset?: number;
   community_id?: number | null;

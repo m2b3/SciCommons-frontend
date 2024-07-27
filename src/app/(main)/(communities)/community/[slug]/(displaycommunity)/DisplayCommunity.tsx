@@ -47,7 +47,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   }, [isSuccess, error, data, refetch]);
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
+    <div className="overflow-hidden rounded-lg shadow-md dark:bg-gray-800">
       <div className="relative h-52 w-full">
         <Image
           src={community.banner_pic_url || 'https://picsum.photos/200/300'}

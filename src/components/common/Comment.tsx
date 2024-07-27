@@ -18,7 +18,10 @@ import {
 } from 'lucide-react';
 
 import { ContentTypeEnum } from '@/api/schemas';
-import { useUsersApiGetReactionCount, useUsersApiPostReaction } from '@/api/users/users';
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -84,11 +87,11 @@ const Comment: React.FC<CommentProps> = ({
   const accessToken = useAuthStore((state) => state.accessToken);
 
   // Todo: Too many requests
-  const { data, refetch } = useUsersApiGetReactionCount(contentType, Number(id), {
+  const { data, refetch } = useUsersCommonApiGetReactionCount(contentType, Number(id), {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
-  const { mutate } = useUsersApiPostReaction({
+  const { mutate } = useUsersCommonApiPostReaction({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
