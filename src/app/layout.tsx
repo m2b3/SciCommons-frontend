@@ -15,8 +15,23 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   manifest: '/manifest.json',
+  metadataBase: new URL('https://www.scicommons.org'),
   title: 'SciCommons',
   description: 'Peer-reviewed scientific articles, preprints, and more.',
+  openGraph: {
+    title: 'SciCommons',
+    description: 'Peer-reviewed scientific articles, preprints, and more.',
+    url: 'https://www.scicommons.org',
+    siteName: 'SciCommons',
+    images: [
+      {
+        url: '/og.png',
+        width: 256,
+        height: 256,
+        alt: 'SciCommons',
+      },
+    ],
+  },
 };
 
 export const viewport: Viewport = {

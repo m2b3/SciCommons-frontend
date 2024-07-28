@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import cookies from 'js-cookie';
 
+import Banner from '@/components/Banner';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
 import {
@@ -37,6 +38,7 @@ const Home = () => {
   return (
     <div>
       <NavBar />
+      <Banner />
       <div className="flex h-[calc(100vh-120px)] flex-col items-center justify-center md:h-[calc(100vh-60px)]">
         <TypewriterEffectSmooth words={words} />
         <p className="mb-6 max-w-3xl px-4 text-center text-xs text-neutral-600 dark:text-neutral-200 sm:text-base">
