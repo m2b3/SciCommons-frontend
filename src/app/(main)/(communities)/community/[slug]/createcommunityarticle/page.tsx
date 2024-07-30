@@ -82,7 +82,7 @@ const CommunityArticleForm: NextPage = () => {
         article_link: formData.article_link || undefined,
         keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
-        community_name: params.slug,
+        community_name: params?.slug,
       },
     };
     const image_file = formData.imageFile ? formData.imageFile.file : undefined;
@@ -99,7 +99,7 @@ const CommunityArticleForm: NextPage = () => {
       {/* Back to community */}
       <div className="mb-4">
         <button
-          onClick={() => router.push(`/community/${params.slug}`)}
+          onClick={() => router.push(`/community/${params?.slug}`)}
           className="flex items-center gap-2 text-sm text-green-500 hover:underline"
         >
           <MoveLeft size={16} /> Back to Community

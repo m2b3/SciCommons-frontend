@@ -34,7 +34,7 @@ const Submissions: React.FC = () => {
 
   const { data, isPending, error, refetch } =
     useCommunitiesApiArticlesListCommunityArticlesByStatus(
-      params.slug,
+      params?.slug || '',
       { status: activeTab.toLowerCase() as ArticleStatus },
       {
         query: { enabled: !!accessToken },

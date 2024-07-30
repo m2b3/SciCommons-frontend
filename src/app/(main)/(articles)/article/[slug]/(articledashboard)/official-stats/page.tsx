@@ -14,7 +14,7 @@ const Dashboard = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ slug: string }>();
 
-  const { data, error } = useArticlesApiGetOfficialArticleStats(params.slug, {
+  const { data, error } = useArticlesApiGetOfficialArticleStats(params?.slug || '', {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 

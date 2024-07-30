@@ -31,13 +31,13 @@ const BottomBar = () => {
 
   useEffect(() => {
     switch (true) {
-      case pathname.includes('articles') || pathname.includes('article'):
+      case pathname?.includes('articles') || pathname?.includes('article'):
         setActiveTab('Articles');
         break;
-      case pathname.includes('posts') || pathname.includes('post'):
+      case pathname?.includes('posts') || pathname?.includes('post'):
         setActiveTab('Posts');
         break;
-      case pathname.includes('communities') || pathname.includes('community'):
+      case pathname?.includes('communities') || pathname?.includes('community'):
         setActiveTab('Communities');
         break;
       default:

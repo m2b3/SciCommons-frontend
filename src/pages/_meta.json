@@ -1,0 +1,12 @@
+{
+  "docs": {
+    "title": "Docs",
+    "display": "hidden",
+    "type": "page"
+  },
+  "home": {
+    "title": "Home",
+    "href": "/",
+    "type": "page"
+  }
+}

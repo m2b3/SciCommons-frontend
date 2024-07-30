@@ -25,8 +25,8 @@ const CommunityArticleDisplayPage = () => {
   const [isRightHovered, setIsRightHovered] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
-    params.articleSlug,
-    { community_name: params.slug },
+    params?.articleSlug || '',
+    { community_name: params?.slug || '' },
     {
       query: { enabled: !!accessToken },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },

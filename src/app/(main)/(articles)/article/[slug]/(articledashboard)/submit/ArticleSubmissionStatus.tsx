@@ -18,7 +18,7 @@ const ArticleSubmissionStatus = () => {
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const { data, isPending, error } = useArticlesApiGetArticle(
-    params.slug,
+    params?.slug || '',
     {},
     {
       query: { enabled: !!accessToken },

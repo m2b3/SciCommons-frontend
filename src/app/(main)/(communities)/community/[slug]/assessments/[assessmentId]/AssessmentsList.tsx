@@ -22,7 +22,6 @@ const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
-  console.log(communityId);
   return (
     <div className="flex flex-col space-y-4">
       {isPending && Array.from({ length: 5 }, (_, index) => <ArticleCardSkeleton key={index} />)}
@@ -38,7 +37,7 @@ const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
             <div className="absolute bottom-4 right-4">
               <button
                 className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
-                onClick={() => router.push(`/community/${params.slug}/assessments/${article.id}`)}
+                onClick={() => router.push(`/community/${params?.slug}/assessments/${article.id}`)}
               >
                 View Details
               </button>

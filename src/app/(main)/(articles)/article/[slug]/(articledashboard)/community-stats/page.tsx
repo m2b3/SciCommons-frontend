@@ -14,7 +14,7 @@ const CommunityDashboard = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ slug: string }>();
 
-  const { data, error } = useArticlesApiGetCommunityArticleStats(params.slug, {
+  const { data, error } = useArticlesApiGetCommunityArticleStats(params?.slug || '', {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 

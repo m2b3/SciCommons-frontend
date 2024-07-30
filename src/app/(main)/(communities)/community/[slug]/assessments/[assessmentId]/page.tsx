@@ -26,8 +26,8 @@ const Page = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data } = useCommunitiesApiArticlesGetAssessmentDetails(
-    params.slug,
-    Number(params.assessmentId),
+    params?.slug || '',
+    Number(params?.assessmentId),
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }

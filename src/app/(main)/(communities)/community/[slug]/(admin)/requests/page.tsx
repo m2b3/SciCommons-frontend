@@ -20,7 +20,7 @@ const Requests = () => {
   const params = useParams<{ slug: string }>();
 
   const { data, error, isSuccess, isPending, refetch } = useCommunitiesApiJoinGetJoinRequests(
-    params.slug,
+    params?.slug || '',
     {
       query: { enabled: !!accessToken },
       request: axiosConfig,

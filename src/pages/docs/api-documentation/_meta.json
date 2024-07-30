@@ -1,0 +1,8 @@
+{
+  "api-overview": "API Overview",
+  "user-endpoints": "User Endpoints",
+  "article-endpoints": "Article Endpoints",
+  "community-endpoints": "Community Endpoints",
+  "post-endpoints": "Post Endpoints",
+  "error-handling": "Error Handling"
+}

@@ -12,31 +12,31 @@ export default function CommunityAdminLayout({ children }: { children: React.Rea
   const params = useParams<{ slug: string }>();
   const links = [
     {
-      href: `/community/${params.slug}/dashboard`,
+      href: `/community/${params?.slug}/dashboard`,
       label: 'Dashboard',
       icon: <Activity className="mr-3" />,
     },
-    { href: `/community/${params.slug}/invite`, label: 'Invite', icon: <Mail className="mr-3" /> },
+    { href: `/community/${params?.slug}/invite`, label: 'Invite', icon: <Mail className="mr-3" /> },
     {
-      href: `/community/${params.slug}/submissions`,
+      href: `/community/${params?.slug}/submissions`,
       label: 'Articles',
       icon: <FileText className="mr-3" />,
     },
-    { href: `/community/${params.slug}/roles`, label: 'Roles', icon: <Users className="mr-3" /> },
+    { href: `/community/${params?.slug}/roles`, label: 'Roles', icon: <Users className="mr-3" /> },
     {
-      href: `/community/${params.slug}/requests`,
+      href: `/community/${params?.slug}/requests`,
       label: 'Requests',
       icon: <GitBranch className="mr-3" />,
     },
     {
-      href: `/community/${params.slug}/preferences`,
+      href: `/community/${params?.slug}/preferences`,
       label: 'Preferences',
       icon: <Settings className="mr-3" />,
     },
   ];
   return (
     <div className="flex">
-      <Sidebar baseHref={`/community/${params.slug}`} links={links} />
+      <Sidebar baseHref={`/community/${params?.slug}`} links={links} />
       <main className="ml-10 flex-1 bg-gray-100 p-4 md:ml-64">{children}</main>
     </div>
   );

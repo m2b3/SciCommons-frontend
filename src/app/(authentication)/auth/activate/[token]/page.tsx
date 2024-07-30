@@ -16,7 +16,7 @@ const ActivateAccount = () => {
   const router = useRouter();
   const params = useParams<{ token: string }>();
 
-  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(params.token);
+  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(params?.token || '');
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {

@@ -11,6 +11,7 @@
     "EditorConfig.EditorConfig", // EditorConfig support
     "orta.vscode-jest", // Jest support for testing
     "aaron-bond.better-comments", // Highlights comments
-    "bradlc.vscode-tailwindcss" // Tailwind CSS IntelliSense
+    "bradlc.vscode-tailwindcss", // Tailwind CSS IntelliSense
+    "unifiedjs.vscode-mdx" // MDX support
   ]
 }

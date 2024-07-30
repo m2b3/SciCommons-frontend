@@ -1,0 +1,461 @@
+import { FileTree } from 'nextra/components'
+
+## Overview
+
+The project consists of two main components: the Frontend implemented using Next.js and the Backend developed with Django. This section provides an overview of the directory structure for both components, explaining the purpose of each directory and significant files within them. This structure helps in maintaining a clean, organized codebase, facilitating easier navigation and development.
+
+## Frontend (Next.js)
+
+The Next.js frontend is structured to separate concerns effectively, ensuring a scalable and maintainable codebase. Below is the typical directory layout for the Next.js project:
+
+
+<FileTree>
+  <FileTree.Folder name="scicommons-frontend-nextjs" defaultOpen>
+    <FileTree.File name=".env.example" />
+    <FileTree.File name=".env.local" />
+    <FileTree.File name=".eslintrc" />
+    <FileTree.File name=".gitignore" />
+    <FileTree.Folder name=".husky" />
+    <FileTree.File name=".huskyrc" />
+    <FileTree.File name=".lintstagedrc.js" />
+    <FileTree.File name=".prettierrc" />
+    <FileTree.Folder name=".vscode">
+      <FileTree.File name="settings.json" />
+      <FileTree.File name="extensions.json" />
+    </FileTree.Folder>
+    <FileTree.File name="next-env.d.ts" />
+    <FileTree.File name="next.config.mjs" />
+    <FileTree.File name="orval.config.ts" />
+    <FileTree.File name="package.json" />
+    <FileTree.File name="postcss.config.mjs" />
+    <FileTree.Folder name="public" />
+    <FileTree.File name="README.md" />
+    <FileTree.Folder name="src" defaultOpen>
+      <FileTree.Folder name="api" />
+      <FileTree.Folder name="app" defaultOpen>
+        <FileTree.Folder name="(authentication)">
+          <FileTree.Folder name="auth">
+            <FileTree.Folder name="activate">
+              <FileTree.Folder name="[token]">
+                <FileTree.File name="page.tsx" />
+              </FileTree.Folder>
+            </FileTree.Folder>
+            <FileTree.Folder name="forgotpassword">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="login">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="register">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="resendverificationemail">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="resetpassword">
+              <FileTree.Folder name="[token]">
+                <FileTree.File name="page.tsx" />
+              </FileTree.Folder>
+            </FileTree.Folder>
+            <FileTree.Folder name="signupsuccess">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+          </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="(main)">
+          <FileTree.Folder name="(articles)">
+            <FileTree.Folder name="article">
+              <FileTree.Folder name="[slug]">
+                <FileTree.Folder name="(articledashboard)">
+                  <FileTree.Folder name="community-stats">
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.File name="layout.tsx" />
+                  <FileTree.Folder name="notifications">
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="official-stats">
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="settings">
+                    <FileTree.File name="AddFAQs.tsx" />
+                    <FileTree.File name="EditArticleDetails.tsx" />
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="submit">
+                    <FileTree.File name="ArticleSubmissionStatus.tsx" />
+                    <FileTree.File name="page.tsx" />
+                    <FileTree.File name="SubmitToCommunity.tsx" />
+                  </FileTree.Folder>
+                </FileTree.Folder>
+                <FileTree.Folder name="(displayarticle)">
+                  <FileTree.File name="ArticleStats.tsx" />
+                  <FileTree.File name="DisplayArticle.tsx" />
+                  <FileTree.File name="DisplayFAQs.tsx" />
+                  <FileTree.File name="page.tsx" />
+                  <FileTree.File name="ReactQuill.tsx" />
+                  <FileTree.File name="RelevantArticles.tsx" />
+                  <FileTree.File name="ReviewCard.tsx" />
+                  <FileTree.File name="ReviewForm.tsx" />
+                </FileTree.Folder>
+              </FileTree.Folder>
+            </FileTree.Folder>
+            <FileTree.Folder name="articles">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="submitarticle">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+          </FileTree.Folder>
+          <FileTree.Folder name="(communities)">
+            <FileTree.Folder name="communities">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="community">
+              <FileTree.Folder name="[slug]">
+                <FileTree.Folder name="(admin)">
+                  <FileTree.Folder name="dashboard">
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="invite">
+                    <FileTree.File name="page.tsx" />
+                    <FileTree.File name="Registered.tsx" />
+                    <FileTree.File name="StatusList.tsx" />
+                    <FileTree.File name="UnRegistered.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.File name="layout.tsx" />
+                  <FileTree.Folder name="preferences">
+                    <FileTree.File name="AddRules.tsx" />
+                    <FileTree.File name="EditCommunityDetails.tsx" />
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="requests">
+                    <FileTree.File name="page.tsx" />
+                    <FileTree.File name="RequestListItem.tsx" />
+                    <FileTree.File name="RequestsList.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="roles">
+                    <FileTree.File name="page.tsx" />
+                    <FileTree.File name="UsersListItem.tsx" />
+                  </FileTree.Folder>
+                  <FileTree.Folder name="submissions">
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                </FileTree.Folder>
+                <FileTree.Folder name="(displaycommunity)">
+                  <FileTree.File name="ArticleSubmission.tsx" />
+                  <FileTree.File name="CommunityRules.tsx" />
+                  <FileTree.File name="CommunityStats.tsx" />
+                  <FileTree.File name="DisplayCommunity.tsx" />
+                  <FileTree.File name="page.tsx" />
+                </FileTree.Folder>
+                <FileTree.Folder name="articles">
+                  <FileTree.Folder name="[postId]">
+                    <FileTree.File name="CommunityArticleStats.tsx" />
+                    <FileTree.File name="CommunityCommentForm.tsx" />
+                    <FileTree.File name="CommunityRelevantArticles.tsx" />
+                    <FileTree.File name="page.tsx" />
+                  </FileTree.Folder>
+                </FileTree.Folder>
+                <FileTree.Folder name="createcommunityarticle">
+                  <FileTree.File name="page.tsx" />
+                </FileTree.Folder>
+                <FileTree.Folder name="invitations">
+                  <FileTree.Folder name="registered">
+                    <FileTree.Folder name="[invitation_id]">
+                      <FileTree.File name="page.tsx" />
+                    </FileTree.Folder>
+                  </FileTree.Folder>
+                  <FileTree.Folder name="unregistered">
+                    <FileTree.Folder name="[invitation_id]">
+                      <FileTree.Folder name="[signed_email]">
+                        <FileTree.File name="page.tsx" />
+                      </FileTree.Folder>
+                    </FileTree.Folder>
+                  </FileTree.Folder>
+                </FileTree.Folder>
+              </FileTree.Folder>
+            </FileTree.Folder>
+            <FileTree.Folder name="createcommunity">
+              <FileTree.File name="OptionCard.tsx" />
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+          </FileTree.Folder>
+          <FileTree.Folder name="(users)">
+            <FileTree.Folder name="mycontributions">
+              <FileTree.File name="page.tsx" />
+              <FileTree.File name="TabContent.tsx" />
+              <FileTree.File name="UserProfileStats.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="myprofile">
+              <FileTree.File name="page.tsx" />
+              <FileTree.File name="PersonalLinks.tsx" />
+              <FileTree.File name="ProfessionalStatus.tsx" />
+              <FileTree.File name="Profile.tsx" />
+            </FileTree.Folder>
+            <FileTree.Folder name="notifications">
+              <FileTree.File name="page.tsx" />
+            </FileTree.Folder>
+          </FileTree.Folder>
+          <FileTree.File name="layout.tsx" />
+        </FileTree.Folder>
+        <FileTree.File name="favicon.ico" />
+        <FileTree.File name="globals.css" />
+        <FileTree.File name="layout.tsx" />
+        <FileTree.File name="page.tsx" />
+      </FileTree.Folder>
+      <FileTree.Folder name="components">
+        <FileTree.Folder name="animations">
+          <FileTree.File name="CheckMarkAnimation.tsx" />
+        </FileTree.Folder>
+        <FileTree.Folder name="articles">
+          <FileTree.File name="ArticleCard.tsx" />
+          <FileTree.File name="ArticleHighlightCard.tsx" />
+          <FileTree.File name="SearchComponent.tsx" />
+          <FileTree.File name="SubmitArticleForm.tsx" />
+        </FileTree.Folder>
+        <FileTree.File name="Comment.tsx" />
+        <FileTree.Folder name="communities">
+          <FileTree.File name="CommunityCard.tsx" />
+          <FileTree.File name="CommunityHighlightCard.tsx" />
+          <FileTree.File name="OptionCard.tsx" />
+          <FileTree.File name="TabComponent.tsx" />
+        </FileTree.Folder>
+        <FileTree.File name="FileUpload.tsx" />
+        <FileTree.File name="Footer.tsx" />
+        <FileTree.File name="FormInput.tsx" />
+        <FileTree.File name="GifReloader.tsx" />
+        <FileTree.File name="ImageUpload.tsx" />
+        <FileTree.File name="LabeledToolTip.tsx" />
+        <FileTree.Folder name="loaders">
+          <FileTree.File name="CommunityInvitationSkeletonLoader.tsx" />
+          <FileTree.File name="DisplayArticleSkeletonLoader.tsx" />
+          <FileTree.File name="DisplayCommunitySkeletonLoader.tsx" />
+        </FileTree.Folder>
+        <FileTree.File name="MultiLabelSelector.tsx" />
+        <FileTree.File name="NavBar.tsx" />
+        <FileTree.Folder name="richtexteditor">
+          <FileTree.File name="CommentEditor.tsx" />
+          <FileTree.File name="MenuBar.tsx" />
+          <FileTree.File name="TipTap.tsx" />
+        </FileTree.Folder>
+        <FileTree.File name="SearchBar.tsx" />
+        <FileTree.File name="Sidebar.tsx" />
+        <FileTree.Folder name="ui" />
+      </FileTree.Folder>
+      <FileTree.Folder name="constants">
+        <FileTree.File name="dummyData.tsx" />
+      </FileTree.Folder>
+      <FileTree.Folder name="hooks">
+        <FileTree.File name="useAuthHeaders.ts" />
+        <FileTree.File name="useStore.ts" />
+      </FileTree.Folder>
+      <FileTree.Folder name="lib">
+        <FileTree.File name="utils.ts" />
+      </FileTree.Folder>
+      <FileTree.File name="middleware.ts" />
+      <FileTree.Folder name="stores">
+        <FileTree.File name="authStore.ts" />
+        <FileTree.File name="useFetchExternalArticleStore.ts" />
+      </FileTree.Folder>
+      <FileTree.Folder name="types">
+        <FileTree.File name="index.ts" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.File name="tailwind.config.ts" />
+    <FileTree.File name="tsconfig.json" />
+    <FileTree.File name="tsconfig.tsbuildinfo" />
+    <FileTree.File name="yarn.lock" />
+  </FileTree.Folder>
+</FileTree>
+### Root Directory
+
+
+
+* **.env.example**: Shows sample environment variables needed.
+* **.env.local**: Your local environment variables for development.
+* **.eslintrc**: Configures ESLint for code linting.
+* **.gitignore**: Lists files Git should ignore.
+* **.husky/**: Contains Git hooks for pre-commit checks.
+* **.lintstagedrc.js**: Runs linters on staged files before committing.
+* **.prettierrc**: Configures Prettier for code formatting.
+* **package.json**: Lists dependencies and scripts for the project.
+* **README.md**: Documentation about the project.
+* **tsconfig.json**: TypeScript configuration settings.
+* **yarn.lock**: Ensures consistent versions of dependencies.
+
+
+### src Directory
+
+
+
+* **api/**: Configuration and setup for API-related code.
+* **app/**: Main app pages and routes.
+    * **(authentication)/auth/**: Handles authentication (login, register, etc.).
+    * **(main)**: Main content areas.
+        * **(articles)**: Pages related to articles.
+        * **(communities)**: Pages related to communities.
+        * **(users)**: Pages related to user profiles and activities.
+    * **layout.tsx**: Layout component for the app.
+    * **globals.css**: Global styles for the app.
+
+
+### components Directory
+
+
+
+* **common components/**: Reusable UI components.
+    * **NavBar.tsx**: The navigation bar.
+    * **Footer.tsx**: The footer.
+    * **FormInput.tsx**: Common form input field.
+    * **SearchBar.tsx**: Search bar.
+
+
+### Configuration Files
+
+
+
+* **next.config.mjs**: Next.js configuration.
+* **tailwind.config.ts**: TailwindCSS configuration.
+* **postcss.config.mjs**: PostCSS configuration.
+
+
+### Other Directories
+
+
+
+* **public/**: Static files like images and icons.
+* **hooks/**: Custom React hooks.
+* **lib/**: Utility functions.
+* **stores/**: State management stores.
+* **types/**: TypeScript type definitions.
+
+## Backend (Django)
+
+The Django backend is organized to keep applications modular and maintainable. Below is the typical directory layout for the Django project:
+
+```markdown copy
+└── 📁scicommons-backend-revamp
+    └── .dockerignore
+    └── .env
+    └── .env.example
+    └── .flake8
+    └── .gitignore
+    └── .pre-commit-config.yaml
+    └── 📁admin
+    └── 📁articles
+        └── api.py
+        └── api_review.py
+        └── 📁migrations
+        └── models.py
+        └── schemas.py
+        └── __init__.py
+    └── 📁communities
+        └── api.py
+        └── api_admin.py
+        └── api_invitation.py
+        └── api_join.py
+        └── api_posts.py
+        └── 📁migrations
+        └── models.py
+        └── schemas.py
+        └── __init__.py
+    └── docker-compose.yml
+    └── Dockerfile
+    └── manage.py
+    └── 📁myapp
+        └── api.py
+        └── asgi.py
+        └── middleware.py
+        └── settings.py
+        └── urls.py
+        └── wsgi.py
+        └── __init__.py
+    └── poetry.lock
+    └── 📁posts
+        └── models.py
+        └── __init__.py
+    └── pyproject.toml
+    └── README.md
+    └── 📁static                    
+    └── 📁users
+        └── api.py
+        └── api_auth.py
+        └── auth.py
+        └── 📁migrations
+        └── models.py
+        └── schemas.py
+        └── __init__.py
+```
+
+### Project Root Directory
+
+- **.dockerignore**: Specifies files and directories to ignore when building Docker images.
+- **.env**: Environment variables for the project.
+- **.env.example**: Sample environment variables file.
+- **.flake8**: Configuration for flake8, a Python code linter.
+- **.gitignore**: Specifies files for Git to ignore.
+- **.pre-commit-config.yaml**: Configuration for pre-commit hooks to enforce code quality.
+- **docker-compose.yml**: Configuration for Docker Compose to manage multi-container Docker applications.
+- **Dockerfile**: Instructions to build a Docker image for the project.
+- **manage.py**: Django's command-line utility for administrative tasks.
+- **poetry.lock**: Ensures consistent dependency versions for Poetry.
+- **pyproject.toml**: Configuration file for Poetry and other tools.
+- **README.md**: Project documentation.
+
+### Application Directories
+
+- **admin/**:
+
+  - Contains admin-specific configurations and management scripts.
+
+- **articles/**:
+
+  - **api.py**: API endpoints related to articles.
+  - **api_review.py**: API endpoints related to article reviews.
+  - **migrations/**: Database migrations for the articles app.
+  - **models.py**: Database models for articles.
+  - **schemas.py**: Data validation schemas for articles.
+  - **init.py**: Initializes the articles app.
+
+- **communities/**:
+
+  - **api.py**: API endpoints related to communities.
+  - **api_admin.py**: API endpoints for community admins.
+  - **api_invitation.py**: API endpoints for community invitations.
+  - **api_join.py**: API endpoints for joining communities.
+  - **api_posts.py**: API endpoints for community posts.
+  - **migrations/**: Database migrations for the communities app.
+  - **models.py**: Database models for communities.
+  - **schemas.py**: Data validation schemas for communities.
+  - **init.py**: Initializes the communities app.
+
+- **myapp/**:
+
+  - **api.py**: Central API configuration.
+  - **asgi.py**: ASGI configuration for asynchronous support.
+  - **middleware.py**: Custom middleware for the project.
+  - **settings.py**: Project settings and configurations.
+  - **urls.py**: URL routing for the project.
+  - **wsgi.py**: WSGI configuration for deploying the application.
+  - **init.py**: Initializes the myapp module.
+
+- **posts/**:
+
+  - **models.py**: Database models for posts.
+  - **init.py**: Initializes the posts app.
+
+- **static/**:
+
+  - Directory for static files like CSS, JavaScript, and images.
+
+- **users/**:
+  - **api.py**: API endpoints related to users.
+  - **api_auth.py**: API endpoints for user authentication.
+  - **auth.py**: Authentication logic.
+  - **migrations/**: Database migrations for the users app.
+  - **models.py**: Database models for users.
+  - **schemas.py**: Data validation schemas for users.
+  - **init.py**: Initializes the users app.
+
+By organizing the project in this way, both frontend and backend development can proceed independently while maintaining a clear structure that facilitates collaboration and scalability.

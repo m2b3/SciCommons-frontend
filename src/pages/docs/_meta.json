@@ -1,0 +1,22 @@
+{
+  "index": "Introduction",
+  "user-guide": "User Guide",
+  "-- Technical Documentation": {
+    "type": "separator",
+    "title": "Technical Documentation"
+  },
+  "getting-started": "Getting Started",
+  "project-structure": "Project Structure",
+  "api-documentation": "API Documentation",
+  "contribution-guide": "Contribution Guide",
+  "about": {
+    "title": "About",
+    "type": "page"
+  },
+  "contact": {
+    "title": "Contact ↗",
+    "type": "page",
+    "href": "https://twitter.com/shuding_",
+    "newWindow": true
+  }
+}

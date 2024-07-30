@@ -19,7 +19,7 @@ interface FormValues {
 const SubmitToCommunity = () => {
   const params = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
-  const communityName = searchParams.get('name');
+  const communityName = searchParams?.get('name');
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
@@ -42,7 +42,7 @@ const SubmitToCommunity = () => {
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     mutate(
-      { articleSlug: params.slug, communityName: data.communityName },
+      { articleSlug: params?.slug || '', communityName: data.communityName },
       {
         onSuccess: () => {
           reset();

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 import withPWAInit from '@ducanh2912/next-pwa';
+import nextra from 'nextra';
 
 const withPWA = withPWAInit({
   dest: 'public',
@@ -28,4 +29,9 @@ const nextConfig = withPWA({
   },
 });
 
-export default nextConfig;
+const withNextra = nextra({
+  theme: 'nextra-theme-docs',
+  themeConfig: './theme.config.tsx'
+})
+
+export default withNextra(nextConfig);

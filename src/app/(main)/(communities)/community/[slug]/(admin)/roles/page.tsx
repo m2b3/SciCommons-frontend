@@ -25,7 +25,7 @@ const Roles: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error, isPending, refetch } = useCommunitiesMembersApiGetCommunityMembers(
-    params.slug,
+    params?.slug || '',
     {
       query: {
         enabled: !!accessToken,

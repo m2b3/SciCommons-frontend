@@ -204,7 +204,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
       </div>
       {/* add a note mentioning that the article will be submitted and reviewed by the community */}
       {/* Display this if pathname has community included in it */}
-      {pathname.includes('community') && (
+      {pathname?.includes('community') && (
         <p className="mt-2 text-gray-600">
           Note: The article will be submitted to the community for review and approval.
         </p>

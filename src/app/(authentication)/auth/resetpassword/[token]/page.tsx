@@ -48,7 +48,7 @@ const ResetPasswordForm: React.FC = () => {
       data: {
         password: data.password,
         confirm_password: data.confirmPassword,
-        token: params.token,
+        token: params?.token || '',
       },
     });
   };

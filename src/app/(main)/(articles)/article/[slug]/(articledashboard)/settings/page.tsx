@@ -22,7 +22,7 @@ const ArticleSettings = () => {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
 
   const { data, isPending, error } = useArticlesApiGetArticle(
-    params.slug,
+    params?.slug || '',
     {},
     {
       query: { enabled: !!accessToken },

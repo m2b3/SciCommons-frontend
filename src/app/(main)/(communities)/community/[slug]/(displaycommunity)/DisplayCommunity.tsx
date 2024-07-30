@@ -86,7 +86,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
           {community.is_admin && (
             <>
               <ArticleSubmission communityName={community.name} />
-              <Link href={`/community/${params.slug}/dashboard`}>
+              <Link href={`/community/${params?.slug}/dashboard`}>
                 <button className="rounded-full bg-black px-4 py-2 text-white dark:bg-white dark:text-black">
                   Dashboard
                 </button>

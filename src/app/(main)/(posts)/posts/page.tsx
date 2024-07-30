@@ -48,7 +48,7 @@ const PostListContent = () => {
   }, [error]);
 
   useEffect(() => {
-    const queryHashtag = searchParams.get('hashtag');
+    const queryHashtag = searchParams?.get('hashtag');
     queryHashtag && setHashtag(`#${queryHashtag}`);
   }, [searchParams]);
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -62,6 +62,8 @@
     "next": "14.2.3",
     "next-themes": "^0.3.0",
     "nextjs-toploader": "^1.6.12",
+    "nextra": "^2.13.4",
+    "nextra-theme-docs": "^2.13.4",
     "nightwind": "^1.1.13",
     "react": "^18",
     "react-dom": "^18",
