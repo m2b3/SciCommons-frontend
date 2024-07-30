@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import Cookies from 'js-cookie';
-import { Bell, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
+import { Bell, DownloadIcon, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import {
@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
 import useIdenticon from '@/hooks/useIdenticons';
+import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
 import useStore from '@/hooks/useStore';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -121,6 +122,7 @@ const ProfileDropdown: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
   const { theme, setTheme } = useTheme();
   const imageData = useIdenticon(40);
+  const { handleAppInstall } = usePWAInstallPrompt('install');
 
   const handleLogout = () => {
     logout();
@@ -161,6 +163,17 @@ const ProfileDropdown: React.FC = () => {
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             />
           </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <button
+            onClick={handleAppInstall}
+            id="install"
+            hidden
+            className="flex items-center text-functional-green"
+          >
+            <DownloadIcon size={16} className="mr-2" />
+            Install
+          </button>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <button onClick={handleLogout} className="flex items-center text-functional-red">
