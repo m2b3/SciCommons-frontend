@@ -8,6 +8,7 @@ import { Card, LineChart, Title } from '@tremor/react';
 import { FilePlus, FileText, Users } from 'lucide-react';
 
 import { useCommunitiesApiGetCommunityDashboard } from '@/api/communities/communities';
+import ArticleHighlightCard from '@/components/articles/ArticleHighlightCard';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -79,13 +80,16 @@ const CommunityDashboard = () => {
         {/* List of Recently Published Articles */}
         <section className="mb-6">
           <h2 className="mb-4 text-xl font-semibold">Recently Published Articles</h2>
-          {/* <div className="rounded bg-white p-4 shadow">
-          <ul>
-            {articlesData.map((article, index) => (
-              <ArticleHighlightCard key={index} {...article} />
-            ))}
-          </ul>
-        </div> */}
+          <div className="rounded bg-white p-4 shadow">
+            {data.data.recently_published_articles.length === 0 && (
+              <p className="text-gray-500">No articles have been published yet.</p>
+            )}
+            <ul>
+              {data.data.recently_published_articles.map((article, index) => (
+                <ArticleHighlightCard key={index} article={article} />
+              ))}
+            </ul>
+          </div>
         </section>
 
         <h2 className="mb-4 text-xl font-semibold">Community Articles Stats</h2>
@@ -109,7 +113,10 @@ const CommunityDashboard = () => {
               <Title>Member Growth Over Time</Title>
               <LineChart
                 className="h-80"
-                data={data.data.member_growth}
+                data={data.data.member_growth.map((item) => ({
+                  date: item.date,
+                  members: item.count,
+                }))}
                 index="date"
                 categories={['members']}
                 colors={['indigo', 'rose']}
@@ -121,7 +128,10 @@ const CommunityDashboard = () => {
               <Title>Article Submission Trends</Title>
               <LineChart
                 className="h-80"
-                data={data.data.article_submission_trends}
+                data={data.data.article_submission_trends.map((item) => ({
+                  date: item.date,
+                  articles: item.count,
+                }))}
                 index="date"
                 categories={['articles']}
                 colors={['indigo', 'rose']}

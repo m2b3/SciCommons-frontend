@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
@@ -12,11 +11,10 @@ import { toast } from 'sonner';
 import { useUsersApiAuthActivate } from '@/api/users-auth/users-auth';
 import { ErrorMessage } from '@/constants';
 
-const ActivateAccount = () => {
+const ActivateAccount = ({ params }: { params: { token: string } }) => {
   const router = useRouter();
-  const params = useParams<{ token: string }>();
 
-  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(params?.token || '');
+  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(params.token);
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {

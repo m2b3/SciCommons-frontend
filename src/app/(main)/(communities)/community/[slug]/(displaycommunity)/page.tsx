@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import SplitScreenLayout from '@/components/common/SplitScreenLayout';
-import DisplayCommunitySkeletonLoader from '@/components/loaders/DisplayCommunitySkeletonLoader';
 import TabNavigation from '@/components/ui/tab-navigation';
 import useStore from '@/hooks/useStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -17,7 +16,7 @@ import CommunityAbout from './CommunityAbout';
 import CommunityArticles from './CommunityArticles';
 import CommunityRules, { CommunityRulesSkeleton } from './CommunityRules';
 import CommunityStats, { CommunityStatsSkeleton } from './CommunityStats';
-import DisplayCommunity from './DisplayCommunity';
+import DisplayCommunity, { DisplayCommunitySkeleton } from './DisplayCommunity';
 import RelevantCommunities from './RelevantCommunities';
 
 const Community = ({ params }: { params: { slug: string } }) => {
@@ -60,7 +59,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
   const LeftSide = (
     <>
       {isPending ? (
-        <DisplayCommunitySkeletonLoader />
+        <DisplayCommunitySkeleton />
       ) : (
         data && <DisplayCommunity community={data.data} refetch={refetch} />
       )}
@@ -75,7 +74,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
   const RightSide = (
     <>
       {isPending ? (
-        <div className="shadow-md">
+        <div className="flex flex-col gap-4 shadow-md">
           <CommunityStatsSkeleton />
           <CommunityRulesSkeleton />
         </div>
@@ -108,7 +107,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
       <div className="lg:hidden">
         <div className="p-4">
           {isPending ? (
-            <DisplayCommunitySkeletonLoader />
+            <DisplayCommunitySkeleton />
           ) : (
             data && <DisplayCommunity community={data.data} refetch={refetch} />
           )}

@@ -62,9 +62,12 @@ const CommunityDashboard = () => {
                   <Title>Community Reviews Over Time</Title>
                   <LineChart
                     className="h-80"
-                    data={data.data.reviews_over_time}
+                    data={data.data.reviews_over_time.map((item) => ({
+                      date: item.date,
+                      reviews: item.count,
+                    }))}
                     index="date"
-                    categories={['views']}
+                    categories={['reviews']}
                     colors={['indigo', 'rose']}
                     valueFormatter={dataFormatter}
                     yAxisWidth={60}
@@ -75,7 +78,10 @@ const CommunityDashboard = () => {
                   <Title>Community Likes Over Time</Title>
                   <LineChart
                     className="h-80"
-                    data={data.data.likes_over_time}
+                    data={data.data.likes_over_time.map((item) => ({
+                      date: item.date,
+                      likes: item.count,
+                    }))}
                     index="date"
                     categories={['likes']}
                     colors={['indigo', 'rose']}
@@ -96,6 +102,9 @@ const CommunityDashboard = () => {
               <h2 className="mb-4 text-xl font-semibold">Community Reviews and Feedback</h2>
               <div className="rounded bg-white p-4 shadow">
                 <h3 className="mb-2 text-lg font-semibold">Recent Community Reviews</h3>
+                {data.data.recent_reviews.length === 0 && (
+                  <p>No community reviews available for this article.</p>
+                )}
                 <ul>
                   {data.data.recent_reviews.map((review, index) => (
                     <li key={index} className="mb-2">

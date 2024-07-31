@@ -18,6 +18,7 @@ import type {
 import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
+  BookmarkSchema,
   FavoriteItemSchema,
   Message,
   NotificationSchema,
@@ -554,6 +555,72 @@ export const useUsersApiGetMyFavorites = <
   request?: SecondParameter<typeof customInstance>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getUsersApiGetMyFavoritesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Get My Bookmarks
+ */
+export const usersApiGetMyBookmarks = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<BookmarkSchema[]>(
+    { url: `/api/users/bookmarks`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getUsersApiGetMyBookmarksQueryKey = () => {
+  return [`/api/users/bookmarks`] as const;
+};
+
+export const getUsersApiGetMyBookmarksQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiGetMyBookmarks>>,
+  TError = ErrorType<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof usersApiGetMyBookmarks>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiGetMyBookmarksQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetMyBookmarks>>> = ({ signal }) =>
+    usersApiGetMyBookmarks(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiGetMyBookmarks>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiGetMyBookmarksQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiGetMyBookmarks>>
+>;
+export type UsersApiGetMyBookmarksQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get My Bookmarks
+ */
+export const useUsersApiGetMyBookmarks = <
+  TData = Awaited<ReturnType<typeof usersApiGetMyBookmarks>>,
+  TError = ErrorType<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof usersApiGetMyBookmarks>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiGetMyBookmarksQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

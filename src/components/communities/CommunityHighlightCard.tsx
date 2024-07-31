@@ -36,12 +36,12 @@ export default CommunityHighlightCard;
 export const CommunityHighlightCardSkeleton: React.FC = () => {
   return (
     <div className="flex items-start">
-      <div className="mr-4 h-12 w-12 animate-pulse rounded-full bg-gray-200" />
-      <div>
-        <div className="mb-1 h-4 w-40 animate-pulse bg-gray-200" />
+      <div className="mr-4 h-12 w-12 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+      <div className="flex-1">
+        <div className="mb-1 h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
         <div className="flex items-center space-x-4">
-          <div className="h-4 w-20 animate-pulse bg-gray-200" />
-          <div className="h-4 w-20 animate-pulse bg-gray-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
         </div>
       </div>
     </div>

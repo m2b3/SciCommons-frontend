@@ -4,20 +4,19 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { CommunityStatsResponseArticleSubmissionTrendsItem } from './communityStatsResponseArticleSubmissionTrendsItem';
-import type { CommunityStatsResponseMemberGrowthItem } from './communityStatsResponseMemberGrowthItem';
-import type { RecentArticleSchema } from './recentArticleSchema';
+import type { ArticleBasicOut } from './articleBasicOut';
+import type { DateCount } from './dateCount';
 
 export interface CommunityStatsResponse {
-  article_submission_trends: CommunityStatsResponseArticleSubmissionTrendsItem[];
+  article_submission_trends: DateCount[];
   articles_published: number;
   description: string;
-  member_growth: CommunityStatsResponseMemberGrowthItem[];
+  member_growth: DateCount[];
   name: string;
   new_articles_this_week: number;
   new_members_this_week: number;
   new_published_articles_this_week: number;
-  recently_published_articles: RecentArticleSchema[];
+  recently_published_articles: ArticleBasicOut[];
   total_articles: number;
   total_discussions: number;
   total_members: number;

@@ -24,13 +24,13 @@ export default CommunityRules;
 
 export const CommunityRulesSkeleton: React.FC = () => {
   return (
-    <div className="rounded-md bg-white p-6 shadow-md dark:bg-gray-800 dark:shadow-gray-700/50">
-      <h2 className="mb-4 h-6 w-1/2 animate-pulse bg-gray-300 dark:bg-gray-600"></h2>
+    <div className="rounded-md border-2 bg-white p-6 shadow-md dark:bg-gray-800 dark:shadow-gray-700/50">
+      <div className="mb-4 h-6 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
       <ul className="space-y-3">
-        {Array.from({ length: 3 }).map((_, index) => (
+        {[...Array(5)].map((_, index) => (
           <li key={index} className="flex items-start">
-            <span className="mr-2 h-5 w-5 animate-pulse bg-gray-300 dark:bg-gray-600"></span>
-            <p className="h-5 w-full animate-pulse bg-gray-300 dark:bg-gray-600"></p>
+            <span className="mr-2 h-4 w-4 animate-pulse rounded bg-green-200 dark:bg-green-700" />
+            <div className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
           </li>
         ))}
       </ul>

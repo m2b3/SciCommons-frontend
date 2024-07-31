@@ -429,9 +429,9 @@ export const useArticlesApiGetArticles = <
 };
 
 /**
- * @summary Get Official Article Stats
+ * @summary Get Article Official Stats
  */
-export const articlesApiGetOfficialArticleStats = (
+export const articlesApiGetArticleOfficialStats = (
   articleSlug: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
@@ -442,18 +442,18 @@ export const articlesApiGetOfficialArticleStats = (
   );
 };
 
-export const getArticlesApiGetOfficialArticleStatsQueryKey = (articleSlug: string) => {
+export const getArticlesApiGetArticleOfficialStatsQueryKey = (articleSlug: string) => {
   return [`/api/articles/article/${articleSlug}/official-stats`] as const;
 };
 
-export const getArticlesApiGetOfficialArticleStatsQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>,
+export const getArticlesApiGetArticleOfficialStatsQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>,
   TError = ErrorType<Message>,
 >(
   articleSlug: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   }
@@ -461,40 +461,40 @@ export const getArticlesApiGetOfficialArticleStatsQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getArticlesApiGetOfficialArticleStatsQueryKey(articleSlug);
+    queryOptions?.queryKey ?? getArticlesApiGetArticleOfficialStatsQueryKey(articleSlug);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>> = ({
     signal,
-  }) => articlesApiGetOfficialArticleStats(articleSlug, requestOptions, signal);
+  }) => articlesApiGetArticleOfficialStats(articleSlug, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!articleSlug, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>,
+    Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type ArticlesApiGetOfficialArticleStatsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>
+export type ArticlesApiGetArticleOfficialStatsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>
 >;
-export type ArticlesApiGetOfficialArticleStatsQueryError = ErrorType<Message>;
+export type ArticlesApiGetArticleOfficialStatsQueryError = ErrorType<Message>;
 
 /**
- * @summary Get Official Article Stats
+ * @summary Get Article Official Stats
  */
-export const useArticlesApiGetOfficialArticleStats = <
-  TData = Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>,
+export const useArticlesApiGetArticleOfficialStats = <
+  TData = Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>,
   TError = ErrorType<Message>,
 >(
   articleSlug: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetOfficialArticleStats>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticleOfficialStats>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesApiGetOfficialArticleStatsQueryOptions(articleSlug, options);
+  const queryOptions = getArticlesApiGetArticleOfficialStatsQueryOptions(articleSlug, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

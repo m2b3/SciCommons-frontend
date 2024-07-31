@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 
 import { Card, LineChart, Title } from '@tremor/react';
 
-import { useArticlesApiGetOfficialArticleStats } from '@/api/articles/articles';
+import { useArticlesApiGetArticleOfficialStats } from '@/api/articles/articles';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -14,7 +14,7 @@ const Dashboard = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ slug: string }>();
 
-  const { data, error } = useArticlesApiGetOfficialArticleStats(params?.slug || '', {
+  const { data, error } = useArticlesApiGetArticleOfficialStats(params?.slug || '', {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -62,9 +62,12 @@ const Dashboard = () => {
               <Title>Reviews Over Time</Title>
               <LineChart
                 className="h-80"
-                data={data.data.reviews_over_time}
+                data={data.data.reviews_over_time.map((item) => ({
+                  date: item.date,
+                  reviews: item.count,
+                }))}
                 index="date"
-                categories={['views']}
+                categories={['reviews']}
                 colors={['indigo', 'rose']}
                 valueFormatter={dataFormatter}
                 yAxisWidth={60}
@@ -75,7 +78,11 @@ const Dashboard = () => {
               <Title>Likes Over Time</Title>
               <LineChart
                 className="h-80"
-                data={data.data.likes_over_time}
+                // convert date in likes_over_time to the YYYY-MM-DD format
+                data={data.data.likes_over_time.map((item) => ({
+                  date: item.date,
+                  likes: item.count,
+                }))}
                 index="date"
                 categories={['likes']}
                 colors={['indigo', 'rose']}
@@ -98,8 +105,9 @@ const Dashboard = () => {
             <h3 className="mb-2 text-lg font-semibold">Recent Reviews</h3>
             <ul>
               {data.data.recent_reviews.map((review, index) => (
-                <li key={index} className="mb-2">
-                  <p className="text-sm text-gray-700">{review.excerpt}</p>
+                <li key={index} className="flex flex-col gap-2">
+                  {/* Dangerously set html */}
+                  <div dangerouslySetInnerHTML={{ __html: review.excerpt }} />
                   <p className="text-xs text-gray-500">
                     {new Date(review.date).toLocaleDateString()}
                   </p>

@@ -51,6 +51,19 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           <h3 className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
             Article Links
           </h3>
+          {/* Display article.article_link if article.article_pdf_urls is an empty array */}
+          {article.article_pdf_urls.length === 0 && (
+            <div className="mb-1">
+              <a
+                href={article.article_link || '#'} // Fallback to # if article_link is empty
+                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {article.article_link?.split('/').pop() || article.article_link}
+              </a>
+            </div>
+          )}
           {article.article_pdf_urls.map((link, index) => (
             <div key={index} className="mb-1">
               <a

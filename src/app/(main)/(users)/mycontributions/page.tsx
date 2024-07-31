@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 
 import {
   useUsersApiGetArticles,
+  useUsersApiGetMyBookmarks,
   useUsersApiGetMyCommunities,
   useUsersApiGetMyFavorites,
   useUsersApiGetMyPosts,
@@ -108,6 +109,10 @@ const ContributionsPage: React.FC = () => {
     request: requestConfig,
   });
 
+  const { data: bookmarksData, error: bookmarksDataError } = useUsersApiGetMyBookmarks({
+    request: requestConfig,
+  });
+
   const [activeTab, setActiveTab] = useState<
     'articles' | 'communities' | 'posts' | 'favorites' | 'bookmarks'
   >('articles');
@@ -188,29 +193,14 @@ const ContributionsPage: React.FC = () => {
               : 'bg-yellow-100 text-yellow-600',
         type: favorite.type,
       })) || [],
-    bookmarks: [
-      {
+    bookmarks:
+      bookmarksData?.data.map((bookmark) => ({
         icon: Bookmark,
-        title: 'Machine Learning for Predictive Healthcare',
-        subtitle: 'Article by Prof. Sarah Lee',
-        iconColor: 'bg-blue-100 text-blue-600',
-        type: 'Article',
-      },
-      {
-        icon: Bookmark,
-        title: 'The Future of Personalized Medicine',
-        subtitle: 'Post by FutureMed · 876 likes',
+        title: bookmark.title,
+        subtitle: bookmark.details,
         iconColor: 'bg-yellow-100 text-yellow-600',
-        type: 'Post',
-      },
-      {
-        icon: Bookmark,
-        title: 'Emerging Trends in Biotechnology',
-        subtitle: 'Article by Dr. Michael Chen',
-        iconColor: 'bg-blue-100 text-blue-600',
-        type: 'Article',
-      },
-    ],
+        type: bookmark.type,
+      })) || [],
   };
 
   const tabContent: Record<typeof activeTab, Array<ItemCardProps>> = {
@@ -227,7 +217,8 @@ const ContributionsPage: React.FC = () => {
       articlesDataError ||
       communitiesDataError ||
       postsDataError ||
-      favoritesDataError
+      favoritesDataError ||
+      bookmarksDataError
     ) {
       toast.error(
         error?.response?.data.message ||
@@ -235,10 +226,18 @@ const ContributionsPage: React.FC = () => {
           communitiesDataError?.response?.data.message ||
           postsDataError?.response?.data.message ||
           favoritesDataError?.response?.data.message ||
+          bookmarksDataError?.response?.data.message ||
           ErrorMessage
       );
     }
-  }, [error, articlesDataError, communitiesDataError, postsDataError, favoritesDataError]);
+  }, [
+    error,
+    articlesDataError,
+    communitiesDataError,
+    postsDataError,
+    favoritesDataError,
+    bookmarksDataError,
+  ]);
 
   return (
     <div className="bg-gray-100 text-black res-text-sm dark:bg-gray-900 dark:text-white">
@@ -253,73 +252,86 @@ const ContributionsPage: React.FC = () => {
           </div>
         </div>
       )}
-      {data && userData && articlesData && communitiesData && postsData && favoritesData && (
-        <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <ProfileHeader
-              name={userData.name}
-              image={userData.image}
-              bio={userData.bio}
-              location={userData.location}
-              website={userData.website}
-            />
+      {data &&
+        userData &&
+        articlesData &&
+        communitiesData &&
+        postsData &&
+        favoritesData &&
+        bookmarksData && (
+          <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+              <ProfileHeader
+                name={userData.name}
+                image={userData.image}
+                bio={userData.bio}
+                location={userData.location}
+                website={userData.website}
+              />
 
-            <ReputationBadge level={userData.reputationLevel} score={userData.reputationScore} />
+              <ReputationBadge level={userData.reputationLevel} score={userData.reputationScore} />
 
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {userData.contributions?.map((contribution, index) => (
-                <ContributionCard key={index} {...contribution} />
-              ))}
-            </div>
-
-            <div className="mt-8">
-              <div className="sm:hidden">
-                <button
-                  className="flex w-full items-center justify-between rounded-lg bg-white px-4 py-2 text-left font-semibold text-gray-800 shadow"
-                  onClick={() => setIsTabsOpen(!isTabsOpen)}
-                >
-                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                  <ChevronDown
-                    className={`h-5 w-5 transition-transform ${isTabsOpen ? 'rotate-180 transform' : ''}`}
-                  />
-                </button>
-                {isTabsOpen && (
-                  <div className="mt-2 overflow-hidden rounded-lg bg-white shadow">
-                    {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
-                      <button
-                        key={tab}
-                        className="w-full px-4 py-2 text-left font-semibold text-gray-800 hover:bg-gray-100"
-                        onClick={() => {
-                          setActiveTab(tab);
-                          setIsTabsOpen(false);
-                        }}
-                      >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="mb-4 hidden space-x-2 overflow-x-auto sm:flex">
-                {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
-                  <TabButton key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab)}>
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </TabButton>
+              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {userData.contributions?.map((contribution, index) => (
+                  <ContributionCard key={index} {...contribution} />
                 ))}
               </div>
 
-              <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-700 sm:p-6">
-                <h2 className="mb-4 text-xl font-semibold">
-                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                </h2>
-                {tabContent[activeTab].map((item, index) => (
-                  <ItemCard key={index} {...item} />
-                ))}
+              <div className="mt-8">
+                <div className="sm:hidden">
+                  <button
+                    className="flex w-full items-center justify-between rounded-lg bg-white px-4 py-2 text-left font-semibold text-gray-800 shadow"
+                    onClick={() => setIsTabsOpen(!isTabsOpen)}
+                  >
+                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                    <ChevronDown
+                      className={`h-5 w-5 transition-transform ${isTabsOpen ? 'rotate-180 transform' : ''}`}
+                    />
+                  </button>
+                  {isTabsOpen && (
+                    <div className="mt-2 overflow-hidden rounded-lg bg-white shadow">
+                      {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
+                        <button
+                          key={tab}
+                          className="w-full px-4 py-2 text-left font-semibold text-gray-800 hover:bg-gray-100"
+                          onClick={() => {
+                            setActiveTab(tab);
+                            setIsTabsOpen(false);
+                          }}
+                        >
+                          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="mb-4 hidden space-x-2 overflow-x-auto sm:flex">
+                  {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
+                    <TabButton
+                      key={tab}
+                      active={activeTab === tab}
+                      onClick={() => setActiveTab(tab)}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </TabButton>
+                  ))}
+                </div>
+
+                <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-700 sm:p-6">
+                  <h2 className="mb-4 text-xl font-semibold">
+                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                  </h2>
+                  {tabContent[activeTab].length === 0 && (
+                    <p className="text-gray-500 dark:text-gray-400">No {activeTab} found</p>
+                  )}
+                  {tabContent[activeTab].map((item, index) => (
+                    <ItemCard key={index} {...item} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
