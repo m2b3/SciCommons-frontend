@@ -21,13 +21,13 @@ const RelevantArticles: FC<RelevantArticlesProps> = ({ articleId }) => {
   );
 
   return (
-    <div className="rounded-lg border p-4 shadow-sm">
-      <h3 className="mb-4 text-lg font-bold">Relevant Articles</h3>
+    <div className="rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-lg font-bold dark:text-white">Relevant Articles</h3>
       {isPending &&
         Array.from({ length: 3 }).map((_, index) => <ArticleHighlightCardSkeleton key={index} />)}
       {data && data.data.length === 0 && (
-        <div className="rounded-md bg-white py-4">
-          <p className="text-gray-700">No relevant articles found.</p>
+        <div className="rounded-md bg-white py-4 dark:bg-gray-700">
+          <p className="text-gray-700 dark:text-gray-300">No relevant articles found.</p>
         </div>
       )}
       {data &&

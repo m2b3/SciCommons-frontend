@@ -2,10 +2,9 @@
 
 import React, { useEffect } from 'react';
 
-import { useParams } from 'next/navigation';
+import { toast } from 'sonner';
 
-import toast from 'react-hot-toast';
-
+import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import TabComponent from '@/components/communities/TabComponent';
 import { useAuthStore } from '@/stores/authStore';
@@ -15,8 +14,7 @@ import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDet
 
 type ActiveTab = 'Details' | 'FAQs';
 
-const ArticleSettings = () => {
-  const params = useParams<{ slug: string }>();
+const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
@@ -30,7 +28,6 @@ const ArticleSettings = () => {
     }
   );
 
-  // Toast notifications for UI Feedback
   useEffect(() => {
     if (error) {
       toast.error(`${error.response?.data.message}`);
@@ -38,7 +35,7 @@ const ArticleSettings = () => {
   }, [error]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col dark:bg-gray-900">
       <div className="self-start">
         <TabComponent<ActiveTab>
           tabs={['Details', 'FAQs']}
@@ -47,11 +44,11 @@ const ArticleSettings = () => {
         />
       </div>
       {activeTab === 'Details' && (
-        <div className="my-4 rounded bg-white px-8 py-4 shadow">
+        <div className="my-4 rounded bg-white px-8 py-4 shadow dark:bg-gray-800">
           <div className="mb-4 flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-3xl font-bold dark:text-white">
               Edit your
-              <span className="text-green-500"> Article </span>
+              <span className="text-green-500 dark:text-green-400"> Article </span>
               Details
             </h1>
           </div>
@@ -96,4 +93,4 @@ const ArticleSettings = () => {
   );
 };
 
-export default ArticleSettings;
+export default withAuth(ArticleSettings, 'article', (props) => props.params.slug);

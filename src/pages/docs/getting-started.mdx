@@ -1,26 +1,44 @@
 import { Steps, Tabs, Callout } from 'nextra/components'
 
-This section provides a comprehensive guide to setting up and running your project, which consists of a frontend implemented using Next.js and a backend using Django. You can find detailed info on why this stack is chosen in the “xyz” section.
+This section provides a comprehensive guide to setting up and running your project, which consists of a frontend implemented using Next.js and a backend using Django. You can find detailed info on why this stack is chosen below, along with prerequisites, installation steps, and troubleshooting tips.
+
+## Why This Tech Stack?
+
+Our project leverages a powerful combination of technologies for both frontend and backend development:
+
+### Frontend: Next.js, TailwindCSS, TypeScript
+
+- **Next.js:** Provides server-side rendering, static site generation, and excellent performance optimizations.
+- **TailwindCSS:** Offers utility-first CSS for rapid UI development.
+- **TypeScript:** Adds static typing to JavaScript, enhancing code quality and developer productivity.
+
+### Backend: Django with Django-Ninja
+
+- **Django:** A high-level Python web framework that encourages rapid development and clean, pragmatic design.
+- **Django-Ninja:** Adds fast API endpoints to Django, similar to FastAPI but integrated seamlessly with Django.
+
+This stack combines the best of both worlds: a modern, performant frontend with a robust, scalable backend. It allows for rapid development while maintaining code quality and performance.
 
 ## Prerequisites
 
 Ensure you have the following software and tools installed:
 
-- **Operating System:** Windows, macOS, or Linux
+### Operating System
+- Windows, macOS, or Linux
 
-- **Software:**
+### Software
+- Python 3.8+
+- Node.js 20+
+- Django 3.2+
+- Next.js 13+
+- Anaconda (for managing Python environments)
+- Git (for version control)
+- Docker (optional, for containerization)
 
-  - Python 3.8+
-  - Node.js 20+
-  - Django 3.2+
-  - Next.js 13+
-  - Anaconda
-  - Git
-  - Docker (optional)
+### Hardware
+- Minimum 8 GB RAM
+- 20 GB free disk space
 
-- **Hardware:**
-  - Minimum 8 GB RAM
-  - 20 GB free disk space
 
 ## Set Up the Backend (Django)
 <Steps>
@@ -204,13 +222,13 @@ yarn dev
 **Backend Tests:**
 
 ```shell copy
-python manage.py test
+poetry run python manage.py test
 ```
 
 **Frontend Tests:**
 
 ```shell copy
-npm test
+yarn test
 ```
 
 ## Troubleshooting

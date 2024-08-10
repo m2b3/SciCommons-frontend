@@ -9,5 +9,5 @@ import type { ArticleCreateSchema } from './articleCreateSchema';
 export type ArticlesApiCreateArticleBody = {
   details: ArticleCreateSchema;
   image_file?: Blob;
-  pdf_files: Blob[];
+  pdf_files?: Blob[];
 };

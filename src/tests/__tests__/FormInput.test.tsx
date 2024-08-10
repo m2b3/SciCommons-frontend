@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen } from '@testing-library/react';
 
-import FormInput from '@/components/FormInput';
+import FormInput from '@/components/common/FormInput';
 
 describe('FormInput', () => {
   const mockRegister = jest.fn();

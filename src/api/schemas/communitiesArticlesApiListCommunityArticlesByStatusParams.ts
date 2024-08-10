@@ -6,7 +6,7 @@
  */
 import type { ArticleStatus } from './articleStatus';
 
-export type CommunitiesApiArticlesListCommunityArticlesByStatusParams = {
+export type CommunitiesArticlesApiListCommunityArticlesByStatusParams = {
   status?: ArticleStatus | null;
   submitted_after?: string | null;
   submitted_before?: string | null;

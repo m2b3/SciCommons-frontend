@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { AxiosResponse } from 'axios';
 import { Plus, Trash2 } from 'lucide-react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
 import { CommunityOut } from '@/api/schemas';

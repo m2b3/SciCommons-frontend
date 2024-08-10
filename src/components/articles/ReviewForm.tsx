@@ -9,8 +9,8 @@ import {
   useArticlesReviewApiDeleteReview,
   useArticlesReviewApiUpdateReview,
 } from '@/api/reviews/reviews';
-import FormInput from '@/components/FormInput';
-import LabeledTooltip from '@/components/LabeledToolTip';
+import FormInput from '@/components/common/FormInput';
+import LabeledTooltip from '@/components/common/LabeledToolTip';
 import CommentEditor from '@/components/richtexteditor/CommentEditor';
 import { Ratings } from '@/components/ui/ratings';
 import { showErrorToast } from '@/lib/toastHelpers';

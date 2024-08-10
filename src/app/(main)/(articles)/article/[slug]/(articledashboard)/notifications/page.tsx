@@ -2,14 +2,11 @@
 
 import React from 'react';
 
-import { useParams } from 'next/navigation';
-
+import { withAuth } from '@/HOCs/withAuth';
 import Notifications from '@/components/common/Notifications';
 
-const ArticleNotifications: React.FC = () => {
-  const params = useParams<{ slug: string }>();
-
+const ArticleNotifications = ({ params }: { params: { slug: string } }) => {
   return <Notifications article_slug={params?.slug} />;
 };
 
-export default ArticleNotifications;
+export default withAuth(ArticleNotifications, 'article', (props) => props.params.slug);

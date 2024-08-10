@@ -44,7 +44,9 @@ export const articlesApiCreateArticle = (
   if (articlesApiCreateArticleBody.image_file !== undefined) {
     formData.append('image_file', articlesApiCreateArticleBody.image_file);
   }
-  articlesApiCreateArticleBody.pdf_files.forEach((value) => formData.append('pdf_files', value));
+  if (articlesApiCreateArticleBody.pdf_files !== undefined) {
+    articlesApiCreateArticleBody.pdf_files.forEach((value) => formData.append('pdf_files', value));
+  }
   formData.append('details', JSON.stringify(articlesApiCreateArticleBody.details));
 
   return customInstance<ArticleOut>(

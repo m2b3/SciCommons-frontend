@@ -1,6 +1,6 @@
 'use client';
 
-import { PlaceholdersAndVanishInput } from './ui/placeholders-and-vanish-input';
+import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
 
 const SearchBar = () => {
   const placeholders = [

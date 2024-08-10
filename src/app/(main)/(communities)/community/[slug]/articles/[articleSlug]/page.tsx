@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
-import toast from 'react-hot-toast';
-
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
@@ -16,6 +14,7 @@ import RelevantArticles from '@/components/articles/RelevantArticles';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
 import TabNavigation from '@/components/ui/tab-navigation';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 const CommunityArticleDisplayPage = () => {
@@ -28,7 +27,6 @@ const CommunityArticleDisplayPage = () => {
     params?.articleSlug || '',
     { community_name: params?.slug || '' },
     {
-      query: { enabled: !!accessToken },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
@@ -40,7 +38,7 @@ const CommunityArticleDisplayPage = () => {
     refetch: reviewsRefetch,
   } = useArticlesReviewApiListReviews(
     data?.data.id || 0,
-    { community_id: data?.data.community_article_status?.community.id || 0 },
+    { community_id: data?.data.community_article?.community.id || 0 },
     {
       query: { enabled: !!accessToken && !!data },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -49,13 +47,13 @@ const CommunityArticleDisplayPage = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message || 'An error occurred'}`);
+      showErrorToast(error);
     }
   }, [error]);
 
   useEffect(() => {
     if (reviewsError) {
-      toast.error(`${reviewsError.response?.data.message || 'An error occurred'}`);
+      showErrorToast(reviewsError);
     }
   }, [reviewsError]);
 
@@ -67,7 +65,7 @@ const CommunityArticleDisplayPage = () => {
           <ReviewForm
             articleId={data?.data.id || 0}
             refetch={reviewsRefetch}
-            communityId={data?.data.community_article_status?.community.id}
+            communityId={data?.data.community_article?.community.id}
           />
           {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
           {reviewsData &&
@@ -82,7 +80,7 @@ const CommunityArticleDisplayPage = () => {
       content: (
         <DiscussionForum
           articleId={data?.data.id || 0}
-          communityId={data?.data.community_article_status?.community.id}
+          communityId={data?.data.community_article?.community.id}
         />
       ),
     },
@@ -94,7 +92,7 @@ const CommunityArticleDisplayPage = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      showErrorToast(error);
     }
   }, [error]);
 
@@ -113,7 +111,7 @@ const CommunityArticleDisplayPage = () => {
         <div className="p-4">
           <RelevantArticles
             articleId={data?.data.id || 0}
-            communityId={data?.data.community_article_status?.community.id || 0}
+            communityId={data?.data.community_article?.community.id || 0}
           />
         </div>
       </div>

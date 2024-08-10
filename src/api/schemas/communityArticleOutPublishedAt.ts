@@ -5,4 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UserOutProfilePicUrl = string | null;
+export type CommunityArticleOutPublishedAt = string | null;

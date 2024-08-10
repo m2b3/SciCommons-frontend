@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
-import { useUsersApiGetMyArticles } from '@/api/users/users';
+import { useCommunitiesArticlesApiGetMyArticles } from '@/api/community-articles/community-articles';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import {
   Dialog,
@@ -36,7 +36,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
 
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
-  const { data, isPending, error } = useUsersApiGetMyArticles(
+  const { data, isPending, error } = useCommunitiesArticlesApiGetMyArticles(
     { status_filter: 'unsubmitted' },
     {
       query: {
@@ -89,7 +89,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
             )}
             {data &&
               data.data.items.map((article) => (
-                <div key={article.id} className="relative">
+                <div key={article.id} className="relative mx-auto max-w-3xl">
                   <ArticleCard key={article.id} article={article} />
                   <button
                     onClick={() => handleSubmitArticle(String(article.slug))}

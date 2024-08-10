@@ -4,6 +4,7 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { ReviewOutCommunityArticle } from './reviewOutCommunityArticle';
 import type { ReviewOutDeletedAt } from './reviewOutDeletedAt';
 import type { ReviewOutId } from './reviewOutId';
 import type { ReviewVersionSchema } from './reviewVersionSchema';
@@ -13,12 +14,16 @@ export interface ReviewOut {
   anonymous_name?: string;
   article_id: number;
   comments_count?: number;
+  community_article?: ReviewOutCommunityArticle;
   content: string;
   created_at: string;
   deleted_at?: ReviewOutDeletedAt;
   id?: ReviewOutId;
+  is_approved?: boolean;
   is_author?: boolean;
   rating: number;
+  /** @maxLength 10 */
+  review_type?: string;
   /** @maxLength 255 */
   subject: string;
   updated_at: string;

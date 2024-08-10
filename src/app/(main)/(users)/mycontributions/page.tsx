@@ -17,7 +17,7 @@ import {
 import { toast } from 'sonner';
 
 import {
-  useUsersApiGetArticles,
+  useUsersApiGetMyArticles,
   useUsersApiGetMyBookmarks,
   useUsersApiGetMyCommunities,
   useUsersApiGetMyFavorites,
@@ -93,7 +93,7 @@ const ContributionsPage: React.FC = () => {
     request: requestConfig,
   });
 
-  const { data: articlesData, error: articlesDataError } = useUsersApiGetArticles({
+  const { data: articlesData, error: articlesDataError } = useUsersApiGetMyArticles({
     request: requestConfig,
   });
 

@@ -11,5 +11,4 @@
 export interface ResetPasswordSchema {
   confirm_password: string;
   password: string;
-  token: string;
 }

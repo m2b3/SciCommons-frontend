@@ -24,13 +24,91 @@ import type {
   Message,
   PaginatedHashtagOut,
   PaginatedPostsResponse,
+  PermissionCheckOut,
   ReactionCountOut,
   ReactionIn,
+  UsersCommonApiCheckPermissionParams,
   UsersCommonApiGetHashtagsParams,
   UsersCommonApiListMyPostsParams,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
+/**
+ * @summary Check Permission
+ */
+export const usersCommonApiCheckPermission = (
+  params?: UsersCommonApiCheckPermissionParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PermissionCheckOut>(
+    { url: `/api/users/check-permission`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersCommonApiCheckPermissionQueryKey = (
+  params?: UsersCommonApiCheckPermissionParams
+) => {
+  return [`/api/users/check-permission`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersCommonApiCheckPermissionQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersCommonApiCheckPermission>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersCommonApiCheckPermissionParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiCheckPermission>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersCommonApiCheckPermissionQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersCommonApiCheckPermission>>> = ({
+    signal,
+  }) => usersCommonApiCheckPermission(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersCommonApiCheckPermission>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersCommonApiCheckPermissionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersCommonApiCheckPermission>>
+>;
+export type UsersCommonApiCheckPermissionQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Check Permission
+ */
+export const useUsersCommonApiCheckPermission = <
+  TData = Awaited<ReturnType<typeof usersCommonApiCheckPermission>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsersCommonApiCheckPermissionParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiCheckPermission>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersCommonApiCheckPermissionQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
 
 /**
  * @summary Toggle Bookmark

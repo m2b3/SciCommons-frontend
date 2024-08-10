@@ -2,38 +2,32 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { useParams } from 'next/navigation';
-
 import { toast } from 'sonner';
 
+import { withAuth } from '@/HOCs/withAuth';
 import {
-  useCommunitiesApiArticlesListCommunityArticlesByStatus,
-  useCommunitiesApiArticlesManageArticle,
+  useCommunitiesArticlesApiListCommunityArticlesByStatus,
+  useCommunitiesArticlesApiManageArticle,
 } from '@/api/community-articles/community-articles';
 import { ArticleOut, ArticleStatus } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import TabComponent from '@/components/communities/TabComponent';
 import { useAuthStore } from '@/stores/authStore';
 
-import ArticleAssessmentDetails from './ArticleAssessmentDetails';
-
 type Action = 'approve' | 'reject' | 'publish';
 
-const Submissions: React.FC = () => {
+const Submissions = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
-  const params = useParams<{ slug: string }>();
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const [activeTab, setActiveTab] = useState<ArticleStatus>('submitted');
-  // Set communityId and articleId`
-  const [selectedIds, setSelectedIds] = useState<{ communityId: number; articleId: number }>();
   const [actionInProgress, setActionInProgress] = useState<{
     action: Action;
     articleId: number | null;
   }>({ action: 'approve', articleId: null });
 
   const { data, isPending, error, refetch } =
-    useCommunitiesApiArticlesListCommunityArticlesByStatus(
+    useCommunitiesArticlesApiListCommunityArticlesByStatus(
       params?.slug || '',
       { status: activeTab.toLowerCase() as ArticleStatus },
       {
@@ -42,12 +36,9 @@ const Submissions: React.FC = () => {
       }
     );
 
-  const { mutate } = useCommunitiesApiArticlesManageArticle({
+  const { mutate } = useCommunitiesArticlesApiManageArticle({
     request: axiosConfig,
     mutation: {
-      onMutate: (data) => {
-        setActionInProgress({ action: data.action, articleId: data.articleId });
-      },
       onSuccess: (data) => {
         refetch();
         toast.success(`${data.data.message}`);
@@ -60,8 +51,8 @@ const Submissions: React.FC = () => {
     },
   });
 
-  const handleAction = (action: Action, articleId: number, communityId: number) => {
-    mutate({ communityId, articleId, action });
+  const handleAction = (action: Action, communityArticleId: number) => {
+    mutate({ communityArticleId, action });
   };
 
   useEffect(() => {
@@ -79,14 +70,8 @@ const Submissions: React.FC = () => {
       return (
         <>
           <button
-            className="mr-2 rounded-lg bg-green-500 px-4 py-2 text-xs text-white"
-            onClick={() =>
-              handleAction(
-                'approve',
-                Number(article.id),
-                Number(article.community_article_status?.community.id)
-              )
-            }
+            className="mr-2 rounded-lg bg-green-500 px-4 py-2 text-xs text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+            onClick={() => handleAction('approve', Number(article.community_article?.id))}
             disabled={
               actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
             }
@@ -96,14 +81,8 @@ const Submissions: React.FC = () => {
               : 'Approve'}
           </button>
           <button
-            className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white"
-            onClick={() =>
-              handleAction(
-                'reject',
-                Number(article.id),
-                Number(article.community_article_status?.community.id)
-              )
-            }
+            className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+            onClick={() => handleAction('reject', Number(article.community_article?.id))}
             disabled={
               actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
             }
@@ -118,26 +97,8 @@ const Submissions: React.FC = () => {
       return (
         <div className="flex space-x-2">
           <button
-            className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
-            onClick={() =>
-              setSelectedIds({
-                communityId: Number(article.community_article_status?.community.id),
-                articleId: Number(article.id),
-              })
-            }
-          >
-            View Details
-          </button>
-
-          <button
-            className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
-            onClick={() =>
-              handleAction(
-                'publish',
-                Number(article.id),
-                Number(article.community_article_status?.community.id)
-              )
-            }
+            className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            onClick={() => handleAction('publish', Number(article.community_article?.id))}
             disabled={
               actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
             }
@@ -147,20 +108,6 @@ const Submissions: React.FC = () => {
               : 'Publish'}
           </button>
         </div>
-      );
-    } else if (activeTab === 'under_review') {
-      return (
-        <button
-          className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white"
-          onClick={() =>
-            setSelectedIds({
-              communityId: Number(article.community_article_status?.community.id),
-              articleId: Number(article.id),
-            })
-          }
-        >
-          View Details
-        </button>
       );
     }
     return null;
@@ -173,8 +120,10 @@ const Submissions: React.FC = () => {
 
     if (data && data.data.items.length === 0) {
       return (
-        <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg">
-          <h1 className="text-lg font-semibold text-gray-500">No articles found</h1>
+        <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg dark:bg-gray-800 dark:shadow-gray-700/50">
+          <h1 className="text-lg font-semibold text-gray-500 dark:text-gray-400">
+            No articles found
+          </h1>
         </div>
       );
     }
@@ -193,7 +142,7 @@ const Submissions: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col dark:bg-gray-900">
       <div className="self-start">
         <TabComponent
           tabs={['submitted', 'under_review', 'accepted', 'published', 'rejected']}
@@ -201,21 +150,9 @@ const Submissions: React.FC = () => {
           setActiveTab={setActiveTab}
         />
       </div>
-      <div className="my-4 flex flex-col space-y-4">
-        {/* When activeTab is either under_review or accepted & selectedIds is available */}
-        {/* Render the ArticleAssessmentDetails component */}
-        {selectedIds ? (
-          <ArticleAssessmentDetails
-            articleId={selectedIds.articleId}
-            communityId={selectedIds.communityId}
-            onBack={() => setSelectedIds(undefined)}
-          />
-        ) : (
-          renderArticles()
-        )}
-      </div>
+      <div className="my-4 flex flex-col space-y-4">{renderArticles()}</div>
     </div>
   );
 };
 
-export default Submissions;
+export default withAuth(Submissions, 'community', (props) => props.params.slug);

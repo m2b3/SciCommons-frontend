@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 
 import { BarChart2, Bell, PieChart, Send, Settings } from 'lucide-react';
 
-import Sidebar from '@/components/Sidebar';
+import Sidebar from '@/components/common/Sidebar';
 
 export default function ArticleAuthorLayout({ children }: { children: React.ReactNode }) {
   const params = useParams<{ slug: string }>();

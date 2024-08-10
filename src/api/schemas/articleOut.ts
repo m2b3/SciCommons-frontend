@@ -6,7 +6,7 @@
  */
 import type { ArticleOutArticleImageUrl } from './articleOutArticleImageUrl';
 import type { ArticleOutArticleLink } from './articleOutArticleLink';
-import type { ArticleOutCommunityArticleStatus } from './articleOutCommunityArticleStatus';
+import type { ArticleOutCommunityArticle } from './articleOutCommunityArticle';
 import type { ArticleOutId } from './articleOutId';
 import type { ArticleOutSlug } from './articleOutSlug';
 import type { FAQSchema } from './fAQSchema';
@@ -20,7 +20,7 @@ export interface ArticleOut {
   article_link?: ArticleOutArticleLink;
   article_pdf_urls: string[];
   authors: Tag[];
-  community_article_status: ArticleOutCommunityArticleStatus;
+  community_article: ArticleOutCommunityArticle;
   created_at: string;
   faqs: FAQSchema[];
   id?: ArticleOutId;

@@ -4,15 +4,25 @@ import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MessageCircle, Pencil, ThumbsDown, ThumbsUp } from 'lucide-react';
-import toast from 'react-hot-toast';
+import {
+  CheckCircle,
+  MessageCircle,
+  Pencil,
+  Shield,
+  ThumbsDown,
+  ThumbsUp,
+  UserCircle,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
+import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
 import { ReviewOut } from '@/api/schemas';
 import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
@@ -51,16 +61,34 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
         refetchReactions();
       },
       onError: (error) => {
-        toast.error(error.response?.data.message || 'An error occurred');
+        showErrorToast(error);
       },
     },
   });
+
+  const { mutate: approveArticle, isPending: approveArticlePending } =
+    useCommunitiesArticlesApiApproveArticle({
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      mutation: {
+        onSuccess: (data) => {
+          refetch && refetch();
+          toast.success(data.data.message);
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      },
+    });
 
   const handleReaction = (reaction: Reaction) => {
     if (reaction === 'upvote')
       mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: 1 } });
     else if (reaction === 'downvote')
       mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: -1 } });
+  };
+
+  const handleApprove = () => {
+    approveArticle({ communityArticleId: review.community_article?.id || 0 });
   };
 
   const currentVersion =
@@ -72,6 +100,31 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           created_at: review.updated_at,
         }
       : review.versions[selectedVersion - 1];
+
+  const getReviewTypeTag = (reviewType: string) => {
+    switch (reviewType) {
+      case 'reviewer':
+        return (
+          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800">
+            <UserCircle className="mr-1 h-3 w-3" />
+            Reviewer
+          </span>
+        );
+      case 'moderator':
+        return (
+          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+            <Shield className="mr-1 h-3 w-3" />
+            Moderator
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const canApprove =
+    review.community_article?.reviewer_ids?.includes(review.user.id || 0) ||
+    review.community_article?.moderator_id === review.user.id;
 
   return (
     <>
@@ -109,6 +162,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                       className="cursor-pointer hover:text-green-500"
                     />
                   )}
+                  {getReviewTypeTag(review.review_type || '')}
                 </span>
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -200,6 +254,20 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   {review.comments_count} comments
                 </button>
               </div>
+              {canApprove && (
+                <button
+                  onClick={handleApprove}
+                  disabled={review.is_approved || approveArticlePending}
+                  className={`flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                    review.is_approved
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                  }`}
+                >
+                  <CheckCircle className="mr-1 h-4 w-4" />
+                  {review.is_approved ? 'Approved' : 'Approve'}
+                </button>
+              )}
             </div>
           </div>
         </div>

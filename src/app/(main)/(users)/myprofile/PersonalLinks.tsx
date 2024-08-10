@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
-import FormInput from '@/components/FormInput';
+import FormInput from '@/components/common/FormInput';
 
 import { IProfileForm } from './page';
 

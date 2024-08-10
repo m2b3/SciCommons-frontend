@@ -5,4 +5,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AssessorSchemaApproved = boolean | null;
+export interface PermissionCheckOut {
+  has_permission: boolean;
+}

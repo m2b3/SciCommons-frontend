@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { Users } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import {
   useCommunitiesApiInvitationGetCommunityInvitationDetails,

@@ -2,11 +2,10 @@
 
 import React, { useEffect } from 'react';
 
-import { useParams } from 'next/navigation';
-
 import dayjs from 'dayjs';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
+import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesMembersApiGetCommunityMembers } from '@/api/community-members/community-members';
 import TabComponent from '@/components/communities/TabComponent';
 import { useAuthStore } from '@/stores/authStore';
@@ -15,11 +14,8 @@ import UsersListItem from './UsersListItem';
 
 type ActiveTab = 'Members' | 'Moderators' | 'Reviewers' | 'Admins';
 
-// Todo: 1. Replace profile picture with actual profile picture
-// Todo: 2. Optimize the code to reduce the number of lines
-const Roles: React.FC = () => {
-  const params = useParams<{ slug: string }>();
-
+// Todo: Optimize the code to reduce the number of lines
+const Roles = ({ params }: { params: { slug: string } }) => {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Members');
 
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -159,7 +155,7 @@ const Roles: React.FC = () => {
   );
 };
 
-export default Roles;
+export default withAuth(Roles, 'community', (props) => props.params.slug);
 
 const UsersListItemSkeleton: React.FC = () => {
   return (

@@ -6,14 +6,14 @@ import { useRouter } from 'next/navigation';
 
 import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useCommunitiesApiCreateCommunity } from '@/api/communities/communities';
 import { CreateCommunityDetails } from '@/api/schemas';
-import FormInput from '@/components/FormInput';
-import ImageUpload from '@/components/ImageUpload';
-import LabeledTooltip from '@/components/LabeledToolTip';
-import MultiLabelSelector from '@/components/MultiLabelSelector';
+import FormInput from '@/components/common/FormInput';
+import ImageUpload from '@/components/common/ImageUpload';
+import LabeledTooltip from '@/components/common/LabeledToolTip';
+import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
 import { useAuthStore } from '@/stores/authStore';
 

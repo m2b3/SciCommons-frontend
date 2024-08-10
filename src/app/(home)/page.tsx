@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 import cookies from 'js-cookie';
 
-import Banner from '@/components/Banner';
-import Footer from '@/components/Footer';
-import NavBar from '@/components/NavBar';
+import Banner from '@/components/common/Banner';
+import Footer from '@/components/common/Footer';
+import NavBar from '@/components/common/NavBar';
 import {
   Accordion,
   AccordionContent,

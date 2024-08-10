@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import { Toaster as SonnerToaster } from 'sonner';
 
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
-import BottomBar from '@/components/BottomBar';
+import BottomBar from '@/components/common/BottomBar';
 
 import './globals.css';
 
@@ -59,7 +59,7 @@ export default function RootLayout({
           </ThemeProvider>
           <BottomBar />
           <Toaster />
-          <SonnerToaster richColors />
+          <SonnerToaster richColors position="top-center" />
         </body>
       </html>
     </ReactQueryClientProvider>

@@ -23,7 +23,7 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // light mode
+        // light mode (for tremor)
         tremor: {
           brand: {
             faint: colors.blue[50],
@@ -53,7 +53,7 @@ const config: Config = {
             inverted: colors.white,
           },
         },
-        // dark mode
+        // dark mode (for tremor)
         'dark-tremor': {
           brand: {
             faint: '#0B1229',
@@ -304,7 +304,6 @@ const config: Config = {
       });
     }),
     require('@headlessui/tailwindcss'),
-    // require('nightwind'),
     plugin(function ({ addUtilities }: PluginAPI) {
       const newUtilities = {
         '.res-text-xs': {

@@ -33,9 +33,6 @@ const ImageUpload = <TFieldValues extends FieldValues>({
     defaultValue: undefined,
   });
 
-  // const [url, setUrl] = useState<string>('');
-  // const [urlError, setUrlError] = useState<string | null>(null);
-
   const onDrop = (acceptedFiles: File[], fileRejections: FileRejection[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
@@ -65,10 +62,8 @@ const ImageUpload = <TFieldValues extends FieldValues>({
   };
 
   const uploadFile = (fileObj: FileObj) => {
-    // Assume a FileReader to simulate the upload process
     const reader = new FileReader();
     reader.onloadend = () => {
-      // Simulate upload completion
       setTimeout(() => {
         onChange({ ...fileObj, progress: 100, status: 'completed' });
       }, 1000);
@@ -78,7 +73,6 @@ const ImageUpload = <TFieldValues extends FieldValues>({
     };
     reader.readAsArrayBuffer(fileObj.file);
 
-    // Simulate upload progress
     const uploadSimulation = () => {
       let progress = 0;
       const interval = setInterval(() => {
@@ -94,34 +88,6 @@ const ImageUpload = <TFieldValues extends FieldValues>({
     uploadSimulation();
   };
 
-  // const handleUrlUpload = () => {
-  //   if (!url) {
-  //     setUrlError('Please enter a valid URL.');
-  //     return;
-  //   }
-
-  //   axios
-  //     .get(url, { responseType: 'blob' })
-  //     .then((response) => {
-  //       const file = new File([response.data], 'image_from_url', { type: response.data.type });
-  //       if (file.size > 2 * 1024 * 1024) {
-  //         setFileObj({
-  //           file,
-  //           progress: 0,
-  //           status: 'error',
-  //           errorMessage: 'File size exceeds 2 MB',
-  //         });
-  //       } else {
-  //         const newFileObj: FileObj = { file, progress: 0, status: 'uploading' };
-  //         setFileObj(newFileObj);
-  //         uploadFile(newFileObj);
-  //       }
-  //     })
-  //     .catch(() => {
-  //       setUrlError('Failed to fetch the image from URL.');
-  //     });
-  // };
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { 'image/png': [], 'image/jpeg': [], 'image/jpg': [], 'image/webp': [] },
@@ -129,15 +95,14 @@ const ImageUpload = <TFieldValues extends FieldValues>({
   });
 
   return (
-    <div className="mt-4 w-full rounded bg-white">
+    <div className="mt-4 w-full rounded bg-white dark:bg-gray-800">
       <LabeledTooltip label={label} info={info} />
       <div
         {...getRootProps()}
-        // if there is an error make the border red
         className={clsx(
-          'cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-6 text-center transition-colors duration-200 ease-in-out hover:bg-gray-100',
+          'cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-6 text-center transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700',
           {
-            'border-red-500': error,
+            'border-red-500 dark:border-red-400': error,
           }
         )}
       >
@@ -151,19 +116,24 @@ const ImageUpload = <TFieldValues extends FieldValues>({
               className="mb-4 rounded"
               alt="Default"
             />
-            <p className="text-center">
+            <p className="text-center dark:text-gray-300">
               Drop your image to replace or{' '}
-              <span className="cursor-pointer text-blue-500">Browse</span>
+              <span className="cursor-pointer text-blue-500 dark:text-blue-400">Browse</span>
             </p>
-            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Supports: PNG, JPG, JPEG, WEBP
+            </p>
           </div>
         ) : (
           <>
             <Image src="/imageupload.png" width={64} height={64} className="mx-auto" alt="Upload" />
-            <p>
-              Drop your image here, or <span className="cursor-pointer text-blue-500">Browse</span>
+            <p className="dark:text-gray-300">
+              Drop your image here, or{' '}
+              <span className="cursor-pointer text-blue-500 dark:text-blue-400">Browse</span>
             </p>
-            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Supports: PNG, JPG, JPEG, WEBP
+            </p>
           </>
         )}
       </div>
@@ -178,7 +148,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
               className="mr-2 rounded"
             />
             <div className="flex-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm dark:text-gray-300">
                 <span>{fileObj.file.name}</span>
                 <span>
                   {fileObj.status === 'uploading'
@@ -188,7 +158,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
                       : 'Completed'}
                 </span>
               </div>
-              <div className="mt-1 h-2 rounded bg-gray-200">
+              <div className="mt-1 h-2 rounded bg-gray-200 dark:bg-gray-600">
                 <div
                   className={`h-2 rounded ${fileObj.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`}
                   style={{ width: `${fileObj.progress}%` }}
@@ -202,24 +172,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
           </div>
         </div>
       )}
-      {/* <div className="mt-4 text-center">or</div>
-      <div className="mt-4 flex items-center">
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => {
-            setUrl(e.target.value);
-            setUrlError(null);
-          }}
-          placeholder="Add file URL"
-          className="mr-2 flex-1 rounded border p-2"
-        />
-        <button onClick={handleUrlUpload} className="rounded bg-gray-500 px-4 py-2 text-white">
-          Upload
-        </button>
-      </div>
-      {urlError && <div className="mt-2 text-sm text-red-500">{urlError}</div>} */}
-      {error && <div className="mt-2 text-sm text-red-500">{error.message}</div>}
+      {error && <div className="mt-2 text-sm text-red-500 dark:text-red-400">{error.message}</div>}
     </div>
   );
 };

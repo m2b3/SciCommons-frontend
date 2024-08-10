@@ -4,7 +4,7 @@ import React from 'react';
 
 import Link from 'next/link';
 
-import GifReloader from '@/components/GifReloader';
+import GifReloader from '@/components/common/GifReloader';
 
 const SignUpSuccess = () => {
   return (

@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import clsx from 'clsx';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useCommunitiesApiArticlesSubmitArticle } from '@/api/community-articles/community-articles';
-import FormInput from '@/components/FormInput';
-import { ErrorMessage } from '@/constants';
+import { useCommunitiesArticlesApiSubmitArticle } from '@/api/community-articles/community-articles';
+import FormInput from '@/components/common/FormInput';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface FormValues {
@@ -16,8 +16,7 @@ interface FormValues {
   note: string;
 }
 
-const SubmitToCommunity = () => {
-  const params = useParams<{ slug: string }>();
+const SubmitToCommunity = ({ slug }: { slug: string }) => {
   const searchParams = useSearchParams();
   const communityName = searchParams?.get('name');
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -30,7 +29,7 @@ const SubmitToCommunity = () => {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const { mutate, isSuccess, isPending, error } = useCommunitiesApiArticlesSubmitArticle({
+  const { mutate, isPending } = useCommunitiesArticlesApiSubmitArticle({
     request: axiosConfig,
   });
 
@@ -42,34 +41,21 @@ const SubmitToCommunity = () => {
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     mutate(
-      { articleSlug: params?.slug || '', communityName: data.communityName },
+      { articleSlug: slug || '', communityName: data.communityName },
       {
         onSuccess: () => {
           reset();
           toast.success('Article submitted successfully');
         },
         onError: (error) => {
-          toast.error(`${error.response?.data.message}` || ErrorMessage);
+          showErrorToast(error);
         },
       }
     );
   };
 
-  // Toast messages for success and error
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Article submitted successfully');
-    }
-  }, [isSuccess]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(`${error.response?.data.message}`);
-    }
-  }, [error]);
-
   return (
-    <div className="my-4 rounded-lg bg-white p-4 shadow-md">
+    <div className="my-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
         <FormInput<FormValues>
           label="Enter the community name"
@@ -93,13 +79,15 @@ const SubmitToCommunity = () => {
           textArea={true}
         />
         <div className="flex justify-end space-x-4">
-          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
             Cancel
           </button>
           <button
             className={clsx(
-              'rounded-md px-4 py-2 text-white hover:bg-green-600',
-              isPending ? 'bg-gray-400' : 'bg-green-500'
+              'rounded-md px-4 py-2 text-white',
+              isPending
+                ? 'bg-gray-400 dark:bg-gray-500'
+                : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
             )}
             disabled={isPending}
           >

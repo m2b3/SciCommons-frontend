@@ -10,8 +10,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
-import FormInput from '@/components/FormInput';
 import Button from '@/components/common/Button';
+import FormInput from '@/components/common/FormInput';
 import { ErrorMessage } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -38,7 +38,7 @@ const LoginForm: React.FC = () => {
       onSuccess: (data) => {
         toast.success('Logged in successfully');
         setAccessToken(data.data.token);
-        router.push('/');
+        router.back();
       },
       onError: (err) => {
         toast.error(err.response?.data.message || ErrorMessage);

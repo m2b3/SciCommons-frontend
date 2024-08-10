@@ -20,13 +20,13 @@ import { useAuthStore } from '@/stores/authStore';
 
 const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
+  const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params.slug,
     {},
     {
-      query: { enabled: !!accessToken },
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: axiosConfig,
     }
   );
 

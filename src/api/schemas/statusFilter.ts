@@ -9,6 +9,11 @@ export type StatusFilter = (typeof StatusFilter)[keyof typeof StatusFilter];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const StatusFilter = {
-  unsubmitted: 'unsubmitted',
+  submitted: 'submitted',
+  approved: 'approved',
+  under_review: 'under_review',
+  accepted: 'accepted',
+  rejected: 'rejected',
   published: 'published',
+  unsubmitted: 'unsubmitted',
 } as const;

@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 
 import { CheckCircle, FileText } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useCommunitiesMembersApiManageCommunityMember } from '@/api/community-members/community-members';
 import {

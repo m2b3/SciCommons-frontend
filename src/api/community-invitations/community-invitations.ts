@@ -362,25 +362,27 @@ export const useCommunitiesApiInvitationRespondToEmailInvitation = <
  * @summary Get Community Invitations
  */
 export const communitiesApiInvitationGetCommunityInvitations = (
-  communityId: number,
+  communityName: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<InvitationDetails[]>(
-    { url: `/api/communities/${communityId}/invitations`, method: 'GET', signal },
+    { url: `/api/communities/${communityName}/invitations`, method: 'GET', signal },
     options
   );
 };
 
-export const getCommunitiesApiInvitationGetCommunityInvitationsQueryKey = (communityId: number) => {
-  return [`/api/communities/${communityId}/invitations`] as const;
+export const getCommunitiesApiInvitationGetCommunityInvitationsQueryKey = (
+  communityName: string
+) => {
+  return [`/api/communities/${communityName}/invitations`] as const;
 };
 
 export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
   TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
   TError = ErrorType<Message>,
 >(
-  communityId: number,
+  communityName: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -396,14 +398,14 @@ export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
 
   const queryKey =
     queryOptions?.queryKey ??
-    getCommunitiesApiInvitationGetCommunityInvitationsQueryKey(communityId);
+    getCommunitiesApiInvitationGetCommunityInvitationsQueryKey(communityName);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>
   > = ({ signal }) =>
-    communitiesApiInvitationGetCommunityInvitations(communityId, requestOptions, signal);
+    communitiesApiInvitationGetCommunityInvitations(communityName, requestOptions, signal);
 
-  return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
+  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
     TError,
     TData
@@ -422,7 +424,7 @@ export const useCommunitiesApiInvitationGetCommunityInvitations = <
   TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
   TError = ErrorType<Message>,
 >(
-  communityId: number,
+  communityName: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -435,7 +437,7 @@ export const useCommunitiesApiInvitationGetCommunityInvitations = <
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions(
-    communityId,
+    communityName,
     options
   );
 

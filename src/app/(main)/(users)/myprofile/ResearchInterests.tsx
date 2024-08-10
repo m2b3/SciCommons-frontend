@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Controller, useFormContext } from 'react-hook-form';
 
-import MultiLabelSelector from '@/components/MultiLabelSelector';
+import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 
 interface ResearchInterestsProps {
   editMode: boolean;

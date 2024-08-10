@@ -3,14 +3,14 @@
 import React from 'react';
 
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useUsersApiAuthResetPassword } from '@/api/users-auth/users-auth';
-import FormInput from '@/components/FormInput';
 import Button from '@/components/common/Button';
+import FormInput from '@/components/common/FormInput';
 import { ErrorMessage } from '@/constants';
 
 interface IResetPasswordForm {
@@ -18,10 +18,8 @@ interface IResetPasswordForm {
   confirmPassword: string;
 }
 
-const ResetPasswordForm: React.FC = () => {
+const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
   const router = useRouter();
-  const params = useParams<{ token: string }>();
-
   const {
     register,
     handleSubmit,
@@ -45,10 +43,10 @@ const ResetPasswordForm: React.FC = () => {
 
   const onSubmit = (data: IResetPasswordForm) => {
     mutate({
+      token: params.token,
       data: {
         password: data.password,
         confirm_password: data.confirmPassword,
-        token: params?.token || '',
       },
     });
   };

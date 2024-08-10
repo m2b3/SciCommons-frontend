@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const TruncateText = ({
   text,
@@ -11,14 +11,14 @@ const TruncateText = ({
 }) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const textRef = useRef(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const checkTruncation = () => {
       if (textRef.current) {
         const lineHeight = parseInt(window.getComputedStyle(textRef.current).lineHeight);
         const maxHeight = lineHeight * maxLines;
-        setIsTruncated((textRef.current as HTMLElement).scrollHeight > maxHeight);
+        setIsTruncated(textRef.current.scrollHeight > maxHeight);
       }
     };
 
@@ -32,8 +32,13 @@ const TruncateText = ({
       <p
         ref={textRef}
         className={`${
-          !isExpanded && isTruncated ? `line-clamp-${maxLines}` : ''
+          !isExpanded && isTruncated ? 'overflow-hidden' : ''
         } text-gray-700 dark:text-gray-300`}
+        style={{
+          display: '-webkit-box',
+          WebkitLineClamp: !isExpanded && isTruncated ? maxLines : 'unset',
+          WebkitBoxOrient: 'vertical',
+        }}
       >
         {text}
       </p>

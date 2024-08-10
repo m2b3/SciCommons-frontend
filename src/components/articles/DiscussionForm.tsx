@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useArticlesDiscussionApiCreateDiscussion } from '@/api/discussions/discussions';
-import FormInput from '@/components/FormInput';
+import FormInput from '@/components/common/FormInput';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';

@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { useParams } from 'next/navigation';
+import { toast } from 'sonner';
 
-import toast from 'react-hot-toast';
-
+import { withAuth } from '@/HOCs/withAuth';
 import {
   useCommunitiesApiJoinGetJoinRequests,
   useCommunitiesApiJoinManageJoinRequest,
@@ -14,10 +13,9 @@ import { useAuthStore } from '@/stores/authStore';
 
 import RequestListItem, { RequestListItemSkeleton } from './RequestListItem';
 
-const Requests = () => {
+const Requests = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
-  const params = useParams<{ slug: string }>();
 
   const { data, error, isSuccess, isPending, refetch } = useCommunitiesApiJoinGetJoinRequests(
     params?.slug || '',
@@ -117,4 +115,4 @@ const Requests = () => {
   );
 };
 
-export default Requests;
+export default withAuth(Requests, 'community', (props) => props.params.slug);

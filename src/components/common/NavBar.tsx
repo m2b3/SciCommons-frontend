@@ -9,7 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import Cookies from 'js-cookie';
 import { Bell, DownloadIcon, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import {
   DropdownMenu,
@@ -33,6 +33,7 @@ const NavBar: React.FC = () => {
     { href: '/articles', label: 'Articles' },
     { href: '/communities', label: 'Communities' },
     { href: '/posts', label: 'Posts' },
+    { href: '/about', label: 'About' },
   ];
 
   return (

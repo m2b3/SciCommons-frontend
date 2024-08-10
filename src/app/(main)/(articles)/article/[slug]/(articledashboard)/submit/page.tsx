@@ -2,6 +2,7 @@
 
 import React, { Suspense } from 'react';
 
+import { withAuth } from '@/HOCs/withAuth';
 import TabComponent from '@/components/communities/TabComponent';
 
 import ArticleSubmissionStatus from './ArticleSubmissionStatus';
@@ -9,14 +10,14 @@ import SubmitToCommunity from './SubmitToCommunity';
 
 type ActiveTab = 'Submit' | 'Status';
 
-const SubmitArticleToCommunity: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState<ActiveTab>('Status');
+const SubmitArticleToCommunity = ({ params }: { params: { slug: string } }) => {
+  const [activeTab, setActiveTab] = React.useState<ActiveTab>('Submit');
 
   return (
     <div className="flex flex-col">
       <div className="self-start">
         <TabComponent<ActiveTab>
-          tabs={['Status', 'Submit']}
+          tabs={['Submit', 'Status']}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
@@ -24,11 +25,11 @@ const SubmitArticleToCommunity: React.FC = () => {
       {activeTab === 'Status' && <ArticleSubmissionStatus />}
       {activeTab === 'Submit' && (
         <Suspense>
-          <SubmitToCommunity />
+          <SubmitToCommunity slug={params.slug} />
         </Suspense>
       )}
     </div>
   );
 };
 
-export default SubmitArticleToCommunity;
+export default withAuth(SubmitArticleToCommunity, 'article', (props) => props.params.slug);

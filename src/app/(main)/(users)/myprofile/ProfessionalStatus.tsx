@@ -3,7 +3,7 @@ import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
 
-import FormInput from '@/components/FormInput';
+import FormInput from '@/components/common/FormInput';
 
 import { IProfileForm } from './page';
 

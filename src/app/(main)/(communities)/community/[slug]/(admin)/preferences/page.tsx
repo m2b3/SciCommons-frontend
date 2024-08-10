@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 
+import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import TabComponent from '@/components/communities/TabComponent';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -48,4 +49,4 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default Preferences;
+export default withAuth(Preferences, 'community', (props) => props.params.slug);

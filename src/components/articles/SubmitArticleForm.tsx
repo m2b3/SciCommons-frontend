@@ -12,10 +12,10 @@ import {
   UseFormRegister,
 } from 'react-hook-form';
 
-import FileUpload from '@/components/FileUpload';
-import FormInput from '@/components/FormInput';
-import ImageUpload from '@/components/ImageUpload';
-import MultiLabelSelector from '@/components/MultiLabelSelector';
+import FileUpload from '@/components/common/FileUpload';
+import FormInput from '@/components/common/FormInput';
+import ImageUpload from '@/components/common/ImageUpload';
+import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { SubmitArticleFormValues } from '@/types';
 
 import SearchComponent from './SearchComponent';

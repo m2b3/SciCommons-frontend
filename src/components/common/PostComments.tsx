@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 import { ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import {
   usePostsApiCreateComment,

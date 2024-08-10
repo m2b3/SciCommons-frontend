@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { Send } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { usePostsApiCreatePost } from '@/api/posts/posts';
 import { HashtagsList } from '@/constants/common.constants';

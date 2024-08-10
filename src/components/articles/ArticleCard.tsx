@@ -19,7 +19,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
         <Link
           href={
             forCommunity
-              ? `/community/${article.community_article_status?.community.name}/articles/${article.slug}`
+              ? `/community/${article.community_article?.community.name}/articles/${article.slug}`
               : `/article/${article.slug}`
           }
         >
@@ -34,7 +34,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
           Authors: {article.authors.map((author) => author.label).join(', ')}
         </p>
         <p className="mt-1 truncate text-gray-500 dark:text-gray-400">
-          Published Community/Journal: {article.community_article_status?.community.name}
+          Published Community/Journal: {article.community_article?.community.name}
         </p>
         <div className="mt-2 flex flex-wrap">
           {article.keywords.map((keyword, index) => (

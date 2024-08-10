@@ -407,12 +407,13 @@ export const useUsersApiAuthRequestReset = <
  * @summary Reset Password
  */
 export const usersApiAuthResetPassword = (
+  token: string,
   resetPasswordSchema: BodyType<ResetPasswordSchema>,
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Message>(
     {
-      url: `/api/users/reset-password`,
+      url: `/api/users/reset-password/${token}`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: resetPasswordSchema,
@@ -428,25 +429,25 @@ export const getUsersApiAuthResetPasswordMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
     TError,
-    { data: BodyType<ResetPasswordSchema> },
+    { token: string; data: BodyType<ResetPasswordSchema> },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
   TError,
-  { data: BodyType<ResetPasswordSchema> },
+  { token: string; data: BodyType<ResetPasswordSchema> },
   TContext
 > => {
   const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
-    { data: BodyType<ResetPasswordSchema> }
+    { token: string; data: BodyType<ResetPasswordSchema> }
   > = (props) => {
-    const { data } = props ?? {};
+    const { token, data } = props ?? {};
 
-    return usersApiAuthResetPassword(data, requestOptions);
+    return usersApiAuthResetPassword(token, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -468,14 +469,14 @@ export const useUsersApiAuthResetPassword = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
     TError,
-    { data: BodyType<ResetPasswordSchema> },
+    { token: string; data: BodyType<ResetPasswordSchema> },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
   TError,
-  { data: BodyType<ResetPasswordSchema> },
+  { token: string; data: BodyType<ResetPasswordSchema> },
   TContext
 > => {
   const mutationOptions = getUsersApiAuthResetPasswordMutationOptions(options);

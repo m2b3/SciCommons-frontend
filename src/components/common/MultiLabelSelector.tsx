@@ -33,13 +33,13 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
       <div>
         <label className="mb-2 flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
-          <span className="ml-2 cursor-pointer text-gray-400 dark:text-gray-500">
+          <span className="ml-2 cursor-pointer text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <Info size={16} />
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
                   <p>{tooltipText}</p>
                 </TooltipContent>
               </Tooltip>
@@ -60,13 +60,13 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
           }
         />
         {fieldState.error && (
-          <p className="mt-1 text-sm text-red-500">{fieldState.error.message}</p>
+          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldState.error.message}</p>
         )}
       </div>
     );
   }
 );
 
-MultiLabelSelector.displayName = 'MultiLabelSelector'; // Add display name to the component
+MultiLabelSelector.displayName = 'MultiLabelSelector';
 
 export default MultiLabelSelector;
