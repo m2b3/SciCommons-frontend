@@ -3,12 +3,13 @@
 import React, { useEffect } from 'react';
 
 import { YooptaContentValue } from '@yoopta/editor';
-import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import SplitScreenLayout from '@/components/common/SplitScreenLayout';
 import TabNavigation from '@/components/ui/tab-navigation';
 import useStore from '@/hooks/useStore';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import AssessmentsList from './AssessmentsList';
@@ -31,7 +32,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      showErrorToast(error);
     }
   }, [error]);
 
@@ -139,4 +140,4 @@ const Community = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default Community;
+export default withAuthRedirect(Community, { requireAuth: true });

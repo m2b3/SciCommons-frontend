@@ -9,10 +9,11 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
-import { ErrorMessage } from '@/constants';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ILoginForm {
@@ -38,10 +39,10 @@ const LoginForm: React.FC = () => {
       onSuccess: (data) => {
         toast.success('Logged in successfully');
         setAccessToken(data.data.token);
-        router.back();
+        router.back(); // Todo: Redirect to previous page but not when the previous page was auth-related
       },
       onError: (err) => {
-        toast.error(err.response?.data.message || ErrorMessage);
+        showErrorToast(err);
       },
     },
   });
@@ -134,4 +135,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default withAuthRedirect(LoginForm);

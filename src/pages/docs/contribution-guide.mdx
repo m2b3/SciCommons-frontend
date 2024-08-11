@@ -1,35 +1,59 @@
-# Contributing to SciCommons
+# Contributing to Our Project
 
-First off, thank you for considering contributing to SciCommons! It's people like you that make CoolProject such a great tool for everyone. This document provides guidelines for contributing to CoolProject.
+Thank you for your interest in contributing to our project! We have two main repositories: one for the frontend and one for the backend. This guide will help you contribute to both.
+
+## Project Structure
+
+Our project is divided into two main repositories:
+
+1. Frontend: https://github.com/m2b3/SciCommons-frontend
+2. Backend: https://github.com/m2b3/SciCommons-backend
 
 ## Code of Conduct
 
-By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please report unacceptable behavior to coolproject@example.com.
+By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md) in both repositories.
 
 ## Getting Started
 
-1. Fork the repository on GitHub
-2. Clone your fork locally:
+### For Frontend Development
+
+1. Fork the frontend repository
+2. Clone your fork:
    ```
-   git clone https://github.com/your-username/coolproject.git
+   git clone https://github.com/m2b3/SciCommons-frontend.git
    ```
 3. Set up the development environment:
    ```
-   cd coolproject
-   npm install
+   cd frontend
+   yarn install
    ```
 4. Create a branch for your changes:
    ```
    git checkout -b your-branch-name
    ```
 
-## How Can I Contribute?
+### For Backend Development
+
+1. Fork the backend repository
+2. Clone your fork:
+   ```
+   git clone https://github.com/m2b3/SciCommons-backend.git
+   ```
+3. Set up the development environment:
+   ```
+   cd backend
+   ```
+   Follow the instructions in the README.md file to set up the backend environment.
+4. Create a branch for your changes:
+   ```
+   git checkout -b your-branch-name
+   ```
+
+## How to Contribute
 
 ### Reporting Bugs
 
-Before creating bug reports, please check the issue tracker as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible.
-
-**Bug Report Template:**
+Before creating bug reports, please check both repositories' issue trackers. When creating a bug report, please include as many details as possible and use the following template:
 
 ```
 ## Description
@@ -46,15 +70,16 @@ Before creating bug reports, please check the issue tracker as you might find ou
 ## Actual behavior
 [What actually happens]
 
+## Repository
+[Specify whether this is a frontend or backend issue]
+
 ## Additional context
 [Add any other context about the problem here.]
 ```
 
 ### Suggesting Enhancements
 
-Enhancement suggestions are tracked as GitHub issues. When you are creating an enhancement suggestion, please include as many details as possible.
-
-**Feature Request Template:**
+We welcome enhancement suggestions for both frontend and backend. Please use the following template:
 
 ```
 ## Is your feature request related to a problem? Please describe.
@@ -62,6 +87,9 @@ Enhancement suggestions are tracked as GitHub issues. When you are creating an e
 
 ## Describe the solution you'd like
 [A clear and concise description of what you want to happen.]
+
+## Repository
+[Specify whether this is for the frontend or backend]
 
 ## Describe alternatives you've considered
 [A clear and concise description of any alternative solutions or features you've considered.]
@@ -73,9 +101,9 @@ Enhancement suggestions are tracked as GitHub issues. When you are creating an e
 ### Pull Requests
 
 1. Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-2. Update the README.md with details of changes to the interface, this includes new environment variables, exposed ports, useful file locations and container parameters.
+2. Update the README.md in the relevant repository with details of changes.
 3. Increase the version numbers in any examples files and the README.md to the new version that this Pull Request would represent.
-4. You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+4. You may merge the Pull Request once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ## Style Guidelines
 
@@ -86,15 +114,44 @@ Enhancement suggestions are tracked as GitHub issues. When you are creating an e
 * Limit the first line to 72 characters or less
 * Reference issues and pull requests liberally after the first line
 
-### JavaScript Style Guide
+### Frontend Style Guide
 
-All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com/).
+We use Husky and lint-staged to enforce our frontend code style:
 
-### CSS Conventions
+* ESLint is configured to catch and fix JavaScript/TypeScript issues
+* TypeScript compiler checks for type errors
+* Prettier ensures consistent code formatting
 
-* Use kebab-case for class names
-* Prefer flexbox for layout
-* Use variables for colors and font sizes
+These checks run automatically on staged files when you commit. If there are any issues, the commit will be blocked until you fix them.
+
+### Backend Style Guide
+
+We use pre-commit hooks to maintain our backend code quality:
+
+* Flake8 checks for Python code style and quality issues
+* Black automatically formats Python code
+* isort sorts Python imports
+
+Before committing, run the following command to apply these checks to all files:
+
+```
+pre-commit run --all-files
+```
+
+This will ensure your code adheres to our style guidelines before you commit.
+
+### General Guidelines
+
+* Write clear, readable, and self-documenting code
+* Include comments for complex logic, but prefer clear code over excessive comments
+* Write unit tests for new features and bug fixes
+
+## Testing
+
+* For frontend, run tests with: `yarn test`
+* For backend, run tests with: `poetry run python manage.py test`
+
+Ensure all tests pass before submitting a pull request.
 
 ## Additional Notes
 
@@ -104,11 +161,12 @@ All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com
 | --- | --- |
 | `bug` | Confirmed bugs or reports that are very likely to be bugs |
 | `enhancement` | Feature requests |
-| `documentation` | Improvements or additions to documentation |
+| `frontend` | Related to the frontend repository |
+| `backend` | Related to the backend repository |
 | `good first issue` | Good for newcomers |
 
 ## Recognition
 
-We value every contribution. Contributors who have their pull requests merged will be added to our [Contributors](CONTRIBUTORS.md) list. Additionally, significant contributions may be rewarded with special privileges or roles within the project community.
+Contributors will be recognized in both repositories' CONTRIBUTORS.md files. We value every contribution, whether it's to the frontend or backend!
 
-Thank you for contributing to CoolProject! 🎉
+Thank you for contributing to our project! 🎉

@@ -4,14 +4,16 @@ const TruncateText = ({
   text,
   maxLines,
   hideButton = false,
+  isHTML = false,
 }: {
   text: string;
   maxLines: number;
   hideButton?: boolean;
+  isHTML?: boolean;
 }) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkTruncation = () => {
@@ -27,9 +29,11 @@ const TruncateText = ({
     return () => window.removeEventListener('resize', checkTruncation);
   }, [maxLines, text]);
 
+  const contentProps = isHTML ? { dangerouslySetInnerHTML: { __html: text } } : { children: text };
+
   return (
     <div>
-      <p
+      <div
         ref={textRef}
         className={`${
           !isExpanded && isTruncated ? 'overflow-hidden' : ''
@@ -39,9 +43,8 @@ const TruncateText = ({
           WebkitLineClamp: !isExpanded && isTruncated ? maxLines : 'unset',
           WebkitBoxOrient: 'vertical',
         }}
-      >
-        {text}
-      </p>
+        {...contentProps}
+      />
       {isTruncated && !hideButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}

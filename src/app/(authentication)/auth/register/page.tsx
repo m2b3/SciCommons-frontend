@@ -4,15 +4,17 @@ import React from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
-import { ErrorMessage } from '@/constants';
+import { showErrorToast } from '@/lib/toastHelpers';
+
+import SignUpSuccess from './SignUpSuccess';
 
 interface IFormInput {
   username: string;
@@ -24,8 +26,6 @@ interface IFormInput {
 }
 
 const RegisterForm: React.FC = () => {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -35,14 +35,17 @@ const RegisterForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const { isPending, mutate: signUp } = useUsersApiAuthSignup({
+  const {
+    isPending,
+    isSuccess,
+    mutate: signUp,
+  } = useUsersApiAuthSignup({
     mutation: {
       onSuccess: () => {
         toast.success('Registration successful! Please check your email to verify your account.');
-        router.push('/auth/signupsuccess');
       },
       onError: (err) => {
-        toast.error(err.response?.data.message || ErrorMessage);
+        showErrorToast(err);
       },
     },
   });
@@ -50,6 +53,10 @@ const RegisterForm: React.FC = () => {
   const onSubmit = (data: IFormInput) => {
     signUp({ data });
   };
+
+  if (isSuccess) {
+    return <SignUpSuccess />;
+  }
 
   return (
     <div className="flex h-screen flex-col md:flex-row">
@@ -155,4 +162,4 @@ const RegisterForm: React.FC = () => {
   );
 };
 
-export default RegisterForm;
+export default withAuthRedirect(RegisterForm);

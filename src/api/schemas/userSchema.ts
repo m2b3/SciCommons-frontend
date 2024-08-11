@@ -9,6 +9,8 @@ import type { UserSchemaProfilePicUrl } from './userSchemaProfilePicUrl';
 
 export interface UserSchema {
   articles_published: number;
+  articles_reviewed: number;
+  articles_submitted: number;
   email: string;
   id: number;
   joined_at: UserSchemaJoinedAt;

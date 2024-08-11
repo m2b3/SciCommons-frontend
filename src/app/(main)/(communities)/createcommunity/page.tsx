@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiCreateCommunity } from '@/api/communities/communities';
 import { CreateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
@@ -36,7 +37,7 @@ interface FormValues {
   profileImage: FileObj;
 }
 
-const CreateCommunity = () => {
+const CreateCommunity: React.FC = () => {
   const router = useRouter();
   const accessToken = useAuthStore((state) => state.accessToken);
 
@@ -211,4 +212,4 @@ const CreateCommunity = () => {
   );
 };
 
-export default CreateCommunity;
+export default withAuthRedirect(CreateCommunity, { requireAuth: true });

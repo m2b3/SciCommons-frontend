@@ -62,8 +62,8 @@ const Roles = ({ params }: { params: { slug: string } }) => {
                 memberSince={
                   item.joined_at ? dayjs(item.joined_at).format('MMM D, YYYY') : 'Jun, 24'
                 }
-                reviewedArticles={item.articles_published}
-                submittedArticles={item.articles_published}
+                reviewedArticles={item.articles_reviewed}
+                submittedArticles={item.articles_submitted}
                 profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
@@ -90,8 +90,8 @@ const Roles = ({ params }: { params: { slug: string } }) => {
                 memberSince={
                   item.joined_at ? dayjs(item.joined_at).format('MMM D, YYYY') : 'Jun, 24'
                 }
-                reviewedArticles={item.articles_published}
-                submittedArticles={item.articles_published}
+                reviewedArticles={item.articles_reviewed}
+                submittedArticles={item.articles_submitted}
                 profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
@@ -118,8 +118,8 @@ const Roles = ({ params }: { params: { slug: string } }) => {
                 memberSince={
                   item.joined_at ? dayjs(item.joined_at).format('MMM D, YYYY') : 'Jun, 24'
                 }
-                reviewedArticles={item.articles_published}
-                submittedArticles={item.articles_published}
+                reviewedArticles={item.articles_reviewed}
+                submittedArticles={item.articles_submitted}
                 profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}
@@ -142,7 +142,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
                   item.joined_at ? dayjs(item.joined_at).format('MMM D, YYYY') : 'Jun 8, 2024'
                 }
                 reviewedArticles={item.articles_published}
-                submittedArticles={item.articles_published}
+                submittedArticles={item.articles_submitted}
                 profilePicture={item.profile_pic_url}
                 activeTab={activeTab}
                 userId={item.id}

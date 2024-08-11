@@ -97,7 +97,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
   };
 
   return (
-    <div className="rounded-md bg-white p-4 text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+    <div className="rounded-md bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."

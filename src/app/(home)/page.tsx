@@ -51,9 +51,9 @@ const Home = () => {
               Explore
             </button>
           </Link>
-          <Link href="/auth/register">
+          <Link href="/communities">
             <button className="h-10 w-40 rounded-xl border border-black bg-white text-sm  text-black">
-              Signup
+              Visit Communities
             </button>
           </Link>
         </div>

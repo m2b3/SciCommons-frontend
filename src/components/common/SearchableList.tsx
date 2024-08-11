@@ -58,7 +58,7 @@ function SearchableList<T>({
   emptyStateLogo,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

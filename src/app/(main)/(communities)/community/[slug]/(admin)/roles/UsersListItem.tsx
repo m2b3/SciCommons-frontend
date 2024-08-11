@@ -21,7 +21,7 @@ interface UsersListItemProps {
   communityId: number;
   name: string;
   memberSince: string;
-  reviewedArticles: number;
+  reviewedArticles?: number;
   submittedArticles: number;
   profilePicture?: string | null;
   userId: number;
@@ -81,8 +81,12 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
           <p className="text-gray-500">Member since {memberSince}</p>
           <div className="mt-2 flex items-center text-gray-500">
             <div className="mr-4 flex items-center">
-              <CheckCircle size={16} className="mr-1" />
-              <p>{reviewedArticles} Articles Reviewed</p>
+              {reviewedArticles != 0 && (
+                <>
+                  <CheckCircle size={16} className="mr-1" />
+                  <p>{reviewedArticles} Articles Reviewed</p>
+                </>
+              )}
             </div>
             <div className="flex items-center">
               <FileText size={16} className="mr-1" />

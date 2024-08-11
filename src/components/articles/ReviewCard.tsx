@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -26,6 +26,7 @@ import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
+import TruncateText from '../common/TruncateText';
 import ReviewComments from './ReviewComments';
 import ReviewForm from './ReviewForm';
 
@@ -39,7 +40,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   dayjs.extend(relativeTime);
 
   const [edit, setEdit] = useState(false);
-  const [selectedVersion, setSelectedVersion] = useState<number>(0);
+  const [selectedVersion, setSelectedVersion] = useState<number>(review.versions.length);
   const [displayComments, setDisplayComments] = useState<boolean>(false);
   const imageData = useIdenticon(40);
 
@@ -91,15 +92,18 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     approveArticle({ communityArticleId: review.community_article?.id || 0 });
   };
 
-  const currentVersion =
-    selectedVersion === 0
-      ? {
-          rating: review.rating,
-          content: review.content,
-          subject: review.subject,
-          created_at: review.updated_at,
-        }
-      : review.versions[selectedVersion - 1];
+  const currentVersion = useMemo(() => {
+    if (selectedVersion === review.versions.length) {
+      return {
+        rating: review.rating,
+        content: review.content,
+        subject: review.subject,
+        created_at: review.updated_at,
+      };
+    } else {
+      return review.versions[review.versions.length - 1 - selectedVersion];
+    }
+  }, [review, selectedVersion]);
 
   const getReviewTypeTag = (reviewType: string) => {
     switch (reviewType) {
@@ -186,24 +190,26 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
                   className="rounded border-gray-300 p-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
-                  <option value={0}>Latest</option>
-                  {review.versions.map((version, index) => (
-                    <option key={index + 1} value={index + 1}>
-                      {dayjs(version.created_at).format('MMM D, YYYY ')}
-                    </option>
-                  ))}
+                  <option value={review.versions.length}>Latest</option>
+                  {review.versions
+                    .map((version, index) => (
+                      <option key={index} value={review.versions.length - 1 - index}>
+                        {dayjs(version.created_at).format('MMM D, YYYY ')}
+                      </option>
+                    ))
+                    .reverse()}
                 </select>
               </div>
               ({dayjs(currentVersion.created_at).fromNow()})
             </div>
           </div>
-          <h3 className="mb-2 text-lg font-semibold dark:text-white">{currentVersion.subject}</h3>
-          <div
-            className="mb-4 text-gray-700 dark:text-gray-300"
-            dangerouslySetInnerHTML={{
-              __html: currentVersion.content,
-            }}
-          />
+          <h3 className="mb-2 text-lg font-semibold dark:text-white">
+            <TruncateText text={currentVersion.subject} maxLines={2} />
+          </h3>
+
+          <div className="mb-4 text-gray-700 dark:text-gray-300">
+            <TruncateText text={currentVersion.content} maxLines={4} isHTML />
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex space-x-4 text-gray-500 dark:text-gray-400">
               <div className="flex items-center">

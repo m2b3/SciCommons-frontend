@@ -4,15 +4,11 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type {
   MutationFunction,
-  QueryFunction,
-  QueryKey,
   UseMutationOptions,
   UseMutationResult,
-  UseQueryOptions,
-  UseQueryResult,
 } from '@tanstack/react-query';
 
 import { customInstance } from '.././custom-instance';
@@ -108,74 +104,69 @@ export const useUsersApiAuthSignup = <TError = ErrorType<Message>, TContext = un
  */
 export const usersApiAuthActivate = (
   token: string,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+  options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<Message>(
-    { url: `/api/users/activate/${token}`, method: 'GET', signal },
-    options
-  );
+  return customInstance<Message>({ url: `/api/users/activate/${token}`, method: 'POST' }, options);
 };
 
-export const getUsersApiAuthActivateQueryKey = (token: string) => {
-  return [`/api/users/activate/${token}`] as const;
-};
-
-export const getUsersApiAuthActivateQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersApiAuthActivate>>,
+export const getUsersApiAuthActivateMutationOptions = <
   TError = ErrorType<Message>,
->(
-  token: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getUsersApiAuthActivateQueryKey(token);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiAuthActivate>>> = ({ signal }) =>
-    usersApiAuthActivate(token, requestOptions, signal);
-
-  return { queryKey, queryFn, enabled: !!token, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthActivate>>,
     TError,
-    TData
-  > & { queryKey: QueryKey };
+    { token: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usersApiAuthActivate>>,
+  TError,
+  { token: string },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usersApiAuthActivate>>,
+    { token: string }
+  > = (props) => {
+    const { token } = props ?? {};
+
+    return usersApiAuthActivate(token, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type UsersApiAuthActivateQueryResult = NonNullable<
+export type UsersApiAuthActivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof usersApiAuthActivate>>
 >;
-export type UsersApiAuthActivateQueryError = ErrorType<Message>;
+
+export type UsersApiAuthActivateMutationError = ErrorType<Message>;
 
 /**
  * @summary Activate
  */
-export const useUsersApiAuthActivate = <
-  TData = Awaited<ReturnType<typeof usersApiAuthActivate>>,
-  TError = ErrorType<Message>,
->(
-  token: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getUsersApiAuthActivateQueryOptions(token, options);
+export const useUsersApiAuthActivate = <TError = ErrorType<Message>, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiAuthActivate>>,
+    TError,
+    { token: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof usersApiAuthActivate>>,
+  TError,
+  { token: string },
+  TContext
+> => {
+  const mutationOptions = getUsersApiAuthActivateMutationOptions(options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
+  return useMutation(mutationOptions);
 };
-
 /**
  * @summary Resend Activation
  */

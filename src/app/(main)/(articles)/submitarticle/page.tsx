@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiCreateArticle } from '@/api/articles/articles';
 import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
@@ -15,12 +16,14 @@ import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
 import { SubmitArticleFormValues } from '@/types';
 
+const STORAGE_KEY = 'articleFormData';
+
 const ArticleForm: React.FC = () => {
   const router = useRouter();
-
   const { articleData } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
   const accessToken = useAuthStore((state) => state.accessToken);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
     request: {
@@ -32,6 +35,7 @@ const ArticleForm: React.FC = () => {
       onSuccess: (data) => {
         toast.success('Article submitted successfully! Redirecting....');
         router.push(`/article/${data.data.slug}`);
+        localStorage.removeItem(STORAGE_KEY);
       },
       onError: (error) => {
         showErrorToast(error);
@@ -45,39 +49,64 @@ const ArticleForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<SubmitArticleFormValues>({
     defaultValues: {
       submissionType: 'Public',
-      title: articleData?.title || '',
-      abstract: articleData?.abstract || '',
+      title: '',
+      abstract: '',
+      authors: [],
+      keywords: [],
+      article_link: '',
     },
     mode: 'onChange',
   });
-  // reset the form details when there is article data is available
+
+  // Load saved form data on component mount
   useEffect(() => {
-    if (articleData) {
-      reset({
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      reset(parsedData);
+      setActiveTab(parsedData.activeTab || 'upload');
+    }
+    setIsInitialized(true);
+  }, [reset]);
+
+  // Save form data to local storage whenever it changes
+  useEffect(() => {
+    if (isInitialized) {
+      const subscription = watch((formData) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...formData, activeTab }));
+      });
+      return () => subscription.unsubscribe();
+    }
+  }, [watch, activeTab, isInitialized]);
+
+  // Handle tab change
+  useEffect(() => {
+    if (isInitialized) {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...parsedData, activeTab }));
+      }
+    }
+  }, [activeTab, isInitialized]);
+
+  // Handle article data
+  useEffect(() => {
+    if (isInitialized && articleData) {
+      const newData = {
         title: articleData.title,
         authors: articleData.authors.map((author) => ({ label: author, value: author })),
         abstract: articleData.abstract,
         article_link: articleData.link,
-      });
+      };
+      reset(newData);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...newData, activeTab }));
     }
-  }, [articleData, reset]);
-
-  // reset fields when the active tab changes
-  useEffect(() => {
-    reset({
-      title: '',
-      authors: [],
-      abstract: '',
-      article_link: '',
-      keywords: [],
-      imageFile: undefined,
-      pdfFiles: undefined,
-      submissionType: 'Public',
-    });
-  }, [activeTab, reset]);
+  }, [articleData, reset, activeTab, isInitialized]);
 
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
     const dataToSend: ArticleCreateSchema = {
@@ -95,7 +124,6 @@ const ArticleForm: React.FC = () => {
       },
     };
     const image_file = formData.imageFile ? formData.imageFile.file : undefined;
-    // map pdfFiles if both pdf file and pdfFiles are present
     const pdf_files = formData.pdfFiles
       ? formData.pdfFiles.map((pdfFile) => pdfFile && pdfFile.file).filter(Boolean)
       : [];
@@ -130,4 +158,4 @@ const ArticleForm: React.FC = () => {
   );
 };
 
-export default ArticleForm;
+export default withAuthRedirect(ArticleForm, { requireAuth: true });

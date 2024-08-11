@@ -67,13 +67,13 @@ const Footer: React.FC = () => {
             <p className="mt-2 text-center text-base leading-6 text-gray-400 dark:text-gray-500">
               <span className="inline-block">© 2023 SciCommons. All rights reserved.</span>
               <span className="mx-4 text-gray-400 dark:text-gray-500">|</span>
-              <a href="#" className="hover:underline">
+              <Link href="/terms-and-conditions" className="hover:underline">
                 Terms and Conditions
-              </a>
+              </Link>
               <span className="mx-4 text-gray-400 dark:text-gray-500">|</span>
-              <a href="#" className="hover:underline">
+              <Link href="/privacy-policy" className="hover:underline">
                 Privacy Policy
-              </a>
+              </Link>
             </p>
           </div>
         </div>

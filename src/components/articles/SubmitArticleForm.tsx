@@ -142,11 +142,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
             requiredMessage="Article link is required"
             info="Provide a link to the article you want to submit."
             errors={errors}
-            readOnly={activeTab === 'search'}
           />
-          <p className="text-sm text-gray-500">
-            You cannot edit the article link when searching for articles.
-          </p>
         </>
       )}
       <Controller

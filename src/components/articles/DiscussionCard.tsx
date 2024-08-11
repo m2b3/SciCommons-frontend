@@ -83,7 +83,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
             </div>
           </div>
           <p
-            className="mr-4 flex-grow cursor-pointer font-bold text-gray-900 hover:text-blue-500 hover:underline dark:text-gray-100 dark:hover:text-blue-400"
+            className="mr-4 line-clamp-2 flex-grow cursor-pointer font-bold text-gray-900 hover:text-blue-500 hover:underline dark:text-gray-100 dark:hover:text-blue-400"
             onClick={() => handleDiscussionClick(Number(discussion.id))}
           >
             {discussion.topic}

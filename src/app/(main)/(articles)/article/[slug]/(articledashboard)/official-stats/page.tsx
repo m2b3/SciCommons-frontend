@@ -6,6 +6,7 @@ import { Card, LineChart, Title } from '@tremor/react';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticleOfficialStats } from '@/api/articles/articles';
+import TruncateText from '@/components/common/TruncateText';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -29,7 +30,9 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
       <div className="container mx-auto p-6 dark:bg-gray-900 dark:text-white">
         {/* Header */}
         <header className="mb-6">
-          <h1 className="text-4xl font-bold dark:text-white">{data.data.title}</h1>
+          <h1 className="text-3xl font-bold dark:text-white">
+            <TruncateText text={data.data.title} maxLines={2} />
+          </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Submitted on {new Date(data.data.submission_date).toLocaleDateString()} by{' '}
             {data.data.submitter}

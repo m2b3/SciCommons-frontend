@@ -23,6 +23,7 @@ import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
+import TruncateText from '../common/TruncateText';
 import DiscussionComments from './DiscussionComments';
 
 interface DiscussionThreadProps {
@@ -107,8 +108,12 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="mr-4 flex-grow cursor-pointer font-bold">{discussion.topic}</p>
-                <p className="text-sm">{discussion.content}</p>
+                <p className="mr-4 flex-grow cursor-pointer font-bold">
+                  <TruncateText text={discussion.topic} maxLines={2} />
+                </p>
+                <p className="text-sm">
+                  <TruncateText text={discussion.content} maxLines={3} />
+                </p>
               </div>
               <div className="mt-4 flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <button className="mr-4 flex items-center space-x-1">

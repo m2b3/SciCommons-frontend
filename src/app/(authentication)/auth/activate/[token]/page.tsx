@@ -13,26 +13,40 @@ import { ErrorMessage } from '@/constants';
 
 const ActivateAccount = ({ params }: { params: { token: string } }) => {
   const router = useRouter();
-
-  const { isLoading, error, isSuccess, isError } = useUsersApiAuthActivate(params.token);
+  const [isActivated, setIsActivated] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
+  const { mutate: activateAccount, isPending, error, isError } = useUsersApiAuthActivate();
+
   useEffect(() => {
-    if (isSuccess) {
-      toast.success('Account activated successfully! Redirecting to login page...');
-
-      const timer = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-
-      setTimeout(() => {
-        clearInterval(timer);
-        router.push('/auth/login');
-      }, 5000);
-
-      return () => clearInterval(timer);
+    if (!isActivated) {
+      activateAccount(
+        { token: params.token },
+        {
+          onSuccess: () => {
+            setIsActivated(true);
+            toast.success('Account activated successfully! Redirecting to login page...');
+          },
+        }
+      );
     }
-  }, [isSuccess, router]);
+  }, [activateAccount, isActivated, params.token]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isActivated) {
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            router.push('/auth/login');
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [isActivated, router]);
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
@@ -42,19 +56,19 @@ const ActivateAccount = ({ params }: { params: { token: string } }) => {
             <Image src="/auth/activateaccount.png" alt="logo" width={80} height={80} />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {isLoading
+            {isPending
               ? 'Activating your Account...'
               : isError
                 ? error?.response?.data.message || ErrorMessage
                 : 'Account Activated'}
           </h1>
           <div className="mt-2 text-gray-500 dark:text-gray-400">
-            {isLoading ? (
+            {isPending ? (
               <div className="mt-4 flex justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-dashed border-brand"></div>
               </div>
             ) : isError ? (
-              `Please try again.`
+              `${error?.response?.data.message || ErrorMessage}`
             ) : (
               `Your account has been activated successfully! Redirecting to login page in ${countdown} seconds...`
             )}

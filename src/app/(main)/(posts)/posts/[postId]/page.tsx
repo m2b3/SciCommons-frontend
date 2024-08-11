@@ -28,7 +28,7 @@ import {
 import RedditStyleComments from '@/components/common/PostComments';
 import TruncateText from '@/components/common/TruncateText';
 import Hashtag from '@/components/posts/Hashtag';
-import Post, { PostSkeleton } from '@/components/posts/Post';
+import PostHighlightCard, { PostHighlightCardSkeleton } from '@/components/posts/PostHighlightCard';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -204,16 +204,16 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
         )}
       </div>
       <div className="hidden w-full py-10 pr-10 lg:flex lg:flex-col">
-        {!userPostDataPending ? (
-          userPostData?.data?.items?.map((post: PostOut) => <Post key={post?.id} {...post} />)
-        ) : (
-          <PostSkeleton />
-        )}
+        {!userPostDataPending
+          ? userPostData?.data?.items?.map((post: PostOut) => (
+              <PostHighlightCard key={post?.id} post={post} />
+            ))
+          : Array.from({ length: 3 }).map((_, index) => <PostHighlightCardSkeleton key={index} />)}
         {userPostData?.data?.items.length === 0 && (
           <div className="flex w-full flex-col items-center pt-20">
             <FileX2 className="text-gray-400 dark:text-gray-700" size={50} strokeWidth={1.5} />
             <h1 className="mt-4 text-lg font-bold text-gray-400 dark:text-gray-700">
-              No Popular posts by user!
+              No Related Posts
             </h1>
           </div>
         )}

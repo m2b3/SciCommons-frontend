@@ -54,22 +54,22 @@ const TeamMember = ({
 const AboutPage = () => {
   const teamMembers = [
     {
-      name: 'John Doe',
+      name: 'Dinakar Chennupati',
       role: 'Lead Developer',
       image: '/api/placeholder/150/150',
-      github: 'https://github.com/johndoe',
-      linkedin: 'https://www.linkedin.com/in/johndoe',
-      twitter: 'https://twitter.com/johndoe',
+      github: 'https://github.com/dinakar17',
+      linkedin: 'https://www.linkedin.com/in/dinakarchennupati/',
+      twitter: 'https://x.com/DinakarChennup1',
     },
     {
-      name: 'Jane Smith',
+      name: 'Jyothi Swaroop Reddy',
       role: 'UI/UX Designer',
       image: '/api/placeholder/150/150',
       github: 'https://github.com/janesmith',
       linkedin: 'https://www.linkedin.com/in/janesmith',
     },
     {
-      name: 'Alex Johnson',
+      name: 'Armaan',
       role: 'Backend Engineer',
       image: '/api/placeholder/150/150',
       github: 'https://github.com/alexjohnson',

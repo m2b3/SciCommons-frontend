@@ -3,6 +3,7 @@
 // Todo: Render this component on server side
 import { useEffect } from 'react';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
@@ -105,4 +106,4 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   return <SplitScreenLayout leftSide={LeftSide} rightSide={RightSide} />;
 };
 
-export default ArticleDisplayPage;
+export default withAuthRedirect(ArticleDisplayPage, { requireAuth: true });

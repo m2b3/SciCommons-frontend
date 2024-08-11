@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -9,11 +9,10 @@ import { Send } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { usePostsApiCreatePost } from '@/api/posts/posts';
 import { HashtagsList } from '@/constants/common.constants';
 import { useAuthStore } from '@/stores/authStore';
-
-// Todo: Replace Title and Content Input fields with FormInput component
 
 interface IFormInput {
   title: string;
@@ -25,15 +24,32 @@ interface Hashtag {
   hashtag: string;
 }
 
+const STORAGE_KEY = 'createPostFormData';
+
 const CreatePostPage: React.FC = () => {
   const router = useRouter();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [postBody, setPostBody] = useState('');
+  const [currentWord, setCurrentWord] = useState('');
+  const [availableHashtags, setAvailableHashtags] = useState<Hashtag[]>([]);
+  const hashtagDropdownRef = useRef<HTMLUListElement>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<IFormInput>();
-  const accessToken = useAuthStore((state) => state.accessToken);
+    setValue,
+    watch,
+  } = useForm<IFormInput>({
+    defaultValues: {
+      title: '',
+      content: '',
+      hashtags: [],
+    },
+  });
+
   const { mutate: createPost, isPending } = usePostsApiCreatePost({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
@@ -41,6 +57,7 @@ const CreatePostPage: React.FC = () => {
         toast.success('Post created successfully');
         router.push(`/posts/${data.data.id}`);
         reset();
+        localStorage.removeItem(STORAGE_KEY);
       },
       onError: (error) => {
         console.error('Error creating post:', error);
@@ -49,10 +66,29 @@ const CreatePostPage: React.FC = () => {
     },
   });
 
+  // Load saved form data on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      reset(parsedData);
+      setPostBody(parsedData.content || '');
+    }
+    setIsInitialized(true);
+  }, [reset]);
+
+  // Save form data to local storage whenever it changes
+  useEffect(() => {
+    if (isInitialized) {
+      const subscription = watch((formData) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+      });
+      return () => subscription.unsubscribe();
+    }
+  }, [watch, isInitialized]);
+
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    // Extract hashtags from the post body
     const hashtags = extractHashtags(postBody);
-    // Add hashtags to the form data
     createPost({ data: { ...data, hashtags } });
   };
 
@@ -62,14 +98,10 @@ const CreatePostPage: React.FC = () => {
     return hashtags ? hashtags : [];
   };
 
-  const hashtagDropdownRef = useRef<HTMLUListElement>(null);
-  const [currentWord, setCurrentWord] = useState('');
-  const [availableHashtags, setAvailableHashtags] = useState<Hashtag[]>([]);
-  const [postBody, setPostBody] = useState('');
-
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     setPostBody(text);
+    setValue('content', text);
 
     const words = text.split(' ');
     const lastWord = words[words.length - 1];
@@ -190,7 +222,10 @@ const CreatePostPage: React.FC = () => {
                     key={index}
                     className="flex cursor-pointer items-center justify-between border-b border-common-minimal p-2 hover:bg-common-minimal/50"
                     onClick={() => {
-                      setPostBody(postBody + hashtagObj.hashtag.substring(currentWord.length));
+                      const newPostBody =
+                        postBody + hashtagObj.hashtag.substring(currentWord.length);
+                      setPostBody(newPostBody);
+                      setValue('content', newPostBody);
                       setAvailableHashtags([]);
                     }}
                   >
@@ -211,7 +246,9 @@ const CreatePostPage: React.FC = () => {
                 key={index}
                 className="flex cursor-pointer flex-wrap items-center gap-1 rounded-full bg-gray-200 px-3 py-2 dark:bg-gray-800"
                 onClick={() => {
-                  setPostBody(`${postBody} ${hashtagObj.hashtag}`);
+                  const newPostBody = `${postBody} ${hashtagObj.hashtag}`;
+                  setPostBody(newPostBody);
+                  setValue('content', newPostBody);
                 }}
               >
                 <span className="text-sm text-text-primary">{hashtagObj?.hashtag}</span>
@@ -224,4 +261,4 @@ const CreatePostPage: React.FC = () => {
   );
 };
 
-export default CreatePostPage;
+export default withAuthRedirect(CreatePostPage, { requireAuth: true });

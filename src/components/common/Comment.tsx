@@ -28,6 +28,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
 import RenderComments from './RenderComments';
+import TruncateText from './TruncateText';
 
 export interface UserData {
   id: number;
@@ -215,7 +216,9 @@ const Comment: React.FC<CommentProps> = ({
             isReview={isReview}
           />
         ) : (
-          <p className="mt-1 text-sm">{content}</p>
+          <p className="mt-1 text-sm">
+            <TruncateText text={content} maxLines={4} />
+          </p>
         )}
         <div className="mt-5 flex items-center space-x-4 text-gray-500">
           <button className="flex items-center space-x-1">

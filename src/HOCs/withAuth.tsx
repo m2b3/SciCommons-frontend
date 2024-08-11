@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ComponentType, useEffect } from 'react';
+import React, { ComponentType, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { UsersCommonApiCheckPermissionParams } from '@/api/schemas';
 import { useUsersCommonApiCheckPermission } from '@/api/users-common-api/users-common-api';
+import Loader from '@/components/common/Loader';
 import { useAuthStore } from '@/stores/authStore';
 
 interface WithAuthProps {
@@ -23,7 +24,8 @@ export function withAuth<P extends WithAuthProps>(
 ) {
   const WithAuthComponent: React.FC<P> = (props) => {
     const router = useRouter();
-    const { isAuthenticated, accessToken } = useAuthStore();
+    const { isAuthenticated, accessToken, initializeAuth } = useAuthStore();
+    const [isInitializing, setIsInitializing] = useState(true);
 
     const resourceId = getResourceId ? getResourceId(props) : undefined;
 
@@ -32,13 +34,21 @@ export function withAuth<P extends WithAuthProps>(
       resource_id: resourceId || undefined,
     };
 
+    useEffect(() => {
+      const initAuth = async () => {
+        await initializeAuth();
+        setIsInitializing(false);
+      };
+      initAuth();
+    }, [initializeAuth]);
+
     const {
       data: permissionData,
       isLoading,
       isError,
     } = useUsersCommonApiCheckPermission(params, {
       query: {
-        enabled: isAuthenticated && !!accessToken && !!dashboardType,
+        enabled: !isInitializing && isAuthenticated && !!accessToken && !!dashboardType,
       },
       request: {
         headers: {
@@ -48,11 +58,14 @@ export function withAuth<P extends WithAuthProps>(
     });
 
     useEffect(() => {
+      if (isInitializing) {
+        return;
+      }
+
       if (!isAuthenticated || !accessToken) {
-        // Todo: This isn't working as expected
         toast.error('You need to be logged in to view this resource');
         router.replace('/auth/login');
-      } else if (isAuthenticated && !isLoading && !isError && permissionData !== undefined) {
+      } else if (!isLoading && !isError && permissionData !== undefined) {
         if (!permissionData.data.has_permission) {
           if (dashboardType === 'article') {
             router.replace(`/article/${resourceId}`);
@@ -64,14 +77,23 @@ export function withAuth<P extends WithAuthProps>(
           toast.error('You do not have permission to view this resource');
         }
       }
-    }, [isAuthenticated, accessToken, isLoading, isError, permissionData, router, resourceId]);
+    }, [
+      isInitializing,
+      isAuthenticated,
+      accessToken,
+      isLoading,
+      isError,
+      permissionData,
+      router,
+      resourceId,
+    ]);
+
+    if (isInitializing || isLoading) {
+      return <Loader type="dots" color="green" size="small" text="Loading..." />;
+    }
 
     if (!isAuthenticated || !accessToken) {
       return null;
-    }
-
-    if (isLoading) {
-      return <div>Loading...</div>;
     }
 
     if (isError) {
@@ -84,8 +106,6 @@ export function withAuth<P extends WithAuthProps>(
 
     return <WrappedComponent {...props} />;
   };
-
-  //   WithAuthComponent.displayName = `WithAuth(${getDisplayName(WrappedComponent)})`;
 
   return WithAuthComponent;
 }

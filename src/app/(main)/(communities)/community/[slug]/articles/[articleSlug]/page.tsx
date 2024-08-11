@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
@@ -17,7 +18,7 @@ import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
-const CommunityArticleDisplayPage = () => {
+const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
 
@@ -146,4 +147,4 @@ const CommunityArticleDisplayPage = () => {
   );
 };
 
-export default CommunityArticleDisplayPage;
+export default withAuthRedirect(CommunityArticleDisplayPage, { requireAuth: true });
