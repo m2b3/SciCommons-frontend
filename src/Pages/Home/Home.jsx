@@ -39,6 +39,10 @@ const Home = () => {
           className="page-component__bg_image_box bg-medium-color"
           id="header-23-256551"
         >
+          <div className="w-full p-3 text-center bg-yellow-400/20 text-yellow-800">
+            This website is purely for testing at the moment. Stay tuned for a proper release in
+            September 2024. Thank you.
+          </div>
           <div className="page-component__bg_overlay_box " />
           <div
             className="page-component__wrapper bg-[#ebfde8]"
