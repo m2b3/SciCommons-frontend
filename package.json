@@ -50,7 +50,7 @@
     "@yoopta/marks": "^4.6.6",
     "@yoopta/paragraph": "^4.6.5-rc.1",
     "@yoopta/toolbar": "^4.6.6",
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
