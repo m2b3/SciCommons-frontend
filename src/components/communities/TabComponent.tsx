@@ -24,14 +24,14 @@ const TabComponent = <ActiveTabType extends string>({
   };
 
   return (
-    <div className="flex rounded-md bg-slate-200 p-1 shadow dark:bg-slate-700">
+    <div className="flex rounded-md bg-white-secondary p-1 text-gray-900 shadow res-text-sm">
       {tabs.map((tab) => (
         <button
           key={tab}
           className={clsx('rounded-md px-4 py-2 transition-all duration-300', {
-            'bg-white shadow-md dark:bg-slate-800 dark:text-white': tab === activeTab,
-            'text-gray-500 dark:text-gray-400': tab !== activeTab,
-            'hover:bg-slate-100 dark:hover:bg-slate-600': tab !== activeTab,
+            'bg-white-primary shadow-md': tab === activeTab,
+            'text-gray-500': tab !== activeTab,
+            'hover:bg-white-primary': tab !== activeTab,
           })}
           onClick={() => handleTabClick(tab as ActiveTabType)}
         >

@@ -8,6 +8,7 @@ import { useCommunitiesApiInvitationInviteRegisteredUsers } from '@/api/communit
 import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface IRegisteredProps {
@@ -33,8 +34,7 @@ const Registered = () => {
 
   useEffect(() => {
     if (error) {
-      console.log('Error:', error);
-      toast.error(`Error: ${(error.response?.data.message as string) || 'An error occurred'}`);
+      showErrorToast(error);
     }
   }, [error]);
 
@@ -56,7 +56,7 @@ const Registered = () => {
   };
 
   return (
-    <div className="my-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 dark:shadow-gray-700/50">
+    <div className="my-4 rounded-lg bg-white-primary p-4 shadow-md">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
         <Controller
           name="username"
@@ -86,15 +86,13 @@ const Registered = () => {
           textArea={true}
         />
         <div className="flex justify-end space-x-4">
-          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 res-text-sm hover:bg-gray-300">
             Cancel
           </button>
           <button
             className={clsx(
-              'rounded-md px-4 py-2 text-white',
-              isPending
-                ? 'bg-gray-400 dark:bg-gray-600'
-                : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
+              'rounded-md px-4 py-2 text-white res-text-sm',
+              isPending ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
             )}
             disabled={isPending}
           >

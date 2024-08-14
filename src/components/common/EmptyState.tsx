@@ -12,7 +12,7 @@ const EmptyState = ({
   subcontent?: string;
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg p-8 dark:bg-gray-800">
+    <div className="flex flex-col items-center justify-center rounded-lg bg-white-secondary p-8 text-gray-900">
       <div className="mb-4">
         {logo ? (
           typeof logo === 'string' ? (
@@ -21,15 +21,13 @@ const EmptyState = ({
             logo
           )
         ) : (
-          <AlertCircle className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+          <AlertCircle className="h-16 w-16 text-gray-500" />
         )}
       </div>
-      <p className="text-center text-xl font-semibold text-gray-700 dark:text-gray-200">
-        {content}
-      </p>
+      <p className="text-center text-xl font-semibold">{content}</p>
       {subcontent && (
         <div
-          className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400"
+          className="mt-2 text-center text-sm"
           dangerouslySetInnerHTML={{ __html: subcontent }}
         />
       )}

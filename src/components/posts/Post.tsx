@@ -4,7 +4,6 @@ import Link from 'next/link';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { MessageCircle, MoreHorizontal, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { PostOut } from '@/api/schemas';
 import {
@@ -13,6 +12,7 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import TruncateText from '@/components/common/TruncateText';
 import useIdenticon from '@/hooks/useIdenticons';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import Hashtag from './Hashtag';
@@ -24,7 +24,6 @@ const Post = (post: PostOut) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(40);
 
-  // Todo: Too many requests
   const { data, refetch } = useUsersCommonApiGetReactionCount('posts.post', Number(post.id), {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
@@ -36,7 +35,7 @@ const Post = (post: PostOut) => {
         refetch();
       },
       onError: (error) => {
-        toast.error(error.response?.data.message || 'An error occurred');
+        showErrorToast(error);
       },
     },
   });
@@ -49,7 +48,7 @@ const Post = (post: PostOut) => {
   };
 
   return (
-    <div className="mb-6 overflow-hidden rounded-common-xl border border-gray-100 shadow-md dark:border-gray-800 dark:bg-gray-900">
+    <div className="mb-6 overflow-hidden rounded-common-xl border border-gray-100 bg-white-secondary shadow-md res-text-xs">
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -61,11 +60,9 @@ const Post = (post: PostOut) => {
               height={36}
             />
             <div className="flex items-center">
-              <h3 className="font-semibold text-gray-950 dark:text-gray-300">
-                {post.author.username}
-              </h3>
-              <span className="mx-2 text-gray-400 dark:text-gray-600">&middot;</span>
-              <p className="text-sm text-gray-400">{dayjs(post?.created_at).fromNow()}</p>
+              <h3 className="font-semibold text-gray-900 res-text-sm">{post.author.username}</h3>
+              <span className="mx-2 text-gray-400">&middot;</span>
+              <p className="text-gray-400">{dayjs(post?.created_at).fromNow()}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -75,9 +72,11 @@ const Post = (post: PostOut) => {
           </div>
         </div>
         <Link href={`/posts/${post.id}`}>
-          <h2 className="mb-2 cursor-pointer text-xl font-bold text-primary">{post?.title}</h2>
+          <h2 className="mb-2 cursor-pointer font-bold text-primary res-text-base">
+            {post?.title}
+          </h2>
         </Link>
-        <div className="mb-4">
+        <div className="mb-4 text-gray-800">
           <TruncateText text={post?.content} maxLines={3} />
         </div>
 
@@ -98,7 +97,7 @@ const Post = (post: PostOut) => {
             ) : (
               <ThumbsUp size={20} onClick={() => handleReaction('upvote')} />
             )}
-            <span className="text-xs">{data?.data?.likes}</span>
+            <span>{data?.data?.likes}</span>
           </button>
           <button className="flex items-center space-x-1 transition hover:text-red-500">
             {data?.data.user_reaction === -1 ? (
@@ -111,13 +110,13 @@ const Post = (post: PostOut) => {
               <ThumbsDown size={20} onClick={() => handleReaction('downvote')} />
             )}
           </button>
-          <button className="flex items-center space-x-1 text-xs transition hover:text-green-500">
+          <button className="flex items-center space-x-1 transition hover:text-green-500">
             <MessageCircle size={16} />
             <span>{post.comments_count} comments</span>
           </button>
           <button className="flex items-center space-x-1 transition hover:text-purple-500">
             <Share2 size={16} />
-            <span className="text-xs">Share</span>
+            <span>Share</span>
           </button>
         </div>
       </div>
@@ -128,39 +127,39 @@ const Post = (post: PostOut) => {
 export default Post;
 
 export const PostSkeleton = () => (
-  <div className="mb-6 overflow-hidden rounded-common-xl bg-gray-100 shadow-md dark:bg-gray-800">
+  <div className="mb-6 overflow-hidden rounded-common-xl bg-gray-100 shadow-md">
     <div className="p-4">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="mr-3 h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+          <div className="mr-3 h-10 w-10 rounded-full bg-gray-300"></div>
           <div className="flex flex-col">
-            <div className="h-4 w-24 rounded bg-gray-300 dark:bg-gray-700"></div>
-            <div className="mt-1 h-4 w-16 rounded bg-gray-300 dark:bg-gray-700"></div>
+            <div className="h-4 w-24 rounded bg-gray-300"></div>
+            <div className="mt-1 h-4 w-16 rounded bg-gray-300"></div>
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-          <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="h-5 w-5 rounded bg-gray-300"></div>
+          <div className="h-5 w-5 rounded bg-gray-300"></div>
         </div>
       </div>
-      <div className="mb-2 h-6 w-3/4 rounded bg-gray-300 dark:bg-gray-700"></div>
-      <div className="mb-4 h-4 w-full rounded bg-gray-300 dark:bg-gray-700"></div>
-      <div className="mb-4 h-4 w-full rounded bg-gray-300 dark:bg-gray-700"></div>
+      <div className="mb-2 h-6 w-3/4 rounded bg-gray-300"></div>
+      <div className="mb-4 h-4 w-full rounded bg-gray-300"></div>
+      <div className="mb-4 h-4 w-full rounded bg-gray-300"></div>
       <div className="flex items-center space-x-6 text-gray-500">
         <div className="flex items-center space-x-1">
-          <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-          <div className="h-4 w-6 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="h-5 w-5 rounded bg-gray-300"></div>
+          <div className="h-4 w-6 rounded bg-gray-300"></div>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="h-5 w-5 rounded bg-gray-300"></div>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-          <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="h-5 w-5 rounded bg-gray-300"></div>
+          <div className="h-4 w-12 rounded bg-gray-300"></div>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-          <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="h-5 w-5 rounded bg-gray-300"></div>
+          <div className="h-4 w-12 rounded bg-gray-300"></div>
         </div>
       </div>
     </div>

@@ -95,14 +95,14 @@ const ImageUpload = <TFieldValues extends FieldValues>({
   });
 
   return (
-    <div className="mt-4 w-full rounded bg-white dark:bg-gray-800">
+    <div className="mt-4 w-full rounded res-text-sm">
       <LabeledTooltip label={label} info={info} />
       <div
         {...getRootProps()}
         className={clsx(
-          'cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-6 text-center transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700',
+          'cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-6 text-center transition-colors duration-200 ease-in-out hover:bg-gray-100',
           {
-            'border-red-500 dark:border-red-400': error,
+            'border-red-500': error,
           }
         )}
       >
@@ -116,24 +116,19 @@ const ImageUpload = <TFieldValues extends FieldValues>({
               className="mb-4 rounded"
               alt="Default"
             />
-            <p className="text-center dark:text-gray-300">
+            <p className="text-center">
               Drop your image to replace or{' '}
-              <span className="cursor-pointer text-blue-500 dark:text-blue-400">Browse</span>
+              <span className="cursor-pointer text-blue-500">Browse</span>
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Supports: PNG, JPG, JPEG, WEBP
-            </p>
+            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
           </div>
         ) : (
           <>
             <Image src="/imageupload.png" width={64} height={64} className="mx-auto" alt="Upload" />
-            <p className="dark:text-gray-300">
-              Drop your image here, or{' '}
-              <span className="cursor-pointer text-blue-500 dark:text-blue-400">Browse</span>
+            <p>
+              Drop your image here, or <span className="cursor-pointer text-blue-500">Browse</span>
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Supports: PNG, JPG, JPEG, WEBP
-            </p>
+            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
           </>
         )}
       </div>
@@ -148,7 +143,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
               className="mr-2 rounded"
             />
             <div className="flex-1">
-              <div className="flex justify-between text-sm dark:text-gray-300">
+              <div className="flex justify-between text-sm">
                 <span>{fileObj.file.name}</span>
                 <span>
                   {fileObj.status === 'uploading'
@@ -158,7 +153,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
                       : 'Completed'}
                 </span>
               </div>
-              <div className="mt-1 h-2 rounded bg-gray-200 dark:bg-gray-600">
+              <div className="mt-1 h-2 rounded bg-gray-200">
                 <div
                   className={`h-2 rounded ${fileObj.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`}
                   style={{ width: `${fileObj.progress}%` }}
@@ -172,7 +167,7 @@ const ImageUpload = <TFieldValues extends FieldValues>({
           </div>
         </div>
       )}
-      {error && <div className="mt-2 text-sm text-red-500 dark:text-red-400">{error.message}</div>}
+      {error && <div className="mt-2 text-sm text-red-500">{error.message}</div>}
     </div>
   );
 };

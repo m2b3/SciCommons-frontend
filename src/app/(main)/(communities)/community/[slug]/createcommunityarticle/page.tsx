@@ -136,7 +136,7 @@ const CommunityArticleForm: NextPage = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container py-4 text-gray-900">
       <div className="mb-4">
         <button
           onClick={() => router.push(`/community/${params?.slug}`)}

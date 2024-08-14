@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { useUsersApiGetMe, useUsersApiUpdateUser } from '@/api/users/users';
 import Button from '@/components/common/Button';
 import { Option } from '@/components/ui/multiple-selector';
-import { ErrorMessage } from '@/constants';
 import useIdenticon from '@/hooks/useIdenticons';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import PersonalLinks from './PersonalLinks';
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
         setEditMode(false);
       },
       onError: (error) => {
-        toast.error(error.response?.data.message || 'An error occurred while updating the profile');
+        showErrorToast(error);
       },
     },
   });
@@ -140,7 +140,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.response?.data.message || ErrorMessage);
+      showErrorToast(error);
     }
   }, [error]);
 
@@ -148,7 +148,7 @@ const Home: React.FC = () => {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="min-h-screen bg-gray-100 py-8 res-text-sm dark:bg-gray-900 dark:text-white"
+        className="min-h-screen bg-gray-100 py-8 text-gray-900 res-text-sm"
       >
         <div className="container mx-auto px-4">
           <Profile

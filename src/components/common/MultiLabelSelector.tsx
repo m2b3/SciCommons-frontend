@@ -31,16 +31,16 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
   }) => {
     return (
       <div>
-        <label className="mb-2 flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="mb-2 flex items-center font-medium text-gray-700 res-text-xs">
           {label}
-          <span className="ml-2 cursor-pointer text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
+          <span className="ml-2 cursor-pointer text-gray-400 hover:text-gray-600">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <Info size={16} />
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
-                  <p>{tooltipText}</p>
+                <TooltipContent className="bg-white text-gray-900">
+                  <p className="res-text-xs">{tooltipText}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -54,13 +54,11 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
           creatable={creatable}
           disabled={disabled}
           emptyIndicator={
-            <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-              no results found.
-            </p>
+            <p className="text-center leading-10 text-gray-600 res-text-base">no results found.</p>
           }
         />
         {fieldState.error && (
-          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldState.error.message}</p>
+          <p className="mt-1 text-red-500 res-text-xs">{fieldState.error.message}</p>
         )}
       </div>
     );

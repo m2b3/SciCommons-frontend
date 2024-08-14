@@ -35,9 +35,7 @@ const TruncateText = ({
     <div>
       <div
         ref={textRef}
-        className={`${
-          !isExpanded && isTruncated ? 'overflow-hidden' : ''
-        } text-gray-700 dark:text-gray-300`}
+        className={`${!isExpanded && isTruncated ? 'overflow-hidden' : ''} text-gray-700`}
         style={{
           display: '-webkit-box',
           WebkitLineClamp: !isExpanded && isTruncated ? maxLines : 'unset',
@@ -48,7 +46,7 @@ const TruncateText = ({
       {isTruncated && !hideButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="mt-1 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+          className="mt-1 text-blue-600 res-text-xs hover:underline"
         >
           {isExpanded ? 'Read less' : 'Read more'}
         </button>

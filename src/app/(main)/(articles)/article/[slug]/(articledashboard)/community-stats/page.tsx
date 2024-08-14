@@ -27,13 +27,13 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
 
   return (
     data && (
-      <div className="container mx-auto p-6 dark:bg-gray-900">
+      <div className="container mx-auto p-6 text-gray-900">
         {/* Header */}
         <header className="mb-6">
-          <h1 className="text-3xl font-bold dark:text-white">
+          <h1 className="font-bold res-heading-lg">
             <TruncateText text={data.data.title} maxLines={2} />
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 res-text-xs">
             Community: {data.data.community_name} | Author: {data.data.submitter}
           </p>
         </header>
@@ -41,34 +41,28 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
           <>
             {/* Community Performance Metrics */}
             <section className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div className="rounded bg-white p-4 shadow dark:bg-gray-800">
-                <h2 className="text-2xl font-semibold dark:text-white">{data.data.discussions}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Community Discussions</p>
+              <div className="rounded bg-white-primary p-4 shadow">
+                <h2 className="font-semibold res-heading-sm">{data.data.discussions}</h2>
+                <p className="text-gray-500 res-text-xs">Community Discussions</p>
               </div>
-              <div className="rounded bg-white p-4 shadow dark:bg-gray-800">
-                <h2 className="text-2xl font-semibold dark:text-white">{data.data.likes}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Community Likes</p>
+              <div className="rounded bg-white-primary p-4 shadow">
+                <h2 className="font-semibold res-heading-sm">{data.data.likes}</h2>
+                <p className="text-gray-500 res-text-xs">Community Likes</p>
               </div>
-              <div className="rounded bg-white p-4 shadow dark:bg-gray-800">
-                <h2 className="text-2xl font-semibold dark:text-white">
-                  {data.data.reviews_count}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Community Reviews and Ratings
-                </p>
+              <div className="rounded bg-white-primary p-4 shadow">
+                <h2 className="font-semibold res-heading-sm">{data.data.reviews_count}</h2>
+                <p className="text-gray-500 res-text-xs">Community Reviews and Ratings</p>
               </div>
             </section>
 
             {/* Community Engagement Insights */}
             <section className="mb-6">
-              <h2 className="mb-4 text-xl font-semibold dark:text-white">
-                Community Engagement Insights
-              </h2>
+              <h2 className="mb-4 font-semibold res-heading-sm">Community Engagement Insights</h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <Card className="dark:bg-gray-800">
-                  <Title className="dark:text-white">Community Reviews Over Time</Title>
+                <Card>
+                  <Title>Community Reviews Over Time</Title>
                   <LineChart
-                    className="h-80 dark:text-gray-200"
+                    className="h-80"
                     data={data.data.reviews_over_time.map((item) => ({
                       date: item.date,
                       reviews: item.count,
@@ -81,10 +75,10 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
                     onValueChange={(v) => console.log(v)}
                   />
                 </Card>
-                <Card className="dark:bg-gray-800">
-                  <Title className="dark:text-white">Community Likes Over Time</Title>
+                <Card>
+                  <Title>Community Likes Over Time</Title>
                   <LineChart
-                    className="h-80 dark:text-gray-200"
+                    className="h-80"
                     data={data.data.likes_over_time.map((item) => ({
                       date: item.date,
                       likes: item.count,
@@ -97,34 +91,26 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
                     onValueChange={(v) => console.log(v)}
                   />
                 </Card>
-                <Card className="dark:bg-gray-800">
-                  <Title className="dark:text-white">Average Community Rating</Title>
-                  <h2 className="text-2xl font-semibold dark:text-white">
-                    {data.data.average_rating} / 5
-                  </h2>
+                <Card>
+                  <Title>Average Community Rating</Title>
+                  <h2 className="font-semibold res-heading-sm">{data.data.average_rating} / 5</h2>
                 </Card>
               </div>
             </section>
 
             {/* Community Reviews and Feedback */}
             <section className="mb-6">
-              <h2 className="mb-4 text-xl font-semibold dark:text-white">
-                Community Reviews and Feedback
-              </h2>
-              <div className="rounded bg-white p-4 shadow dark:bg-gray-800">
-                <h3 className="mb-2 text-lg font-semibold dark:text-white">
-                  Recent Community Reviews
-                </h3>
+              <h2 className="mb-4 font-semibold res-heading-sm">Community Reviews and Feedback</h2>
+              <div className="rounded bg-white-primary p-4 shadow">
+                <h3 className="mb-2 font-semibold res-heading-xs">Recent Community Reviews</h3>
                 {data.data.recent_reviews.length === 0 && (
-                  <p className="dark:text-gray-300">
-                    No community reviews available for this article.
-                  </p>
+                  <p className="res-text-sm">No community reviews available for this article.</p>
                 )}
                 <ul>
                   {data.data.recent_reviews.map((review, index) => (
                     <li key={index} className="mb-2">
-                      <p className="text-sm text-gray-700 dark:text-gray-300">{review.excerpt}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-gray-700 res-text-sm">{review.excerpt}</p>
+                      <p className="text-gray-500 res-text-xs">
                         {new Date(review.date).toLocaleDateString()}
                       </p>
                     </li>
@@ -135,22 +121,20 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
 
             {/* Community Engagement Actions */}
             <section className="mb-6">
-              <h2 className="mb-4 text-xl font-semibold dark:text-white">
-                Community Engagement Actions
-              </h2>
-              <div className="rounded bg-white p-4 shadow dark:bg-gray-800">
-                <button className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+              <h2 className="mb-4 font-semibold res-heading-sm">Community Engagement Actions</h2>
+              <div className="rounded bg-white-primary p-4 shadow">
+                <button className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
                   Share Article
                 </button>
-                <button className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+                <button className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600">
                   Respond to Reviews
                 </button>
               </div>
             </section>
           </>
         ) : (
-          <div className="rounded bg-white p-4 shadow dark:bg-gray-800">
-            <p className="text-center text-lg dark:text-white">
+          <div className="rounded bg-white-primary p-4 shadow">
+            <p className="text-center res-text-base">
               No community data available for this article.
             </p>
           </div>

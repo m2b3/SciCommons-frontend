@@ -13,6 +13,7 @@ import {
   useCommunitiesApiInvitationRespondToEmailInvitation,
 } from '@/api/community-invitations/community-invitations';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function UnRegisteredUsersInvitation({
@@ -28,10 +29,13 @@ export default function UnRegisteredUsersInvitation({
   const communityId = parseInt(params.slug);
   const invitationId = parseInt(params.invitation_id);
 
-  const { data, isSuccess, error, isPending } =
-    useCommunitiesApiInvitationGetCommunityInvitationDetails(communityId, invitationId, {
+  const { data, error, isPending } = useCommunitiesApiInvitationGetCommunityInvitationDetails(
+    communityId,
+    invitationId,
+    {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    });
+    }
+  );
 
   const {
     mutate,
@@ -44,15 +48,8 @@ export default function UnRegisteredUsersInvitation({
   });
 
   useEffect(() => {
-    if (isSuccess) {
-      console.log(data);
-    }
-  }, [data, isSuccess]);
-
-  useEffect(() => {
     if (error) {
-      console.error(error);
-      toast.error(error.response?.data.message || 'Failed to get invitation details');
+      showErrorToast(error);
     }
   }, [error]);
 

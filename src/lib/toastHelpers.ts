@@ -9,13 +9,13 @@ interface ErrorResponse {
 }
 
 /**
- * Display an error message using react-hot-toast.
+ * Display an error message using sonner.
  * @param {ErrorResponse} error - The error object.
  * @param {string} [defaultMessage="An error occurred"] - The default message to display if no error message is found.
  */
 export const showErrorToast = (
   error: ErrorResponse,
-  defaultMessage: string = 'An error occurred'
+  defaultMessage: string = 'An error occurred. Please try again later.'
 ): void => {
   const message = error?.response?.data?.message || defaultMessage;
   toast.error(message);

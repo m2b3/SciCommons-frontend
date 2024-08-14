@@ -21,7 +21,7 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col rounded-lg bg-white p-6 shadow-md dark:bg-gray-800 md:flex-row">
+    <div className="mx-auto flex max-w-4xl flex-col rounded-lg bg-white-secondary p-6 shadow-md md:flex-row">
       <div className="relative mx-auto mb-6 flex items-center justify-center md:mb-0 md:mr-6 md:w-1/3">
         <div className="h-40 w-40 overflow-hidden rounded-full bg-gray-100">
           <Image

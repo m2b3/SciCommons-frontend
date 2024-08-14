@@ -112,7 +112,7 @@ const FileUpload = <TFieldValues extends FieldValues>({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full text-gray-900">
       <div
         {...getRootProps()}
         className={clsx(
@@ -130,7 +130,7 @@ const FileUpload = <TFieldValues extends FieldValues>({
         <p className="text-sm text-gray-500">Maximum {MAX_FILES} files</p>
         <button
           type="button"
-          className={clsx('mt-2 rounded-md bg-blue-500 px-4 py-2 text-white', {
+          className={clsx('mt-2 rounded-md bg-blue-500 px-4 py-2 text-gray-900', {
             'cursor-not-allowed opacity-50': fileObjs.length >= MAX_FILES,
           })}
           disabled={fileObjs.length >= MAX_FILES}

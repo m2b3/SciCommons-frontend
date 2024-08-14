@@ -13,7 +13,7 @@ interface OptionCardProps {
 const OptionCard = ({ name, description, value, selectedValue, onChange }: OptionCardProps) => {
   return (
     <div
-      className={`cursor-pointer rounded-lg border p-4 ${selectedValue === value ? 'border-green-500 bg-green-100' : 'border-gray-300'}`}
+      className={`cursor-pointer rounded-lg border p-4 res-text-sm ${selectedValue === value ? 'border-green-500 bg-green-100' : 'border-gray-300'}`}
       onClick={() => onChange(value)}
     >
       <div className="flex items-center justify-between">

@@ -25,11 +25,11 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
 
   return (
     <>
-      <div className="fixed left-0 top-10 hidden h-screen overflow-y-auto border-r border-gray-200 p-4 dark:border-gray-700 dark:bg-gray-800 md:block md:w-64 md:bg-white">
+      <div className="fixed left-0 top-10 hidden h-screen overflow-y-auto border-r border-gray-200 bg-white-secondary p-4 text-gray-900 md:block md:w-64 md:bg-white-primary">
         <div className="flex flex-col space-y-2 py-4">
           <Link
             href={baseHref}
-            className="mb-8 flex items-center text-sm text-gray-500 hover:text-green-500 hover:underline dark:text-gray-400 dark:hover:text-green-400"
+            className="mb-8 flex items-center text-sm text-gray-500 hover:text-green-500 hover:underline"
           >
             <MoveLeft size={14} className="mr-3" />
             {baseHref.includes('article') ? 'Back to Article' : 'Back to Community'}
@@ -39,13 +39,11 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
               key={link.href}
               href={link.href}
               className={`flex items-center rounded-md px-4 py-2 ${
-                pathname === link.href
-                  ? 'bg-black text-white dark:bg-white dark:text-black'
-                  : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                pathname === link.href ? 'bg-black text-white' : 'hover:bg-gray-200'
               }`}
             >
               {React.cloneElement(link.icon, {
-                className: pathname === link.href ? 'text-white mr-3 dark:text-black' : 'mr-3',
+                className: pathname === link.href ? 'text-white mr-3' : 'mr-3',
               })}
               {link.label}
             </Link>
@@ -55,18 +53,18 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
       <div className="fixed left-0 top-10 z-10 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <button className="px-2 py-4 dark:text-white">
+            <button className="px-2 py-4">
               <Menu size={24} />
             </button>
           </SheetTrigger>
-          <SheetContent side="left" className="dark:bg-gray-800 dark:text-white">
+          <SheetContent side="left">
             <SheetHeader>
-              <SheetTitle className="dark:text-white">Menu</SheetTitle>
+              <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col space-y-2 py-4">
               <Link
                 href={baseHref}
-                className="mb-8 flex items-center text-sm text-gray-500 hover:text-green-500 hover:underline dark:text-gray-400 dark:hover:text-green-400"
+                className="mb-8 flex items-center text-sm text-gray-500 hover:text-green-500 hover:underline"
               >
                 <MoveLeft size={14} className="mr-3" />
                 {baseHref.includes('article') ? 'Back to Article' : 'Back to Community'}
@@ -76,13 +74,11 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
                   key={link.href}
                   href={link.href}
                   className={`flex items-center rounded-md px-4 py-2 ${
-                    pathname === link.href
-                      ? 'bg-black text-white dark:bg-white dark:text-black'
-                      : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                    pathname === link.href ? 'bg-black text-white' : 'hover:bg-gray-200'
                   }`}
                 >
                   {React.cloneElement(link.icon, {
-                    className: pathname === link.href ? 'text-white mr-3 dark:text-black' : 'mr-3',
+                    className: pathname === link.href ? 'text-white mr-3' : 'mr-3',
                   })}
                   {link.label}
                 </Link>

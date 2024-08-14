@@ -27,7 +27,7 @@ const RequestListItem: React.FC<RequestListItemProps> = ({
   communityId,
 }) => {
   return (
-    <div className="mb-2 flex items-center justify-between rounded-md border bg-white p-4 shadow-md">
+    <div className="mb-2 flex items-center justify-between rounded-md border p-4 shadow-md">
       <div className="flex items-center">
         <Image
           src={profilePicture ? profilePicture : '/images/default-avatar.png'}
@@ -85,7 +85,7 @@ export default RequestListItem;
 
 export const RequestListItemSkeleton = () => {
   return (
-    <div className="mb-2 flex animate-pulse items-center justify-between rounded-md border bg-white p-4 shadow-md">
+    <div className="mb-2 flex animate-pulse items-center justify-between rounded-md border p-4 shadow-md">
       <div className="flex items-center">
         <div className="mr-4 h-12 w-12 rounded-full bg-gray-300"></div>
         <div className="flex flex-col gap-2">

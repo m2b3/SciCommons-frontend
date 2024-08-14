@@ -240,7 +240,7 @@ const ContributionsPage: React.FC = () => {
   ]);
 
   return (
-    <div className="bg-gray-100 text-black res-text-sm dark:bg-gray-900 dark:text-white">
+    <div className="bg-gray-100 text-gray-900 res-text-sm">
       {isPending && (
         <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <ProfileHeaderSkeleton />
@@ -280,7 +280,7 @@ const ContributionsPage: React.FC = () => {
               <div className="mt-8">
                 <div className="sm:hidden">
                   <button
-                    className="flex w-full items-center justify-between rounded-lg bg-white px-4 py-2 text-left font-semibold text-gray-800 shadow"
+                    className="flex w-full items-center justify-between rounded-lg bg-white-primary px-4 py-2 text-left font-semibold text-gray-800 shadow"
                     onClick={() => setIsTabsOpen(!isTabsOpen)}
                   >
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
@@ -289,7 +289,7 @@ const ContributionsPage: React.FC = () => {
                     />
                   </button>
                   {isTabsOpen && (
-                    <div className="mt-2 overflow-hidden rounded-lg bg-white shadow">
+                    <div className="mt-2 overflow-hidden rounded-lg bg-white-primary shadow">
                       {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
                         <button
                           key={tab}
@@ -317,12 +317,12 @@ const ContributionsPage: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-700 sm:p-6">
+                <div className="rounded-lg bg-white-primary p-4 shadow-md sm:p-6">
                   <h2 className="mb-4 text-xl font-semibold">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                   </h2>
                   {tabContent[activeTab].length === 0 && (
-                    <p className="text-gray-500 dark:text-gray-400">No {activeTab} found</p>
+                    <p className="text-gray-500">No {activeTab} found</p>
                   )}
                   {tabContent[activeTab].map((item, index) => (
                     <ItemCard key={index} {...item} />

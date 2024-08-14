@@ -3,12 +3,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Users } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { useCommunitiesApiListCommunities } from '@/api/communities/communities';
 import { CommunityOut } from '@/api/schemas';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import CommunityCard, { CommunityCardSkeleton } from '@/components/communities/CommunityCard';
+import { showErrorToast } from '@/lib/toastHelpers';
 
 interface CommunitiesResponse {
   data: {
@@ -36,7 +36,7 @@ const Communities: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      showErrorToast(error);
     }
     if (data) {
       if (page === 1 || loadingType === LoadingType.PAGINATION) {

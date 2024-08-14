@@ -159,7 +159,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
   };
 
   return (
-    <div className="rounded-md bg-white p-4 text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+    <div className="rounded-md bg-white-secondary p-4 text-gray-900">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
@@ -183,7 +183,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-white p-1 text-sm"
+                className="rounded border bg-white-primary p-1 text-sm"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >

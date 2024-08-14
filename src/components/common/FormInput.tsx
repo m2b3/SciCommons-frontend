@@ -6,8 +6,6 @@ import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// Todo: use `useFormContext` to avoid passing `errors` and `register` as props
-
 interface InputProps<TFieldValues extends FieldValues> {
   label?: string;
   type: string;
@@ -19,12 +17,12 @@ interface InputProps<TFieldValues extends FieldValues> {
   minLengthMessage?: string;
   maxLengthValue?: number;
   maxLengthMessage?: string;
-  name: keyof TFieldValues; // Ensure name is a key of the form values
+  name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
-  readOnly?: boolean; // Optional boolean to enable/disable editing
-  info?: string; // Optional info text for the tooltip
-  textArea?: boolean; // Optional boolean to render a textarea
+  readOnly?: boolean;
+  info?: string;
+  textArea?: boolean;
 }
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -68,25 +66,24 @@ const FormInput = <TFieldValues extends FieldValues>({
     className: clsx(
       'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-brand focus:border-brand res-text-sm',
       error && !readOnly ? 'border-red-500' : 'border-gray-300',
-      'dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:focus:ring-brand dark:focus:border-brand',
-      readOnly ? 'bg-gray-100 dark:bg-gray-700' : ''
+      readOnly ? 'bg-gray-100' : ''
     ),
   };
   return (
     <div className="w-full">
       {label && (
         <div className="mb-2 flex items-center space-x-2">
-          <span className="font-medium text-gray-700 res-text-sm dark:text-gray-300">{label}</span>
+          <span className="font-medium text-gray-700 res-text-xs">{label}</span>
           {info && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button>
-                    <Info size={16} />
+                    <Info size={14} />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{info}</p>
+                  <p className="res-text-xs">{info}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -95,7 +92,7 @@ const FormInput = <TFieldValues extends FieldValues>({
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
       {error && !readOnly && (
-        <p className="mt-2 text-red-600 res-text-sm dark:text-red-400">{String(error.message)}</p>
+        <p className="mt-2 text-red-600 res-text-xs">{String(error.message)}</p>
       )}
     </div>
   );

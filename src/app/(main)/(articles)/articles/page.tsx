@@ -3,12 +3,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { FileX2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import { ArticleOut } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
+import { showErrorToast } from '@/lib/toastHelpers';
 
 interface ArticlesResponse {
   data: {
@@ -35,7 +35,7 @@ const Articles: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      showErrorToast(error);
     }
     if (data) {
       if (page === 1 || loadingType === LoadingType.PAGINATION) {

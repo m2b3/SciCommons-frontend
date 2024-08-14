@@ -12,7 +12,7 @@ interface DisplayArticleProps {
 
 const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
   return (
-    <div className="flex flex-col items-start rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:flex-row">
+    <div className="flex flex-col items-start rounded-lg border bg-white-secondary p-4 shadow-sm res-text-xs sm:flex-row">
       <div className="mb-4 w-full sm:mb-0 sm:mr-4 sm:w-1/3">
         <div className="relative h-0 w-full pb-[75%]">
           <Image
@@ -25,18 +25,18 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </div>
       </div>
       <div className="relative flex-1">
-        <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+        <h2 className="mb-4 font-bold text-gray-900 res-text-xl">
           <TruncateText text={article.title} maxLines={2} />
         </h2>
         <div className="mb-4">
-          <h3 className="mb-1 text-lg font-semibold text-gray-700 dark:text-gray-300">Abstract</h3>
-          <p className="text-gray-600 dark:text-gray-400">
+          <h3 className="mb-1 font-semibold text-gray-700 res-text-base">Abstract</h3>
+          <p className="text-gray-600">
             <TruncateText text={article.abstract} maxLines={2} />
           </p>
         </div>
         <div className="mb-4">
-          <h3 className="mb-1 text-sm font-semibold text-gray-600 dark:text-gray-400">Authors</h3>
-          <p className="text-gray-700 dark:text-gray-300">
+          <h3 className="mb-1 font-semibold text-gray-600 res-text-xs">Authors</h3>
+          <p className="text-gray-700">
             <TruncateText
               text={article.authors.map((author) => author.label).join(', ')}
               maxLines={2}
@@ -44,19 +44,16 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           </p>
         </div>
         <div className="mb-4">
-          <h3 className="mb-1 text-sm font-semibold text-gray-600 dark:text-gray-400">Keywords</h3>
+          <h3 className="mb-1 font-semibold text-gray-600 res-text-xs">Keywords</h3>
           <TruncateText text={article.keywords.join(', ')} maxLines={2} />
         </div>
         <div>
-          <h3 className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
-            Article Links
-          </h3>
-          {/* Display article.article_link if article.article_pdf_urls is an empty array */}
+          <h3 className="mb-2 font-semibold text-gray-600 res-text-xs">Article Links</h3>
           {article.article_pdf_urls.length === 0 && (
             <div className="mb-1">
               <a
-                href={article.article_link || '#'} // Fallback to # if article_link is empty
-                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                href={article.article_link || '#'}
+                className="text-blue-600 res-text-xs hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -68,7 +65,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
             <div key={index} className="mb-1">
               <a
                 href={link}
-                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                className="text-blue-600 res-text-xs hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -79,7 +76,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </div>
         {article.is_submitter && (
           <Link href={`/article/${article.slug}/official-stats`}>
-            <button className="absolute bottom-0 right-0 rounded-lg bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black">
+            <button className="absolute bottom-0 right-0 rounded-lg bg-black px-4 py-2 text-white res-text-xs">
               Dashboard
             </button>
           </Link>
@@ -93,20 +90,20 @@ export default DisplayArticle;
 
 export const DisplayArticleSkeleton: React.FC = () => {
   return (
-    <div className="text-gray-900 dark:text-gray-100">
-      <div className="flex animate-pulse items-start rounded-lg border border-gray-200 p-4 shadow-sm dark:border-gray-700">
+    <div className="text-gray-900">
+      <div className="flex animate-pulse items-start rounded-lg border border-gray-200 p-4 shadow-sm">
         <div className="mr-4 h-auto w-1/3">
-          <div className="h-52 w-full rounded-lg bg-gray-300 dark:bg-gray-600"></div>
+          <div className="h-52 w-full rounded-lg bg-gray-300"></div>
         </div>
         <div className="flex-1 space-y-4">
-          <div className="h-6 rounded bg-gray-300 dark:bg-gray-600"></div>
-          <div className="h-4 w-3/4 rounded bg-gray-300 dark:bg-gray-600"></div>
-          <div className="h-4 rounded bg-gray-300 dark:bg-gray-600"></div>
-          <div className="h-4 w-1/2 rounded bg-gray-300 dark:bg-gray-600"></div>
-          <div className="h-4 rounded bg-gray-300 dark:bg-gray-600"></div>
+          <div className="h-6 rounded bg-gray-300"></div>
+          <div className="h-4 w-3/4 rounded bg-gray-300"></div>
+          <div className="h-4 rounded bg-gray-300"></div>
+          <div className="h-4 w-1/2 rounded bg-gray-300"></div>
+          <div className="h-4 rounded bg-gray-300"></div>
         </div>
       </div>
-      <div className="mt-4 h-64 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
+      <div className="mt-4 h-64 w-full rounded bg-gray-200"></div>
     </div>
   );
 };

@@ -105,7 +105,7 @@ function SearchableList<T>({
         placeholder={searchPlaceholder}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-4"
+        className="mb-4 text-gray-900 focus-visible:ring-foreground"
       />
       <div className="flex min-h-screen flex-col space-y-4">
         {items.map((item, index) => (
@@ -127,7 +127,7 @@ function SearchableList<T>({
         )}
       </div>
       {loadingType === LoadingType.PAGINATION && items.length > 0 && (
-        <Pagination className="mt-4">
+        <Pagination className="mt-4 text-gray-900">
           <PaginationContent>
             {currentPage > 1 && (
               <PaginationItem>

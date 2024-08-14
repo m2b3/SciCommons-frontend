@@ -97,11 +97,11 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   };
 
   return (
-    <div className="grid min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[1fr_520px]">
+    <div className="grid min-h-screen grid-cols-1 overflow-hidden text-dark-primary lg:grid-cols-[1fr_520px]">
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center sm:mt-10 md:px-8">
         {isLoading && <PostDetailSkeleton />}
         {data && (
-          <div className="x-auto min-h-screen w-full max-w-[720px] border-gray-100 bg-gray-50 p-6 shadow-common dark:border-gray-800 dark:bg-white/5 sm:min-h-fit sm:rounded-common-xl sm:border">
+          <div className="x-auto min-h-screen w-full max-w-[720px] border-gray-100 bg-gray-50 p-6 shadow-common sm:min-h-fit sm:rounded-common-xl sm:border">
             <div className="mb-4 flex items-center justify-between">
               <div className="mb-4 flex items-center">
                 <Image
@@ -112,9 +112,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                   height={40}
                 />
                 <div>
-                  <h2 className="font-semibold text-gray-950 dark:text-gray-300">
-                    {data.data.author.username}
-                  </h2>
+                  <h2 className="font-semibold text-gray-900">{data.data.author.username}</h2>
                   <p className="text-sm text-gray-400">{dayjs(data.data.created_at).fromNow()}</p>
                 </div>
               </div>
@@ -148,7 +146,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
               </div>
             </div>
             <h1 className="mb-2 text-xl font-bold text-primary">{data.data.title}</h1>
-            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mb-4 text-sm text-gray-600">
               <TruncateText text={data.data.content} maxLines={3} />
             </p>
             {data?.data?.hashtags && data?.data?.hashtags?.length > 0 && (
@@ -194,7 +192,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                 <span className="text-xs">Share</span>
               </button>
             </div>
-            <div className="border-t border-gray-300 pt-4 dark:border-gray-700">
+            <div className="border-t border-gray-300 pt-4">
               <h3 className="text-2lg mb-4 font-semibold text-gray-500">Comments</h3>
               <div className="space-y-4">
                 <RedditStyleComments postId={data.data.id ?? 0} />
@@ -211,10 +209,8 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
           : Array.from({ length: 3 }).map((_, index) => <PostHighlightCardSkeleton key={index} />)}
         {userPostData?.data?.items.length === 0 && (
           <div className="flex w-full flex-col items-center pt-20">
-            <FileX2 className="text-gray-400 dark:text-gray-700" size={50} strokeWidth={1.5} />
-            <h1 className="mt-4 text-lg font-bold text-gray-400 dark:text-gray-700">
-              No Related Posts
-            </h1>
+            <FileX2 className="text-gray-400" size={50} strokeWidth={1.5} />
+            <h1 className="mt-4 text-lg font-bold text-gray-400">No Related Posts</h1>
           </div>
         )}
       </div>
@@ -225,36 +221,36 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
 export default PostDetailPage;
 
 const PostDetailSkeleton = () => (
-  <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-lg bg-white p-6 dark:bg-gray-800">
+  <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-lg bg-white p-6">
     <div className="mb-4 flex items-center">
-      <div className="mr-3 h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+      <div className="mr-3 h-10 w-10 rounded-full bg-gray-300"></div>
       <div>
-        <div className="h-4 w-24 rounded bg-gray-300 dark:bg-gray-700"></div>
-        <div className="mt-1 h-4 w-16 rounded bg-gray-300 dark:bg-gray-700"></div>
+        <div className="h-4 w-24 rounded bg-gray-300"></div>
+        <div className="mt-1 h-4 w-16 rounded bg-gray-300"></div>
       </div>
     </div>
-    <div className="mb-2 h-8 w-3/4 rounded bg-gray-300 dark:bg-gray-700"></div>
-    <div className="mb-4 h-4 w-full rounded bg-gray-300 dark:bg-gray-700"></div>
-    <div className="mb-4 h-4 w-full rounded bg-gray-300 dark:bg-gray-700"></div>
-    <div className="mb-4 h-4 w-full rounded bg-gray-300 dark:bg-gray-700"></div>
+    <div className="mb-2 h-8 w-3/4 rounded bg-gray-300"></div>
+    <div className="mb-4 h-4 w-full rounded bg-gray-300"></div>
+    <div className="mb-4 h-4 w-full rounded bg-gray-300"></div>
+    <div className="mb-4 h-4 w-full rounded bg-gray-300"></div>
     <div className="mb-6 flex items-center space-x-4 text-gray-500">
       <div className="flex items-center space-x-1">
-        <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-        <div className="h-4 w-6 rounded bg-gray-300 dark:bg-gray-700"></div>
+        <div className="h-5 w-5 rounded bg-gray-300"></div>
+        <div className="h-4 w-6 rounded bg-gray-300"></div>
       </div>
       <div className="flex items-center space-x-1">
-        <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-        <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-700"></div>
+        <div className="h-5 w-5 rounded bg-gray-300"></div>
+        <div className="h-4 w-12 rounded bg-gray-300"></div>
       </div>
       <div className="flex items-center space-x-1">
-        <div className="h-5 w-5 rounded bg-gray-300 dark:bg-gray-700"></div>
-        <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-700"></div>
+        <div className="h-5 w-5 rounded bg-gray-300"></div>
+        <div className="h-4 w-12 rounded bg-gray-300"></div>
       </div>
     </div>
     <div className="border-t border-gray-200 pt-4">
       <h3 className="mb-4 text-lg font-semibold text-gray-800">Comments</h3>
       <div className="mb-4">
-        <div className="h-12 rounded bg-gray-300 dark:bg-gray-700"></div>
+        <div className="h-12 rounded bg-gray-300"></div>
       </div>
     </div>
   </div>

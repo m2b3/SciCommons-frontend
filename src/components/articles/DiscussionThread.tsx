@@ -82,14 +82,14 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
 
   return (
     discussion && (
-      <div className="text-gray-900 dark:text-gray-100">
+      <div className="text-gray-900 res-text-sm">
         <button
           onClick={() => setDiscussionId(null)}
-          className="mb-4 flex items-center text-sm text-gray-600 hover:text-blue-500 hover:underline dark:text-gray-300 dark:hover:text-blue-400"
+          className="mb-4 flex items-center text-gray-600 res-text-xs hover:text-blue-500 hover:underline"
         >
           <ArrowLeft className="mr-2" size={16} /> Back to Discussions
         </button>
-        <div className="mb-4 rounded bg-white p-4 shadow dark:bg-gray-800 dark:shadow-gray-700">
+        <div className="mb-4 rounded bg-white-secondary p-4 shadow">
           <div className="mb-2 flex items-start justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
@@ -101,21 +101,21 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                   className="mr-2 rounded-full"
                 />
                 <div>
-                  <span className="text-sm">{discussion.anonymous_name}</span>
-                  <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                  <span>{discussion.anonymous_name}</span>
+                  <span className="ml-2 text-gray-500 res-text-xs">
                     • {dayjs(discussion.created_at).fromNow()}
                   </span>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="mr-4 flex-grow cursor-pointer font-bold">
+                <p className="mr-4 flex-grow cursor-pointer font-bold res-text-base">
                   <TruncateText text={discussion.topic} maxLines={2} />
                 </p>
-                <p className="text-sm">
+                <p>
                   <TruncateText text={discussion.content} maxLines={3} />
                 </p>
               </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="mt-4 flex items-center text-gray-500 res-text-xs">
                 <button className="mr-4 flex items-center space-x-1">
                   <MessageSquare size={16} />
                   <span>{discussion.comments_count} comments</span>
@@ -127,19 +127,17 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <MoreVertical className="text-gray-500 dark:text-gray-400" />
+              <MoreVertical className="text-gray-500" />
               <div className="flex flex-col items-center">
                 <button
-                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  className="text-gray-400 hover:text-gray-600"
                   onClick={() => handleReaction('upvote')}
                 >
                   <ChevronUp size={20} />
                 </button>
-                <span className="font-bold text-gray-700 dark:text-gray-300">
-                  {reactions?.data.likes}
-                </span>
+                <span className="font-bold text-gray-700">{reactions?.data.likes}</span>
                 <button
-                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  className="text-gray-400 hover:text-gray-600"
                   onClick={() => handleReaction('downvote')}
                 >
                   <ChevronDown size={20} />
@@ -148,7 +146,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
             </div>
           </div>
         </div>
-        <h3 className="mb-2 text-lg font-bold">Comments</h3>
+        <h3 className="mb-2 font-bold res-text-base">Comments</h3>
         <DiscussionComments discussionId={discussionId} />
       </div>
     )

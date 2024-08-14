@@ -16,6 +16,7 @@ import ImageUpload from '@/components/common/ImageUpload';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import OptionCard from './OptionCard';
@@ -53,8 +54,7 @@ const CreateCommunity: React.FC = () => {
         router.push(`/community/${data.data.slug}`);
       },
       onError: (error) => {
-        console.error('Error submitting article:', error);
-        toast.error(`${error.response?.data.message || 'An error occurred'}`);
+        showErrorToast(error);
       },
     },
   });
@@ -104,7 +104,7 @@ const CreateCommunity: React.FC = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container py-4 text-gray-900">
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold">
           Create your

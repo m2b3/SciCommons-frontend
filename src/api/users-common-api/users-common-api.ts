@@ -56,7 +56,7 @@ export const getUsersCommonApiCheckPermissionQueryKey = (
 
 export const getUsersCommonApiCheckPermissionQueryOptions = <
   TData = Awaited<ReturnType<typeof usersCommonApiCheckPermission>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersCommonApiCheckPermissionParams,
   options?: {
@@ -84,14 +84,14 @@ export const getUsersCommonApiCheckPermissionQueryOptions = <
 export type UsersCommonApiCheckPermissionQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersCommonApiCheckPermission>>
 >;
-export type UsersCommonApiCheckPermissionQueryError = ErrorType<unknown>;
+export type UsersCommonApiCheckPermissionQueryError = ErrorType<Message>;
 
 /**
  * @summary Check Permission
  */
 export const useUsersCommonApiCheckPermission = <
   TData = Awaited<ReturnType<typeof usersCommonApiCheckPermission>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersCommonApiCheckPermissionParams,
   options?: {

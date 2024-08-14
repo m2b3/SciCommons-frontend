@@ -33,7 +33,7 @@ const TeamMember = ({
   linkedin?: string;
   twitter?: string;
 }) => (
-  <div className="flex flex-col items-center rounded-lg bg-white p-4 shadow-md transition-transform hover:scale-105">
+  <div className="flex flex-col items-center rounded-lg bg-white-primary p-4 shadow-md transition-transform hover:scale-105">
     <Image
       src={image}
       alt={name}
@@ -41,8 +41,8 @@ const TeamMember = ({
       width={150}
       height={150}
     />
-    <h3 className="mb-1 text-xl font-semibold">{name}</h3>
-    <p className="mb-3 text-gray-600">{role}</p>
+    <h3 className="mb-1 font-semibold res-text-base">{name}</h3>
+    <p className="mb-3 text-gray-600 res-text-xs">{role}</p>
     <div className="flex space-x-3">
       <SocialLink href={github} icon={GithubIcon} />
       <SocialLink href={linkedin} icon={LinkedinIcon} />
@@ -85,12 +85,14 @@ const AboutPage = () => {
 
   return (
     <div className="bg-gray-100">
-      <div className="container mx-auto min-h-screen bg-gray-100 px-4 py-8">
-        <h1 className="mb-8 text-center text-4xl font-bold text-gray-800">About Our Project</h1>
+      <div className="container mx-auto min-h-screen bg-gray-100 px-4 py-8 res-text-base">
+        <h1 className="mb-8 text-center font-bold text-gray-800 res-heading-base">
+          About Our Project
+        </h1>
 
         <Card className="mb-8 transition-shadow hover:shadow-lg">
           <CardHeader className="bg-blue-600 text-white">
-            <CardTitle className="text-2xl">Our Mission</CardTitle>
+            <CardTitle className="res-heading-base">Our Mission</CardTitle>
           </CardHeader>
           <CardContent className="mt-4">
             <p className="mb-4">
@@ -109,7 +111,7 @@ const AboutPage = () => {
 
         <Card className="mb-8 transition-shadow hover:shadow-lg">
           <CardHeader className="bg-green-600 text-white">
-            <CardTitle className="text-2xl">What We&rsquo;ve Achieved</CardTitle>
+            <CardTitle className="res-heading-base">What We&rsquo;ve Achieved</CardTitle>
           </CardHeader>
           <CardContent className="mt-4">
             <p className="mb-4">
@@ -133,8 +135,8 @@ const AboutPage = () => {
 
         <Card className="mb-8 transition-shadow hover:shadow-lg">
           <CardHeader className="bg-purple-600 text-white">
-            <CardTitle className="text-2xl">Our Team</CardTitle>
-            <CardDescription className="text-gray-200">
+            <CardTitle className="res-heading-base">Our Team</CardTitle>
+            <CardDescription className="text-gray-200 res-text-sm">
               The brilliant minds behind this project
             </CardDescription>
           </CardHeader>

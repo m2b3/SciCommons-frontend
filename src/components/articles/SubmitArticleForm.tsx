@@ -46,7 +46,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
       {/* Select the tab to upload a file or search for an article */}
-      <div className="mx-auto w-full rounded bg-white p-4 shadow">
+      <div className="mx-auto w-full rounded shadow">
         <div className="flex border-b border-gray-300">
           <button
             className={`flex-1 py-2 text-center transition-all duration-300 ${activeTab === 'upload' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}

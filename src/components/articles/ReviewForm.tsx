@@ -141,7 +141,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mb-4 flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+          className="mb-4 flex flex-col gap-4 rounded-lg border border-gray-200 bg-white-secondary p-4 shadow-sm res-text-sm"
         >
           <div className="">
             <LabeledTooltip label="Rate this article" info="Rate this article" />
@@ -157,9 +157,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                     readonly={false}
                   />
                   {errors.rating && (
-                    <p className="mt-1 text-sm text-red-500 dark:text-red-400">
-                      {errors.rating.message}
-                    </p>
+                    <p className="mt-1 text-red-500 res-text-xs">{errors.rating.message}</p>
                   )}
                 </>
               )}
@@ -185,7 +183,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <button
                 type="submit"
                 className={clsx(
-                  'self-end rounded bg-blue-600 px-4 py-2 text-sm text-white dark:bg-blue-500',
+                  'self-end rounded bg-blue-600 px-4 py-2 text-white res-text-xs',
                   editPending && 'cursor-not-allowed opacity-50'
                 )}
                 onClick={() => setAction('edit')}
@@ -195,7 +193,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <button
                 type="submit"
                 className={clsx(
-                  'self-end rounded bg-red-600 px-4 py-2 text-sm text-white dark:bg-red-500',
+                  'self-end rounded bg-red-600 px-4 py-2 text-white res-text-xs',
                   deletePending && 'cursor-not-allowed opacity-50'
                 )}
                 onClick={() => setAction('delete')}
@@ -204,7 +202,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               </button>
               <button
                 type="button"
-                className="self-end rounded bg-gray-500 px-4 py-2 text-sm text-white dark:bg-gray-600"
+                className="self-end rounded bg-gray-500 px-4 py-2 text-white res-text-xs"
                 onClick={() => setEdit && setEdit(false)}
               >
                 Cancel
@@ -215,20 +213,20 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <button
                 type="submit"
                 className={clsx(
-                  'self-start rounded bg-blue-600 px-4 py-2 text-sm text-white dark:bg-blue-500',
+                  'self-start rounded bg-blue-600 px-4 py-2 text-white res-text-xs',
                   isPending && 'cursor-not-allowed opacity-50'
                 )}
                 onClick={() => setAction('create')}
               >
                 {isPending ? 'Submitting...' : 'Submit Review'}
               </button>
-              <span className="text-sm text-gray-600 dark:text-gray-300">
+              <span className="text-gray-600 res-text-xs">
                 By clicking Submit Review, you agree to our{' '}
-                <a href="#" className="text-blue-600 dark:text-blue-400">
+                <a href="#" className="text-blue-600">
                   terms of service
                 </a>{' '}
                 and{' '}
-                <a href="#" className="text-blue-600 dark:text-blue-400">
+                <a href="#" className="text-blue-600">
                   privacy policy
                 </a>
                 .

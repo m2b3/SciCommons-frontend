@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { UsersCommonApiCheckPermissionParams } from '@/api/schemas';
 import { useUsersCommonApiCheckPermission } from '@/api/users-common-api/users-common-api';
 import Loader from '@/components/common/Loader';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface WithAuthProps {
@@ -45,6 +46,7 @@ export function withAuth<P extends WithAuthProps>(
     const {
       data: permissionData,
       isLoading,
+      error,
       isError,
     } = useUsersCommonApiCheckPermission(params, {
       query: {
@@ -76,6 +78,8 @@ export function withAuth<P extends WithAuthProps>(
           }
           toast.error('You do not have permission to view this resource');
         }
+      } else if (isError) {
+        showErrorToast(error);
       }
     }, [
       isInitializing,
@@ -86,6 +90,7 @@ export function withAuth<P extends WithAuthProps>(
       permissionData,
       router,
       resourceId,
+      error,
     ]);
 
     if (isInitializing || isLoading) {

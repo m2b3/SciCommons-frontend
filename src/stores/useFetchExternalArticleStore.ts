@@ -21,70 +21,101 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
   error: null,
 
   fetchArticle: async (query: string) => {
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, articleData: null });
     let apiUrl = '';
+    let source = '';
 
     if (query.startsWith('10.')) {
-      // Fetching from CrossRef
       apiUrl = `https://api.crossref.org/works/${query}`;
+      source = 'CrossRef';
     } else if (query.startsWith('arXiv:')) {
-      // Fetching from arXiv
       const arxivId = query.split(':')[1];
       apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
-    } else if (query.startsWith(' :')) {
-      // Fetching from PubMed
+      source = 'arXiv';
+    } else if (query.startsWith('PMID:')) {
       const pmid = query.split(':')[1];
       apiUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`;
+      source = 'PubMed';
     } else {
       set({
         loading: false,
-        error: 'Invalid input. Please enter a valid DOI, arXiv ID, or PubMed ID.',
+        error: 'Invalid input. Please enter a valid DOI, arXiv ID (arXiv:), or PubMed ID (PMID:).',
       });
       return;
     }
 
     try {
       const response = await axios.get(apiUrl);
-      const parsedData = parseData(query, response.data);
-      set({ articleData: parsedData, loading: false });
+      const parsedData = parseData(query, response.data, source);
+      if (parsedData) {
+        set({ articleData: parsedData, loading: false });
+      } else {
+        set({
+          error: `Article not found in ${source}. Please check your input and try again.`,
+          loading: false,
+        });
+      }
     } catch (error) {
-      set({ error: 'Failed to fetch article. Please try again.', loading: false });
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 404) {
+          set({
+            error: `Article not found in ${source}. Please check your input and try again.`,
+            loading: false,
+          });
+        } else {
+          set({
+            error: `Error fetching article from ${source}: ${error.response.statusText}`,
+            loading: false,
+          });
+        }
+      } else {
+        set({
+          error: `Failed to fetch article from ${source}. Please try again later.`,
+          loading: false,
+        });
+      }
     }
   },
 }));
 
-function parseData(query: string, data: any): ArticleData {
-  if (query.startsWith('10.')) {
-    // Parse CrossRef data
+function parseData(query: string, data: any, source: string): ArticleData | null {
+  if (source === 'CrossRef') {
+    if (!data.message) return null;
     return {
-      title: data.message.title[0],
-      authors: data.message.author.map((author: any) => `${author.given} ${author.family}`),
+      title: data.message.title?.[0] || 'No title available',
+      authors:
+        data.message.author?.map((author: any) =>
+          `${author.given || ''} ${author.family || ''}`.trim()
+        ) || [],
       abstract: data.message.abstract || 'No abstract available',
-      link: data.message.URL,
+      link: data.message.URL || `https://doi.org/${query}`,
     };
-  } else if (query.startsWith('arXiv:')) {
-    // Parse arXiv data
+  } else if (source === 'arXiv') {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(data, 'text/xml');
+    const entries = xmlDoc.getElementsByTagName('entry');
+    if (entries.length === 0) return null;
     return {
-      title: xmlDoc.getElementsByTagName('title')[1].textContent || '',
-      authors: Array.from(xmlDoc.getElementsByTagName('author')).map(
-        (author) => author.getElementsByTagName('name')[0].textContent || ''
+      title: entries[0].getElementsByTagName('title')[0]?.textContent || 'No title available',
+      authors: Array.from(entries[0].getElementsByTagName('author')).map(
+        (author) => author.getElementsByTagName('name')[0]?.textContent || ''
       ),
-      abstract: xmlDoc.getElementsByTagName('summary')[0].textContent || '',
+      abstract:
+        entries[0].getElementsByTagName('summary')[0]?.textContent || 'No abstract available',
       link: `https://arxiv.org/abs/${query.split(':')[1]}`,
     };
-  } else if (query.startsWith('PMID:')) {
-    // Parse PubMed data
-    const result = data.result[data.result.uids[0]];
+  } else if (source === 'PubMed') {
+    const pmid = query.split(':')[1];
+    if (!data.result || !data.result[pmid]) return null;
+    const result = data.result[pmid];
     return {
-      title: result.title,
-      authors: result.authors.map((author: any) => author.name),
+      title: result.title || 'No title available',
+      authors: result.authors?.map((author: any) => author.name) || [],
       abstract: result.abstract || 'No abstract available',
-      link: `https://pubmed.ncbi.nlm.nih.gov/${result.uids[0]}/`,
+      link: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
     };
   } else {
-    throw new Error('Unsupported query type');
+    return null;
   }
 }
 

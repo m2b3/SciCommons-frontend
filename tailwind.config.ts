@@ -23,6 +23,53 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // override default colors
+        gray: {
+          50: 'var(--color-gray-50)',
+          100: 'var(--color-gray-100)',
+          200: 'var(--color-gray-200)',
+          300: 'var(--color-gray-300)',
+          400: 'var(--color-gray-400)',
+          500: 'var(--color-gray-500)',
+          600: 'var(--color-gray-600)',
+          700: 'var(--color-gray-700)',
+          800: 'var(--color-gray-800)',
+          900: 'var(--color-gray-900)',
+        },
+        green: {
+          50: 'var(--color-green-50)',
+          100: 'var(--color-green-100)',
+          200: 'var(--color-green-200)',
+          300: 'var(--color-green-300)',
+          400: 'var(--color-green-400)',
+          500: 'var(--color-green-500)',
+          600: 'var(--color-green-600)',
+          700: 'var(--color-green-700)',
+          800: 'var(--color-green-800)',
+          900: 'var(--color-green-900)',
+        },
+        blue: {
+          50: 'var(--color-blue-50)',
+          100: 'var(--color-blue-100)',
+          200: 'var(--color-blue-200)',
+          300: 'var(--color-blue-300)',
+          400: 'var(--color-blue-400)',
+          500: 'var(--color-blue-500)',
+          600: 'var(--color-blue-600)',
+          700: 'var(--color-blue-700)',
+          800: 'var(--color-blue-800)',
+          900: 'var(--color-blue-900)',
+        },
+        white: {
+          DEFAULT: colors.white,
+          primary: 'var(--color-white-primary)',
+          secondary: 'var(--color-white-secondary)',
+        },
+        dark: {
+          DEFAULT: colors.gray[900],
+          primary: 'var(--color-dark-primary)',
+          secondary: 'var(--color-dark-secondary)',
+        },
         // light mode (for tremor)
         tremor: {
           brand: {
@@ -140,17 +187,6 @@ const config: Config = {
           850: 'rgba(var(--neutral-850))',
           900: 'rgba(var(--neutral-900))',
           950: 'rgba(var(--neutral-950))',
-        },
-        blue: {
-          100: 'rgba(var(--blue-100))',
-          200: 'rgba(var(--blue-200))',
-          300: 'rgba(var(--blue-300))',
-          400: 'rgba(var(--blue-400))',
-          450: 'rgba(var(--blue-450))',
-          500: 'rgba(var(--blue-500))',
-          600: 'rgba(var(--blue-600))',
-          700: 'rgba(var(--blue-700))',
-          800: 'rgba(var(--blue-800))',
         },
         functional: {
           green: 'rgba(var(--Functional-Green-Green))',
@@ -307,7 +343,7 @@ const config: Config = {
     plugin(function ({ addUtilities }: PluginAPI) {
       const newUtilities = {
         '.res-text-xs': {
-          '@apply text-xs md:text-sm': {},
+          '@apply text-sm md:text-sm': {},
         },
         '.res-text-sm': {
           '@apply text-sm md:text-base': {},
@@ -325,19 +361,19 @@ const config: Config = {
           '@apply text-base sm:text-lg md:text-xl': {},
         },
         '.res-heading-sm': {
-          '@apply text-lg sm:text-xl md:text-2xl': {},
+          '@apply text-lg sm:text-xl lg:text-2xl': {},
         },
         '.res-heading-base': {
-          '@apply text-xl sm:text-2xl md:text-3xl': {},
+          '@apply text-xl sm:text-2xl lg:text-3xl': {},
         },
         '.res-heading-lg': {
-          '@apply text-2xl sm:text-3xl md:text-4xl': {},
+          '@apply text-2xl sm:text-3xl lg:text-4xl': {},
         },
         '.res-heading-xl': {
-          '@apply text-3xl sm:text-4xl md:text-5xl': {},
+          '@apply text-3xl sm:text-4xl lg:text-5xl': {},
         },
         '.res-heading-2xl': {
-          '@apply text-4xl sm:text-5xl md:text-6xl': {},
+          '@apply text-4xl sm:text-5xl lg:text-6xl': {},
         },
       };
 

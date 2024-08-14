@@ -169,7 +169,7 @@ const Comment: React.FC<CommentProps> = ({
         />
       </div>
 
-      <div className="flex-grow">
+      <div className="flex-grow res-text-sm">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-2">
@@ -181,10 +181,10 @@ const Comment: React.FC<CommentProps> = ({
                   {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
                 </button>
               )}
-              <span className="font-semibold text-gray-950 dark:text-gray-300">
+              <span className="font-semibold text-gray-900">
                 {anonymous_name || author.username}
               </span>
-              <span className="text-sm text-gray-400">• {dayjs(created_at).fromNow()}</span>
+              <span className="text-gray-400 res-text-xs">• {dayjs(created_at).fromNow()}</span>
             </div>
             {rating && !isEditing && (
               <div>
@@ -216,7 +216,7 @@ const Comment: React.FC<CommentProps> = ({
             isReview={isReview}
           />
         ) : (
-          <p className="mt-1 text-sm">
+          <p className="mt-1">
             <TruncateText text={content} maxLines={4} />
           </p>
         )}
@@ -231,7 +231,7 @@ const Comment: React.FC<CommentProps> = ({
             ) : (
               <ThumbsUp size={16} onClick={() => handleReaction('upvote')} />
             )}
-            <span className="text-xs">{data?.data.likes}</span>
+            <span className="res-text-xs">{data?.data.likes}</span>
           </button>
           <button className="flex items-center space-x-1">
             {data?.data.user_reaction === -1 ? (
@@ -249,15 +249,15 @@ const Comment: React.FC<CommentProps> = ({
             onClick={() => setIsReplying(!isReplying)}
           >
             <MessageSquare size={16} />
-            <span className="text-xs">Reply</span>
+            <span className="res-text-xs">Reply</span>
           </button>
           <button className="flex items-center space-x-1">
             <Award size={16} />
-            <span className="text-xs">Award</span>
+            <span className="res-text-xs">Award</span>
           </button>
           <button className="flex items-center space-x-1">
             <Share2 size={16} />
-            <span className="text-xs">Share</span>
+            <span className="res-text-xs">Share</span>
           </button>
           <button>
             <MoreHorizontal size={16} />
@@ -288,7 +288,7 @@ const Comment: React.FC<CommentProps> = ({
         {hasReplies && isCollapsed && (
           <button
             onClick={() => setIsCollapsed(false)}
-            className="mt-2 text-base text-blue-500 hover:underline"
+            className="mt-2 text-blue-500 res-text-base hover:underline"
           >
             {replies.length} more {replies.length === 1 ? 'reply' : 'replies'}
           </button>

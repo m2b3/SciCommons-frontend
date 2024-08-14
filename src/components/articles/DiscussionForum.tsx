@@ -52,11 +52,11 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold dark:text-white">Discussions</h1>
+      <div className="mb-4 flex items-center justify-between text-gray-900 res-text-sm">
+        <h1 className="font-bold res-text-xl">Discussions</h1>
         <Button
           onClick={handleNewDiscussion}
-          className="bg-green-500 text-white hover:bg-green-600"
+          className="bg-green-500 res-text-sm hover:bg-green-600"
         >
           + New Discussion
         </Button>

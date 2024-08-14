@@ -35,7 +35,7 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   }, [error]);
 
   return (
-    <div className="flex flex-col dark:bg-gray-900">
+    <div className="flex flex-col text-gray-900">
       <div className="self-start">
         <TabComponent<ActiveTab>
           tabs={['Details', 'FAQs']}
@@ -44,11 +44,11 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
         />
       </div>
       {activeTab === 'Details' && (
-        <div className="my-4 rounded bg-white px-8 py-4 shadow dark:bg-gray-800">
+        <div className="my-4 rounded bg-white-primary px-8 py-4 shadow">
           <div className="mb-4 flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold dark:text-white">
+            <h1 className="font-bold res-heading-base">
               Edit your
-              <span className="text-green-500 dark:text-green-400"> Article </span>
+              <span className="text-green-500"> Article </span>
               Details
             </h1>
           </div>

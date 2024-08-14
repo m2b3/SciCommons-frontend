@@ -59,10 +59,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
   };
 
   return (
-    <div
-      key={discussion.id}
-      className="mb-4 rounded bg-white p-4 shadow dark:bg-gray-800 dark:shadow-gray-700"
-    >
+    <div key={discussion.id} className="mb-4 rounded bg-white-secondary p-4 shadow res-text-sm">
       <div className="mb-2 flex items-start justify-between">
         <div>
           <div className="flex items-center">
@@ -74,21 +71,19 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               className="mr-2 rounded-full"
             />
             <div>
-              <span className="text-sm text-gray-800 dark:text-gray-200">
-                {discussion.anonymous_name}
-              </span>
-              <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-gray-800">{discussion.anonymous_name}</span>
+              <span className="ml-2 text-gray-500 res-text-xs">
                 • {dayjs(discussion.created_at).fromNow()}
               </span>
             </div>
           </div>
           <p
-            className="mr-4 line-clamp-2 flex-grow cursor-pointer font-bold text-gray-900 hover:text-blue-500 hover:underline dark:text-gray-100 dark:hover:text-blue-400"
+            className="mr-4 line-clamp-2 flex-grow cursor-pointer font-bold text-gray-900 res-text-base hover:text-blue-500 hover:underline"
             onClick={() => handleDiscussionClick(Number(discussion.id))}
           >
             {discussion.topic}
           </p>
-          <div className="mt-4 flex items-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="mt-4 flex items-center text-gray-500 res-text-xs">
             <button className="mr-4 flex items-center space-x-1">
               <MessageSquare size={16} />
               <span>{discussion.comments_count} comments</span>
@@ -100,17 +95,17 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <MoreVertical className="text-gray-500 dark:text-gray-400" />
+          <MoreVertical className="text-gray-500" />
           <div className="flex flex-col items-center">
             <button
-              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+              className="text-gray-400 hover:text-gray-600"
               onClick={() => handleReaction('upvote')}
             >
               <ChevronUp size={20} />
             </button>
-            <span className="font-bold text-gray-700 dark:text-gray-300">{data?.data.likes}</span>
+            <span className="font-bold text-gray-700">{data?.data.likes}</span>
             <button
-              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+              className="text-gray-400 hover:text-gray-600"
               onClick={() => handleReaction('downvote')}
             >
               <ChevronDown size={20} />
@@ -126,26 +121,26 @@ export default DiscussionCard;
 
 export const DiscussionCardSkeleton: React.FC = () => {
   return (
-    <div className="mb-4 animate-pulse rounded bg-white p-4 shadow dark:bg-gray-800 dark:shadow-gray-700">
+    <div className="mb-4 animate-pulse rounded bg-white-secondary p-4 shadow">
       <div className="mb-2 flex items-start justify-between">
         <div>
           <div className="flex items-center">
-            <div className="mr-2 h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600" />
+            <div className="mr-2 h-8 w-8 rounded-full bg-gray-300" />
             <div>
-              <div className="h-4 w-20 rounded bg-gray-300 dark:bg-gray-600" />
-              <div className="mt-1 h-2 w-10 rounded bg-gray-300 dark:bg-gray-600" />
+              <div className="h-4 w-20 rounded bg-gray-300" />
+              <div className="mt-1 h-2 w-10 rounded bg-gray-300" />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <div className="h-4 w-20 rounded bg-gray-300 dark:bg-gray-600" />
+          <div className="mt-4 flex items-center text-sm text-gray-500">
+            <div className="h-4 w-20 rounded bg-gray-300" />
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600" />
+          <div className="h-6 w-6 rounded-full bg-gray-300" />
           <div className="flex flex-col items-center">
-            <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600" />
-            <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600" />
-            <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600" />
+            <div className="h-6 w-6 rounded-full bg-gray-300" />
+            <div className="h-6 w-6 rounded-full bg-gray-300" />
+            <div className="h-6 w-6 rounded-full bg-gray-300" />
           </div>
         </div>
       </div>

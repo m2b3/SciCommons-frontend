@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useUsersApiAuthResetPassword } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
-import { ErrorMessage } from '@/constants';
+import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IResetPasswordForm {
   password: string;
@@ -36,7 +36,7 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
         router.push('/auth/login');
       },
       onError: (err) => {
-        toast.error(err.response?.data.message || ErrorMessage);
+        showErrorToast(err);
       },
     },
   });

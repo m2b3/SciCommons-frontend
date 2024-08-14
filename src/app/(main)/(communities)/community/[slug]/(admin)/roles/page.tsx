@@ -51,7 +51,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.members.length === 0 && (
-            <p className="bg-white p-4 text-gray-500 shadow">No members exist in this community.</p>
+            <p className="p-4 text-gray-500 shadow">No members exist in this community.</p>
           )}
           {data &&
             data.data.members.map((item, index) => (
@@ -77,9 +77,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.moderators.length === 0 && (
-            <p className="bg-white p-4 text-gray-500 shadow">
-              No moderators exist in this community.
-            </p>
+            <p className="p-4 text-gray-500 shadow">No moderators exist in this community.</p>
           )}
           {data &&
             data.data.moderators.map((item, index) => (
@@ -105,9 +103,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.reviewers.length === 0 && (
-            <p className="bg-white p-4 text-gray-500 shadow">
-              No reviewers exist in this community.
-            </p>
+            <p className="p-4 text-gray-500 shadow">No reviewers exist in this community.</p>
           )}
           {data &&
             data.data.reviewers.map((item, index) => (
@@ -159,7 +155,7 @@ export default withAuth(Roles, 'community', (props) => props.params.slug);
 
 const UsersListItemSkeleton: React.FC = () => {
   return (
-    <div className="mb-2 flex items-center justify-between rounded-md border bg-white p-4 shadow-md">
+    <div className="mb-2 flex items-center justify-between rounded-md border p-4 shadow-md">
       <div className="flex items-center">
         <div className="mr-4 h-12 w-12 animate-pulse rounded-full bg-gray-300"></div>
         <div>

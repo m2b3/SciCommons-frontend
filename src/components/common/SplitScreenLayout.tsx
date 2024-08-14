@@ -16,7 +16,7 @@ const SplitScreenLayout: React.FC<SplitScreenLayoutProps> = ({
   const [isRightHovered, setIsRightHovered] = useState(false);
 
   return (
-    <div className="container mx-auto">
+    <div className="mx-auto md:container">
       {/* Mobile Layout */}
       <div className="lg:hidden">
         <div className="p-4">{leftSide}</div>

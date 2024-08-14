@@ -13,6 +13,7 @@ import {
   useCommunitiesApiInvitationRespondToInvitation,
 } from '@/api/community-invitations/community-invitations';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function RegisteredUsersInvitation({
@@ -48,8 +49,7 @@ export default function RegisteredUsersInvitation({
 
   useEffect(() => {
     if (error) {
-      console.error(error);
-      toast.error(error.response?.data.message || 'Failed to get invitation details');
+      showErrorToast(error);
     }
   }, [error]);
 

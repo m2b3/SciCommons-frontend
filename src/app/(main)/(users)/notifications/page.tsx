@@ -58,7 +58,7 @@ const NotificationPage: React.FC = () => {
           data.data.map((notif) => (
             <li
               key={notif.id}
-              className={`mb-2 rounded p-4 ${notif.isRead ? 'bg-gray-200' : 'bg-white shadow-md'}`}
+              className={`mb-2 rounded p-4 ${notif.isRead ? 'bg-gray-200' : 'bg-white-secondary shadow-md'}`}
             >
               <p className={`font-medium ${notif.isRead ? 'text-gray-600' : 'text-gray-900'}`}>
                 {notif.message}
@@ -98,7 +98,7 @@ export default NotificationPage;
 
 const NotificationCardSkeletonLoader: React.FC = () => {
   return (
-    <div className="mb-2 animate-pulse rounded bg-white p-4 shadow-lg">
+    <div className="mb-2 animate-pulse rounded bg-white-secondary p-4 shadow-lg">
       <div className="mb-2 h-4 w-1/2 bg-gray-200"></div>
       <div className="mb-2 h-4 w-1/4 bg-gray-200"></div>
       <div className="h-4 w-3/4 bg-gray-200"></div>

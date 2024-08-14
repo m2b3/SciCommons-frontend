@@ -132,7 +132,7 @@ const ArticleForm: React.FC = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container py-4 text-gray-900">
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold">
           Submit an

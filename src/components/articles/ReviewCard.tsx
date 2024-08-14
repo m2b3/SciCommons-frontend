@@ -36,7 +36,6 @@ interface ReviewCardProps {
 }
 
 const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
-  // Extend dayjs with the relativeTime plugin
   dayjs.extend(relativeTime);
 
   const [edit, setEdit] = useState(false);
@@ -46,7 +45,6 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  // Todo: Too many requests
   const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.review',
     Number(review.id),
@@ -109,14 +107,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     switch (reviewType) {
       case 'reviewer':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800">
+          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 font-medium text-purple-800 res-text-xs">
             <UserCircle className="mr-1 h-3 w-3" />
             Reviewer
           </span>
         );
       case 'moderator':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 font-medium text-blue-800 res-text-xs">
             <Shield className="mr-1 h-3 w-3" />
             Moderator
           </span>
@@ -144,7 +142,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           refetch={refetch}
         />
       ) : (
-        <div className="mb-4 rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="mb-4 rounded-lg border bg-white-secondary p-4 shadow-sm res-text-sm">
           <div className="mb-2 flex justify-between">
             <div className="flex items-center gap-4">
               <div>
@@ -157,7 +155,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="flex items-center gap-2 font-bold dark:text-white">
+                <span className="flex items-center gap-2 font-bold">
                   by {review.anonymous_name || review.user.username}
                   {review.is_author && (
                     <Pencil
@@ -172,7 +170,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   {[...Array(5)].map((_, i) => (
                     <svg
                       key={i}
-                      className={`h-4 w-4 ${i < currentVersion.rating ? 'text-green-500' : 'text-gray-300 dark:text-gray-600'}`}
+                      className={`h-4 w-4 ${i < currentVersion.rating ? 'text-green-500' : 'text-gray-300'}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -182,13 +180,13 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2 text-gray-500 res-text-xs">
               <div className="">
                 <select
                   id="version-select"
                   value={selectedVersion}
                   onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
-                  className="rounded border-gray-300 p-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="rounded border-gray-300 p-1"
                 >
                   <option value={review.versions.length}>Latest</option>
                   {review.versions
@@ -203,27 +201,27 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               ({dayjs(currentVersion.created_at).fromNow()})
             </div>
           </div>
-          <h3 className="mb-2 text-lg font-semibold dark:text-white">
+          <h3 className="mb-2 font-semibold res-text-base">
             <TruncateText text={currentVersion.subject} maxLines={2} />
           </h3>
 
-          <div className="mb-4 text-gray-700 dark:text-gray-300">
+          <div className="mb-4 text-gray-700">
             <TruncateText text={currentVersion.content} maxLines={4} isHTML />
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex space-x-4 text-gray-500 dark:text-gray-400">
+            <div className="flex space-x-4 text-gray-500">
               <div className="flex items-center">
                 {data?.data.user_reaction === 1 ? (
                   <button
                     onClick={() => handleReaction('upvote')}
-                    className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                    className="text-green-500 hover:text-green-700"
                   >
                     <ThumbsUp className="mr-1 h-4 w-4" />
                   </button>
                 ) : (
                   <button
                     onClick={() => handleReaction('upvote')}
-                    className="text-gray-500 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-400"
+                    className="text-gray-500 hover:text-green-500"
                   >
                     <ThumbsUp className="mr-1 h-4 w-4" />
                   </button>
@@ -235,14 +233,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 {data?.data.user_reaction === -1 ? (
                   <button
                     onClick={() => handleReaction('downvote')}
-                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    className="text-red-500 hover:text-red-700"
                   >
                     <ThumbsDown className="mr-1 h-4 w-4" />
                   </button>
                 ) : (
                   <button
                     onClick={() => handleReaction('downvote')}
-                    className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+                    className="text-gray-500 hover:text-red-500"
                   >
                     <ThumbsDown className="mr-1 h-4 w-4" />
                   </button>
@@ -250,7 +248,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 <span>{data?.data.dislikes}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+            <div className="flex items-center space-x-2 text-gray-500">
               <div className="flex items-center">
                 <MessageCircle className="mr-1 h-4 w-4" />
                 <button
@@ -264,7 +262,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 <button
                   onClick={handleApprove}
                   disabled={review.is_approved || approveArticlePending}
-                  className={`flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                  className={`flex items-center rounded-full px-3 py-1 font-medium res-text-xs ${
                     review.is_approved
                       ? 'bg-green-100 text-green-800'
                       : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
@@ -289,37 +287,37 @@ export default ReviewCard;
 
 export const ReviewCardSkeleton: FC = () => {
   return (
-    <div className="mb-4 animate-pulse rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className="mb-4 animate-pulse rounded-lg border p-4 shadow-sm">
       <div className="mb-2 flex justify-between">
         <div>
-          <div className="h-4 w-24 rounded bg-gray-300 dark:bg-gray-600"></div>
+          <div className="h-4 w-24 rounded bg-gray-300"></div>
           <div className="mt-2 flex items-center">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="mr-1 h-4 w-4 rounded bg-gray-300 dark:bg-gray-600"></div>
+              <div key={i} className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
             ))}
           </div>
         </div>
-        <div className="h-4 w-32 rounded bg-gray-300 dark:bg-gray-600"></div>
+        <div className="h-4 w-32 rounded bg-gray-300"></div>
       </div>
-      <div className="mb-2 h-6 w-48 rounded bg-gray-300 dark:bg-gray-600"></div>
-      <div className="mb-4 h-20 rounded bg-gray-300 dark:bg-gray-600"></div>
+      <div className="mb-2 h-6 w-48 rounded bg-gray-300"></div>
+      <div className="mb-4 h-20 rounded bg-gray-300"></div>
       <div className="flex items-center justify-between">
         <div className="flex space-x-4 text-gray-500">
           <div className="flex items-center">
-            <div className="mr-1 h-4 w-4 rounded bg-gray-300 dark:bg-gray-600"></div>
-            <div className="h-4 w-6 rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
+            <div className="h-4 w-6 rounded bg-gray-300"></div>
           </div>
           <div className="flex items-center">
-            <div className="mr-1 h-4 w-4 rounded bg-gray-300 dark:bg-gray-600"></div>
-            <div className="h-4 w-6 rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
+            <div className="h-4 w-6 rounded bg-gray-300"></div>
           </div>
         </div>
         <div className="flex items-center space-x-2 text-gray-500">
           <div className="flex items-center">
-            <div className="mr-1 h-4 w-4 rounded bg-gray-300 dark:bg-gray-600"></div>
-            <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
+            <div className="h-4 w-12 rounded bg-gray-300"></div>
           </div>
-          <div className="h-8 w-20 rounded bg-blue-300 dark:bg-blue-700"></div>
+          <div className="h-8 w-20 rounded bg-blue-300"></div>
         </div>
       </div>
     </div>

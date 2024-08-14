@@ -34,11 +34,11 @@ const ArticleSubmissionStatus = () => {
   }, [error]);
 
   return (
-    <div className="my-4 rounded bg-white px-8 py-4 shadow dark:bg-gray-800">
+    <div className="my-4 rounded bg-white-secondary px-8 py-4 text-gray-900 shadow">
       <div className="mb-4 flex flex-col justify-center">
-        <h1 className="text-xl font-bold dark:text-white">Article Submission Status</h1>
+        <h1 className="font-bold res-text-xl">Article Submission Status</h1>
       </div>
-      {isPending && <p className="dark:text-gray-300">Loading...</p>}
+      {isPending && <p className="res-text-base">Loading...</p>}
       {data && data.data.community_article && (
         <div className="flex items-center">
           <Image
@@ -54,28 +54,23 @@ const ArticleSubmissionStatus = () => {
           />
           <div className="ml-4">
             <Link href={`/community/${data.data.community_article.community.name}`}>
-              <h3 className="cursor-pointer text-lg font-semibold hover:underline dark:text-white">
+              <h3 className="cursor-pointer font-semibold res-text-base hover:underline">
                 {data.data.community_article.community.name}
               </h3>
             </Link>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 res-text-sm">
               {data.data.community_article.community.description}
             </p>
           </div>
           <div className="ml-auto">
             <span
               className={clsx(
-                'rounded-full px-3 py-1 text-white',
-                data.data.community_article.status === StatusFilter.accepted &&
-                  'bg-green-500 dark:bg-green-600',
-                data.data.community_article.status === StatusFilter.submitted &&
-                  'bg-gray-400 dark:bg-gray-500',
-                data.data.community_article.status === StatusFilter.under_review &&
-                  'bg-yellow-500 dark:bg-yellow-600',
-                data.data.community_article.status === StatusFilter.rejected &&
-                  'bg-red-500 dark:bg-red-600',
-                data.data.community_article.status === StatusFilter.published &&
-                  'bg-blue-500 dark:bg-blue-600'
+                'rounded-full px-3 py-1 text-white res-text-xs',
+                data.data.community_article.status === StatusFilter.accepted && 'bg-green-500',
+                data.data.community_article.status === StatusFilter.submitted && 'bg-gray-400',
+                data.data.community_article.status === StatusFilter.under_review && 'bg-yellow-500',
+                data.data.community_article.status === StatusFilter.rejected && 'bg-red-500',
+                data.data.community_article.status === StatusFilter.published && 'bg-blue-500'
               )}
             >
               {data.data.community_article.status}
@@ -84,7 +79,7 @@ const ArticleSubmissionStatus = () => {
         </div>
       )}
       {data && !data.data.community_article && (
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600 res-text-base">
           Article is not submitted to any community yet.
         </p>
       )}

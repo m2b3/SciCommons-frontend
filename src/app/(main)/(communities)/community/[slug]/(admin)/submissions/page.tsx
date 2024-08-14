@@ -70,7 +70,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
       return (
         <>
           <button
-            className="mr-2 rounded-lg bg-green-500 px-4 py-2 text-xs text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+            className="mr-2 rounded-lg bg-green-500 px-4 py-2 text-white res-text-xs hover:bg-green-600"
             onClick={() => handleAction('approve', Number(article.community_article?.id))}
             disabled={
               actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
@@ -81,7 +81,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
               : 'Approve'}
           </button>
           <button
-            className="rounded-lg bg-red-500 px-4 py-2 text-xs text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+            className="rounded-lg bg-red-500 px-4 py-2 text-white res-text-xs hover:bg-red-600"
             onClick={() => handleAction('reject', Number(article.community_article?.id))}
             disabled={
               actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
@@ -97,7 +97,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
       return (
         <div className="flex space-x-2">
           <button
-            className="rounded-lg bg-blue-500 px-4 py-2 text-xs text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="rounded-lg bg-blue-500 px-4 py-2 text-white res-text-xs hover:bg-blue-600"
             onClick={() => handleAction('publish', Number(article.community_article?.id))}
             disabled={
               actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
@@ -120,10 +120,8 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
 
     if (data && data.data.items.length === 0) {
       return (
-        <div className="flex h-32 items-center justify-center rounded-lg bg-white shadow-lg dark:bg-gray-800 dark:shadow-gray-700/50">
-          <h1 className="text-lg font-semibold text-gray-500 dark:text-gray-400">
-            No articles found
-          </h1>
+        <div className="flex h-32 items-center justify-center rounded-lg bg-white-primary shadow-lg">
+          <h1 className="font-semibold text-gray-500 res-heading-xs">No articles found</h1>
         </div>
       );
     }
@@ -142,7 +140,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
   };
 
   return (
-    <div className="flex flex-col dark:bg-gray-900">
+    <div className="flex flex-col">
       <div className="self-start">
         <TabComponent
           tabs={['submitted', 'under_review', 'accepted', 'published', 'rejected']}

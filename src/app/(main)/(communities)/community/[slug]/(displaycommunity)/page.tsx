@@ -75,30 +75,17 @@ const Community = ({ params }: { params: { slug: string } }) => {
   const RightSide = (
     <>
       {isPending ? (
-        <div className="flex flex-col gap-4 shadow-md dark:shadow-gray-700/50">
+        <div className="flex flex-col gap-4 shadow-md">
           <CommunityStatsSkeleton />
           <CommunityRulesSkeleton />
         </div>
       ) : (
         data && (
-          <>
-            <div className="mb-4">
-              <CommunityStats community={data.data} />
-            </div>
-            {data.data.rules.length === 0 ? (
-              <div className="mb-4 rounded-md border-2 border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-700/50">
-                <h2 className="mb-4 text-xl font-semibold dark:text-gray-100">No Rules</h2>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Rules have not been set for this community.
-                </p>
-              </div>
-            ) : (
-              <div className="mb-4">
-                <CommunityRules rules={data.data.rules} />
-              </div>
-            )}
+          <div className="flex flex-col gap-4">
+            <CommunityStats community={data.data} />
+            <CommunityRules community={data.data} />
             <RelevantCommunities communityId={data.data.id} />
-          </>
+          </div>
         )
       )}
     </>

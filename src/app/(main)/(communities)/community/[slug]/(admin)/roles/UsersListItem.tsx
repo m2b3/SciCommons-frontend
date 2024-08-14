@@ -67,7 +67,7 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
   };
 
   return (
-    <div className="mb-2 flex items-center justify-between rounded-md border bg-white p-4 shadow-md">
+    <div className="mb-2 flex items-center justify-between rounded-md border bg-white-primary p-4 text-gray-900 shadow-md res-text-sm">
       <div className="flex items-center">
         <Image
           src={profilePicture || `data:image/png;base64,${imageData}`}

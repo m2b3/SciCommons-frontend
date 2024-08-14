@@ -159,9 +159,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         )}
       />
       <div className="mb-4 space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Submission Type
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Submission Type</label>
         <Controller
           name="submissionType"
           control={control}
@@ -171,9 +169,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
                 type="button"
                 onClick={() => onChange('Public')}
                 className={`rounded-md px-4 py-2 ${
-                  value === 'Public'
-                    ? 'bg-gray-500 text-white dark:bg-gray-600'
-                    : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                  value === 'Public' ? 'bg-gray-500 text-white' : 'bg-gray-200 text-gray-700'
                 }`}
               >
                 Public
@@ -182,9 +178,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
                 type="button"
                 onClick={() => onChange('Private')}
                 className={`rounded-md px-4 py-2 ${
-                  value === 'Private'
-                    ? 'bg-gray-500 text-white dark:bg-gray-600'
-                    : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                  value === 'Private' ? 'bg-gray-500 text-white' : 'bg-gray-200 text-gray-700'
                 }`}
               >
                 Private
@@ -195,12 +189,9 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
       </div>
       <button
         type="submit"
-        className={clsx(
-          'mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white dark:bg-green-600',
-          {
-            'cursor-not-allowed opacity-50': isUpdatePending,
-          }
-        )}
+        className={clsx('mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white', {
+          'cursor-not-allowed opacity-50': isUpdatePending,
+        })}
       >
         {isUpdatePending ? 'Saving...' : 'Save Changes'}
       </button>
@@ -212,14 +203,14 @@ export default EditArticleDetails;
 
 export const EditArticleDetailsSkeleton = () => {
   return (
-    <div className="dark:bg-gray-900">
+    <div>
       <div className="flex flex-col space-y-8">
-        <div className="h-80 w-full bg-gray-200 dark:bg-gray-700"></div>
-        <div className="h-8 w-full bg-gray-200 dark:bg-gray-700"></div>
-        <div className="h-32 w-full bg-gray-200 dark:bg-gray-700"></div>
-        <div className="h-8 w-full bg-gray-200 dark:bg-gray-700"></div>
-        <div className="h-8 w-full bg-gray-200 dark:bg-gray-700"></div>
-        <div className="h-8 w-36 bg-gray-200 dark:bg-gray-700"></div>
+        <div className="h-80 w-full bg-gray-200"></div>
+        <div className="h-8 w-full bg-gray-200"></div>
+        <div className="h-32 w-full bg-gray-200"></div>
+        <div className="h-8 w-full bg-gray-200"></div>
+        <div className="h-8 w-full bg-gray-200"></div>
+        <div className="h-8 w-36 bg-gray-200"></div>
       </div>
     </div>
   );

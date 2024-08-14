@@ -53,10 +53,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="mb-4 rounded bg-white p-4 shadow dark:bg-gray-800 dark:shadow-gray-700"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="mb-4 rounded bg-white-secondary p-4 shadow">
       <FormInput<FormValues>
         label="Topic"
         name="topic"
@@ -76,10 +73,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
         errors={errors}
         textArea={true}
       />
-      <Button
-        type="submit"
-        className="mt-4 bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-      >
+      <Button type="submit" className="mt-4 bg-blue-500 text-white hover:bg-blue-600">
         Submit
       </Button>
     </form>

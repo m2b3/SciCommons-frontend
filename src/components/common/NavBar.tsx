@@ -37,7 +37,7 @@ const NavBar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-slate-100/20 backdrop-blur-[50px] dark:border-gray-700 dark:bg-slate-300/10 sm:px-9">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-slate-100/20 text-gray-900 backdrop-blur-[50px] dark:bg-slate-300/10 sm:px-9">
       <nav className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
           <MoveLeft
@@ -53,13 +53,9 @@ const NavBar: React.FC = () => {
           {navLinks?.map((link) => (
             <li
               key={link.href}
-              className={cn(
-                'rounded-full px-3 py-1 text-sm text-black hover:bg-functional-green/10 dark:text-white',
-                {
-                  'bg-functional-green/10 font-bold text-green-400 dark:text-green-400':
-                    link.href === pathname,
-                }
-              )}
+              className={cn('rounded-full px-3 py-1 text-sm hover:bg-functional-green/10', {
+                'bg-functional-green/10 font-bold text-green-400': link.href === pathname,
+              })}
             >
               <Link href={link.href}>{link.label}</Link>
             </li>
@@ -71,16 +67,13 @@ const NavBar: React.FC = () => {
               <CreateDropdown />
             </div>
             <Link href="/notifications">
-              <Bell className="h-9 w-9 cursor-pointer rounded-full p-2 text-gray-800 hover:bg-gray-200 hover:text-gray-600 dark:text-gray-500 hover:dark:bg-gray-700" />
+              <Bell className="h-9 w-9 cursor-pointer rounded-full p-2 text-gray-800 hover:bg-gray-200 hover:text-gray-600" />
             </Link>
             <ProfileDropdown />
           </div>
         ) : (
           <div className="flex items-center space-x-4">
-            <Link
-              href="/auth/login"
-              className="text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-500"
-            >
+            <Link href="/auth/login" className="text-gray-800 hover:text-gray-600">
               <button>Login</button>
             </Link>
             <Link href="/auth/register" className="text-gray-800 hover:text-gray-600">

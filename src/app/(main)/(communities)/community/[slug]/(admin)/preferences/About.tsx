@@ -90,7 +90,7 @@ const About: React.FC<AboutProps> = ({ data }) => {
 
   return (
     <div>
-      <div className="my-4 w-full bg-white p-16" ref={selectionRef}>
+      <div className="my-4 w-full bg-white-primary p-16 res-text-sm" ref={selectionRef}>
         <YooptaEditor
           editor={editor}
           plugins={plugins}

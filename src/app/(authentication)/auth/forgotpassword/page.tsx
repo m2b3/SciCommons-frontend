@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useUsersApiAuthRequestReset } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
-import { ErrorMessage } from '@/constants';
+import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IForgotPasswordForm {
   email: string;
@@ -32,7 +32,7 @@ const ForgotPasswordForm: React.FC = () => {
         toast.success('Password reset email sent successfully');
       },
       onError: (err) => {
-        toast.error(err.response?.data.message || ErrorMessage);
+        showErrorToast(err);
       },
     },
   });

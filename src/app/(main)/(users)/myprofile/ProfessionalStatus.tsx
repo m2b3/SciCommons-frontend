@@ -24,9 +24,9 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
   };
 
   return (
-    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white-secondary p-6 shadow-md">
       <h2 className="mb-4 font-bold res-text-xl">Academic or Professional Status</h2>
-      <p className="mb-6 text-gray-600 dark:text-gray-300">
+      <p className="mb-6 text-gray-600">
         Provide your academic or professional status to help us ensure relevant content.
       </p>
       {fields.map((field, index) => (

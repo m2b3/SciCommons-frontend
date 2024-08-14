@@ -68,7 +68,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
   }, [data, reset]);
 
   return (
-    <div className="my-4 rounded bg-white px-8 py-4 shadow">
+    <div className="my-4 rounded bg-white-primary px-8 py-4 shadow res-text-sm">
       {isPending && <div>Loading...</div>}
       <form onSubmit={handleSubmit((data) => onSubmit(data.rules))} className="space-y-8">
         {fields.map((field, index) => (
@@ -96,7 +96,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
                   {...field}
                   placeholder="Add Rule"
                   id={`rules.${index}.rule`}
-                  className="mt-1 block w-full rounded-md border-gray-300 px-4 py-2 shadow-md focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full rounded-md border-2 border-gray-300 px-4 py-2 shadow-md focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               )}
             />

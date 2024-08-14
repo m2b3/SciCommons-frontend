@@ -97,7 +97,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
   };
 
   return (
-    <div className="rounded-md bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+    <div className="rounded-md bg-white-secondary text-gray-900">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
@@ -106,7 +106,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
       {isPending &&
         Array.from({ length: 5 }).map((_, index) => (
           <div
-            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-600"
+            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300"
             key={index}
           ></div>
         ))}
@@ -120,7 +120,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-white p-1 text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+                className="rounded border bg-white-primary p-1 text-sm text-gray-900"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >
@@ -134,7 +134,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
             </div>
             <button
               onClick={toggleAllComments}
-              className="flex items-center text-blue-500 transition-colors duration-200 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+              className="flex items-center text-blue-500 transition-colors duration-200 hover:text-blue-600"
             >
               {isAllCollapsed ? (
                 <>

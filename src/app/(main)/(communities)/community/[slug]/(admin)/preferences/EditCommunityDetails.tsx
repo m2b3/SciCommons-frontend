@@ -110,9 +110,9 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
   }, [data, reset]);
 
   return (
-    <div className="my-4 rounded bg-white px-8 py-4 shadow">
+    <div className="my-4 rounded bg-white-primary px-8 py-4 shadow">
       <div className="mb-4 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold">
+        <h1 className="font-bold res-heading-sm">
           Edit your
           <span className="text-green-500"> Community </span>
           Details
@@ -173,7 +173,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
               label="Community Type"
               info="Select the type of community you want to create."
             />
-            <div className="flex space-x-8">
+            <div className="flex flex-col gap-2 md:flex-row">
               <Controller
                 name="type"
                 control={control}
@@ -210,9 +210,12 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
           <button
             type="submit"
-            className={clsx('mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white', {
-              'cursor-not-allowed opacity-50': isUpdatePending,
-            })}
+            className={clsx(
+              'mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white res-text-sm',
+              {
+                'cursor-not-allowed opacity-50': isUpdatePending,
+              }
+            )}
           >
             {isUpdatePending ? 'Saving...' : 'Save Changes'}
           </button>

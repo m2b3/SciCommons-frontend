@@ -75,13 +75,13 @@ const Requests = ({ params }: { params: { slug: string } }) => {
 
   return (
     <div>
-      <div className="rounded-lg bg-white p-4 shadow-md">
+      <div className="rounded-lg bg-white-primary p-4 text-gray-900 shadow-md">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-medium">Join Requests</h2>
+          <h2 className="font-medium res-heading-xs">Join Requests</h2>
           <select
             value={filter}
             onChange={handleFilterChange}
-            className="block w-40 rounded-md border-gray-300 px-3 py-2 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+            className="block w-40 rounded-md border-gray-300 px-3 py-2 res-text-xs focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
           >
             <option value="All">All</option>
             <option value="approved">Accepted</option>

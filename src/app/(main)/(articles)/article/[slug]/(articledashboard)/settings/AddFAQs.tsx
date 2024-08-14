@@ -73,21 +73,18 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
   return (
     <form onSubmit={handleSubmit((data) => onSubmit(data.faqs))} className="my-4 space-y-6">
       {fields.map((field, index) => (
-        <div
-          key={field.id}
-          className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 dark:shadow-gray-700"
-        >
+        <div key={field.id} className="rounded-lg bg-white-secondary p-4 shadow-md">
           <div className="mb-4 flex items-center space-x-2">
             <label
               htmlFor={`faqs.${index}.question`}
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block font-medium text-gray-700 res-text-xs"
             >
               Question {index + 1}
             </label>
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+              className="text-red-600 hover:text-red-900"
             >
               <Trash2 size={16} />
             </button>
@@ -100,13 +97,13 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
                 {...field}
                 id={`faqs.${index}.question`}
                 placeholder="Enter question"
-                className="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-400 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm res-text-xs focus:border-indigo-500 focus:ring-indigo-500"
               />
             )}
           />
           <label
             htmlFor={`faqs.${index}.answer`}
-            className="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="mt-4 block font-medium text-gray-700 res-text-xs"
           >
             Answer
           </label>
@@ -118,7 +115,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
                 {...field}
                 id={`faqs.${index}.answer`}
                 placeholder="Enter answer"
-                className="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-400 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm res-text-xs focus:border-indigo-500 focus:ring-indigo-500"
               />
             )}
           />
@@ -128,13 +125,13 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
         <button
           type="button"
           onClick={() => append({ question: '', answer: '' })}
-          className="flex items-center text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+          className="flex items-center text-green-600 res-text-sm hover:text-green-900"
         >
           <Plus className="mr-1 h-5 w-5" /> Add FAQ
         </button>
         <button
           type="submit"
-          className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+          className="rounded-md bg-blue-500 px-4 py-2 text-white res-text-sm hover:bg-blue-600"
         >
           {isPending ? 'Updating...' : 'Update FAQs'}
         </button>
