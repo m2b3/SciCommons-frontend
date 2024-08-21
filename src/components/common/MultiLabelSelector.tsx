@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Info } from 'lucide-react';
 import { ControllerFieldState } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import MultipleSelector, { Option } from '@/components/ui/multiple-selector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -16,6 +17,7 @@ interface LabeledSelectorProps {
   disabled?: boolean;
   options?: string[];
   fieldState: ControllerFieldState;
+  maxOptions?: number;
 }
 
 const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
@@ -28,6 +30,7 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
     value,
     onChange,
     fieldState,
+    maxOptions,
   }) => {
     return (
       <div>
@@ -53,6 +56,10 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
           placeholder={placeholder}
           creatable={creatable}
           disabled={disabled}
+          maxSelected={maxOptions || undefined}
+          onMaxSelected={(maxLimit) => {
+            toast.error(`You can only create ${maxLimit} options.`);
+          }}
           emptyIndicator={
             <p className="text-center leading-10 text-gray-600 res-text-base">no results found.</p>
           }

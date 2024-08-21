@@ -28,11 +28,15 @@ const plugins = [
 ];
 
 const CommunityAbout: React.FC<CommunityAboutProps> = ({ about }) => {
-  console.log(about);
   const editor = useMemo(() => createYooptaEditor(), []);
 
   return (
     <div className="">
+      {Object.keys(about).length === 0 && about.constructor === Object && (
+        <p className="py-4 text-center text-gray-500">
+          No about content available for this community
+        </p>
+      )}
       <YooptaEditor
         editor={editor}
         value={about}

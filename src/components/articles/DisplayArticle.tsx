@@ -11,20 +11,26 @@ interface DisplayArticleProps {
 }
 
 const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
+  const hasImage = !!article.article_image_url;
+
   return (
-    <div className="flex flex-col items-start rounded-lg border bg-white-secondary p-4 shadow-sm res-text-xs sm:flex-row">
-      <div className="mb-4 w-full sm:mb-0 sm:mr-4 sm:w-1/3">
-        <div className="relative h-0 w-full pb-[75%]">
-          <Image
-            src={article.article_image_url || '/images/placeholder.jpg'}
-            alt={article.title}
-            layout="fill"
-            objectFit="cover"
-            className="absolute left-0 top-0 h-full w-full rounded-lg"
-          />
+    <div
+      className={`flex flex-col items-start rounded-lg border bg-white-secondary p-4 shadow-sm res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}
+    >
+      {hasImage && (
+        <div className="mb-4 w-full sm:mb-0 sm:mr-4 sm:w-1/3">
+          <div className="relative h-0 w-full pb-[75%]">
+            <Image
+              src={article.article_image_url || '/placeholder.png'}
+              alt={article.title}
+              layout="fill"
+              objectFit="cover"
+              className="absolute left-0 top-0 h-full w-full rounded-lg"
+            />
+          </div>
         </div>
-      </div>
-      <div className="relative flex-1">
+      )}
+      <div className={`relative flex-1 ${hasImage ? '' : 'w-full'}`}>
         <h2 className="mb-4 font-bold text-gray-900 res-text-xl">
           <TruncateText text={article.title} maxLines={2} />
         </h2>

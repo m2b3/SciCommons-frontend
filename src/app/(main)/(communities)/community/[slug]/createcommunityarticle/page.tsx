@@ -12,14 +12,25 @@ import { toast } from 'sonner';
 import { useArticlesApiCreateArticle } from '@/api/articles/articles';
 import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
 import { SubmitArticleFormValues } from '@/types';
 
 const STORAGE_KEY = 'communityArticleFormData';
 
+const defaultFormValues: SubmitArticleFormValues = {
+  submissionType: 'Public',
+  title: '',
+  abstract: '',
+  authors: [],
+  keywords: [],
+  article_link: '',
+  pdfFiles: [],
+};
+
 const CommunityArticleForm: NextPage = () => {
-  const { articleData } = useFetchExternalArticleStore();
+  const { articleData, fetchArticle } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
   const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
@@ -42,7 +53,7 @@ const CommunityArticleForm: NextPage = () => {
         localStorage.removeItem(STORAGE_KEY);
       },
       onError: (error) => {
-        toast.error(`${error.response?.data.message}`);
+        showErrorToast(error);
       },
     },
   });
@@ -55,14 +66,7 @@ const CommunityArticleForm: NextPage = () => {
     reset,
     watch,
   } = useForm<SubmitArticleFormValues>({
-    defaultValues: {
-      submissionType: 'Public',
-      title: '',
-      abstract: '',
-      authors: [],
-      keywords: [],
-      article_link: '',
-    },
+    defaultValues: defaultFormValues,
     mode: 'onChange',
   });
 
@@ -71,8 +75,9 @@ const CommunityArticleForm: NextPage = () => {
     const savedData = localStorage.getItem(STORAGE_KEY);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      reset(parsedData);
       setActiveTab(parsedData.activeTab || 'upload');
+      const currentTabData = parsedData[parsedData.activeTab] || defaultFormValues;
+      reset(currentTabData);
     }
     setIsInitialized(true);
   }, [reset]);
@@ -81,7 +86,16 @@ const CommunityArticleForm: NextPage = () => {
   useEffect(() => {
     if (isInitialized) {
       const subscription = watch((formData) => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...formData, activeTab }));
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        const parsedData = savedData ? JSON.parse(savedData) : {};
+
+        const dataToSave = {
+          ...parsedData,
+          [activeTab]: { ...formData, pdfFiles: undefined },
+          activeTab,
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
       });
       return () => subscription.unsubscribe();
     }
@@ -93,22 +107,32 @@ const CommunityArticleForm: NextPage = () => {
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...parsedData, activeTab }));
+        const currentTabData = parsedData[activeTab] || defaultFormValues;
+        reset(currentTabData);
       }
     }
-  }, [activeTab, isInitialized]);
+  }, [activeTab, reset, isInitialized]);
 
   // Handle article data
   useEffect(() => {
-    if (isInitialized && articleData) {
+    if (isInitialized && articleData && activeTab === 'search') {
       const newData = {
+        ...defaultFormValues,
         title: articleData.title,
         authors: articleData.authors.map((author) => ({ label: author, value: author })),
         abstract: articleData.abstract,
         article_link: articleData.link,
       };
       reset(newData);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...newData, activeTab }));
+
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      const parsedData = savedData ? JSON.parse(savedData) : {};
+      const dataToSave = {
+        ...parsedData,
+        [activeTab]: newData,
+        activeTab,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     }
   }, [articleData, reset, activeTab, isInitialized]);
 
@@ -127,12 +151,20 @@ const CommunityArticleForm: NextPage = () => {
         community_name: params?.slug,
       },
     };
-    const image_file = formData.imageFile ? formData.imageFile.file : undefined;
     const pdf_files = formData.pdfFiles
       ? formData.pdfFiles.map((pdfFile) => pdfFile && pdfFile.file).filter(Boolean)
       : [];
 
-    submitArticle({ data: { details: dataToSend, image_file, pdf_files } });
+    submitArticle({ data: { details: dataToSend, pdf_files } });
+  };
+
+  const handleSearch = async (query: string) => {
+    try {
+      await fetchArticle(query);
+      setActiveTab('search');
+    } catch (error) {
+      toast.error('Failed to fetch article. Please try again later.');
+    }
   };
 
   return (
@@ -165,6 +197,7 @@ const CommunityArticleForm: NextPage = () => {
           isPending,
           activeTab,
           setActiveTab,
+          onSearch: handleSearch,
         }}
       />
     </div>

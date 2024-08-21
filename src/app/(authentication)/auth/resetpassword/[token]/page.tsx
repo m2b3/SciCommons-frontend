@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthResetPassword } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
@@ -99,4 +100,4 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
   );
 };
 
-export default ResetPasswordForm;
+export default withAuthRedirect(ResetPasswordForm);

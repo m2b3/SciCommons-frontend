@@ -8,6 +8,7 @@
 export interface BookmarkSchema {
   details: string;
   id: number;
+  slug: string;
   title: string;
   type: string;
 }

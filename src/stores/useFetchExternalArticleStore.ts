@@ -25,14 +25,16 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
     let apiUrl = '';
     let source = '';
 
-    if (query.startsWith('10.')) {
+    const lowerQuery = query.toLowerCase();
+
+    if (lowerQuery.startsWith('10.')) {
       apiUrl = `https://api.crossref.org/works/${query}`;
       source = 'CrossRef';
-    } else if (query.startsWith('arXiv:')) {
+    } else if (lowerQuery.startsWith('arxiv:')) {
       const arxivId = query.split(':')[1];
       apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
       source = 'arXiv';
-    } else if (query.startsWith('PMID:')) {
+    } else if (lowerQuery.startsWith('pmid:')) {
       const pmid = query.split(':')[1];
       apiUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`;
       source = 'PubMed';

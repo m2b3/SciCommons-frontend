@@ -7,6 +7,7 @@
 
 export interface FavoriteItemSchema {
   details: string;
+  slug: string;
   tag: string;
   title: string;
   type: string;

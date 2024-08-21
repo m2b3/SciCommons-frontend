@@ -13,17 +13,18 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
+import { usePathTracker } from '@/hooks/usePathTracker';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ILoginForm {
-  login: string; // Can be either username or email
+  login: string;
   password: string;
 }
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
-
+  const { getPreviousPath } = usePathTracker();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   const {
@@ -39,7 +40,14 @@ const LoginForm: React.FC = () => {
       onSuccess: (data) => {
         toast.success('Logged in successfully');
         setAccessToken(data.data.token);
-        router.back(); // Todo: Redirect to previous page but not when the previous page was auth-related
+        const previousPath = getPreviousPath();
+
+        // Redirect logic
+        if (previousPath && !previousPath.startsWith('/auth')) {
+          router.push(previousPath);
+        } else {
+          router.push('/'); // Redirect to home if previous path is auth-related or not available
+        }
       },
       onError: (err) => {
         showErrorToast(err);
@@ -125,8 +133,8 @@ const LoginForm: React.FC = () => {
         <div className="absolute inset-0 mb-12 hidden items-end justify-center md:flex">
           <div className="max-w-md rounded-xl bg-white bg-opacity-[0.25] p-2 shadow-lg backdrop-blur-sm md:p-6">
             <p className="font-medium text-gray-800 res-text-lg">
-              &quot;Advancing science thrives on collaboration and open access to knowledge.&quot; -
-              Anonymous
+              &quot;We cannot solve our problems with the same thinking we used when we created
+              them.&quot; - Albert Einstein
             </p>
           </div>
         </div>

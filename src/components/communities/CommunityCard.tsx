@@ -19,7 +19,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
     <div className="flex flex-col items-start rounded-lg border border-gray-200 bg-white-secondary p-4 shadow-sm res-text-xs sm:flex-row">
       <div className="relative mb-4 h-16 w-16 flex-shrink-0 sm:mb-0 sm:mr-4">
         <Image
-          src={community.profile_pic_url || `data:image/svg+xml;utf8,${imageData}`}
+          src={community.profile_pic_url || `data:image/png;base64,${imageData}`}
           alt={community.name}
           fill
           className="rounded-full object-cover"

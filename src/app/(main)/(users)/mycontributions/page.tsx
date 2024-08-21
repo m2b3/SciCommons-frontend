@@ -154,6 +154,7 @@ const ContributionsPage: React.FC = () => {
     ],
     articles:
       articlesData?.data.map((article) => ({
+        type: 'Article',
         icon:
           article.status === 'Submitted'
             ? FileText
@@ -162,21 +163,26 @@ const ContributionsPage: React.FC = () => {
               : MessageSquare,
         title: article.title,
         subtitle: `${article.status} on ${article.date}`,
+        slug: article.slug,
         iconColor: 'bg-green-100 text-green-600',
       })) || [],
     communities:
       communitiesData?.data.map((community) => ({
+        type: 'Community',
         icon: Users,
         title: community.name,
         subtitle: `${community.role} · ${community.members_count} members`,
         iconColor: 'bg-purple-100 text-purple-600',
         role: community.role,
+        slug: community.name,
         memberCount: community.members_count,
       })) || [],
     posts:
       postsData?.data.map((post) => ({
+        type: 'Post',
         icon: post.action === 'Created' ? Book : MessageCircle,
         title: post.title,
+        slug: post.id,
         subtitle: `${post.action} on ${post.created_at} · ${post.likes_count} likes`,
         iconColor: 'bg-indigo-100 text-indigo-600',
       })) || [],
@@ -192,6 +198,7 @@ const ContributionsPage: React.FC = () => {
               ? 'bg-green-100 text-green-600'
               : 'bg-yellow-100 text-yellow-600',
         type: favorite.type,
+        slug: favorite.slug,
       })) || [],
     bookmarks:
       bookmarksData?.data.map((bookmark) => ({
@@ -200,6 +207,7 @@ const ContributionsPage: React.FC = () => {
         subtitle: bookmark.details,
         iconColor: 'bg-yellow-100 text-yellow-600',
         type: bookmark.type,
+        slug: bookmark.slug,
       })) || [],
   };
 

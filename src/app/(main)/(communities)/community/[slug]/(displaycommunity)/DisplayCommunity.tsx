@@ -13,6 +13,8 @@ import '@/api/communities/communities';
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
 import TruncateText from '@/components/common/TruncateText';
+import useIdenticon from '@/hooks/useIdenticons';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import ArticleSubmission from './ArticleSubmission';
@@ -24,6 +26,7 @@ interface DisplayCommunityProps {
 
 const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch }) => {
   const params = useParams<{ slug: string }>();
+  const imageData = useIdenticon(60);
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
@@ -41,7 +44,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
       refetch();
     }
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      showErrorToast(error);
     }
   }, [isSuccess, error, data, refetch]);
 
@@ -49,7 +52,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
     <div className="overflow-hidden rounded-lg bg-white-secondary shadow-md">
       <div className="relative h-52 w-full">
         <Image
-          src={community.banner_pic_url || 'https://picsum.photos/200/300'}
+          src={community.banner_pic_url || `data:image/png;base64,${imageData}`}
           alt="Community Cover"
           layout="fill"
           objectFit="cover"
@@ -59,7 +62,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
         <div className="absolute left-4 top-0 -translate-y-1/2 transform">
           <div className="relative h-24 w-24">
             <Image
-              src={community.profile_pic_url || 'https://picsum.photos/200/300'}
+              src={community.profile_pic_url || `data:image/png;base64,${imageData}`}
               alt="Profile"
               layout="fill"
               objectFit="cover"

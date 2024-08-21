@@ -48,16 +48,18 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
             ))}
           </div>
         </div>
-        <div className="ml-4 flex-none">
-          <div className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-40 lg:w-40">
-            <Image
-              src={article.article_image_url || 'https://picsum.photos/200/200'}
-              alt="Article Image"
-              fill
-              className="rounded-lg object-cover"
-            />
+        {article.article_image_url && (
+          <div className="ml-4 flex-none">
+            <div className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-40 lg:w-40">
+              <Image
+                src={article.article_image_url}
+                alt="Article Image"
+                fill
+                className="rounded-lg object-cover"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <div className="flex items-center">

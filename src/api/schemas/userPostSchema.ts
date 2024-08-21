@@ -9,6 +9,7 @@ export interface UserPostSchema {
   action: string;
   action_date: string;
   created_at: string;
+  id: number;
   likes_count: number;
   title: string;
 }

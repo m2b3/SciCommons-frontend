@@ -14,7 +14,6 @@ import {
 
 import FileUpload from '@/components/common/FileUpload';
 import FormInput from '@/components/common/FormInput';
-import ImageUpload from '@/components/common/ImageUpload';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { SubmitArticleFormValues } from '@/types';
 
@@ -29,6 +28,7 @@ interface SubmitArticleFormProps {
   isPending: boolean;
   activeTab: 'upload' | 'search';
   setActiveTab: React.Dispatch<React.SetStateAction<'upload' | 'search'>>;
+  onSearch: (query: string) => void;
 }
 
 const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
@@ -40,6 +40,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
   isPending,
   activeTab,
   setActiveTab,
+  onSearch,
 }) => {
   const pathname = usePathname();
 
@@ -70,7 +71,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
               render={({}) => <FileUpload name={'pdfFiles'} control={control} />}
             />
           )}
-          {activeTab === 'search' && <SearchComponent />}
+          {activeTab === 'search' && <SearchComponent onSearch={onSearch} />}
         </div>
       </div>
       <FormInput<SubmitArticleFormValues>
@@ -154,13 +155,14 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
             label="Keywords"
             tooltipText="Select keywords for the article."
             placeholder="Add Keywords"
+            maxOptions={5}
             creatable
             {...field}
             fieldState={fieldState}
           />
         )}
       />
-      <Controller
+      {/* <Controller
         name="imageFile"
         control={control}
         rules={{ required: 'Image is required' }}
@@ -172,7 +174,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
             info="Upload an image for the article"
           />
         )}
-      />
+      /> */}
       <div className="mb-4 space-y-2">
         <label className="block text-sm font-medium text-gray-700">Submission Type</label>
         <Controller

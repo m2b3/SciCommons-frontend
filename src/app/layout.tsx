@@ -5,6 +5,8 @@ import NextTopLoader from 'nextjs-toploader';
 
 import { Toaster as SonnerToaster } from 'sonner';
 
+import { SessionExpirationDialog } from '@/HOCs/CheckSessionExpiration';
+import PathTracker from '@/HOCs/withPathTracker';
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
 import BottomBar from '@/components/common/BottomBar';
 
@@ -47,6 +49,8 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
+          <SessionExpirationDialog />
+          <PathTracker />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -54,7 +58,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <main className="flex-grow pb-16 md:pb-0">{children}</main>
           </ThemeProvider>
           <BottomBar />
           <SonnerToaster richColors position="top-center" />

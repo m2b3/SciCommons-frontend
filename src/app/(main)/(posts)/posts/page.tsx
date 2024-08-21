@@ -10,7 +10,7 @@ import { FileX2 } from 'lucide-react';
 import { usePostsApiListPosts } from '@/api/posts/posts';
 import { PostOut } from '@/api/schemas';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
-import Post, { PostSkeleton } from '@/components/posts/Post';
+import PostCard, { PostCardSkeleton } from '@/components/posts/PostCard';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface PostsResponse {
@@ -76,9 +76,9 @@ const PostListContent = () => {
     }
   }, [page, totalPages]);
 
-  const renderPost = useCallback((post: PostOut) => <Post key={post.id} {...post} />, []);
+  const renderPost = useCallback((post: PostOut) => <PostCard key={post.id} {...post} />, []);
 
-  const renderSkeleton = useCallback(() => <PostSkeleton />, []);
+  const renderSkeleton = useCallback(() => <PostCardSkeleton />, []);
 
   return (
     <div className="mx-auto mt-10 min-h-screen max-w-[760px] px-4 md:px-10">
@@ -115,7 +115,7 @@ const PostListContent = () => {
 
 const PostList = () => {
   return (
-    <Suspense fallback={<PostSkeleton />}>
+    <Suspense fallback={<PostCardSkeleton />}>
       <PostListContent />
     </Suspense>
   );

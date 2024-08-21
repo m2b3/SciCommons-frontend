@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthRequestReset } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
@@ -135,4 +136,4 @@ const ForgotPasswordForm: React.FC = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default withAuthRedirect(ForgotPasswordForm);

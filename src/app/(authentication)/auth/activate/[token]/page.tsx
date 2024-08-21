@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthActivate } from '@/api/users-auth/users-auth';
 import { ErrorMessage } from '@/constants';
 
@@ -99,4 +100,4 @@ const ActivateAccount = ({ params }: { params: { token: string } }) => {
   );
 };
 
-export default ActivateAccount;
+export default withAuthRedirect(ActivateAccount);

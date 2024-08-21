@@ -12,7 +12,6 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiCreateCommunity } from '@/api/communities/communities';
 import { CreateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
-import ImageUpload from '@/components/common/ImageUpload';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
@@ -96,17 +95,16 @@ const CreateCommunity: React.FC = () => {
       tags: data.tags.map((tag) => tag.value),
       type: data.type,
     };
-    const profile_image_file = data.profileImage ? data.profileImage.file : undefined;
 
     createCommunity({
-      data: { payload: { details: dataToSend }, profile_image_file: profile_image_file },
+      data: { payload: { details: dataToSend } },
     });
   };
 
   return (
-    <div className="container py-4 text-gray-900">
+    <div className="container py-4 text-gray-900 res-text-sm">
       <div className="mb-4 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold">
+        <h1 className="font-bold res-heading-base">
           Create your
           <span className="text-green-500"> Community</span>
         </h1>
@@ -137,19 +135,22 @@ const CreateCommunity: React.FC = () => {
           register={register}
           requiredMessage="Description is required"
           minLengthValue={10}
+          maxLengthValue={100}
           minLengthMessage="Description must be at least 10 characters"
+          maxLengthMessage="Description must not exceed 100 characters"
           info="Your community's name should be unique and descriptive."
           errors={errors}
         />
         <Controller
           name="tags"
           control={control}
-          rules={{ required: 'Authors are required' }}
+          rules={{ required: 'Tags are required' }}
           render={({ field: { onChange, value }, fieldState }) => (
             <MultiLabelSelector
               label="Tags"
               tooltipText="Help users find your community by adding tags."
               placeholder="Add Tags"
+              maxOptions={5}
               creatable
               value={value}
               onChange={onChange}
@@ -184,20 +185,6 @@ const CreateCommunity: React.FC = () => {
             />
           </div>
         </div>
-        {/* Profile Image */}
-        <Controller
-          name="profileImage"
-          control={control}
-          rules={{ required: 'Profile Image is required' }}
-          render={({}) => (
-            <ImageUpload
-              control={control}
-              name="profileImage"
-              label="Community Profile Image"
-              info="Upload a profile image for your community"
-            />
-          )}
-        />
 
         <button
           type="submit"

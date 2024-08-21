@@ -13,9 +13,9 @@ export interface SubmitArticleFormValues {
   keywords: Option[];
   article_link?: string;
   authors: Option[];
-  imageFile: FileObj;
   pdfFiles: FileObj[];
   submissionType: 'Public' | 'Private';
+  // imageFile: FileObj;
 }
 
 export enum Action {

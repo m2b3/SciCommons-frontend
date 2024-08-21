@@ -72,7 +72,19 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         submission_type: formData.submissionType,
       },
     };
-    const image_file = formData.articleImageFile ? formData.articleImageFile.file : undefined;
+    let image_file: File | undefined;
+    if (formData.articleImageFile && formData.articleImageFile.file) {
+      const originalFile = formData.articleImageFile.file;
+      let fileName = originalFile.name;
+
+      // Truncate filename if it's longer than 100 characters
+      if (fileName.length > 100) {
+        const extension = fileName.split('.').pop() || '';
+        fileName = fileName.slice(0, 96 - extension.length) + '...' + extension;
+      }
+
+      image_file = new File([originalFile], fileName, { type: originalFile.type });
+    }
 
     mutate({ articleId, data: { details: dataToSend, image_file } });
   };

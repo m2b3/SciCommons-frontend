@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MessageCircle, MoreHorizontal, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { MessageCircle, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { PostOut } from '@/api/schemas';
 import {
@@ -19,13 +19,15 @@ import Hashtag from './Hashtag';
 
 type Reaction = 'upvote' | 'downvote';
 
-const Post = (post: PostOut) => {
+const PostCard = (post: PostOut) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(40);
 
+  const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
+
   const { data, refetch } = useUsersCommonApiGetReactionCount('posts.post', Number(post.id), {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: requestConfig,
   });
 
   const { mutate } = useUsersCommonApiPostReaction({
@@ -65,11 +67,11 @@ const Post = (post: PostOut) => {
               <p className="text-gray-400">{dayjs(post?.created_at).fromNow()}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <button className="text-gray-500 transition hover:text-gray-700">
               <MoreHorizontal size={20} />
             </button>
-          </div>
+          </div> */}
         </div>
         <Link href={`/posts/${post.id}`}>
           <h2 className="mb-2 cursor-pointer font-bold text-primary res-text-base">
@@ -124,9 +126,9 @@ const Post = (post: PostOut) => {
   );
 };
 
-export default Post;
+export default PostCard;
 
-export const PostSkeleton = () => (
+export const PostCardSkeleton = () => (
   <div className="mb-6 overflow-hidden rounded-common-xl bg-gray-100 shadow-md">
     <div className="p-4">
       <div className="mb-4 flex items-center justify-between">

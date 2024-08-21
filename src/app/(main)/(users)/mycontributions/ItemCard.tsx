@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Link from 'next/link';
+
 import { LucideIcon } from 'lucide-react';
 import { Crown, Eye, Shield, UserCircle } from 'lucide-react';
 
@@ -12,6 +14,7 @@ export interface ItemCardProps {
   communityName?: string;
   role?: string;
   memberCount?: number;
+  slug?: string;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -23,13 +26,25 @@ const ItemCard: React.FC<ItemCardProps> = ({
   communityName,
   role,
   memberCount,
+  slug,
 }) => (
   <div className="mb-4 flex items-start space-x-3 rounded-lg bg-white-primary p-4 shadow">
     <div className={`flex-shrink-0 rounded-full p-2 ${iconColor}`}>
       <Icon className="h-5 w-5" />
     </div>
     <div className="flex-grow">
-      <h4 className="text-sm font-semibold text-gray-800">{title}</h4>
+      {/* Type could be post, article, or community. Write a conditional statement to display the type */}
+      <Link
+        href={
+          type === 'Article'
+            ? `/article/${slug}`
+            : type === 'Community'
+              ? `/community/${slug}`
+              : `/posts/${slug}`
+        }
+      >
+        <h4 className="text-sm font-semibold text-gray-800">{title}</h4>
+      </Link>
       <p className="text-xs text-gray-600">
         {role && memberCount ? `${role} · ${memberCount} members` : subtitle}
       </p>

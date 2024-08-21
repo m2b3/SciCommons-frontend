@@ -20,7 +20,7 @@ const ArticleHighlightCard: FC<ArticleHighlightCardProps> = ({ article }) => {
       <div className="flex items-center p-4">
         <div className="relative mr-4 h-12 w-12 flex-shrink-0">
           <Image
-            src={article.article_image_url || `data:image/svg+xml;utf8,${imageData}`}
+            src={article.article_image_url || `data:image/png;base64,${imageData}`}
             alt={article.title}
             layout="fill"
             objectFit="cover"

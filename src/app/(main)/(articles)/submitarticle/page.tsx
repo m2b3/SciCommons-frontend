@@ -18,9 +18,19 @@ import { SubmitArticleFormValues } from '@/types';
 
 const STORAGE_KEY = 'articleFormData';
 
+const defaultFormValues: SubmitArticleFormValues = {
+  submissionType: 'Public',
+  title: '',
+  abstract: '',
+  authors: [],
+  keywords: [],
+  article_link: '',
+  pdfFiles: [],
+};
+
 const ArticleForm: React.FC = () => {
   const router = useRouter();
-  const { articleData } = useFetchExternalArticleStore();
+  const { articleData, fetchArticle } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
   const accessToken = useAuthStore((state) => state.accessToken);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -51,14 +61,7 @@ const ArticleForm: React.FC = () => {
     reset,
     watch,
   } = useForm<SubmitArticleFormValues>({
-    defaultValues: {
-      submissionType: 'Public',
-      title: '',
-      abstract: '',
-      authors: [],
-      keywords: [],
-      article_link: '',
-    },
+    defaultValues: defaultFormValues,
     mode: 'onChange',
   });
 
@@ -67,8 +70,9 @@ const ArticleForm: React.FC = () => {
     const savedData = localStorage.getItem(STORAGE_KEY);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      reset(parsedData);
       setActiveTab(parsedData.activeTab || 'upload');
+      const currentTabData = parsedData[parsedData.activeTab] || defaultFormValues;
+      reset(currentTabData);
     }
     setIsInitialized(true);
   }, [reset]);
@@ -77,7 +81,16 @@ const ArticleForm: React.FC = () => {
   useEffect(() => {
     if (isInitialized) {
       const subscription = watch((formData) => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...formData, activeTab }));
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        const parsedData = savedData ? JSON.parse(savedData) : {};
+
+        const dataToSave = {
+          ...parsedData,
+          [activeTab]: { ...formData, pdfFiles: undefined },
+          activeTab,
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
       });
       return () => subscription.unsubscribe();
     }
@@ -89,26 +102,36 @@ const ArticleForm: React.FC = () => {
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...parsedData, activeTab }));
+        const currentTabData = parsedData[activeTab] || defaultFormValues;
+        reset(currentTabData);
       }
     }
-  }, [activeTab, isInitialized]);
+  }, [activeTab, reset, isInitialized]);
 
   // Handle article data
   useEffect(() => {
-    if (isInitialized && articleData) {
+    if (isInitialized && articleData && activeTab === 'search') {
       const newData = {
+        ...defaultFormValues,
         title: articleData.title,
         authors: articleData.authors.map((author) => ({ label: author, value: author })),
         abstract: articleData.abstract,
         article_link: articleData.link,
       };
       reset(newData);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...newData, activeTab }));
+
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      const parsedData = savedData ? JSON.parse(savedData) : {};
+      const dataToSave = {
+        ...parsedData,
+        [activeTab]: newData,
+        activeTab,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     }
   }, [articleData, reset, activeTab, isInitialized]);
 
-  const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
+  const onSubmit: SubmitHandler<SubmitArticleFormValues> = async (formData) => {
     const dataToSend: ArticleCreateSchema = {
       payload: {
         title: formData.title,
@@ -123,12 +146,43 @@ const ArticleForm: React.FC = () => {
         community_name: null,
       },
     };
-    const image_file = formData.imageFile ? formData.imageFile.file : undefined;
-    const pdf_files = formData.pdfFiles
-      ? formData.pdfFiles.map((pdfFile) => pdfFile && pdfFile.file).filter(Boolean)
-      : [];
 
-    submitArticle({ data: { details: dataToSend, image_file, pdf_files } });
+    // Handle file uploads
+    const pdf_files: File[] = [];
+    if (formData.pdfFiles && formData.pdfFiles.length > 0) {
+      for (const fileObj of formData.pdfFiles) {
+        if (fileObj && fileObj.file instanceof File) {
+          let file = fileObj.file;
+
+          // Check if filename is 100 characters or longer
+          if (file.name.length >= 100) {
+            // Split the filename and extension
+            const nameParts = file.name.split('.');
+            const extension = nameParts.pop() || '';
+            const baseName = nameParts.join('.');
+
+            // Truncate the base name and add the extension back
+            const newName = baseName.slice(0, 95) + '...' + (extension ? `.${extension}` : '');
+
+            // Create a new File object with the truncated name
+            file = new File([file], newName, { type: file.type });
+          }
+
+          pdf_files.push(file);
+        }
+      }
+    }
+
+    submitArticle({ data: { details: dataToSend, pdf_files } });
+  };
+
+  const handleSearch = async (query: string) => {
+    try {
+      await fetchArticle(query);
+      setActiveTab('search');
+    } catch (error) {
+      toast.error('Failed to fetch article. Please try again later.');
+    }
   };
 
   return (
@@ -152,6 +206,7 @@ const ArticleForm: React.FC = () => {
           isPending,
           activeTab,
           setActiveTab,
+          onSearch: handleSearch,
         }}
       />
     </div>

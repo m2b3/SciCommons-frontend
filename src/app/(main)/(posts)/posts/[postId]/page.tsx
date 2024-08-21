@@ -6,15 +6,7 @@ import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {
-  Bookmark,
-  FileX2,
-  MessageCircle,
-  MoreHorizontal,
-  Share2,
-  ThumbsDown,
-  ThumbsUp,
-} from 'lucide-react';
+import { Bookmark, FileX2, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { usePostsApiGetPost, usePostsApiListPosts } from '@/api/posts/posts';
@@ -29,16 +21,19 @@ import RedditStyleComments from '@/components/common/PostComments';
 import TruncateText from '@/components/common/TruncateText';
 import Hashtag from '@/components/posts/Hashtag';
 import PostHighlightCard, { PostHighlightCardSkeleton } from '@/components/posts/PostHighlightCard';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
+import SocialShare from './SocialShare';
+
 const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   dayjs.extend(relativeTime);
 
   const accessToken = useAuthStore((state) => state.accessToken);
-  const requestConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
   const { data, isLoading } = usePostsApiGetPost(params.postId);
   const imageData = useIdenticon(40);
 
@@ -46,6 +41,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
     'posts.post',
     Number(params.postId),
     {
+      query: { enabled: !!data?.data?.id },
       request: requestConfig,
     }
   );
@@ -71,7 +67,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
         refetchLikes();
       },
       onError: (error) => {
-        console.error(error);
+        showErrorToast(error);
       },
     },
   });
@@ -117,32 +113,34 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                {/* Bookmark */}
-                <button className="text-gray-500 transition hover:text-blue-500">
-                  {bookMarkStats?.data.is_bookmarked ? (
-                    <Bookmark
-                      size={20}
-                      className="text-blue-500"
-                      onClick={() =>
-                        toggleBookmark({
-                          data: { content_type: 'posts.post', object_id: params.postId },
-                        })
-                      }
-                    />
-                  ) : (
-                    <Bookmark
-                      size={20}
-                      onClick={() =>
-                        toggleBookmark({
-                          data: { content_type: 'posts.post', object_id: params.postId },
-                        })
-                      }
-                    />
-                  )}
-                </button>
-                <button className="text-gray-500 transition hover:text-gray-700">
-                  <MoreHorizontal size={20} />
-                </button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className={`transition ${
+                          bookMarkStats?.data.is_bookmarked
+                            ? 'text-blue-500 hover:text-blue-600'
+                            : 'text-gray-500 hover:text-blue-500'
+                        }`}
+                        onClick={() =>
+                          toggleBookmark({
+                            data: { content_type: 'posts.post', object_id: params.postId },
+                          })
+                        }
+                      >
+                        <Bookmark
+                          size={20}
+                          className={bookMarkStats?.data.is_bookmarked ? 'fill-current' : ''}
+                        />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="res-text-xs">
+                        {bookMarkStats?.data.is_bookmarked ? 'Remove Bookmark' : 'Bookmark'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
             <h1 className="mb-2 text-xl font-bold text-primary">{data.data.title}</h1>
@@ -187,10 +185,11 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                 <MessageCircle size={16} />
                 <span className="text-xs">{data.data.comments_count} comments</span>
               </button>
-              <button className="flex items-center space-x-1 transition hover:text-purple-500">
-                <Share2 size={16} />
-                <span className="text-xs">Share</span>
-              </button>
+              <SocialShare
+                url={`${window.location.origin}/posts/${params.postId}`}
+                title={data?.data?.title || 'Check out this post'}
+                description={data?.data?.content}
+              />
             </div>
             <div className="border-t border-gray-300 pt-4">
               <h3 className="text-2lg mb-4 font-semibold text-gray-500">Comments</h3>
@@ -204,7 +203,9 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
       <div className="hidden w-full py-10 pr-10 lg:flex lg:flex-col">
         {!userPostDataPending
           ? userPostData?.data?.items?.map((post: PostOut) => (
-              <PostHighlightCard key={post?.id} post={post} />
+              <div className="flex flex-col" key={post?.id}>
+                <PostHighlightCard key={post?.id} post={post} />
+              </div>
             ))
           : Array.from({ length: 3 }).map((_, index) => <PostHighlightCardSkeleton key={index} />)}
         {userPostData?.data?.items.length === 0 && (

@@ -1,19 +1,33 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
 
-const SearchComponent: React.FC = () => {
+interface SearchComponentProps {
+  onSearch?: (query: string) => void;
+}
+
+const SearchComponent: React.FC<SearchComponentProps> = ({ onSearch }) => {
   const [query, setQuery] = useState('');
+  const { fetchArticle, loading, error } = useFetchExternalArticleStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
 
-  const { fetchArticle, loading, error } = useFetchExternalArticleStore();
+  const handleSearch = async () => {
+    if (query.trim()) {
+      await fetchArticle(query);
+      if (onSearch) {
+        onSearch(query);
+      }
+    }
+  };
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    fetchArticle(query);
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSearch();
+    }
   };
 
   return (
@@ -46,11 +60,13 @@ const SearchComponent: React.FC = () => {
           placeholder="Enter DOI, arXiv ID, or PubMed ID"
           value={query}
           onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
           required
         />
         <button
-          className="absolute bottom-2.5 end-2.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300"
-          onClick={handleSubmit}
+          type="button"
+          className="absolute bottom-2.5 end-2.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300"
+          onClick={handleSearch}
         >
           Search
         </button>

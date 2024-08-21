@@ -7,7 +7,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import Cookies from 'js-cookie';
 import { Bell, DownloadIcon, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -47,7 +46,9 @@ const NavBar: React.FC = () => {
               router.back();
             }}
           />
-          <Image src="/logo.png" alt="Logo" width={60} height={40} />
+          <Link href="/">
+            <Image src="/logo.png" alt="Logo" width={60} height={40} />
+          </Link>
         </div>
         <ul className="mx-auto hidden space-x-1 md:flex">
           {navLinks?.map((link) => (
@@ -120,9 +121,6 @@ const ProfileDropdown: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    const access = Cookies.get('accessToken');
-    const refresh = Cookies.get('refreshToken');
-    console.log(access, refresh);
     toast.success('Logged out successfully');
   };
 
