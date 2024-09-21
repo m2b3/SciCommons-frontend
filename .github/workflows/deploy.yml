@@ -1,0 +1,63 @@
+name: CI/CD Pipeline for Next.js App
+
+on:
+  push:
+    branches:
+      - main # Runs this workflow on every push to the 'main' branch.
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 3: Set up Docker metadata (tags and labels)
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # Step 4: Build and push Docker image to GitHub Packages
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+      # Step 5: Deploy Docker image to the VPS via SSH
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker stop nextjs-app || true
+            docker rm nextjs-app || true
+            docker run -d \
+              --name nextjs-app \
+              --env NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }} \
+              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
