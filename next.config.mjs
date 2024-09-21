@@ -27,6 +27,7 @@ const nextConfig = withPWA({
       },
     ],
   },
+  output: 'standalone'
 });
 
 const withNextra = nextra({
