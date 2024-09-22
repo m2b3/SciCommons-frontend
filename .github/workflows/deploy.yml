@@ -34,10 +34,11 @@ jobs:
 
       # Step 3: Test SSH connection to VPS
       - name: Test SSH Connection
-        uses: appleboy/ssh-action@v0.1.0
+        id: action-ssh
+        uses: tiyee/action-ssh@release
         with:
           host: ${{ secrets.VPS_HOST }}
+          port: 22
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "SSH connection successful to ${{ secrets.VPS_HOST }} as ${{ secrets.VPS_USER }}"
+          command: whoami
