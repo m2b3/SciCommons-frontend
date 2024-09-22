@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for Next.js App
+name: Deploy Frontend to Arbutus Cloud Instance
 
 on:
   push:
@@ -46,7 +46,17 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
-      # Step 5: Deploy Docker image to the VPS via SSH
+      # Step 5: Setup SSH keys and known_hosts
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          chmod 600 ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa.pub
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      # Step 6: Deploy Docker image to the VPS via SSH
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.0
         with:
