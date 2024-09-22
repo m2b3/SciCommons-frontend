@@ -18,27 +18,26 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Setup SSH keys and known_hosts, and log each step
-      - name: Setup SSH and Log Output
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "Private key saved to ~/.ssh/id_rsa"
-          chmod 600 ~/.ssh/id_rsa
-          echo "Permissions set for private key"
+      # - name: Setup SSH and Log Output
+      #   run: |
+      #     mkdir -p ~/.ssh/
+      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      #     echo "Private key saved to ~/.ssh/id_rsa"
+      #     chmod 600 ~/.ssh/id_rsa
+      #     echo "Permissions set for private key"
 
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-          echo "Host key added to known_hosts for ${{ secrets.VPS_HOST }}"
+      #     ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+      #     echo "Host key added to known_hosts for ${{ secrets.VPS_HOST }}"
 
-          echo "Contents of known_hosts:"
-          cat ~/.ssh/known_hosts
+      #     echo "Contents of known_hosts:"
+      #     cat ~/.ssh/known_hosts
 
       # Step 3: Test SSH connection to VPS
       - name: Test SSH Connection
-        id: action-ssh
-        uses: tiyee/action-ssh@release
+        uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.VPS_HOST }}
-          port: 22
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command: whoami
+          script: |
+            echo "SSH connection successful to ${{ secrets.VPS_HOST }} as ${{ secrets.VPS_USER }}"
