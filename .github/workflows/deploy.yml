@@ -33,11 +33,22 @@ jobs:
       #     cat ~/.ssh/known_hosts
 
       # Step 3: Test SSH connection to VPS
+      # - name: Test SSH Connection
+      #   uses: appleboy/ssh-action@v0.1.0
+      #   with:
+      #     host: ${{ secrets.VPS_HOST }}
+      #     username: ${{ secrets.VPS_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     script: |
+      #       echo "SSH connection successful to ${{ secrets.VPS_HOST }} as ${{ secrets.VPS_USER }}"
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
       - name: Test SSH Connection
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "SSH connection successful to ${{ secrets.VPS_HOST }} as ${{ secrets.VPS_USER }}"
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH connection successful'"
