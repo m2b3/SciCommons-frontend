@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: m2b3/scicommons-frontend
 
 jobs:
   build-and-deploy:
@@ -59,11 +59,19 @@ jobs:
       - name: Deploy to VPS
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            # Pull the latest image
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker stop scicommons || true
-            docker rm scicommons || true
+            
+            # Check if the container exists
+            if [ "$(docker ps -aq -f name=scicommons)" ]; then
+              # Stop and remove the existing container
+              docker stop scicommons || true
+              docker rm scicommons || true
+            fi
+            
+            # Run the new container
             docker run -d \
-              --name nextjs-app \
+              --name scicommons \
               --env NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }} \
               -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           EOF
