@@ -1,54 +1,69 @@
-name: Test SSH Connection to VPS
+name: Deploy Frontend to Arbutus Cloud Instance
 
-# Allow manual triggering of the workflow
 on:
   workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main # Runs this workflow on every push to the 'main' branch.
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  test-ssh:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
+      packages: write
       id-token: write
 
     steps:
-      # Step 1: Checkout the repository (optional, but often included)
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Setup SSH keys and known_hosts, and log each step
-      # - name: Setup SSH and Log Output
-      #   run: |
-      #     mkdir -p ~/.ssh/
-      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-      #     echo "Private key saved to ~/.ssh/id_rsa"
-      #     chmod 600 ~/.ssh/id_rsa
-      #     echo "Permissions set for private key"
+      # Step 2: Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      #     ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-      #     echo "Host key added to known_hosts for ${{ secrets.VPS_HOST }}"
+      # Step 3: Set up Docker metadata (tags and labels)
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      #     echo "Contents of known_hosts:"
-      #     cat ~/.ssh/known_hosts
+      # Step 4: Build and push Docker image to GitHub Packages
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
 
-      # Step 3: Test SSH connection to VPS
-      # - name: Test SSH Connection
-      #   uses: appleboy/ssh-action@v0.1.0
-      #   with:
-      #     host: ${{ secrets.VPS_HOST }}
-      #     username: ${{ secrets.VPS_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       echo "SSH connection successful to ${{ secrets.VPS_HOST }} as ${{ secrets.VPS_USER }}"
-
-      - name: Set up SSH
+      # Step 5: Setup SSH keys and known_hosts
+      - name: Setup SSH
         run: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Test SSH Connection
+      # Step 6: Deploy Docker image to the VPS via SSH
+      - name: Deploy to VPS
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH connection successful'"
+          ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker stop scicommons || true
+            docker rm scicommons || true
+            docker run -d \
+              --name nextjs-app \
+              --env NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }} \
+              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          EOF
