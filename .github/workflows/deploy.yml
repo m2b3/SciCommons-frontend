@@ -84,7 +84,6 @@ jobs:
             echo "Running the new container..."
             echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}"
             docker run -d --name scicommons \
-              --env NEXT_PUBLIC_BACKEND_URL='${{ secrets.NEXT_PUBLIC_BACKEND_URL }}' \
               -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
 
             # Get the new image ID (the one just pulled and started)
