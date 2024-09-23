@@ -59,20 +59,40 @@ jobs:
       - name: Deploy to VPS
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            # Pull the latest image
             echo "Pulling the latest image..."
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+
+            # Get the currently running image ID
+            CURRENT_IMAGE_ID=$(docker inspect --format="{{.Image}}" scicommons || echo "")
             
             # Check if the container exists
             if [ "$(docker ps -aq -f name=scicommons)" ]; then
-              # Stop and remove the existing container
-              echo "Stopping the existing container..."
+              echo "Stopping and removing the existing container..."
               docker stop scicommons || true
-              echo "Removing the existing container..."
               docker rm scicommons || true
             fi
-
-            echo $NEXT_PUBLIC_BACKEND_URL
-            # Run the new container
-            docker run -d --name scicommons --env NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }} -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            
+            echo "Running the new container..."
+            docker run -d --name scicommons \
+              --env NEXT_PUBLIC_BACKEND_URL='${{ secrets.NEXT_PUBLIC_BACKEND_URL }}' \
+              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            
+            # Get the image ID of the new container
+            NEW_IMAGE_ID=$(docker inspect --format="{{.Image}}" scicommons)
+            
+            echo "Cleaning up old images..."
+            
+            # Get a list of all images, excluding the new and currently running image (if available)
+            IMAGES_TO_REMOVE=$(docker images -q | grep -v -e "$NEW_IMAGE_ID" -e "$CURRENT_IMAGE_ID" | sort | uniq)
+            
+            # If there are any images to remove, delete them
+            if [ -n "$IMAGES_TO_REMOVE" ]; then
+              echo "Removing the following images:"
+              echo "$IMAGES_TO_REMOVE"
+              docker rmi -f $IMAGES_TO_REMOVE || true
+            else
+              echo "No images to remove."
+            fi
+            
+            echo "Deployment complete."
           EOF
