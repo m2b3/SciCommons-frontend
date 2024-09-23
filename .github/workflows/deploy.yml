@@ -60,15 +60,19 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             # Pull the latest image
+            echo "Pulling the latest image..."
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
             
             # Check if the container exists
             if [ "$(docker ps -aq -f name=scicommons)" ]; then
               # Stop and remove the existing container
+              echo "Stopping the existing container..."
               docker stop scicommons || true
+              echo "Removing the existing container..."
               docker rm scicommons || true
             fi
-            
+
+            echo $NEXT_PUBLIC_BACKEND_URL
             # Run the new container
             docker run -d --name scicommons --env NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }} -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
           EOF
