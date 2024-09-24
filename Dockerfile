@@ -1,5 +1,5 @@
 # ARG to accept build-time environment variables
-ARG NEXT_PUBLIC_BACKEND_URL
+# ARG NEXT_PUBLIC_BACKEND_URL
 
 FROM node:20-alpine AS base
 
@@ -44,8 +44,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Pass the environment variable to Next.js build
-ARG NEXT_PUBLIC_BACKEND_URL
-ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+# ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=https://backend.scicommons.org
 
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED=1
