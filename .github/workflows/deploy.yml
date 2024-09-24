@@ -62,7 +62,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             echo "Pulling the latest image..."
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:deployments
 
             echo "Stopping the current container..."
             docker stop scicommons || true
@@ -71,7 +71,7 @@ jobs:
 
             echo "Running the new container..."
             docker run -d --name scicommons \
-              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:deployments
 
             # Get the new image ID (the one just pulled and started)
             NEW_IMAGE_ID=$(docker inspect --format="{{.Image}}" scicommons)
