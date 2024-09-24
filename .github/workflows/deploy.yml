@@ -38,8 +38,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            ${{ github.ref_name }}
 
       # Step 4: Build and push Docker image to GitHub Packages
       - name: Build and push Docker image
