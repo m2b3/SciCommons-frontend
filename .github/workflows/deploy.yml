@@ -38,6 +38,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event={{github.ref_name}}
 
       # Step 4: Build and push Docker image to GitHub Packages
       - name: Build and push Docker image
@@ -62,7 +64,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             echo "Pulling the latest image..."
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:deployments
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
             echo "Stopping the current container..."
             docker stop scicommons || true
@@ -71,7 +73,7 @@ jobs:
 
             echo "Running the new container..."
             docker run -d --name scicommons \
-              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:deployments
+              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
             # Get the new image ID (the one just pulled and started)
             NEW_IMAGE_ID=$(docker inspect --format="{{.Image}}" scicommons)

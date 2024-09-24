@@ -22,10 +22,13 @@ ARG NEXT_PUBLIC_BACKEND_URL
 # 2. Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+
+# Declare ARG again here
+ARG NEXT_PUBLIC_BACKEND_URL
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN echo "NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL" >> .env
-RUN cat .env
 RUN npm run build
 
 # 3. Production image, copy all the files and run next
@@ -51,4 +54,5 @@ EXPOSE 3000
 
 ENV PORT=3000
 
-CMD HOSTNAME=localhost node server.js
+ENV HOSTNAME="0.0.0.0"
+CMD ["node", "server.js"]
