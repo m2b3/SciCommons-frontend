@@ -39,7 +39,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event={{github.ref_name}}
+            ${{ github.ref_name }}
 
       # Step 4: Build and push Docker image to GitHub Packages
       - name: Build and push Docker image
