@@ -46,6 +46,8 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
 
       # Step 5: Setup SSH keys and known_hosts
       - name: Setup SSH
@@ -62,27 +64,13 @@ jobs:
             echo "Pulling the latest image..."
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
 
-            # Check if the currently running container exists and get its image ID
-            CURRENT_IMAGE_ID=$(docker inspect --format="{{.Image}}" scicommons 2>/dev/null || echo "")
-            
-            # If there is no currently running container
-            if [ -z "$CURRENT_IMAGE_ID" ]; then
-              echo "No currently running container found."
-            else
-              echo "Current container image ID: $CURRENT_IMAGE_ID"
-            fi
+            echo "Stopping the current container..."
+            docker stop scicommons || true
+            echo "Removing the current container..."
+            docker rm scicommons || true
 
-            # Check if the container exists
-            if [ "$(docker ps -aq -f name=scicommons)" ]; then
-              echo "Stopping and removing the existing container..."
-              docker stop scicommons || true
-              docker rm scicommons || true
-            fi
-            
             echo "Running the new container..."
-            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}"
             docker run -d --name scicommons \
-              --env 'NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}' \
               -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
 
             # Get the new image ID (the one just pulled and started)
@@ -94,19 +82,13 @@ jobs:
             # Get all images sorted by creation date, newest first
             IMAGE_LIST=$(docker images --format "{{.ID}}" --filter=reference="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:*" | uniq)
 
-            # Prepare the list of images to keep (new and previous, if any)
-            IMAGES_TO_KEEP="$NEW_IMAGE_ID"
-            if [ -n "$CURRENT_IMAGE_ID" ]; then
-              IMAGES_TO_KEEP="$IMAGES_TO_KEEP $CURRENT_IMAGE_ID"
-            fi
-            
-            # Remove all images except the new and previous one (if available)
+            # Remove all images except the new one
             for IMAGE in $IMAGE_LIST; do
-              if [[ ! " $IMAGES_TO_KEEP " =~ " $IMAGE " ]]; then
+              if [ "$IMAGE" != "$NEW_IMAGE_ID" ]; then
                 echo "Removing old image: $IMAGE"
                 docker rmi -f $IMAGE || true
               fi
             done
-            
+
             echo "Deployment complete."
           EOF
