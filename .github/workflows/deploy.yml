@@ -55,40 +55,42 @@ jobs:
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 6: Deploy Docker image to the VPS via SSH
-      - name: Deploy to VPS
+      # Step 6: Transfer docker-compose.prod.yml to the server
+      - name: Transfer docker-compose.prod.yml to SERVER
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          scp -i ~/.ssh/id_rsa docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.prod.yml
+
+      # Step 7: Deploy Docker image to the SERVER via SSH
+      - name: Deploy to SERVER
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             echo "Pulling the latest image..."
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
 
-            echo "Stopping the current container..."
-            docker stop scicommons || true
-            echo "Removing the current container..."
-            docker rm scicommons || true
+            cd deployment/
 
-            echo "Running the new container..."
-            docker run -d --name scicommons \
-              -p 80:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            # Create or clear the .env file
+            > .env
 
-            # Get the new image ID (the one just pulled and started)
-            NEW_IMAGE_ID=$(docker inspect --format="{{.Image}}" scicommons)
-            echo "New container image ID: $NEW_IMAGE_ID"
+            # Append environment variables one by one
+            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
+            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env
+
+            # Ensure the environment variables are written before proceeding
+            echo ".env file created with environment variables."
+
+            # Stop the current containers
+            echo "Stopping the current containers..."
+            docker compose down || true
+
+            # Start the containers using Docker Compose
+            echo "Starting containers using Docker Compose..."
+            docker compose -f docker-compose.prod.yml up -d --build
 
             echo "Cleaning up old images..."
-            
-            # Get all images sorted by creation date, newest first
-            IMAGE_LIST=$(docker images --format "{{.ID}}" --filter=reference="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:*" | uniq)
-
-            # Remove all images except the new one
-            for IMAGE in $IMAGE_LIST; do
-              if [ "$IMAGE" != "$NEW_IMAGE_ID" ]; then
-                echo "Removing old image: $IMAGE"
-                docker rmi -f $IMAGE || true
-              fi
-            done
+            docker image prune -f
 
             echo "Deployment complete."
           EOF

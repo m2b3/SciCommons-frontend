@@ -1,0 +1,64 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - docker_network
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      # If you choose to use an API Key instead of a Token, specify your email as well
+      # - CF_API_EMAIL=user@example.com
+      # - CF_API_KEY=YOUR_API_KEY
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/ubuntu/traefik/traefik.yml:/traefik.yml:ro # Path to your traefik.yml file
+      - /home/ubuntu/traefik/acme.json:/acme.json # Path to your acme.json file
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.traefik.entrypoints=http'
+      - 'traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https'
+      - 'traefik.http.routers.traefik.middlewares=traefik-https-redirect'
+      - 'traefik.http.routers.traefik-secure.entrypoints=https'
+      - 'traefik.http.routers.traefik-secure.tls=true'
+      - 'traefik.http.routers.traefik-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.traefik-secure.tls.domains[0].main=scicommons.org'
+      - 'traefik.http.routers.traefik-secure.service=api@internal'
+  scicommons:
+    container_name: scicommons
+    image: ghcr.io/m2b3/scicommons-frontend:main
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.scicommons.entrypoints=http'
+      - 'traefik.http.routers.scicommons.rule=Host(`scicommons.org`)'
+      - 'traefik.http.middlewares.scicommons-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.scicommons.middlewares=scicommons-https-redirect'
+      - 'traefik.http.routers.scicommons-secure.entrypoints=https'
+      - 'traefik.http.routers.scicommons-secure.rule=Host(`scicommons.org`)'
+      - 'traefik.http.routers.scicommons-secure.tls=true'
+      - 'traefik.http.routers.scicommons-secure.service=scicommons'
+      - 'traefik.http.services.scicommons.loadbalancer.server.port=3000'
+      - 'traefik.docker.network=proxy'
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - docker_network
+
+networks:
+  docker_network:
+    driver: bridge

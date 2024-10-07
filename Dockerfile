@@ -16,19 +16,12 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# Accept build arguments
-ARG NEXT_PUBLIC_BACKEND_URL
-
 # 2. Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 
-# Declare ARG again here
-ARG NEXT_PUBLIC_BACKEND_URL
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN echo "NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL" >> .env
 RUN npm run build
 
 # 3. Production image, copy all the files and run next
