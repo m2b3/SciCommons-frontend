@@ -14,6 +14,19 @@ pnpm dev
 bun dev
 ```
 
+OR Running app in docker container
+
+```bash
+# Build docker image locally
+docker build . --build-arg NEXT_PUBLIC_BACKEND_URL=http://localhost:8000 -t scicommons-frontend:latest
+
+# Before running docker compose, update the docker image name in docker-compose.dev.yml file
+docker compose -f docker-compose.dev.yml up
+
+# detached mode
+docker compose -f docker-compose.dev.yml up -d
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

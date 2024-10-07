@@ -57,10 +57,10 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # # Step 6: Transfer docker-compose.prod.yml to the server
-      # - name: Transfer docker-compose.prod.yml to SERVER
-      #   run: |
-      #     scp -i ~/.ssh/id_rsa docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.prod.yml
+      # Step 6: Transfer docker-compose.prod.yml to the server
+      - name: Transfer docker-compose.prod.yml to SERVER
+        run: |
+          scp -i ~/.ssh/id_rsa docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.prod.yml
 
       # Step 7: Deploy Docker image to the SERVER via SSH
       - name: Deploy to SERVER

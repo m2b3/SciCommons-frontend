@@ -1,10 +1,7 @@
 services:
   scicommons:
     container_name: scicommons
-    image: ghcr.io/m2b3/scicommons-frontend:main
-    volumes:
-      - ./src:/app/src
-      - ./public:/app/public
+    image: ghcr.io/m2b3/scicommons-frontend:main # Change this to your image name
     restart: always
     ports:
       - 3000:3000

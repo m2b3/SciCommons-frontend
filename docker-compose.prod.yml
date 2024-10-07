@@ -34,11 +34,7 @@ services:
   scicommons:
     container_name: scicommons
     image: ghcr.io/m2b3/scicommons-frontend:main
-    environment:
-      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
     volumes:
-      - ./src:/app/src
-      - ./public:/app/public
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
