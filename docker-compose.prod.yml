@@ -31,9 +31,11 @@ services:
       - 'traefik.http.routers.traefik-secure.tls.certresolver=cloudflare'
       - 'traefik.http.routers.traefik-secure.tls.domains[0].main=scicommons.org'
       - 'traefik.http.routers.traefik-secure.service=api@internal'
+
   scicommons:
     container_name: scicommons
     image: ghcr.io/m2b3/scicommons-frontend:main
+    command: ['npm', 'start']
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
