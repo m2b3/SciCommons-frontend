@@ -11,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-// import { IconArticle, IconHomeFilled, IconNotebook, IconUsersGroup } from '@tabler/icons-react';
 import { Home, Newspaper, NotebookPen, Plus, Users } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { GithubIcon, LinkedinIcon, LucideIcon, TwitterIcon } from 'lucide-react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const SocialLink = ({ href, icon: Icon }: { href?: string; icon: LucideIcon }) =>
   href ? (
@@ -133,7 +133,7 @@ const AboutPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="mb-8 transition-shadow hover:shadow-lg">
+        {/* <Card className="mb-8 transition-shadow hover:shadow-lg">
           <CardHeader className="bg-purple-600 text-white">
             <CardTitle className="res-heading-base">Our Team</CardTitle>
             <CardDescription className="text-gray-200 res-text-sm">
@@ -147,7 +147,7 @@ const AboutPage = () => {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

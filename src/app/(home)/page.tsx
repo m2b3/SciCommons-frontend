@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from 'next-themes';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import cookies from 'js-cookie';
@@ -16,7 +18,7 @@ import {
 import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
 import { faqs } from '@/constants/common.constants';
 
-import GyroSlider from './GyroSlider';
+import FeaturesSection from './FeaturesSection';
 
 const Home = () => {
   const words = [
@@ -31,6 +33,7 @@ const Home = () => {
       className: 'text-green-500 dark:text-green-500',
     },
   ];
+  const { theme } = useTheme();
 
   console.log(cookies.get('accessToken'));
   console.log(cookies.get('refreshToken'));
@@ -58,6 +61,25 @@ const Home = () => {
           </Link>
         </div>
       </div>
+      <div className="bg-slate-50 p-12 dark:bg-slate-950">
+        <p className="w-full pb-8 text-center text-xl font-bold text-text-primary md:text-2xl">
+          Our Supporters
+        </p>
+        <div className="flex w-full flex-col items-center justify-center gap-8 sm:flex-row">
+          <Image
+            width={160}
+            height={40}
+            src={theme === 'dark' ? '/images/KCDHA-White.png' : '/images/KCDHA-Black.png'}
+            alt="KCDHA"
+          />
+          <Image
+            width={280}
+            height={40}
+            src={theme === 'dark' ? '/images/GSoC-White.png' : '/images/GSoC-Black.png'}
+            alt="GSoC"
+          />
+        </div>
+      </div>
       <div className="h-fit w-full bg-functional-green/10 py-4">
         <div className="flex w-full flex-col items-center py-8">
           <span className="text-center text-xl font-bold text-text-primary md:text-2xl">
@@ -65,22 +87,22 @@ const Home = () => {
           </span>
           <span className="text-base text-text-secondary">Uniqueness of our platform</span>
         </div>
-        <GyroSlider />
+        <FeaturesSection />
       </div>
       <div className="flex w-full flex-col items-center py-12">
         <span className="px-8 text-center text-xl font-bold text-text-primary md:text-2xl">
           We Have Answered Almost All Your Questions
         </span>
-        <div className="mt-8 flex max-w-[720px] flex-col items-center p-4">
-          <Accordion type="single" collapsible className="max-w-[600px]">
+        <div className="mt-8 flex w-full max-w-[95%] flex-col items-center p-4 md:max-w-[80%]">
+          <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, i) => (
               <AccordionItem
-                className="border-b border-gray-200 px-0 py-1"
+                className="w-full border-b border-gray-200 px-0 py-1"
                 key={i}
                 value={faq?.ques}
               >
                 <AccordionTrigger className="w-full p-5" defaultIconNeeded={true}>
-                  <span className="text-gray-700">{faq?.ques}</span>
+                  <span className="w-full text-left text-gray-700">{faq?.ques}</span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
                   <span className="text-gray-500">{faq?.ans}</span>
