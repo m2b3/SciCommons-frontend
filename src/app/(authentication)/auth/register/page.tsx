@@ -65,7 +65,7 @@ const RegisterForm: React.FC = () => {
         <Image src="/auth/register.jpg" alt="Background" layout="fill" objectFit="cover" />
         <div className="absolute inset-0 hidden items-center justify-center md:flex">
           <div className="max-w-md rounded-xl bg-white bg-opacity-[0.25] p-4 shadow-lg backdrop-blur-sm md:p-8">
-            <p className="font-medium text-gray-800 res-text-base md:text-lg lg:text-xl">
+            <p className="font-medium text-gray-100 res-text-base md:text-lg lg:text-xl">
               Join a global community of researchers and enthusiasts, united by a shared passion for
               scientific discovery. Connect with peers, share your insights, and unlock the power of
               collective knowledge. Together, we can build a better future.
@@ -76,7 +76,7 @@ const RegisterForm: React.FC = () => {
 
       {/* Right side */}
       <div className="flex flex-col justify-center bg-white px-12 py-12 dark:bg-gray-800 md:w-1/2 md:p-12">
-        <h1 className="mb-4 font-bold text-gray-800 res-heading-lg dark:text-white">
+        <h1 className="mb-4 font-bold text-gray-100 res-heading-base dark:text-gray-200">
           Join the Science Revolution
         </h1>
         <p className="rest-text-sm mb-8 hidden text-gray-800 dark:text-gray-300 md:block">

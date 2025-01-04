@@ -71,14 +71,14 @@ const LoginForm: React.FC = () => {
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full flex-col space-y-4">
           <FormInput<ILoginForm>
-            label="Username or Email"
+            label="Email"
             name="login"
             type="text"
-            placeholder="Username or Email"
+            placeholder="Email"
             register={register}
-            requiredMessage="Username or Email is required"
+            requiredMessage="Email is required"
             patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/}
-            patternMessage="Enter a valid email or username"
+            patternMessage="Enter a valid Email"
             errors={errors}
           />
           <FormInput<ILoginForm>
