@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,7 +30,7 @@ const RegisterForm: React.FC = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<IFormInput>({
     mode: 'onChange',
   });
@@ -54,13 +54,20 @@ const RegisterForm: React.FC = () => {
     signUp({ data });
   };
 
+  useEffect(() => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      document.getElementById(firstErrorField)?.focus();
+    }
+  }, [errors]);
+
   if (isSuccess) {
     return <SignUpSuccess />;
   }
 
   return (
     <div className="flex h-screen flex-col md:flex-row">
-      {/* Left side */}
+      {/* Left Side */}
       <div className="relative md:w-1/2">
         <Image src="/auth/register.jpg" alt="Background" layout="fill" objectFit="cover" />
         <div className="absolute inset-0 hidden items-center justify-center md:flex">
@@ -74,7 +81,7 @@ const RegisterForm: React.FC = () => {
         </div>
       </div>
 
-      {/* Right side */}
+      {/* Right Side */}
       <div className="flex flex-col justify-center bg-white px-12 py-12 dark:bg-gray-800 md:w-1/2 md:p-12">
         <h1 className="mb-4 font-bold text-gray-800 res-heading-lg dark:text-white">
           Join the Science Revolution
@@ -83,17 +90,26 @@ const RegisterForm: React.FC = () => {
           Sign up to access an online hub of research papers, comments, and ratings, and engage with
           a global community of researchers.
         </p>
+
         <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full flex-col space-y-4">
           <FormInput
             label="Username"
             name="username"
             type="text"
-            placeholder="Username"
+            placeholder="e.g., john_doe"
             register={register}
+            patternValue={/^[a-z0-9._]+$/}
+            patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
             requiredMessage="Username is required"
+            minLengthValue={3}
+            minLengthMessage="Username must be at least 3 characters"
+            maxLengthValue={30}
+            maxLengthMessage="Username cannot exceed 30 characters"
             errors={errors}
+            isSubmitting={isSubmitting}
+            helperText="3-30 characters. No spaces or special symbols."
           />
-          {/* First Name and Last Name */}
+
           <div className="grid grid-cols-2 gap-4">
             <FormInput
               label="First Name"
@@ -114,43 +130,48 @@ const RegisterForm: React.FC = () => {
               errors={errors}
             />
           </div>
+
           <FormInput
             label="Email"
             name="email"
             type="email"
-            placeholder="Email"
+            placeholder="e.g., john.doe@example.com"
             register={register}
             requiredMessage="Email is required"
             patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            patternMessage="Invalid email address"
+            patternMessage="Enter a valid email address."
             errors={errors}
           />
+
           <FormInput
             label="Password"
             name="password"
             type="password"
-            placeholder="Password"
+            placeholder="Create a password"
             register={register}
             requiredMessage="Password is required"
             minLengthValue={8}
-            minLengthMessage="Password must be at least 8 characters"
+            minLengthMessage="Password must be at least 8 characters long."
             errors={errors}
           />
+
           <FormInput
             label="Confirm Password"
             name="confirm_password"
             type="password"
-            placeholder="Confirm Password"
+            placeholder="Confirm your password"
             register={register}
             requiredMessage="Confirm Password is required"
             errors={errors}
-            patternMessage="The passwords do not match"
             patternValue={new RegExp(watch('password'))}
+            patternMessage="Passwords must match."
           />
+
           <Button type="submit" isPending={isPending}>
             Sign Up
           </Button>
         </form>
+
         <p className="mt-8 text-gray-800 res-text-sm dark:text-gray-300">
           Already have an account?{' '}
           <Link href="/auth/login" className="text-brand hover:underline">
