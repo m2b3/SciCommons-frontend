@@ -20,9 +20,11 @@ interface InputProps<TFieldValues extends FieldValues> {
   name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
+  isSubmitting?: boolean;
   readOnly?: boolean;
   info?: string;
   textArea?: boolean;
+  helperText?: string;
 }
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -39,11 +41,14 @@ const FormInput = <TFieldValues extends FieldValues>({
   maxLengthValue,
   maxLengthMessage,
   errors,
+  isSubmitting = false,
   readOnly = false,
   info,
   textArea = false,
+  helperText,
 }: InputProps<TFieldValues>): JSX.Element => {
   const error = errors[name];
+
   const commonProps = {
     id: String(name),
     placeholder,
@@ -65,10 +70,11 @@ const FormInput = <TFieldValues extends FieldValues>({
     }),
     className: clsx(
       'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-brand focus:border-brand res-text-sm',
-      error && !readOnly ? 'border-red-500' : 'border-gray-300',
+      error && !readOnly && !isSubmitting ? 'border-red-500' : 'border-gray-300',
       readOnly ? 'bg-gray-100' : ''
     ),
   };
+
   return (
     <div className="w-full">
       {label && (
@@ -91,8 +97,12 @@ const FormInput = <TFieldValues extends FieldValues>({
         </div>
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
-      {error && !readOnly && (
+      {error && !readOnly && !isSubmitting && (
         <p className="mt-2 text-red-600 res-text-xs">{String(error.message)}</p>
+      )}
+
+      {!error && helperText && !isSubmitting && (
+        <p className="mt-2 text-gray-500 res-text-xs">{helperText}</p>
       )}
     </div>
   );
