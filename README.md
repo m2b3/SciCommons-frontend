@@ -1,4 +1,4 @@
-We are going to release an "information for contributors" document soon. For now, testing the site yourself and reporting bugs (and potential fixes) is the best way to get started.
+_We are going to release an "information for contributors" document soon. For now, testing the site yourself and reporting bugs (and potential fixes) is the best way to get started._
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
