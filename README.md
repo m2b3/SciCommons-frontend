@@ -1,4 +1,6 @@
-_We are going to release an "information for contributors" document soon. For now, testing the site yourself and reporting bugs (and potential fixes) is the best way to get started._
+---
+### **Please follow our [Contribution guide](https://github.com/m2b3/SciCommons-frontend/blob/main/CONTRIBUTING.md) to start contributing to this repo.**
+---
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
