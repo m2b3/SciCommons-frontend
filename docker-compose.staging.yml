@@ -41,7 +41,7 @@ services:
       - 'traefik.http.routers.scicommons-test-secure.service=scicommons-test'
       # Defines the service name as 'scicommons' for the secure router.
 
-      - 'traefik.http.services.scicommons-test.loadbalancer.server.port=3003'
+      - 'traefik.http.services.scicommons-test.loadbalancer.server.port=3000'
       # Specifies the port (3000) where the SciCommons frontend service is running within the container.
 
       - 'traefik.docker.network=proxy'
