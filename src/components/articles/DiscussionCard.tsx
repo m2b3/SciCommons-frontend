@@ -13,7 +13,6 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
 interface DiscussionCardProps {
@@ -23,20 +22,14 @@ interface DiscussionCardProps {
 
 const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscussionClick }) => {
   dayjs.extend(relativeTime);
-
-  const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(40);
 
   const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.discussion',
-    Number(discussion.id),
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
+    Number(discussion.id)
   );
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetchReactions();

@@ -2,11 +2,12 @@
 
 import React, { useEffect } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import TabComponent from '@/components/communities/TabComponent';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import About from './About';
 import AddRules from './AddRules';
@@ -17,12 +18,11 @@ type ActiveTab = 'Details' | 'Rules' | 'About';
 const Preferences = ({ params }: { params: { slug: string } }) => {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
 
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { data: session } = useSession();
 
   // Get Community Details
   const { data, isPending, error, refetch } = useCommunitiesApiGetCommunity(params.slug, {
-    query: { enabled: !!accessToken },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    query: { enabled: !!session },
   });
 
   useEffect(() => {

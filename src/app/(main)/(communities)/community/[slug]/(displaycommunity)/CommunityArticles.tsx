@@ -7,29 +7,22 @@ import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import { ArticleOut } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
-import { useAuthStore } from '@/stores/authStore';
 
 interface CommunityArticlesProps {
   communityId: number;
 }
 
 const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const [articles, setArticles] = useState<ArticleOut[]>([]);
 
-  const { data, isPending, error } = useArticlesApiGetArticles(
-    {
-      community_id: communityId,
-      page: page,
-      per_page: 10,
-      search: search,
-    },
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  const { data, isPending, error } = useArticlesApiGetArticles({
+    community_id: communityId,
+    page: page,
+    per_page: 10,
+    search: search,
+  });
 
   useEffect(() => {
     if (error) {

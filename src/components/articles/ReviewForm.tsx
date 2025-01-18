@@ -14,7 +14,6 @@ import LabeledTooltip from '@/components/common/LabeledToolTip';
 import CommentEditor from '@/components/richtexteditor/CommentEditor';
 import { Ratings } from '@/components/ui/ratings';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import { ReviewCardSkeleton } from './ReviewCard';
 
@@ -49,9 +48,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   refetch,
   communityId,
 }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
-
   const [action, setAction] = React.useState<ActionType>('create');
 
   const {
@@ -70,17 +66,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     mode: 'onChange',
   });
 
-  const { isPending, mutate: createReview } = useArticlesReviewApiCreateReview({
-    request: axiosConfig,
-  });
+  const { isPending, mutate: createReview } = useArticlesReviewApiCreateReview();
 
-  const { isPending: editPending, mutate: editReview } = useArticlesReviewApiUpdateReview({
-    request: axiosConfig,
-  });
+  const { isPending: editPending, mutate: editReview } = useArticlesReviewApiUpdateReview();
 
-  const { isPending: deletePending, mutate: deleteReview } = useArticlesReviewApiDeleteReview({
-    request: axiosConfig,
-  });
+  const { isPending: deletePending, mutate: deleteReview } = useArticlesReviewApiDeleteReview();
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const reviewData = {

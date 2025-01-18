@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { useCommunitiesArticlesApiSubmitArticle } from '@/api/community-articles/community-articles';
 import FormInput from '@/components/common/FormInput';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface FormValues {
   communityName: string;
@@ -19,8 +18,6 @@ interface FormValues {
 const SubmitToCommunity = ({ slug }: { slug: string }) => {
   const searchParams = useSearchParams();
   const communityName = searchParams?.get('name');
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const {
     register,
@@ -29,9 +26,7 @@ const SubmitToCommunity = ({ slug }: { slug: string }) => {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const { mutate, isPending } = useCommunitiesArticlesApiSubmitArticle({
-    request: axiosConfig,
-  });
+  const { mutate, isPending } = useCommunitiesArticlesApiSubmitArticle();
 
   useEffect(() => {
     if (communityName) {

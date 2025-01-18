@@ -7,7 +7,6 @@ import { useArticlesDiscussionApiCreateDiscussion } from '@/api/discussions/disc
 import FormInput from '@/components/common/FormInput';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface FormValues {
   topic: string;
@@ -21,7 +20,6 @@ interface DiscussionFormProps {
 }
 
 const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId, communityId }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
   const {
     register,
     handleSubmit,
@@ -35,7 +33,6 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
   });
 
   const { mutate } = useArticlesDiscussionApiCreateDiscussion({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         toast.success('Discussion created successfully');

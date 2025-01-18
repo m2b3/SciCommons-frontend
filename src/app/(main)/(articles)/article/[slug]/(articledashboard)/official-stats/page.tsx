@@ -8,14 +8,9 @@ import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticleOfficialStats } from '@/api/articles/articles';
 import TruncateText from '@/components/common/TruncateText';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 const Dashboard = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
-  const { data, error } = useArticlesApiGetArticleOfficialStats(params?.slug || '', {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, error } = useArticlesApiGetArticleOfficialStats(params?.slug || '');
 
   const dataFormatter = (number: number) => `${Intl.NumberFormat('us').format(number).toString()}`;
 

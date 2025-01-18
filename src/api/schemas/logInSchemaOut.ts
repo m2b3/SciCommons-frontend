@@ -13,4 +13,5 @@ export interface LogInSchemaOut {
   message: string;
   status: string;
   token: string;
+  expiresAt: string;
 }

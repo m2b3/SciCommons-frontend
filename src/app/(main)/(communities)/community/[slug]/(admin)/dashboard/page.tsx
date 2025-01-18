@@ -9,14 +9,9 @@ import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunityDashboard } from '@/api/communities/communities';
 import ArticleHighlightCard from '@/components/articles/ArticleHighlightCard';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
-  const { data, error } = useCommunitiesApiGetCommunityDashboard(params?.slug || '', {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, error } = useCommunitiesApiGetCommunityDashboard(params?.slug || '');
 
   useEffect(() => {
     if (error) {

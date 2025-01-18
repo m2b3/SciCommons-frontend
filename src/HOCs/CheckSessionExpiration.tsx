@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,33 +13,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useAuthStore } from '@/stores/authStore';
 
 export const SessionExpirationDialog: React.FC = () => {
   const [showDialog, setShowDialog] = useState(false);
-  const { isAuthenticated, isTokenExpired, logout } = useAuthStore();
-  const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
-    const checkExpiration = () => {
-      if (isAuthenticated && isTokenExpired()) {
-        setShowDialog(true);
-      }
-    };
-
-    // Check initially
-    checkExpiration();
-
-    // Set up interval to check periodically
-    const intervalId = setInterval(checkExpiration, 60000); // Check every minute
-
-    return () => clearInterval(intervalId);
-  }, [isAuthenticated, isTokenExpired]);
+    // Handle refresh token error
+    if (session?.error === 'RefreshAccessTokenError') {
+      // toast.error('Your session has expired. Please log in again.');
+      // signOut({ callbackUrl: '/auth/login' });
+      // return;
+      setShowDialog(true);
+    }
+  }, [session]);
 
   const handleDialogClose = () => {
     setShowDialog(false);
-    logout();
-    router.push('/auth/login');
+    signOut({ callbackUrl: '/auth/login' });
   };
 
   return (

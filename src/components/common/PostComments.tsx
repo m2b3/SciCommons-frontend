@@ -16,7 +16,6 @@ import { CommentData } from '@/components/common/Comment';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import convertToCommentData from '@/lib/convertPostcomment';
-import { useAuthStore } from '@/stores/authStore';
 
 interface PostCommentsProps {
   postId: number;
@@ -27,19 +26,9 @@ interface PostCommentsProps {
 // Todo 3: Add ToolTip for depth select
 
 const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
-  const { data, refetch, isPending } = usePostsApiListPostComments(postId, {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
-
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     refetch();
-  //   }
-  // }, [accessToken, refetch]);
+  const { data, refetch, isPending } = usePostsApiListPostComments(postId);
 
   const { mutate: createComment } = usePostsApiCreateComment({
     mutation: {
@@ -54,10 +43,8 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
         );
       },
     },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
   const { mutate: UpdateComment, data: updatedComment } = usePostsApiUpdateComment({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();
@@ -72,7 +59,6 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
     },
   });
   const { mutate: deleteComment } = usePostsApiDeleteComment({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();

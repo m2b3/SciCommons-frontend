@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
+import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
@@ -16,21 +16,16 @@ import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard
 import ReviewForm from '@/components/articles/ReviewForm';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 const CommunityArticleDisplayPage: React.FC = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { data: session } = useSession();
   const params = useParams<{ articleSlug: string; slug: string }>();
 
   const [isRightHovered, setIsRightHovered] = useState(false);
 
-  const { data, error, isPending } = useArticlesApiGetArticle(
-    params?.articleSlug || '',
-    { community_name: params?.slug || '' },
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  const { data, error, isPending } = useArticlesApiGetArticle(params?.articleSlug || '', {
+    community_name: params?.slug || '',
+  });
 
   const {
     data: reviewsData,
@@ -41,8 +36,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
     data?.data.id || 0,
     { community_id: data?.data.community_article?.community.id || 0 },
     {
-      query: { enabled: !!accessToken && !!data },
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: { enabled: !!session && !!data },
     }
   );
 
@@ -147,4 +141,5 @@ const CommunityArticleDisplayPage: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(CommunityArticleDisplayPage, { requireAuth: true });
+// export default withAuthRedirect(CommunityArticleDisplayPage, { requireAuth: true });
+export default CommunityArticleDisplayPage;

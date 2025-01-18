@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
 import { CommunityOut } from '@/api/schemas';
-import { useAuthStore } from '@/stores/authStore';
 
 interface AddRulesProps {
   data: AxiosResponse<CommunityOut> | undefined;
@@ -25,11 +24,8 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
     },
   });
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   // Todo: Optimize this code to use a single mutation (add rules and update community details in a single mutation)
   const { mutate, isPending: isUpdatePending } = useCommunitiesApiUpdateCommunity({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         toast.success('Community Details updated successfully');

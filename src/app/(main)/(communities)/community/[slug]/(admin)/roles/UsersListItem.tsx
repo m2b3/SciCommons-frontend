@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import { Action } from '@/types';
 
 interface UsersListItemProps {
@@ -40,12 +39,9 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
   userId,
   refetch,
 }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(60);
 
-  const { mutate, isPending } = useCommunitiesMembersApiManageCommunityMember({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { mutate, isPending } = useCommunitiesMembersApiManageCommunityMember();
 
   const handleAction = (action: Action) => {
     mutate(

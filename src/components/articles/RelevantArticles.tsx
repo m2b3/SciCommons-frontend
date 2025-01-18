@@ -4,7 +4,6 @@ import { useArticlesApiGetRelevantArticles } from '@/api/articles/articles';
 import ArticleHighlightCard, {
   ArticleHighlightCardSkeleton,
 } from '@/components/articles/ArticleHighlightCard';
-import { useAuthStore } from '@/stores/authStore';
 
 interface RelevantArticlesProps {
   articleId: number;
@@ -13,12 +12,9 @@ interface RelevantArticlesProps {
 
 const RelevantArticles: FC<RelevantArticlesProps> = ({ articleId }) => {
   console.log(articleId);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const { data, isPending } = useArticlesApiGetRelevantArticles(
-    articleId,
-    { filter_type: 'recent' },
-    { request: { headers: { Authorization: `Bearer ${accessToken}` } } }
-  );
+  const { data, isPending } = useArticlesApiGetRelevantArticles(articleId, {
+    filter_type: 'recent',
+  });
 
   return (
     <div className="rounded-lg border bg-white-secondary p-4 text-gray-900 shadow-sm">

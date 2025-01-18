@@ -9,7 +9,6 @@ import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface IUnRegisteredProps {
   emails: Option[];
@@ -27,12 +26,8 @@ const UnRegistered = () => {
     mode: 'onChange',
   });
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const { isPending, mutate, isSuccess, error } =
-    useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers({
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    });
+    useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers();
 
   useEffect(() => {
     if (error) {

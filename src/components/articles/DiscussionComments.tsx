@@ -16,23 +16,17 @@ import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface DiscussionCommentsProps {
   discussionId: number;
 }
 
 const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
   const { data, refetch, isPending } = useArticlesDiscussionApiListDiscussionComments(
     discussionId,
-    {},
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
+    {}
   );
 
   const { mutate: createComment } = useArticlesDiscussionApiCreateComment({
@@ -44,10 +38,9 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
         showErrorToast(error);
       },
     },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
+
   const { mutate: UpdateComment } = useArticlesDiscussionApiUpdateComment({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();
@@ -58,8 +51,8 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
       },
     },
   });
+
   const { mutate: deleteComment } = useArticlesDiscussionApiDeleteComment({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();

@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 import { toast } from 'sonner';
 
 import { withAuth } from '@/HOCs/withAuth';
@@ -9,19 +11,16 @@ import {
   useCommunitiesApiJoinGetJoinRequests,
   useCommunitiesApiJoinManageJoinRequest,
 } from '@/api/join-community/join-community';
-import { useAuthStore } from '@/stores/authStore';
 
 import RequestListItem, { RequestListItemSkeleton } from './RequestListItem';
 
 const Requests = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const { data: session } = useSession();
 
   const { data, error, isSuccess, isPending, refetch } = useCommunitiesApiJoinGetJoinRequests(
     params?.slug || '',
     {
-      query: { enabled: !!accessToken },
-      request: axiosConfig,
+      query: { enabled: !!session },
     }
   );
 
@@ -31,7 +30,7 @@ const Requests = ({ params }: { params: { slug: string } }) => {
     isPending: isMutating,
     error: mutationError,
     isSuccess: isMutationSuccess,
-  } = useCommunitiesApiJoinManageJoinRequest({ request: axiosConfig });
+  } = useCommunitiesApiJoinManageJoinRequest();
 
   const [filter, setFilter] = useState<string>('All');
 

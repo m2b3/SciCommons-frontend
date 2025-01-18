@@ -2,6 +2,8 @@
 
 import React, { useEffect } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -10,7 +12,6 @@ import Button from '@/components/common/Button';
 import { Option } from '@/components/ui/multiple-selector';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import PersonalLinks from './PersonalLinks';
 import ProfessionalStatus from './ProfessionalStatus';
@@ -39,26 +40,16 @@ export interface IProfileForm {
 }
 
 const Home: React.FC = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { data: session } = useSession();
   const imageData = useIdenticon(40);
 
   const [editMode, setEditMode] = React.useState(false);
 
   const { data, error, refetch } = useUsersApiGetMe({
-    query: { enabled: !!accessToken && !editMode },
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    query: { enabled: !!session && !editMode },
   });
 
   const { mutate, isPending } = useUsersApiUpdateUser({
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
     mutation: {
       onSuccess: () => {
         toast.success('Profile updated successfully');

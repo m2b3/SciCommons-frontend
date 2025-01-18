@@ -26,7 +26,6 @@ import {
 } from '@/api/users/users';
 import { ErrorMessage } from '@/constants';
 import useIdenticon from '@/hooks/useIdenticons';
-import { useAuthStore } from '@/stores/authStore';
 
 import ContributionCard, { ContributionCardSkeleton } from './ContributionCard';
 import ItemCard, { ItemCardProps } from './ItemCard';
@@ -85,33 +84,19 @@ interface UserData {
 }
 
 const ContributionsPage: React.FC = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const requestConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   const imageData = useIdenticon(50);
 
-  const { data, isPending, error } = useUsersApiGetUserStats({
-    request: requestConfig,
-  });
+  const { data, isPending, error } = useUsersApiGetUserStats();
 
-  const { data: articlesData, error: articlesDataError } = useUsersApiGetMyArticles({
-    request: requestConfig,
-  });
+  const { data: articlesData, error: articlesDataError } = useUsersApiGetMyArticles();
 
-  const { data: communitiesData, error: communitiesDataError } = useUsersApiGetMyCommunities({
-    request: requestConfig,
-  });
+  const { data: communitiesData, error: communitiesDataError } = useUsersApiGetMyCommunities();
 
-  const { data: postsData, error: postsDataError } = useUsersApiGetMyPosts({
-    request: requestConfig,
-  });
+  const { data: postsData, error: postsDataError } = useUsersApiGetMyPosts();
 
-  const { data: favoritesData, error: favoritesDataError } = useUsersApiGetMyFavorites({
-    request: requestConfig,
-  });
+  const { data: favoritesData, error: favoritesDataError } = useUsersApiGetMyFavorites();
 
-  const { data: bookmarksData, error: bookmarksDataError } = useUsersApiGetMyBookmarks({
-    request: requestConfig,
-  });
+  const { data: bookmarksData, error: bookmarksDataError } = useUsersApiGetMyBookmarks();
 
   const [activeTab, setActiveTab] = useState<
     'articles' | 'communities' | 'posts' | 'favorites' | 'bookmarks'

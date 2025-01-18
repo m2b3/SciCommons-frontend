@@ -10,7 +10,6 @@ import FormInput from '@/components/common/FormInput';
 import ImageUpload from '@/components/common/ImageUpload';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
-import { useAuthStore } from '@/stores/authStore';
 import { FileObj } from '@/types';
 
 interface FormValues {
@@ -49,15 +48,12 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     },
   });
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
-
   const {
     mutate,
     error: updateError,
     isPending: isUpdatePending,
     isSuccess,
-  } = useArticlesApiUpdateArticle({ request: axiosConfig });
+  } = useArticlesApiUpdateArticle();
 
   const onSubmit = (formData: FormValues) => {
     const dataToSend: ArticleUpdateSchema = {

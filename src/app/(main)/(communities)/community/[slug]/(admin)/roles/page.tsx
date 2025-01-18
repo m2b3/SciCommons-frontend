@@ -2,13 +2,14 @@
 
 import React, { useEffect } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesMembersApiGetCommunityMembers } from '@/api/community-members/community-members';
 import TabComponent from '@/components/communities/TabComponent';
-import { useAuthStore } from '@/stores/authStore';
 
 import UsersListItem from './UsersListItem';
 
@@ -18,15 +19,14 @@ type ActiveTab = 'Members' | 'Moderators' | 'Reviewers' | 'Admins';
 const Roles = ({ params }: { params: { slug: string } }) => {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Members');
 
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { data: session } = useSession();
 
   const { data, error, isPending, refetch } = useCommunitiesMembersApiGetCommunityMembers(
     params?.slug || '',
     {
       query: {
-        enabled: !!accessToken,
+        enabled: !!session,
       },
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
 

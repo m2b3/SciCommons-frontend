@@ -15,7 +15,6 @@ import { CommunityOut } from '@/api/schemas';
 import TruncateText from '@/components/common/TruncateText';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import ArticleSubmission from './ArticleSubmission';
 
@@ -27,12 +26,8 @@ interface DisplayCommunityProps {
 const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch }) => {
   const params = useParams<{ slug: string }>();
   const imageData = useIdenticon(60);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
-  const { mutate, data, isSuccess, error } = useCommunitiesApiJoinJoinCommunity({
-    request: axiosConfig,
-  });
+  const { mutate, data, isSuccess, error } = useCommunitiesApiJoinJoinCommunity();
 
   const handleJoin = () => {
     mutate({ communityId: community.id });

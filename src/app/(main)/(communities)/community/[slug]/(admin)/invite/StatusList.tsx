@@ -6,7 +6,6 @@ import { MailIcon } from 'lucide-react';
 
 import { useCommunitiesApiInvitationGetCommunityInvitations } from '@/api/community-invitations/community-invitations';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 const StatusList = ({ slug }: { slug: string }) => {
   const [filter, setFilter] = useState<'All' | 'Accepted' | 'Pending' | 'Rejected'>('All');
@@ -15,11 +14,7 @@ const StatusList = ({ slug }: { slug: string }) => {
     setFilter(event.target.value as 'All' | 'Accepted' | 'Pending' | 'Rejected');
   };
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
-  const { data, error, isPending } = useCommunitiesApiInvitationGetCommunityInvitations(slug, {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, error, isPending } = useCommunitiesApiInvitationGetCommunityInvitations(slug);
 
   useEffect(() => {
     if (error) {

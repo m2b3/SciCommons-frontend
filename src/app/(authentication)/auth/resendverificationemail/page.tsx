@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthResendActivation } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
@@ -132,4 +132,5 @@ const ResendVerificationForm: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(ResendVerificationForm);
+// export default withAuthRedirect(ResendVerificationForm);
+export default ResendVerificationForm;

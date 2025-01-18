@@ -2,12 +2,23 @@
 
 import React from 'react';
 
+import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { Bell, DownloadIcon, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
+import {
+  Bell,
+  DownloadIcon,
+  LogOut,
+  Moon,
+  MoveLeft,
+  NotebookTabs,
+  Plus,
+  Sun,
+  User,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -16,18 +27,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Switch } from '@/components/ui/switch';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
-import useStore from '@/hooks/useStore';
 import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/stores/authStore';
 
 const NavBar: React.FC = () => {
-  const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
+  const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
-  const { theme } = useTheme();
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/articles', label: 'Articles' },
@@ -63,7 +71,7 @@ const NavBar: React.FC = () => {
             </li>
           ))}
         </ul>
-        {isAuthenticated ? (
+        {session ? (
           <div className="flex items-center space-x-4">
             <div className="hidden md:block">
               <CreateDropdown />
@@ -83,6 +91,19 @@ const NavBar: React.FC = () => {
             </Link>
           </div>
         )}
+        <div className="ml-4">
+          {theme === 'dark' ? (
+            <Sun
+              className="h-9 w-9 cursor-pointer rounded-full p-2 text-gray-800 hover:bg-gray-200 hover:text-gray-600"
+              onClick={() => setTheme('light')}
+            />
+          ) : (
+            <Moon
+              className="h-9 w-9 cursor-pointer rounded-full p-2 text-gray-800 hover:bg-gray-200 hover:text-gray-600"
+              onClick={() => setTheme('dark')}
+            />
+          )}
+        </div>
       </nav>
     </header>
   );
@@ -115,14 +136,27 @@ const CreateDropdown: React.FC = () => {
 };
 
 const ProfileDropdown: React.FC = () => {
-  const logout = useAuthStore((state) => state.logout);
-  const { theme, setTheme } = useTheme();
   const imageData = useIdenticon(40);
   const { handleAppInstall } = usePWAInstallPrompt('install');
 
-  const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/logout`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to log out from the backend');
+      }
+
+      // If backend logout is successful, sign out from the frontend
+      await signOut({ redirect: true, callbackUrl: '/auth/login' });
+      toast.success('Logged out successfully');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      toast.error('Failed to log out. Please try again.');
+    }
   };
 
   return (
@@ -146,16 +180,6 @@ const ProfileDropdown: React.FC = () => {
           <Link href="/mycontributions" className="flex items-center ">
             <NotebookTabs size={16} className="mr-2" /> Contributions
           </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <div className="flex items-center space-x-2">
-            Dark Mode{' '}
-            <Switch
-              className="ml-2"
-              checked={theme === 'dark'}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            />
-          </div>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <button
