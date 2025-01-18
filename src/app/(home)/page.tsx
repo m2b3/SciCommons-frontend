@@ -29,7 +29,7 @@ const Home = () => {
       text: 'to',
     },
     {
-      text: 'SciCommons.',
+      text: 'SciCommons Test.',
       className: 'text-green-500 dark:text-green-500',
     },
   ];
