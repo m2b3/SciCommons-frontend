@@ -83,7 +83,7 @@ jobs:
 
             # Stop the current containers
             echo "Stopping the current containers..."
-            docker compose down || true
+            docker compose -f docker-compose.staging.yml down || true
 
             # Start the containers using Docker Compose
             echo "Starting containers using Docker Compose..."
