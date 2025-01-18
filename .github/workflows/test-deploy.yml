@@ -1,0 +1,96 @@
+name: Deploy Frontend Test to Arbutus Cloud Instance
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main # Runs this workflow on every push to the 'main' branch.
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: m2b3/scicommons-frontend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 3: Set up Docker metadata (tags and labels)
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # Step 4: Build and push Docker image to GitHub Packages
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+
+      # Step 5: Setup SSH keys and known_hosts
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # Step 6: Transfer docker-compose.staging.yml to the server
+      - name: Transfer docker-compose.staging.yml to SERVER
+        run: |
+          scp -i ~/.ssh/id_rsa docker-compose.staging.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.staging.yml
+
+      # Step 7: Deploy Docker image to the SERVER via SSH
+      - name: Deploy to SERVER
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            echo "Pulling the latest image..."
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
+
+            cd deployment/
+
+            # Create or clear the .env file
+            > .env
+
+            # Append environment variables one by one
+            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
+            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env
+
+            # Ensure the environment variables are written before proceeding
+            echo ".env file created with environment variables."
+
+            # Stop the current containers
+            echo "Stopping the current containers..."
+            docker compose down || true
+
+            # Start the containers using Docker Compose
+            echo "Starting containers using Docker Compose..."
+            docker compose -f docker-compose.staging.yml up -d --build
+
+            echo "Cleaning up old images..."
+            docker image prune -f
+
+            echo "Deployment complete."
+          EOF
