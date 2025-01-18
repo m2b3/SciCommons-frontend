@@ -13,7 +13,6 @@ import { useArticlesApiCreateArticle } from '@/api/articles/articles';
 import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
 import { SubmitArticleFormValues } from '@/types';
 
@@ -32,17 +31,11 @@ const defaultFormValues: SubmitArticleFormValues = {
 const CommunityArticleForm: NextPage = () => {
   const { articleData, fetchArticle } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
-  const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
   const params = useParams<{ slug: string }>();
   const [isInitialized, setIsInitialized] = useState(false);
 
   const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
     mutation: {
       onSuccess: (data) => {
         toast.success(

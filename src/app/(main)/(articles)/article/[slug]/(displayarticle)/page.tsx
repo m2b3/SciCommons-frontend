@@ -3,7 +3,8 @@
 // Todo: Render this component on server side
 import { useEffect } from 'react';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+import { useSession } from 'next-auth/react';
+
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
@@ -17,19 +18,11 @@ import EmptyState from '@/components/common/EmptyState';
 import SplitScreenLayout from '@/components/common/SplitScreenLayout';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
+  const { data: session } = useSession();
 
-  const { data, error, isPending } = useArticlesApiGetArticle(
-    params.slug,
-    {},
-    {
-      request: axiosConfig,
-    }
-  );
+  const { data, error, isPending } = useArticlesApiGetArticle(params.slug);
 
   const {
     data: reviewsData,
@@ -40,8 +33,7 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
     data?.data.id || 0,
     {},
     {
-      query: { enabled: !!accessToken && !!data },
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: { enabled: !!session && !!data },
     }
   );
 
@@ -106,4 +98,5 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   return <SplitScreenLayout leftSide={LeftSide} rightSide={RightSide} />;
 };
 
-export default withAuthRedirect(ArticleDisplayPage, { requireAuth: true });
+// export default withAuthRedirect(ArticleDisplayPage, { requireAuth: true });
+export default ArticleDisplayPage;

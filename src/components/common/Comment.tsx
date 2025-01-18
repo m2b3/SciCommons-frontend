@@ -23,7 +23,6 @@ import {
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
-import { useAuthStore } from '@/stores/authStore';
 
 import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
@@ -85,15 +84,10 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   dayjs.extend(relativeTime);
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   // Todo: Too many requests
-  const { data, refetch } = useUsersCommonApiGetReactionCount(contentType, Number(id), {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, refetch } = useUsersCommonApiGetReactionCount(contentType, Number(id));
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();

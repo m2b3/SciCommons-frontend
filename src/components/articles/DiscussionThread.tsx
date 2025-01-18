@@ -20,7 +20,6 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
 import TruncateText from '../common/TruncateText';
@@ -34,11 +33,9 @@ interface DiscussionThreadProps {
 const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDiscussionId }) => {
   dayjs.extend(relativeTime);
   const imageData = useIdenticon(40);
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error } = useArticlesDiscussionApiGetDiscussion(discussionId, {
     query: { enabled: discussionId !== null },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   useEffect(() => {
@@ -49,14 +46,10 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
 
   const { data: reactions, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.discussion',
-    Number(discussionId),
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
+    Number(discussionId)
   );
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetchReactions();

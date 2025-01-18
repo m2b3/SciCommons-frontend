@@ -4,13 +4,11 @@ import React, { useEffect } from 'react';
 
 import { YooptaContentValue } from '@yoopta/editor';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import SplitScreenLayout from '@/components/common/SplitScreenLayout';
 import TabNavigation from '@/components/ui/tab-navigation';
-import useStore from '@/hooks/useStore';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import AssessmentsList from './AssessmentsList';
 import CommunityAbout from './CommunityAbout';
@@ -21,12 +19,7 @@ import DisplayCommunity, { DisplayCommunitySkeleton } from './DisplayCommunity';
 import RelevantCommunities from './RelevantCommunities';
 
 const Community = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useStore(useAuthStore, (state) => state.accessToken);
-  const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
-
-  const communityQuery = useCommunitiesApiGetCommunity(params.slug, {
-    request: axiosConfig,
-  });
+  const communityQuery = useCommunitiesApiGetCommunity(params.slug);
 
   const { data, error, isPending, refetch } = communityQuery;
 
@@ -127,4 +120,5 @@ const Community = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuthRedirect(Community, { requireAuth: true });
+// export default withAuthRedirect(Community, { requireAuth: true });
+export default Community;

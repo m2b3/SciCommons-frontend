@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiCreateCommunity } from '@/api/communities/communities';
 import { CreateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
@@ -16,7 +16,6 @@ import LabeledTooltip from '@/components/common/LabeledToolTip';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import OptionCard from './OptionCard';
 
@@ -39,14 +38,8 @@ interface FormValues {
 
 const CreateCommunity: React.FC = () => {
   const router = useRouter();
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   const { mutate: createCommunity, isPending } = useCommunitiesApiCreateCommunity({
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
     mutation: {
       onSuccess: (data) => {
         toast.success('Community created successfully! Redirecting to community page...');
@@ -199,4 +192,5 @@ const CreateCommunity: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(CreateCommunity, { requireAuth: true });
+// export default withAuthRedirect(CreateCommunity, { requireAuth: true });
+export default CreateCommunity;

@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
@@ -183,4 +183,5 @@ const RegisterForm: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(RegisterForm);
+// export default withAuthRedirect(RegisterForm);
+export default RegisterForm;

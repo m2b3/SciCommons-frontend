@@ -23,7 +23,6 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
 import TruncateText from '../common/TruncateText';
@@ -43,18 +42,12 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   const [displayComments, setDisplayComments] = useState<boolean>(false);
   const imageData = useIdenticon(40);
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
     'articles.review',
-    Number(review.id),
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
+    Number(review.id)
   );
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetchReactions();
@@ -67,7 +60,6 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
 
   const { mutate: approveArticle, isPending: approveArticlePending } =
     useCommunitiesArticlesApiApproveArticle({
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
       mutation: {
         onSuccess: (data) => {
           refetch && refetch();

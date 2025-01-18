@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { useArticlesApiUpdateArticle } from '@/api/articles/articles';
 import { ArticleUpdateSchema } from '@/api/schemas';
 import { Option } from '@/components/ui/multiple-selector';
-import { useAuthStore } from '@/stores/authStore';
 
 interface FAQ {
   question: string;
@@ -26,8 +25,6 @@ interface AddFAQsProps {
 
 const AddFAQs: React.FC<AddFAQsProps> = (props) => {
   const { articleId, title, abstract, authors, keywords, submissionType, faqs } = props;
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const { control, handleSubmit } = useForm<{ faqs: FAQ[] }>({
     defaultValues: {
@@ -40,9 +37,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
     name: 'faqs',
   });
 
-  const { mutate, error, isPending, isSuccess } = useArticlesApiUpdateArticle({
-    request: axiosConfig,
-  });
+  const { mutate, error, isPending, isSuccess } = useArticlesApiUpdateArticle();
 
   const onSubmit = (data: FAQ[]) => {
     const dataToSend: ArticleUpdateSchema = {

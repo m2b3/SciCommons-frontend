@@ -5,18 +5,13 @@ import React from 'react';
 import { useCommunitiesArticlesApiGetAssignedArticles } from '@/api/community-articles/community-articles';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import EmptyState from '@/components/common/EmptyState';
-import { useAuthStore } from '@/stores/authStore';
 
 interface AssessmentsListProps {
   communityId: number;
 }
 
 const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
-  const { data, isPending } = useCommunitiesArticlesApiGetAssignedArticles(communityId, {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, isPending } = useCommunitiesArticlesApiGetAssignedArticles(communityId);
 
   return (
     <div className="flex flex-col space-y-4">

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { ComponentType, useEffect, useState } from 'react';
+import React, { ComponentType, useEffect } from 'react';
 
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
@@ -10,7 +11,6 @@ import { UsersCommonApiCheckPermissionParams } from '@/api/schemas';
 import { useUsersCommonApiCheckPermission } from '@/api/users-common-api/users-common-api';
 import Loader from '@/components/common/Loader';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface WithAuthProps {
   [key: string]: unknown;
@@ -25,8 +25,9 @@ export function withAuth<P extends WithAuthProps>(
 ) {
   const WithAuthComponent: React.FC<P> = (props) => {
     const router = useRouter();
-    const { isAuthenticated, accessToken, initializeAuth } = useAuthStore();
-    const [isInitializing, setIsInitializing] = useState(true);
+    // const { isAuthenticated, accessToken, initializeAuth } = useAuthStore();
+    const { data: session } = useSession();
+    // const [isInitializing, setIsInitializing] = useState(true);
 
     const resourceId = getResourceId ? getResourceId(props) : undefined;
 
@@ -35,13 +36,13 @@ export function withAuth<P extends WithAuthProps>(
       resource_id: resourceId || undefined,
     };
 
-    useEffect(() => {
-      const initAuth = async () => {
-        await initializeAuth();
-        setIsInitializing(false);
-      };
-      initAuth();
-    }, [initializeAuth]);
+    // useEffect(() => {
+    //   const initAuth = async () => {
+    //     await initializeAuth();
+    //     setIsInitializing(false);
+    //   };
+    //   initAuth();
+    // }, [initializeAuth]);
 
     const {
       data: permissionData,
@@ -50,21 +51,21 @@ export function withAuth<P extends WithAuthProps>(
       isError,
     } = useUsersCommonApiCheckPermission(params, {
       query: {
-        enabled: !isInitializing && isAuthenticated && !!accessToken && !!dashboardType,
+        enabled: !!session && !!dashboardType,
       },
       request: {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${session?.accessToken}`,
         },
       },
     });
 
     useEffect(() => {
-      if (isInitializing) {
-        return;
-      }
+      // if (isInitializing) {
+      //   return;
+      // }
 
-      if (!isAuthenticated || !accessToken) {
+      if (!session) {
         toast.error('You need to be logged in to view this resource');
         router.replace('/auth/login');
       } else if (!isLoading && !isError && permissionData !== undefined) {
@@ -81,23 +82,13 @@ export function withAuth<P extends WithAuthProps>(
       } else if (isError) {
         showErrorToast(error);
       }
-    }, [
-      isInitializing,
-      isAuthenticated,
-      accessToken,
-      isLoading,
-      isError,
-      permissionData,
-      router,
-      resourceId,
-      error,
-    ]);
+    }, [session, isLoading, isError, permissionData, router, resourceId, error]);
 
-    if (isInitializing || isLoading) {
+    if (isLoading) {
       return <Loader type="dots" color="green" size="small" text="Loading..." />;
     }
 
-    if (!isAuthenticated || !accessToken) {
+    if (!session) {
       return null;
     }
 

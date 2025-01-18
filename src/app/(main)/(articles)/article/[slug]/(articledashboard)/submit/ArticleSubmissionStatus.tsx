@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -10,20 +11,17 @@ import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { StatusFilter } from '@/api/schemas';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 const ArticleSubmissionStatus = () => {
   const params = useParams<{ slug: string }>();
   const imageData = useIdenticon(40);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const { data: session } = useSession();
 
   const { data, isPending, error } = useArticlesApiGetArticle(
     params?.slug || '',
     {},
     {
-      query: { enabled: !!accessToken },
-      request: axiosConfig,
+      query: { enabled: !!session },
     }
   );
 

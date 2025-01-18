@@ -9,6 +9,7 @@ import { SessionExpirationDialog } from '@/HOCs/CheckSessionExpiration';
 import PathTracker from '@/HOCs/withPathTracker';
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
 import BottomBar from '@/components/common/BottomBar';
+import { NextAuthProvider } from '@/providers';
 
 import './globals.css';
 
@@ -45,25 +46,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReactQueryClientProvider>
-      <html lang="en">
-        <body className={inter.className}>
-          <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
-          <SessionExpirationDialog />
-          <PathTracker />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            storageKey="nightwind-mode"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main className="flex-grow pb-16 md:pb-0">{children}</main>
-          </ThemeProvider>
-          <BottomBar />
-          <SonnerToaster richColors position="top-center" />
-        </body>
-      </html>
-    </ReactQueryClientProvider>
+    <NextAuthProvider>
+      <ReactQueryClientProvider>
+        <html lang="en">
+          <body className={inter.className}>
+            <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
+            <SessionExpirationDialog />
+            <PathTracker />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              storageKey="nightwind-mode"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <main className="flex-grow pb-16 md:pb-0">{children}</main>
+            </ThemeProvider>
+            <BottomBar />
+            <SonnerToaster richColors position="top-center" />
+          </body>
+        </html>
+      </ReactQueryClientProvider>
+    </NextAuthProvider>
   );
 }

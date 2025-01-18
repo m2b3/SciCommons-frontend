@@ -1,31 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
+import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
-import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
-import { usePathTracker } from '@/hooks/usePathTracker';
-import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
+import Loader from '@/components/common/Loader';
 
 interface ILoginForm {
   login: string;
   password: string;
 }
 
-const LoginForm: React.FC = () => {
+const LoginFormComponent: React.FC = () => {
   const router = useRouter();
-  const { getPreviousPath } = usePathTracker();
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams?.get('callbackUrl') || '/';
+  const [isPending, setIsPending] = React.useState(false);
 
   const {
     register,
@@ -35,28 +34,27 @@ const LoginForm: React.FC = () => {
     mode: 'onChange',
   });
 
-  const { isPending, mutate: logInUser } = useUsersApiAuthLoginUser({
-    mutation: {
-      onSuccess: (data) => {
+  const onSubmit = async (data: ILoginForm) => {
+    setIsPending(true);
+    try {
+      const result = await signIn('credentials', {
+        login: data.login,
+        password: data.password,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        router.replace(callbackUrl);
         toast.success('Logged in successfully');
-        setAccessToken(data.data.token);
-        const previousPath = getPreviousPath();
-
-        // Redirect logic
-        if (previousPath && !previousPath.startsWith('/auth')) {
-          router.push(previousPath);
-        } else {
-          router.push('/'); // Redirect to home if previous path is auth-related or not available
-        }
-      },
-      onError: (err) => {
-        showErrorToast(err);
-      },
-    },
-  });
-
-  const onSubmit = (data: ILoginForm) => {
-    logInUser({ data });
+      }
+    } catch (error) {
+      toast.error('An error occurred during login');
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -143,4 +141,15 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(LoginForm);
+const LoginForm: React.FC = () => {
+  return (
+    <Suspense
+      fallback={<Loader type={'dots'} color={'green'} size={'small'} text={'Loading...'} />}
+    >
+      <LoginFormComponent />
+    </Suspense>
+  );
+};
+
+// export default withAuthRedirect(LoginForm);
+export default LoginForm;

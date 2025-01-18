@@ -16,7 +16,6 @@ import { CommentData } from '@/components/common/Comment';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import convertToCommentData from '@/lib/convertReviewCommentData';
-import { useAuthStore } from '@/stores/authStore';
 
 interface ReviewCommentsProps {
   reviewId: number;
@@ -28,13 +27,10 @@ interface ReviewCommentsProps {
 // Todo 3: Add ToolTip for depth select
 
 const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayComments }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
   const { data, refetch, isPending } = useArticlesReviewApiListReviewComments(reviewId, {
     query: { enabled: displayComments },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
   const { mutate: createComment } = useArticlesReviewApiCreateComment({
@@ -50,10 +46,8 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
         );
       },
     },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
   const { mutate: UpdateComment, data: updatedComment } = useArticlesReviewApiUpdateComment({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();
@@ -68,7 +62,6 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
     },
   });
   const { mutate: deleteComment } = useArticlesReviewApiDeleteComment({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();

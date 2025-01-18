@@ -3,24 +3,17 @@
 import React, { useEffect } from 'react';
 
 import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
-import { useAuthStore } from '@/stores/authStore';
 
 interface NotificationsProps {
   article_slug?: string;
 }
 
 const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const query_params = article_slug ? { article_slug } : {};
 
-  const { data, isPending, refetch } = useUsersApiGetNotifications(query_params, {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { data, isPending, refetch } = useUsersApiGetNotifications(query_params);
 
-  const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead();
 
   useEffect(() => {
     if (isSuccess) {

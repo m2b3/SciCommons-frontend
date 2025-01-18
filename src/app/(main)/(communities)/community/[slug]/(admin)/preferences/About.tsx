@@ -18,7 +18,6 @@ import { toast } from 'sonner';
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
 import { CommunityOut, UpdateCommunityDetails } from '@/api/schemas';
 import Button from '@/components/common/Button';
-import { useAuthStore } from '@/stores/authStore';
 
 const plugins = [
   Paragraph,
@@ -56,13 +55,10 @@ interface AboutProps {
 }
 
 const About: React.FC<AboutProps> = ({ data }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const editor = useMemo(() => createYooptaEditor(), []);
   const selectionRef = useRef(null);
 
   const { mutate, isPending } = useCommunitiesApiUpdateCommunity({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         toast.success('Community Details updated successfully');

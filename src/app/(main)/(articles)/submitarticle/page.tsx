@@ -7,12 +7,11 @@ import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiCreateArticle } from '@/api/articles/articles';
 import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
 import { SubmitArticleFormValues } from '@/types';
 
@@ -32,15 +31,9 @@ const ArticleForm: React.FC = () => {
   const router = useRouter();
   const { articleData, fetchArticle } = useFetchExternalArticleStore();
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
-  const accessToken = useAuthStore((state) => state.accessToken);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
     mutation: {
       onSuccess: (data) => {
         toast.success('Article submitted successfully! Redirecting....');
@@ -213,4 +206,5 @@ const ArticleForm: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(ArticleForm, { requireAuth: true });
+// export default withAuthRedirect(ArticleForm, { requireAuth: true });
+export default ArticleForm;

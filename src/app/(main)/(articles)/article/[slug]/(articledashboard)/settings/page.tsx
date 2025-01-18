@@ -2,12 +2,13 @@
 
 import React, { useEffect } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 import { toast } from 'sonner';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import TabComponent from '@/components/communities/TabComponent';
-import { useAuthStore } from '@/stores/authStore';
 
 import AddFAQs from './AddFAQs';
 import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDetails';
@@ -15,16 +16,14 @@ import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDet
 type ActiveTab = 'Details' | 'FAQs';
 
 const ArticleSettings = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
 
   const { data, isPending, error } = useArticlesApiGetArticle(
     params?.slug || '',
     {},
     {
-      query: { enabled: !!accessToken },
-      request: axiosConfig,
+      query: { enabled: !!session },
     }
   );
 

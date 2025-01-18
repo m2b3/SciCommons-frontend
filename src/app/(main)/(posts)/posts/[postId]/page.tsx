@@ -24,16 +24,12 @@ import PostHighlightCard, { PostHighlightCardSkeleton } from '@/components/posts
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
 import SocialShare from './SocialShare';
 
 const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   dayjs.extend(relativeTime);
-
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
   const { data, isLoading } = usePostsApiGetPost(params.postId);
   const imageData = useIdenticon(40);
 
@@ -42,17 +38,13 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
     Number(params.postId),
     {
       query: { enabled: !!data?.data?.id },
-      request: requestConfig,
     }
   );
 
   // BookMarkStats
   const { data: bookMarkStats, refetch: refetchBookMark } = useUsersCommonApiGetBookmarkStatus(
     'posts.post',
-    params.postId,
-    {
-      request: requestConfig,
-    }
+    params.postId
   );
 
   // Likes/Dislikes
@@ -61,7 +53,6 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   });
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetchLikes();
@@ -73,7 +64,6 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   });
 
   const { mutate: toggleBookmark } = useUsersCommonApiToggleBookmark({
-    request: requestConfig,
     mutation: {
       onSuccess: (data) => {
         toast.success(`${data.data.message}`);

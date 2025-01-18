@@ -13,7 +13,6 @@ import LabeledTooltip from '@/components/common/LabeledToolTip';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import OptionCard from '@/components/communities/OptionCard';
 import { Option } from '@/components/ui/multiple-selector';
-import { useAuthStore } from '@/stores/authStore';
 import { FileObj } from '@/types';
 
 type OptionType = 'public' | 'locked' | 'hidden';
@@ -45,10 +44,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     formState: { errors },
   } = useForm<FormValues>();
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const { mutate, isPending: isUpdatePending } = useCommunitiesApiUpdateCommunity({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         toast.success('Community Details updated successfully');

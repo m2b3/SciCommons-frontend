@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 import { toast } from 'sonner';
 
 import { withAuth } from '@/HOCs/withAuth';
@@ -12,13 +14,11 @@ import {
 import { ArticleOut, ArticleStatus } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import TabComponent from '@/components/communities/TabComponent';
-import { useAuthStore } from '@/stores/authStore';
 
 type Action = 'approve' | 'reject' | 'publish';
 
 const Submissions = ({ params }: { params: { slug: string } }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const { data: session } = useSession();
 
   const [activeTab, setActiveTab] = useState<ArticleStatus>('submitted');
   const [actionInProgress, setActionInProgress] = useState<{
@@ -31,13 +31,11 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
       params?.slug || '',
       { status: activeTab.toLowerCase() as ArticleStatus },
       {
-        query: { enabled: !!accessToken },
-        request: axiosConfig,
+        query: { enabled: !!session },
       }
     );
 
   const { mutate } = useCommunitiesArticlesApiManageArticle({
-    request: axiosConfig,
     mutation: {
       onSuccess: (data) => {
         refetch();

@@ -10,7 +10,6 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
-import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleStatsProps {
   article: ArticleOut;
@@ -20,18 +19,12 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
   dayjs.extend(relativeTime);
   dayjs.extend(advancedFormat);
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-
   const { data, refetch } = useUsersCommonApiGetReactionCount(
     'articles.article',
-    Number(article.id),
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
+    Number(article.id)
   );
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();

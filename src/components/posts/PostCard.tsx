@@ -13,7 +13,6 @@ import {
 import TruncateText from '@/components/common/TruncateText';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 import Hashtag from './Hashtag';
 
@@ -21,17 +20,11 @@ type Reaction = 'upvote' | 'downvote';
 
 const PostCard = (post: PostOut) => {
   dayjs.extend(relativeTime);
-  const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(40);
 
-  const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
-
-  const { data, refetch } = useUsersCommonApiGetReactionCount('posts.post', Number(post.id), {
-    request: requestConfig,
-  });
+  const { data, refetch } = useUsersCommonApiGetReactionCount('posts.post', Number(post.id));
 
   const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();

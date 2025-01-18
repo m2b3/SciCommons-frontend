@@ -14,14 +14,12 @@ import {
 } from '@/api/community-invitations/community-invitations';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 export default function RegisteredUsersInvitation({
   params,
 }: {
   params: { slug: string; invitation_id: string };
 }) {
-  const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
 
   const [action, setAction] = useState<'accept' | 'reject'>('accept');
@@ -31,10 +29,7 @@ export default function RegisteredUsersInvitation({
 
   const { data, error, isPending } = useCommunitiesApiInvitationGetCommunityInvitationDetails(
     communityId,
-    invitationId,
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
+    invitationId
   );
 
   const {
@@ -43,9 +38,7 @@ export default function RegisteredUsersInvitation({
     error: respondError,
     isPending: isRespondPending,
     data: respondData,
-  } = useCommunitiesApiInvitationRespondToInvitation({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+  } = useCommunitiesApiInvitationRespondToInvitation();
 
   useEffect(() => {
     if (error) {

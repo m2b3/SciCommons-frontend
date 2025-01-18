@@ -1,8 +1,26 @@
+import { getSession } from 'next-auth/react';
+
 import Axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const AXIOS_INSTANCE: AxiosInstance = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 });
+
+// Add request interceptor to handle auth headers
+AXIOS_INSTANCE.interceptors.request.use(
+  async (config) => {
+    const session = await getSession();
+
+    if (session?.accessToken) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export const customInstance = <T>(
   config: AxiosRequestConfig,

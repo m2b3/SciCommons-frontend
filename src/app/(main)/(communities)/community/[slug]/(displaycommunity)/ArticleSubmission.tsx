@@ -22,7 +22,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleSubmissionProps {
   communityName: string;
@@ -32,9 +31,6 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
   const router = useRouter();
 
   const [open, onOpenChange] = React.useState(false);
-  const accessToken = useAuthStore((state) => state.accessToken);
-
-  const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const { data, isPending, error } = useCommunitiesArticlesApiGetMyArticles(
     { status_filter: 'unsubmitted' },
@@ -42,7 +38,6 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
       query: {
         enabled: open,
       },
-      request: axiosConfig,
     }
   );
 

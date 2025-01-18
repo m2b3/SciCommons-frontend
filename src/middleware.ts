@@ -1,24 +1,46 @@
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// import jwt from 'jsonwebtoken';
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-export function middleware(request: NextRequest) {
-  const accessToken = request.cookies.get('accessToken');
-  console.log(accessToken);
+  // Public paths that don't require authentication
+  const publicPaths = new Set([
+    '/auth/login',
+    '/auth/signup',
+    '/auth/activate',
+    '/auth/forgotpassword',
+  ]);
+  const isPublicPath = publicPaths.has(request.nextUrl.pathname);
 
-  if (!accessToken) {
-    return Response.redirect(new URL('/auth/login?redirect=/submitarticle', request.url));
+  // Protected routes check
+  if (!token && !isPublicPath) {
+    const redirectUrl = new URL('/auth/login', request.url);
+    redirectUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  //   try {
-  //     jwt.verify(token, process.env.JWT_SECRET);
-  //     return NextResponse.next();
-  //   } catch (error) {
-  //     return NextResponse.redirect(new URL('/login', request.url));
-  //   }
+  // Prevent authenticated users from accessing auth pages
+  if (token && isPublicPath) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  return NextResponse.next();
 }
 
-// Config to specify which routes the middleware applies to
 export const config = {
-  matcher: [],
+  matcher: [
+    // Protected routes
+    '/profile',
+    '/community',
+    '/community/articles',
+    '/createcommunity',
+    '/article/:path*',
+    '/submitarticle',
+    '/posts/createpost',
+    '/mycontributions',
+    // Auth routes
+    '/auth/:path*',
+  ],
 };

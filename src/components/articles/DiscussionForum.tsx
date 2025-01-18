@@ -8,7 +8,6 @@ import { useArticlesDiscussionApiListDiscussions } from '@/api/discussions/discu
 import EmptyState from '@/components/common/EmptyState';
 import { Button } from '@/components/ui/button';
 import { ErrorMessage } from '@/constants';
-import { useAuthStore } from '@/stores/authStore';
 
 import DiscussionCard, { DiscussionCardSkeleton } from './DiscussionCard';
 import DiscussionForm from './DiscussionForm';
@@ -21,16 +20,13 @@ interface DiscussionForumProps {
 
 const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityId }) => {
   dayjs.extend(relativeTime);
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   const [showForm, setShowForm] = useState<boolean>(false);
   const [discussionId, setDiscussionId] = useState<number | null>(null);
 
-  const { data, isPending, error } = useArticlesDiscussionApiListDiscussions(
-    articleId,
-    { community_id: communityId || 0 },
-    { request: { headers: { Authorization: `Bearer ${accessToken}` } } }
-  );
+  const { data, isPending, error } = useArticlesDiscussionApiListDiscussions(articleId, {
+    community_id: communityId || 0,
+  });
 
   useEffect(() => {
     if (error) {

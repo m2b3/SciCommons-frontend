@@ -9,7 +9,6 @@ import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { Option } from '@/components/ui/multiple-selector';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface IRegisteredProps {
   username: Option[];
@@ -25,12 +24,9 @@ const Registered = () => {
   } = useForm<IRegisteredProps>({
     mode: 'onChange',
   });
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   const { isPending, mutate, data, isSuccess, error } =
-    useCommunitiesApiInvitationInviteRegisteredUsers({
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    });
+    useCommunitiesApiInvitationInviteRegisteredUsers();
 
   useEffect(() => {
     if (error) {

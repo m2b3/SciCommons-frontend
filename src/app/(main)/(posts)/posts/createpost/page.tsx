@@ -9,11 +9,10 @@ import { Send } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+// import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { usePostsApiCreatePost } from '@/api/posts/posts';
 import { HashtagsList } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
 
 interface IFormInput {
   title: string;
@@ -29,7 +28,6 @@ const STORAGE_KEY = 'createPostFormData';
 
 const CreatePostPage: React.FC = () => {
   const router = useRouter();
-  const accessToken = useAuthStore((state) => state.accessToken);
   const [isInitialized, setIsInitialized] = useState(false);
   const [postBody, setPostBody] = useState('');
   const [currentWord, setCurrentWord] = useState('');
@@ -52,7 +50,6 @@ const CreatePostPage: React.FC = () => {
   });
 
   const { mutate: createPost, isPending } = usePostsApiCreatePost({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: (data) => {
         toast.success('Post created successfully');
@@ -253,4 +250,5 @@ const CreatePostPage: React.FC = () => {
   );
 };
 
-export default withAuthRedirect(CreatePostPage, { requireAuth: true });
+// export default withAuthRedirect(CreatePostPage, { requireAuth: true });
+export default CreatePostPage;
