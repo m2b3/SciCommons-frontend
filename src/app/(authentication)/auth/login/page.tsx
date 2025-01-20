@@ -13,6 +13,7 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
+import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
 import { usePathTracker } from '@/hooks/usePathTracker';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -60,15 +61,31 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col dark:bg-gray-900 md:flex-row">
+    <div className="relative flex h-dvh flex-col items-center justify-center bg-black p-4 sm:p-0">
+      <Image
+        src="/images/assets/bg-auth-pages.webp"
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        className="z-0"
+      />
       {/* Left side */}
-      <div className="flex h-full flex-col justify-center p-12 md:w-1/2">
-        <h1 className="mb-4 font-bold res-heading-lg dark:text-gray-200">Good to See You Again!</h1>
-        <p className="mb-8 hidden text-gray-600 res-text-sm dark:text-gray-400 md:block">
-          Join a vibrant community of researchers, share your latest work, and receive valuable
-          feedback. Log in now to start rating and commenting on scientific articles, and take your
-          research to the next level.
-        </p>
+      <div className="relative flex h-fit w-full flex-col gap-6 overflow-y-auto rounded-xl bg-white px-8 py-12 sm:w-[540px] sm:justify-center sm:p-16 md:shadow-[0px_4px_200px_-40px_rgba(66,182,95,0.5)]">
+        <div
+          className="absolute left-6 top-6 flex cursor-pointer flex-row items-center text-sm md:hidden"
+          onClick={() => router.back()}
+        >
+          <ArrowNarrowLeft className="text-black" />
+        </div>
+        <Image
+          alt="scicommons_logo"
+          width={60}
+          height={20}
+          src={'/logo.png'}
+          className="mx-auto mb-2 md:mb-4"
+          onClick={() => router.push('/')}
+        />
+        <h4 className="text-xl font-bold text-black md:text-2xl">Sign in to your account</h4>
         <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full flex-col space-y-4">
           <FormInput<ILoginForm>
             label="Username or Email"
@@ -80,6 +97,9 @@ const LoginForm: React.FC = () => {
             patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/}
             patternMessage="Enter a valid email or username"
             errors={errors}
+            labelClassName="text-black/90"
+            helperTextClassName="text-black/60"
+            inputClassName="bg-white text-black"
           />
           <FormInput<ILoginForm>
             label="Password"
@@ -89,10 +109,13 @@ const LoginForm: React.FC = () => {
             register={register}
             requiredMessage="Password is required"
             errors={errors}
+            labelClassName="text-black/90"
+            helperTextClassName="text-black/60"
+            inputClassName="bg-white text-black"
           />
           {/* Remember me and forgot password */}
           <div className="mb-6 flex items-center justify-between res-text-sm">
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <input
                 id="remember_me"
                 type="checkbox"
@@ -101,7 +124,7 @@ const LoginForm: React.FC = () => {
               <label htmlFor="remember_me" className="ml-2 block text-gray-900 dark:text-gray-400">
                 Remember me
               </label>
-            </div>
+            </div> */}
             <div className="">
               <Link href="/auth/forgotpassword" className="text-green-500 hover:text-green-400">
                 Forgot your password?
@@ -125,18 +148,6 @@ const LoginForm: React.FC = () => {
               Resend Sign up email
             </Link>
           </p>
-        </div>
-      </div>
-      {/* Right side */}
-      <div className="relative hidden h-full bg-cover bg-center md:block md:w-1/2">
-        <Image src="/auth/login.jpg" alt="Background" layout="fill" objectFit="cover" />
-        <div className="absolute inset-0 mb-12 hidden items-end justify-center md:flex">
-          <div className="max-w-md rounded-xl bg-white bg-opacity-[0.25] p-2 shadow-lg backdrop-blur-sm md:p-6">
-            <p className="font-medium text-gray-800 res-text-lg">
-              &quot;We cannot solve our problems with the same thinking we used when we created
-              them.&quot; - Albert Einstein
-            </p>
-          </div>
         </div>
       </div>
     </div>

@@ -4,8 +4,6 @@ import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import cookies from 'js-cookie';
-
 import Banner from '@/components/common/Banner';
 import Footer from '@/components/common/Footer';
 import NavBar from '@/components/common/NavBar';
@@ -35,9 +33,6 @@ const Home = () => {
   ];
   const { theme } = useTheme();
 
-  console.log(cookies.get('accessToken'));
-  console.log(cookies.get('refreshToken'));
-
   return (
     <div>
       <NavBar />
@@ -55,7 +50,7 @@ const Home = () => {
             </button>
           </Link>
           <Link href="/communities">
-            <button className="h-10 w-40 rounded-xl border border-green-600 text-sm  text-gray-900">
+            <button className="h-10 w-40 rounded-xl border border-green-600 text-sm text-gray-900">
               Visit Communities
             </button>
           </Link>

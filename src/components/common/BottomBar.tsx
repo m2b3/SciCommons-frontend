@@ -28,6 +28,8 @@ const BottomBar = () => {
     { name: 'Posts', route: '/posts', icon: <NotebookPen size={18} /> },
   ];
 
+  const hideBottomBarPaths = ['login', 'register', 'forgotpassword', 'resetpassword'];
+
   useEffect(() => {
     switch (true) {
       case pathname?.includes('articles') || pathname?.includes('article'):
@@ -44,8 +46,12 @@ const BottomBar = () => {
     }
   }, [pathname]);
 
+  if (hideBottomBarPaths.some((path) => pathname?.includes(path))) {
+    return null;
+  }
+
   return (
-    <main className="fixed bottom-0 left-0 grid h-16 w-screen select-none grid-cols-5 border-t border-common-minimal bg-gray-50 dark:bg-gray-900 md:hidden">
+    <main className="fixed bottom-0 left-0 z-[1000] grid h-16 w-screen select-none grid-cols-5 border-t border-common-minimal bg-common-background md:hidden">
       {navLinks.map((link, index) => (
         <div
           key={index}
@@ -71,7 +77,7 @@ const CreateDropdown: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="rounded-full bg-gray-300 p-2 dark:bg-gray-800">
+        <div className="rounded-full bg-common-minimal p-2">
           <Plus size={24} />
         </div>
       </DropdownMenuTrigger>
