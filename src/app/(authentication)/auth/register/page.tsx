@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -12,6 +13,7 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
+import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 import SignUpSuccess from './SignUpSuccess';
@@ -26,11 +28,12 @@ interface IFormInput {
 }
 
 const RegisterForm: React.FC = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<IFormInput>({
     mode: 'onChange',
   });
@@ -54,46 +57,94 @@ const RegisterForm: React.FC = () => {
     signUp({ data });
   };
 
+  useEffect(() => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      document.getElementById(firstErrorField)?.focus();
+    }
+  }, [errors]);
+
   if (isSuccess) {
     return <SignUpSuccess />;
   }
 
   return (
-    <div className="flex h-screen flex-col md:flex-row">
-      {/* Left side */}
-      <div className="relative md:w-1/2">
-        <Image src="/auth/register.jpg" alt="Background" layout="fill" objectFit="cover" />
-        <div className="absolute inset-0 hidden items-center justify-center md:flex">
-          <div className="max-w-md rounded-xl bg-white bg-opacity-[0.25] p-4 shadow-lg backdrop-blur-sm md:p-8">
-            <p className="font-medium text-gray-800 res-text-base md:text-lg lg:text-xl">
-              Join a global community of researchers and enthusiasts, united by a shared passion for
-              scientific discovery. Connect with peers, share your insights, and unlock the power of
-              collective knowledge. Together, we can build a better future.
-            </p>
+    <div className="flex h-dvh flex-col p-4 md:flex-row md:p-0">
+      <Image
+        src="/images/assets/bg-auth-pages.webp"
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        className="z-0 md:hidden"
+      />
+      {/* Left Side */}
+      <div className="relative overflow-hidden md:w-1/2">
+        <Image
+          src="/images/assets/bg-auth-pages.webp"
+          alt="Background"
+          layout="fill"
+          objectFit="cover"
+          className="z-0"
+        />
+        <div className="relative z-10 hidden h-fit items-start justify-center md:flex">
+          <div className="z-20 flex w-full flex-col gap-8 md:pl-10 md:pr-12 md:pt-24 lg:pl-24 lg:pt-24">
+            <h1 className="text-4xl font-bold text-white">
+              Join <span className="text-brand">SciCommons</span>
+            </h1>
+            <span className="text-sm text-white">
+              Sign up to access an online hub of research papers, comments, and ratings, and engage
+              with a global community of researchers.
+            </span>
+            <div className="relative mt-12 overflow-hidden rounded-lg md:h-[400px] md:w-[720px] lg:h-[600px] lg:w-[1080px]">
+              <Image
+                src="/images/assets/screenshot.png"
+                alt="Logo"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right side */}
-      <div className="flex flex-col justify-center bg-white px-12 py-12 dark:bg-gray-800 md:w-1/2 md:p-12">
-        <h1 className="mb-4 font-bold text-gray-800 res-heading-lg dark:text-white">
-          Join the Science Revolution
-        </h1>
-        <p className="rest-text-sm mb-8 hidden text-gray-800 dark:text-gray-300 md:block">
-          Sign up to access an online hub of research papers, comments, and ratings, and engage with
-          a global community of researchers.
-        </p>
+      {/* Right Side */}
+      <div className="relative flex h-full flex-col gap-4 overflow-y-auto rounded-xl bg-white p-10 md:w-1/2 md:rounded-none md:px-8 md:py-10 lg:px-24">
+        <div
+          className="absolute left-6 top-6 flex cursor-pointer flex-row items-center text-sm md:hidden"
+          onClick={() => router.back()}
+        >
+          <ArrowNarrowLeft className="text-black" />
+        </div>
+        <Image
+          alt="scicommons_logo"
+          width={60}
+          height={20}
+          src={'/logo.png'}
+          className="mx-auto mb-2 md:mb-6"
+          onClick={() => router.push('/')}
+        />
+        <h4 className="text-xl font-bold text-black md:text-2xl">Create your free Account</h4>
         <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full flex-col space-y-4">
           <FormInput
             label="Username"
             name="username"
             type="text"
-            placeholder="Username"
+            placeholder="e.g., john_doe"
             register={register}
+            patternValue={/^[a-z0-9._]+$/}
+            patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
             requiredMessage="Username is required"
+            minLengthValue={3}
+            minLengthMessage="Username must be at least 3 characters"
+            maxLengthValue={30}
+            maxLengthMessage="Username cannot exceed 30 characters"
             errors={errors}
+            isSubmitting={isSubmitting}
+            helperText="3-30 characters. No spaces or special symbols."
+            labelClassName="text-black/90"
+            helperTextClassName="text-black/60"
+            inputClassName="bg-white text-black"
           />
-          {/* First Name and Last Name */}
           <div className="grid grid-cols-2 gap-4">
             <FormInput
               label="First Name"
@@ -103,6 +154,8 @@ const RegisterForm: React.FC = () => {
               register={register}
               requiredMessage="First Name is required"
               errors={errors}
+              labelClassName="text-black/90"
+              inputClassName="bg-white text-black"
             />
             <FormInput
               label="Last Name"
@@ -112,46 +165,59 @@ const RegisterForm: React.FC = () => {
               register={register}
               requiredMessage="Last Name is required"
               errors={errors}
+              labelClassName="text-black/90"
+              inputClassName="bg-white text-black"
             />
           </div>
+
           <FormInput
             label="Email"
             name="email"
             type="email"
-            placeholder="Email"
+            placeholder="e.g., john.doe@example.com"
             register={register}
             requiredMessage="Email is required"
             patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            patternMessage="Invalid email address"
+            patternMessage="Enter a valid email address."
             errors={errors}
+            labelClassName="text-black/90"
+            inputClassName="bg-white text-black"
           />
+
           <FormInput
             label="Password"
             name="password"
             type="password"
-            placeholder="Password"
+            placeholder="Create a password"
             register={register}
             requiredMessage="Password is required"
             minLengthValue={8}
-            minLengthMessage="Password must be at least 8 characters"
+            minLengthMessage="Password must be at least 8 characters long."
             errors={errors}
+            labelClassName="text-black/90"
+            inputClassName="bg-white text-black"
           />
+
           <FormInput
             label="Confirm Password"
             name="confirm_password"
             type="password"
-            placeholder="Confirm Password"
+            placeholder="Confirm your password"
             register={register}
             requiredMessage="Confirm Password is required"
             errors={errors}
-            patternMessage="The passwords do not match"
             patternValue={new RegExp(watch('password'))}
+            patternMessage="Passwords must match."
+            labelClassName="text-black/90"
+            inputClassName="bg-white text-black"
           />
+
           <Button type="submit" isPending={isPending}>
             Sign Up
           </Button>
         </form>
-        <p className="mt-8 text-gray-800 res-text-sm dark:text-gray-300">
+
+        <p className="text-gray-800 res-text-sm dark:text-gray-300">
           Already have an account?{' '}
           <Link href="/auth/login" className="text-brand hover:underline">
             Login

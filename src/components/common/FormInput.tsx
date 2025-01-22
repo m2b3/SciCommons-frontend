@@ -1,10 +1,10 @@
 import React from 'react';
 
-import clsx from 'clsx';
 import { Info } from 'lucide-react';
 import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 interface InputProps<TFieldValues extends FieldValues> {
   label?: string;
@@ -20,9 +20,14 @@ interface InputProps<TFieldValues extends FieldValues> {
   name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
+  isSubmitting?: boolean;
   readOnly?: boolean;
   info?: string;
   textArea?: boolean;
+  helperText?: string;
+  inputClassName?: string;
+  labelClassName?: string;
+  helperTextClassName?: string;
 }
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -39,11 +44,17 @@ const FormInput = <TFieldValues extends FieldValues>({
   maxLengthValue,
   maxLengthMessage,
   errors,
+  isSubmitting = false,
   readOnly = false,
   info,
   textArea = false,
+  helperText,
+  inputClassName,
+  labelClassName,
+  helperTextClassName,
 }: InputProps<TFieldValues>): JSX.Element => {
   const error = errors[name];
+
   const commonProps = {
     id: String(name),
     placeholder,
@@ -63,17 +74,23 @@ const FormInput = <TFieldValues extends FieldValues>({
           ? { value: maxLengthValue, message: maxLengthMessage }
           : undefined,
     }),
-    className: clsx(
-      'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-brand focus:border-brand res-text-sm',
-      error && !readOnly ? 'border-red-500' : 'border-gray-300',
+    className: cn(
+      'mt-1 block w-full px-3 py-2 ring-1 ring-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand res-text-sm focus:ring-1',
+      inputClassName,
+      error && !readOnly && !isSubmitting ? 'border-red-500' : 'border-gray-300',
       readOnly ? 'bg-gray-100' : ''
     ),
   };
+
   return (
     <div className="w-full">
       {label && (
         <div className="mb-2 flex items-center space-x-2">
+         fix-issue-#105
           <span className="font-medium text-black res-text-xs">{label}</span>
+
+          
+         main
           {info && (
             <TooltipProvider>
               <Tooltip>
@@ -91,8 +108,12 @@ const FormInput = <TFieldValues extends FieldValues>({
         </div>
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
-      {error && !readOnly && (
+      {error && !readOnly && !isSubmitting && (
         <p className="mt-2 text-red-600 res-text-xs">{String(error.message)}</p>
+      )}
+
+      {!error && helperText && !isSubmitting && (
+        <p className={cn('mt-2 text-gray-500 res-text-xs', helperTextClassName)}>{helperText}</p>
       )}
     </div>
   );

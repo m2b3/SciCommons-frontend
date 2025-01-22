@@ -1,0 +1,64 @@
+services:
+  scicommons-test:
+    container_name: scicommons-test
+    # Names the container 'scicommons' for easier identification.
+
+    image: ghcr.io/m2b3/scicommons-frontend:test
+    # Specifies the image to use for the SciCommons frontend from the GitHub Container Registry.
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # Mounts the host's time configuration to the container to sync the time.
+
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mounts the Docker socket file to allow Traefik to interact with the container.
+
+    labels:
+      - 'traefik.enable=true'
+      # Enables Traefik for this container.
+
+      - 'traefik.http.routers.scicommons-test.entrypoints=http'
+      # Defines the HTTP entry point for the scicommons router.
+
+      - 'traefik.http.routers.scicommons-test.rule=Host(`test.scicommons.org`)'
+      # Defines the routing rule: only route traffic with the host `scicommons.org` to this container.
+
+      - 'traefik.http.middlewares.scicommons-test-https-redirect.redirectscheme.scheme=https'
+      # Redirects HTTP traffic to HTTPS for the SciCommons service.
+
+      - 'traefik.http.routers.scicommons-test.middlewares=scicommons-test-https-redirect'
+      # Applies the HTTPS redirection middleware to the SciCommons router.
+
+      - 'traefik.http.routers.scicommons-test-secure.entrypoints=https'
+      # Defines the HTTPS entry point for the SciCommons router.
+
+      - 'traefik.http.routers.scicommons-test-secure.rule=Host(`test.scicommons.org`)'
+      # Defines the routing rule for secure HTTPS requests to `scicommons.org`.
+
+      - 'traefik.http.routers.scicommons-test-secure.tls=true'
+      # Enables TLS (HTTPS) for the secure SciCommons route.
+
+      - 'traefik.http.routers.scicommons-test-secure.service=scicommons-test'
+      # Defines the service name as 'scicommons' for the secure router.
+
+      - 'traefik.http.services.scicommons-test.loadbalancer.server.port=3000'
+      # Specifies the port (3000) where the SciCommons frontend service is running within the container.
+
+      - 'traefik.docker.network=proxy'
+      # Specifies the Docker network 'proxy' for Traefik to route requests to this container.
+
+    restart: always
+    # Automatically restarts the container if it crashes or stops.
+
+    ports:
+      - 3003:3000
+      # Maps the host machine's port 3000 to the container's port 3000, where the SciCommons frontend service is running.
+
+    networks:
+      - docker_network
+      # Connects the container to the 'docker_network' network.
+
+networks:
+  docker_network:
+    driver: bridge
+    # Creates a user-defined bridge network called 'docker_network' to allow communication between containers.
