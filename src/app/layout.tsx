@@ -58,7 +58,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <main className="flex-grow pb-16 md:pb-0">{children}</main>
+            <main className="flex-grow">{children}</main>
           </ThemeProvider>
           <BottomBar />
           <SonnerToaster richColors position="top-center" />

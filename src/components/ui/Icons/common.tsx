@@ -1,10 +1,12 @@
 import React from 'react';
 
 import {
+  IconArrowNarrowLeft,
   IconBrandFacebookFilled,
   IconBrandInstagramFilled,
   IconBrandTwitterFilled,
   IconBrandYoutubeFilled,
+  IconChevronLeft,
 } from '@tabler/icons-react';
 
 import { cn } from '@/lib/utils';
@@ -44,3 +46,5 @@ export const FacebookIconFilled = IconComponent(IconBrandFacebookFilled);
 export const InstagramIconFilled = IconComponent(IconBrandInstagramFilled);
 export const TwitterIconFilled = IconComponent(IconBrandTwitterFilled);
 export const YoutubeIconFilled = IconComponent(IconBrandYoutubeFilled);
+export const ChevronBack = IconComponent(IconChevronLeft);
+export const ArrowNarrowLeft = IconComponent(IconArrowNarrowLeft);
