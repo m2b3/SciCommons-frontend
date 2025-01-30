@@ -71,15 +71,15 @@ jobs:
 
             cd deployment/
 
-            # Create or clear the .env file
-            > .env
+            # Create or clear the .env.test file
+            > .env.test
 
             # Append environment variables one by one
-            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
-            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env
+            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_TEST }}" >> .env.test
+            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env.test
 
             # Ensure the environment variables are written before proceeding
-            echo ".env file created with environment variables."
+            echo ".env.test file created with environment variables."
 
             # Stop the current containers
             echo "Stopping the current containers..."
