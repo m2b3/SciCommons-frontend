@@ -120,9 +120,9 @@ const CreateCommunity: React.FC = () => {
           placeholder="Enter your community name"
           register={register}
           requiredMessage="Title is required"
-          maxLengthValue={10}
-          maxLengthMessage="Name must not exceed 10 characters"
-          info="Your community's name should be unique and descriptive."
+          maxLengthValue={32}
+          maxLengthMessage="Name must not exceed 32 characters"
+          info="Your community's name should be unique, descriptive, and not more than 32 characters"
           errors={errors}
         />
 
