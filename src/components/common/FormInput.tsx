@@ -86,9 +86,11 @@ const FormInput = <TFieldValues extends FieldValues>({
     <div className="w-full">
       {label && (
         <div className="mb-2 flex items-center space-x-2">
-          <span className={cn('font-medium text-gray-700 res-text-xs', labelClassName)}>
-            {label}
-          </span>
+         fix-issue-#105
+          <span className="font-medium text-black res-text-xs">{label}</span>
+
+          
+         main
           {info && (
             <TooltipProvider>
               <Tooltip>
