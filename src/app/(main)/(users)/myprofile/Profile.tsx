@@ -6,6 +6,7 @@ import { Edit, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import { emailSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -117,8 +118,7 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
             register={register}
             errors={errors}
             requiredMessage="Email is required"
-            patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            patternMessage="Invalid email address"
+            schema={emailSchema}
             readOnly={true}
           />
           <FormInput

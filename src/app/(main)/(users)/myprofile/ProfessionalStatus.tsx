@@ -4,6 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import { yearOrPresentSchema, yearSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -50,8 +51,7 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
               register={register}
               errors={errors}
               requiredMessage="Start year is required"
-              patternValue={/^\d{4}$/}
-              patternMessage="Invalid year format"
+              schema={yearSchema}
               readOnly={!editMode}
             />
             <FormInput
@@ -60,8 +60,7 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
               type="text"
               register={register}
               errors={errors}
-              patternValue={/^\d{4}$|^Present$/i}
-              patternMessage="Invalid year format (use 'Present' for current positions)"
+              schema={yearOrPresentSchema}
               readOnly={!editMode}
             />
             <div className="flex justify-center space-x-2">
