@@ -65,10 +65,16 @@ const About: React.FC<AboutProps> = ({ data }) => {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
-        toast.success('Community Details updated successfully');
+        toast.success('Community Details updated successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (error) => {
-        toast.error(`${error.response?.data.message}`);
+        toast.error(`${error.response?.data.message}`, {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
     },
   });

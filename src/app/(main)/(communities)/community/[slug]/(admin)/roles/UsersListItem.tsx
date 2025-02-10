@@ -56,7 +56,10 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
       },
       {
         onSuccess: (data) => {
-          toast.success(`${data.data.message}`);
+          toast.success(`${data.data.message}`, {
+            duration: 2000,
+            position: 'top-right',
+          });
           refetch();
         },
         onError: (error) => {

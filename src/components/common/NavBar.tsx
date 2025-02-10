@@ -122,7 +122,10 @@ const ProfileDropdown: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success('Logged out successfully');
+    toast.success('Logged out successfully', {
+      duration: 2000,
+      position: 'top-right',
+    });
   };
 
   return (
@@ -138,12 +141,12 @@ const ProfileDropdown: React.FC = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Link href="/myprofile" className="flex items-center ">
+          <Link href="/myprofile" className="flex items-center">
             <User size={16} className="mr-2" /> Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/mycontributions" className="flex items-center ">
+          <Link href="/mycontributions" className="flex items-center">
             <NotebookTabs size={16} className="mr-2" /> Contributions
           </Link>
         </DropdownMenuItem>

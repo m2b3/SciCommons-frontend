@@ -47,7 +47,7 @@ const CommunityArticleForm: NextPage = () => {
       onSuccess: (data) => {
         toast.success(
           "Article has been successfully submitted. You'll notified once it's approved.",
-          { duration: Infinity, action: { label: 'Ok', onClick: () => {} } }
+          { duration: Infinity, action: { label: 'Ok', onClick: () => {} }, position: 'top-right' }
         );
         router.push(`/article/${data.data.slug}`);
         localStorage.removeItem(STORAGE_KEY);
@@ -163,7 +163,10 @@ const CommunityArticleForm: NextPage = () => {
       await fetchArticle(query);
       setActiveTab('search');
     } catch (error) {
-      toast.error('Failed to fetch article. Please try again later.');
+      toast.error('Failed to fetch article. Please try again later.', {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   };
 

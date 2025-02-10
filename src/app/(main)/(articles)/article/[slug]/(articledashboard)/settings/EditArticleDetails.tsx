@@ -91,10 +91,16 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success('Article details updated successfully');
+      toast.success('Article details updated successfully', {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
     if (updateError) {
-      toast.error(`${updateError.response?.data.message}`);
+      toast.error(`${updateError.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [updateError, isSuccess]);
 
