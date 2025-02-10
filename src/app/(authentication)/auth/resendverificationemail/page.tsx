@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthResendActivation } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
-import FormInput from '@/components/common/FormInput';
+import FormInput, { emailSchema } from '@/components/common/FormInput';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IResendForm {
@@ -95,8 +95,9 @@ const ResendVerificationForm: React.FC = () => {
                 placeholder="Enter your email"
                 register={register}
                 requiredMessage="Email is required"
-                patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/}
-                patternMessage="Enter a valid email address"
+                //patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/}
+                //patternMessage="Enter a valid email address"
+                schema={emailSchema}
                 errors={errors}
               />
               <div>

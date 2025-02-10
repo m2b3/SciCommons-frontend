@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthResetPassword } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
-import FormInput from '@/components/common/FormInput';
+import FormInput, { matchPassword, passwordSchema } from '@/components/common/FormInput';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IResetPasswordForm {
@@ -76,8 +76,9 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
             placeholder="Password"
             register={register}
             requiredMessage="Password is required"
-            minLengthValue={8}
-            minLengthMessage="Password must be at least 8 characters"
+            schema={passwordSchema}
+            //minLengthValue={8}
+            //minLengthMessage="Password must be at least 8 characters"
             errors={errors}
           />
           <FormInput<IResetPasswordForm>
@@ -88,8 +89,9 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
             register={register}
             requiredMessage="Confirm Password is required"
             errors={errors}
-            patternMessage="The passwords do not match"
-            patternValue={new RegExp(watch('password'))}
+            schema={matchPassword(new RegExp(watch('password')))}
+            //patternMessage="The passwords do not match"
+            //patternValue={new RegExp(watch('password'))}
           />
           <Button type="submit" isPending={isPending}>
             Reset Password
