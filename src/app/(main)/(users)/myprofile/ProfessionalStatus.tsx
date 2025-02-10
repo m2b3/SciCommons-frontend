@@ -3,7 +3,8 @@ import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
 
-import FormInput, { yearOrPresentSchema, yearSchema } from '@/components/common/FormInput';
+import FormInput from '@/components/common/FormInput';
+import { yearOrPresentSchema, yearSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 

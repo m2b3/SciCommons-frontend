@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { Edit, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
-import FormInput, { emailSchema } from '@/components/common/FormInput';
+import FormInput from '@/components/common/FormInput';
+import { emailSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 

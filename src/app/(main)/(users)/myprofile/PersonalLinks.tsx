@@ -2,12 +2,13 @@ import React from 'react';
 
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
-import FormInput, {
+import FormInput from '@/components/common/FormInput';
+import {
   githubUrlSchema,
   linkedInUrlSchema,
   scholarUrlSchema,
   urlSchema,
-} from '@/components/common/FormInput';
+} from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 

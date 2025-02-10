@@ -11,7 +11,8 @@ import { toast } from 'sonner';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthRequestReset } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
-import FormInput, { emailSchema } from '@/components/common/FormInput';
+import FormInput from '@/components/common/FormInput';
+import { emailSchema } from '@/constants/zod-schema';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IForgotPasswordForm {

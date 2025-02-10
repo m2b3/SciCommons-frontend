@@ -12,13 +12,9 @@ import { toast } from 'sonner';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
-import FormInput, {
-  emailSchema,
-  matchPassword,
-  passwordSchema,
-  usernameSchema,
-} from '@/components/common/FormInput';
+import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
+import { emailSchema, matchPassword, passwordSchema, usernameSchema } from '@/constants/zod-schema';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 import SignUpSuccess from './SignUpSuccess';
