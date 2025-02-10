@@ -136,14 +136,8 @@ const RegisterForm: React.FC = () => {
             type="text"
             placeholder="e.g., john_doe"
             register={register}
-            //patternValue={/^[a-z0-9._]+$/}
             schema={usernameSchema}
-            //patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
             requiredMessage="Username is required"
-            //minLengthValue={3}
-            //minLengthMessage="Username must be at least 3 characters"
-            //maxLengthValue={30}
-            //maxLengthMessage="Username cannot exceed 30 characters"
             errors={errors}
             isSubmitting={isSubmitting}
             helperText="3-30 characters. No spaces or special symbols."
@@ -183,8 +177,6 @@ const RegisterForm: React.FC = () => {
             register={register}
             requiredMessage="Email is required"
             schema={emailSchema}
-            //patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            //patternMessage="Enter a valid email address."
             errors={errors}
             labelClassName="text-black/90"
             inputClassName="bg-white text-black"
@@ -211,9 +203,7 @@ const RegisterForm: React.FC = () => {
             register={register}
             requiredMessage="Confirm Password is required"
             errors={errors}
-            //patternValue={new RegExp(watch('password'))}
             schema={matchPassword(new RegExp(watch('password')))}
-            patternMessage="Passwords must match."
             labelClassName="text-black/90"
             inputClassName="bg-white text-black"
           />

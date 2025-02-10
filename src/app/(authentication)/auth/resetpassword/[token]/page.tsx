@@ -90,8 +90,6 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
             requiredMessage="Confirm Password is required"
             errors={errors}
             schema={matchPassword(new RegExp(watch('password')))}
-            //patternMessage="The passwords do not match"
-            //patternValue={new RegExp(watch('password'))}
           />
           <Button type="submit" isPending={isPending}>
             Reset Password

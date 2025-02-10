@@ -94,9 +94,7 @@ const LoginForm: React.FC = () => {
             placeholder="Username or Email"
             register={register}
             requiredMessage="Username or Email is required"
-            //patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/}
             schema={emailOrUsernameSchema}
-            //patternMessage="Enter a valid email or username"
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"

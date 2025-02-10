@@ -91,8 +91,6 @@ const ForgotPasswordForm: React.FC = () => {
               placeholder="Enter your email"
               register={register}
               requiredMessage="Email is required"
-              //patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/}
-              //patternMessage="Enter a valid email address"
               schema={emailSchema}
               errors={errors}
             />
