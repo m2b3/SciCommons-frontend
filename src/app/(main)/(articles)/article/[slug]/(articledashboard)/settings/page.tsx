@@ -30,7 +30,10 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      toast.error(`${error.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [error]);
 

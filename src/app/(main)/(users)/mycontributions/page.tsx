@@ -235,7 +235,11 @@ const ContributionsPage: React.FC = () => {
           postsDataError?.response?.data.message ||
           favoritesDataError?.response?.data.message ||
           bookmarksDataError?.response?.data.message ||
-          ErrorMessage
+          ErrorMessage,
+        {
+          duration: 2000,
+          position: 'top-right',
+        }
       );
     }
   }, [

@@ -45,7 +45,10 @@ const RegisterForm: React.FC = () => {
   } = useUsersApiAuthSignup({
     mutation: {
       onSuccess: () => {
-        toast.success('Registration successful! Please check your email to verify your account.');
+        toast.success('Registration successful! Please check your email to verify your account.', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (err) => {
         showErrorToast(err);

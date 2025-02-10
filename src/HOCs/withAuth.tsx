@@ -65,7 +65,10 @@ export function withAuth<P extends WithAuthProps>(
       }
 
       if (!isAuthenticated || !accessToken) {
-        toast.error('You need to be logged in to view this resource');
+        toast.error('You need to be logged in to view this resource', {
+          duration: 2000,
+          position: 'top-right',
+        });
         router.replace('/auth/login');
       } else if (!isLoading && !isError && permissionData !== undefined) {
         if (!permissionData.data.has_permission) {
@@ -76,7 +79,10 @@ export function withAuth<P extends WithAuthProps>(
           } else {
             router.replace('/');
           }
-          toast.error('You do not have permission to view this resource');
+          toast.error('You do not have permission to view this resource', {
+            duration: 2000,
+            position: 'top-right',
+          });
         }
       } else if (isError) {
         showErrorToast(error);

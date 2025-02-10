@@ -55,7 +55,10 @@ const CreatePostPage: React.FC = () => {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: (data) => {
-        toast.success('Post created successfully');
+        toast.success('Post created successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         router.push(`/posts/${data.data.id}`);
         reset();
         localStorage.removeItem(STORAGE_KEY);

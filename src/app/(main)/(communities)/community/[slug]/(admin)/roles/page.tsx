@@ -32,7 +32,10 @@ const Roles = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`Error: ${error.response?.data.message}`);
+      toast.error(`Error: ${error.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [error]);
 

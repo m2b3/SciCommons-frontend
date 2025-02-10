@@ -43,7 +43,10 @@ const ArticleForm: React.FC = () => {
     },
     mutation: {
       onSuccess: (data) => {
-        toast.success('Article submitted successfully! Redirecting....');
+        toast.success('Article submitted successfully! Redirecting....', {
+          duration: 2000,
+          position: 'top-right',
+        });
         router.push(`/article/${data.data.slug}`);
         localStorage.removeItem(STORAGE_KEY);
       },
@@ -181,7 +184,10 @@ const ArticleForm: React.FC = () => {
       await fetchArticle(query);
       setActiveTab('search');
     } catch (error) {
-      toast.error('Failed to fetch article. Please try again later.');
+      toast.error('Failed to fetch article. Please try again later.', {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   };
 

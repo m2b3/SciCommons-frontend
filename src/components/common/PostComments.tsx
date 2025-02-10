@@ -50,7 +50,11 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
         console.error(error);
         toast.error(
           (error.response?.data as { message?: string })?.message ||
-            'An error occurred while creating the comment.'
+            'An error occurred while creating the comment.',
+          {
+            duration: 2000,
+            position: 'top-right',
+          }
         );
       },
     },
@@ -76,12 +80,19 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
     mutation: {
       onSuccess: () => {
         refetch();
-        toast.success('Comment deleted successfully.');
+        toast.success('Comment deleted successfully.', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (error) => {
         toast.error(
           (error.response?.data as { message?: string })?.message ||
-            'An error occurred while deleting the comment.'
+            'An error occurred while deleting the comment.',
+          {
+            duration: 2000,
+            position: 'top-right',
+          }
         );
       },
     },

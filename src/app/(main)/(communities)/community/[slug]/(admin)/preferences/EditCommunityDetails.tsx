@@ -51,11 +51,17 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
-        toast.success('Community Details updated successfully');
+        toast.success('Community Details updated successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         refetch && refetch();
       },
       onError: (error) => {
-        toast.error(`Error: ${error.response?.data.message}`);
+        toast.error(`Error: ${error.response?.data.message}`, {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
     },
   });

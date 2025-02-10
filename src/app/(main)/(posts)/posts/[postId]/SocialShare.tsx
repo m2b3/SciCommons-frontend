@@ -26,17 +26,26 @@ const SocialShare: React.FC<SocialShareProps> = ({ url, title, description }) =>
 
   const handleShare = (platform: keyof typeof shareLinks) => {
     window.open(shareLinks[platform], '_blank', 'noopener,noreferrer');
-    toast.success(`Shared on ${platform}`);
+    toast.success(`Shared on ${platform}`, {
+      duration: 2000,
+      position: 'top-right',
+    });
   };
 
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        toast.success('Link copied to clipboard');
+        toast.success('Link copied to clipboard', {
+          duration: 2000,
+          position: 'top-right',
+        });
       })
       .catch(() => {
-        toast.error('Failed to copy link');
+        toast.error('Failed to copy link', {
+          duration: 2000,
+          position: 'top-right',
+        });
       });
   };
 

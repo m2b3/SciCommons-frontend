@@ -56,19 +56,28 @@ const Requests = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      toast.error(`${error.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [error]);
 
   useEffect(() => {
     if (mutationError) {
-      toast.error(`${mutationError.response?.data.message}`);
+      toast.error(`${mutationError.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [mutationError]);
 
   useEffect(() => {
     if (isMutationSuccess) {
-      toast.success(`${mutationData.data.message}`);
+      toast.success(`${mutationData.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
       refetch();
     }
   }, [isMutationSuccess, mutationData, refetch]);

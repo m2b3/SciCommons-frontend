@@ -31,7 +31,10 @@ const FileUpload = <TFieldValues extends FieldValues>({
 
   const onDrop = (acceptedFiles: File[], fileRejections: FileRejection[]) => {
     if (fileObjs.length >= MAX_FILES) {
-      toast.error(`You can only upload a maximum of ${MAX_FILES} files.`, { duration: 5000 });
+      toast.error(`You can only upload a maximum of ${MAX_FILES} files.`, {
+        duration: 2000,
+        position: 'top-right',
+      });
       return;
     }
 

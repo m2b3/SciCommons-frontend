@@ -34,7 +34,10 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message || ErrorMessage}`);
+      toast.error(`${error.response?.data.message || ErrorMessage}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [error]);
 
