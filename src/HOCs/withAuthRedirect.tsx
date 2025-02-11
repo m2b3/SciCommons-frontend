@@ -117,7 +117,9 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button onClick={handleExpirationDialogClose}>OK</Button>
+              <Button onClick={handleExpirationDialogClose} className="text-white res-text-xs">
+                OK
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -201,6 +201,9 @@ const config: Config = {
           red: 'rgba(var(--Functional-Red-Red))',
           redLight: 'rgba(var(--Functional-Red-RedLight))',
           redContrast: 'rgba(var(--Functional-Red-Redcontrast))',
+          gray: 'rgba(var(--Functional-Gray-Gray))',
+          grayLight: 'rgba(var(--Functional-Gray-GrayLight))',
+          grayContrast: 'rgba(var(--Functional-Gray-Graycontrast))',
         },
         common: {
           background: 'rgba(var(--Common-Background))',
@@ -208,6 +211,7 @@ const config: Config = {
           minimal: 'rgba(var(--Common-Minimal))',
           contrast: 'rgba(var(--Common-Contrast))',
           heavyContrast: 'rgba(var(--Common-HeavyContrast))',
+          invert: 'rgba(var(--Common-Invert))',
         },
         accessory: {
           accessory1: 'rgba(var(--Accessory-Accessory1))',

@@ -1,12 +1,8 @@
-import { useState } from 'react';
-
 import { HomeFeaturesTileData } from '@/constants/common.constants';
 
 import FeatureTile from './FeatureTile';
 
 const FeaturesSection = () => {
-  const [active, setActive] = useState<number>(0);
-
   return (
     <div className="relative my-6 overflow-clip">
       <div className="grid w-full grid-cols-1 gap-8 px-8 md:grid-cols-2 lg:grid-cols-3">

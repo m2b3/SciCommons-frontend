@@ -12,6 +12,8 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import { useAuthStore } from '@/stores/authStore';
 
+import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
+
 interface ArticleStatsProps {
   article: ArticleOut;
 }
@@ -54,47 +56,47 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
   };
 
   return (
-    <div className="rounded-lg border bg-white-secondary p-4 text-gray-900 shadow-sm res-text-sm">
-      <h3 className="mb-4 font-bold res-text-base">Article Stats</h3>
-      <div className="space-y-4 text-gray-700">
-        <div className="flex space-x-4">
-          <div className="flex items-center">
+    <div className="rounded-md p-0 res-text-sm">
+      <div className="flex flex-wrap gap-2 text-xs text-text-secondary md:gap-12">
+        <div className="flex gap-2">
+          <span className="font-bold">Published:</span>
+          <span>{formatDate(article.created_at)}</span>
+        </div>
+        <div className="flex gap-2">
+          <span className="font-bold">Updated:</span>
+          <span>{formatDate(article.updated_at)}</span>
+        </div>
+      </div>
+      <div className="mt-4 flex gap-4">
+        <Button
+          className="gap-0 rounded-md bg-functional-blue/20 px-2 py-1 text-xs hover:bg-functional-blue/10"
+          onClick={() => handleReaction('upvote')}
+        >
+          <ButtonIcon>
             <ThumbsUp
-              className={`mr-2 h-5 w-5 cursor-pointer ${
-                data?.data.user_reaction === 1 ? 'text-blue-500' : 'text-gray-400'
-              }`}
-              onClick={() => handleReaction('upvote')}
+              className={`mr-2 size-4 cursor-pointer text-functional-blue`}
+              fill={data?.data.user_reaction === 1 ? 'currentColor' : 'transparent'}
             />
-            <span>{data?.data.likes} likes</span>
-          </div>
-          <div className="flex items-center">
-            <Eye className="mr-2 h-5 w-5 text-gray-400" />
-            <span>0 views</span>
-          </div>
+          </ButtonIcon>
+          <ButtonTitle className="font-normal text-text-secondary">
+            {data?.data.likes} likes
+          </ButtonTitle>
+        </Button>
+        <div className="flex items-center p-1 text-xs">
+          <Star
+            className="mr-2 size-4 text-functional-yellow"
+            fill="currentColor"
+            strokeWidth={0}
+          />
+          <span className="text-text-secondary">{article.total_reviews} Reviews and Ratings</span>
         </div>
-        <div className="flex items-center">
-          <Star className="mr-2 h-5 w-5 text-yellow-400" />
-          <span>{article.total_reviews} Reviews and Ratings</span>
+        <div className="flex items-center p-1 text-xs">
+          <MessageCircle className="mr-2 size-4 text-text-secondary" />
+          <span className="text-text-secondary">{article.total_comments} Comments</span>
         </div>
-        <div className="flex space-x-4">
-          <div className="flex items-center">
-            <MessageCircle className="mr-2 h-5 w-5 text-green-500" />
-            <span>{article.total_comments} comments</span>
-          </div>
-          <div className="flex items-center">
-            <MessageSquare className="mr-2 h-5 w-5 text-purple-500" />
-            <span>{article.total_discussions} discussions</span>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Calendar className="h-5 w-5 flex-shrink-0 text-red-500" />
-          <span className="font-semibold">Published:</span>
-          <span className="text-gray-500">{formatDate(article.created_at)}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Clock className="h-5 w-5 flex-shrink-0 text-blue-500" />
-          <span className="font-semibold">Updated:</span>
-          <span className="text-gray-500">{formatDate(article.updated_at)}</span>
+        <div className="flex items-center p-1 text-xs">
+          <MessageSquare className="mr-2 size-4 text-text-secondary" />
+          <span className="text-text-secondary">{article.total_discussions} Discussions</span>
         </div>
       </div>
     </div>

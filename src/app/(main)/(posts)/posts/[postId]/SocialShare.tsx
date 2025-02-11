@@ -47,23 +47,23 @@ const SocialShare: React.FC<SocialShareProps> = ({ url, title, description }) =>
       </PopoverTrigger>
       <PopoverContent className="w-48">
         <div className="flex flex-col space-y-2">
-          <Button variant="outline" onClick={() => handleShare('facebook')}>
+          <Button variant="transparent" onClick={() => handleShare('facebook')}>
             <Facebook className="mr-2 h-4 w-4" />
             Facebook
           </Button>
-          <Button variant="outline" onClick={() => handleShare('twitter')}>
+          <Button variant="transparent" onClick={() => handleShare('twitter')}>
             <Twitter className="mr-2 h-4 w-4" />
             Twitter
           </Button>
-          <Button variant="outline" onClick={() => handleShare('linkedin')}>
+          <Button variant="transparent" onClick={() => handleShare('linkedin')}>
             <Linkedin className="mr-2 h-4 w-4" />
             LinkedIn
           </Button>
-          <Button variant="outline" onClick={() => handleShare('email')}>
+          <Button variant="transparent" onClick={() => handleShare('email')}>
             <Mail className="mr-2 h-4 w-4" />
             Email
           </Button>
-          <Button variant="outline" onClick={copyToClipboard}>
+          <Button variant="transparent" onClick={copyToClipboard}>
             Copy Link
           </Button>
         </div>

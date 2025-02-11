@@ -11,9 +11,9 @@ import { toast } from 'sonner';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
-import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
+import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 import SignUpSuccess from './SignUpSuccess';
@@ -89,7 +89,7 @@ const RegisterForm: React.FC = () => {
         <div className="relative z-10 hidden h-fit items-start justify-center md:flex">
           <div className="z-20 flex w-full flex-col gap-8 md:pl-10 md:pr-12 md:pt-24 lg:pl-24 lg:pt-24">
             <h1 className="text-4xl font-bold text-white">
-              Join <span className="text-brand">SciCommons</span>
+              Join <span className="text-functional-green">SciCommons</span>
             </h1>
             <span className="text-sm text-white">
               Sign up to access an online hub of research papers, comments, and ratings, and engage
@@ -120,7 +120,7 @@ const RegisterForm: React.FC = () => {
           width={60}
           height={20}
           src={'/logo.png'}
-          className="mx-auto mb-2 md:mb-6"
+          className="mx-auto mb-2 cursor-pointer md:mb-6"
           onClick={() => router.push('/')}
         />
         <h4 className="text-xl font-bold text-black md:text-2xl">Create your free Account</h4>
@@ -212,14 +212,17 @@ const RegisterForm: React.FC = () => {
             inputClassName="bg-white text-black"
           />
 
-          <Button type="submit" isPending={isPending}>
+          <Button type="submit" loading={isPending} className="w-full" showLoadingSpinner={true}>
             Sign Up
           </Button>
         </form>
 
-        <p className="text-gray-800 res-text-sm dark:text-gray-300">
+        <p className="text-text-tertiary res-text-sm">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-brand hover:underline">
+          <Link
+            href="/auth/login"
+            className="hover-text-functional-greenContrast text-functional-green hover:underline"
+          >
             Login
           </Link>
         </p>

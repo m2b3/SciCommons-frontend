@@ -34,15 +34,15 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
   }) => {
     return (
       <div>
-        <label className="mb-2 flex items-center font-medium text-gray-700 res-text-xs">
+        <label className="mb-2 flex items-center font-medium text-text-secondary res-text-xs">
           {label}
-          <span className="ml-2 cursor-pointer text-gray-400 hover:text-gray-600">
+          <span className="over:text-text-secondary ml-2 cursor-pointer text-text-tertiary">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <Info size={16} />
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900">
+                <TooltipContent className="bg-white text-black">
                   <p className="res-text-xs">{tooltipText}</p>
                 </TooltipContent>
               </Tooltip>
@@ -61,11 +61,13 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
             toast.error(`You can only create ${maxLimit} options.`);
           }}
           emptyIndicator={
-            <p className="text-center leading-10 text-gray-600 res-text-base">no results found.</p>
+            <p className="text-center leading-10 text-text-tertiary res-text-xs">
+              no results found.
+            </p>
           }
         />
         {fieldState.error && (
-          <p className="mt-1 text-red-500 res-text-xs">{fieldState.error.message}</p>
+          <p className="mt-1 text-xs text-functional-red">{fieldState.error.message}</p>
         )}
       </div>
     );

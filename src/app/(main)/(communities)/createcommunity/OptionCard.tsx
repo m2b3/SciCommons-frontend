@@ -1,33 +1,50 @@
 import React from 'react';
 
-type OptionType = 'public' | 'locked' | 'hidden';
+import { cn } from '@/lib/utils';
+
+type OptionType = 'public' | 'private' | 'hidden';
 
 interface OptionCardProps {
   name: string;
-  description: string;
   value: OptionType;
   selectedValue: OptionType;
   onChange: (value: OptionType) => void;
+  showRadio?: boolean;
 }
 
-const OptionCard = ({ name, description, value, selectedValue, onChange }: OptionCardProps) => {
+const OptionCard = ({
+  name,
+  value,
+  selectedValue,
+  onChange,
+  showRadio = true,
+}: OptionCardProps) => {
   return (
     <div
-      className={`cursor-pointer rounded-lg border p-4 res-text-sm ${selectedValue === value ? 'border-green-500 bg-green-100' : 'border-gray-300'}`}
+      className={cn(
+        'w-fit cursor-pointer rounded-lg border-2 px-4 py-3 res-text-sm md:w-full',
+        selectedValue === value
+          ? 'border-functional-green bg-functional-green/10'
+          : 'border-common-contrast'
+      )}
       onClick={() => onChange(value)}
     >
-      <div className="flex items-center justify-between">
-        <div className="font-semibold">{name}</div>
+      <div className="flex items-center justify-start gap-4">
         <input
           type="radio"
           name="type"
           value={value}
           checked={selectedValue === value}
           onChange={() => onChange(value)}
-          className="form-radio h-5 w-5 text-green-600"
+          className={cn(
+            'form-radio aspect-square h-4 w-4 bg-functional-green text-functional-green',
+            {
+              hidden: !showRadio,
+            }
+          )}
         />
+        <div className="whitespace-nowrap font-semibold text-text-primary res-text-sm">{name}</div>
       </div>
-      <div className="text-gray-500">{description}</div>
     </div>
   );
 };

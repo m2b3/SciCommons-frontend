@@ -45,7 +45,7 @@ const CommentEditor = <TFieldValues extends FieldValues>({
     editorProps: {
       attributes: {
         class:
-          'flex flex-col px-4 py-3 justify-start border-b border-r border-l border-gray-700 items-start w-full gap-3 pt-4 rounded-bl-md rounded-br-md outline-none',
+          'flex flex-col px-4 py-3 justify-start border-b border-r border-l border-common-contrast items-start w-full gap-3 pt-4 rounded-bl-md rounded-br-md outline-none',
       },
     },
     content: field.value as string,
@@ -76,7 +76,7 @@ const CommentEditor = <TFieldValues extends FieldValues>({
     <div>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-      {error && <p className="mt-2 text-sm text-red-500">{error.message}</p>}
+      {error && <p className="mt-2 text-sm text-functional-red">{error.message}</p>}
     </div>
   );
 };

@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordian';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
 import { faqs } from '@/constants/common.constants';
 
@@ -28,36 +29,48 @@ const Home = () => {
     },
     {
       text: 'SciCommons.',
-      className: 'text-green-500 dark:text-green-500',
+      className: 'text-functional-green',
     },
   ];
   const { theme } = useTheme();
 
   return (
-    <div>
+    <div className="relative bg-common-background">
       <NavBar />
       <Banner />
-      <div className="flex h-[calc(100vh-120px)] flex-col items-center justify-center bg-white-primary text-gray-900 md:h-[calc(100vh-60px)]">
-        <TypewriterEffectSmooth words={words} />
-        <p className="mb-6 max-w-3xl px-4 text-center text-xs text-gray-600 sm:text-base">
-          Be part of the change. Join our open platform to review, rate, and access research freely.
-          Improve research quality and accessibility with community-driven peer review.
-        </p>
-        <div className="flex flex-row items-center space-x-4">
-          <Link href="/articles">
-            <button className="h-10 w-40 rounded-xl border border-transparent bg-gray-900 text-sm text-gray-100">
-              Explore
-            </button>
-          </Link>
-          <Link href="/communities">
-            <button className="h-10 w-40 rounded-xl border border-green-600 text-sm text-gray-900">
-              Visit Communities
-            </button>
-          </Link>
+      <div className="relative inset-0 z-0 -mt-12 flex h-[calc(100vh-180px)] flex-col items-center justify-center overflow-hidden rounded-t-3xl bg-common-background md:h-[calc(100vh-120px)]">
+        <Image
+          src={'/images/assets/gradient.webp'}
+          fill
+          alt=""
+          className="z-0 opacity-10 invert dark:invert-0"
+          quality={10}
+        />
+        <div className="z-10 -mt-8 flex h-full w-full flex-col items-center justify-center backdrop-blur-xl">
+          <span className="mb-1 text-3xl font-bold text-text-primary sm:text-4xl md:hidden">
+            Welcome to
+          </span>
+          <TypewriterEffectSmooth words={words} />
+          <p className="mb-6 max-w-3xl px-4 text-center text-xs text-text-secondary sm:text-base">
+            Be part of the change. Join our open platform to review, rate, and access research
+            freely. Improve research quality and accessibility with community-driven peer review.
+          </p>
+          <div className="flex flex-row items-center space-x-4">
+            <Link href="/articles">
+              <Button variant={'gray'} className="w-40 bg-black">
+                <ButtonTitle>Explore</ButtonTitle>
+              </Button>
+            </Link>
+            <Link href="/communities">
+              <Button className="w-40">
+                <ButtonTitle>Visit Communities</ButtonTitle>
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
-      <div className="bg-slate-50 p-12 dark:bg-slate-950">
-        <p className="w-full pb-8 text-center text-xl font-bold text-text-primary md:text-2xl">
+      <div className="relative z-20 -mt-8 rounded-t-3xl bg-[#F6F6F6] p-12 pb-20 dark:bg-[#141414]">
+        <p className="w-full pb-8 text-center text-xl font-bold text-text-tertiary md:text-2xl">
           Our Supporters
         </p>
         <div className="flex w-full flex-col items-center justify-center gap-8 sm:flex-row">
@@ -75,16 +88,16 @@ const Home = () => {
           />
         </div>
       </div>
-      <div className="h-fit w-full bg-functional-green/10 py-4">
+      <div className="relative z-30 -mt-8 h-fit w-full rounded-t-3xl bg-[#E3F2E9] pb-20 dark:bg-[#0F1E15]">
         <div className="flex w-full flex-col items-center py-8">
-          <span className="text-center text-xl font-bold text-text-primary md:text-2xl">
+          <span className="text-center text-xl font-bold text-functional-green md:text-2xl">
             Features
           </span>
           <span className="text-base text-text-secondary">Uniqueness of our platform</span>
         </div>
         <FeaturesSection />
       </div>
-      <div className="flex w-full flex-col items-center py-12">
+      <div className="relative z-40 -mt-8 flex w-full flex-col items-center rounded-t-3xl bg-common-background py-12">
         <span className="px-8 text-center text-xl font-bold text-text-primary md:text-2xl">
           We Have Answered Almost All Your Questions
         </span>
@@ -92,15 +105,15 @@ const Home = () => {
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, i) => (
               <AccordionItem
-                className="w-full border-b border-gray-200 px-0 py-1"
+                className="w-full border-b border-common-contrast px-0 py-1"
                 key={i}
                 value={faq?.ques}
               >
                 <AccordionTrigger className="w-full p-5" defaultIconNeeded={true}>
-                  <span className="w-full text-left text-gray-700">{faq?.ques}</span>
+                  <span className="w-full text-left text-base text-text-primary">{faq?.ques}</span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
-                  <span className="text-gray-500">{faq?.ans}</span>
+                  <span className="text-text-secondary">{faq?.ans}</span>
                 </AccordionContent>
               </AccordionItem>
             ))}

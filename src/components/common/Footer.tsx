@@ -23,33 +23,33 @@ const navLinks = [
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-functional-green/10 dark:bg-functional-green/10 md:pb-0">
+    <footer className="rounded-t-3xl bg-functional-green/10 pb-16 dark:bg-functional-green/10 md:pb-0">
       <div className="sm-gap-0 flex w-full flex-col justify-between gap-10 p-16 sm:flex-row md:px-44 md:py-12">
         <div className="flex flex-col items-start gap-12">
           <Link href="/" className="flex items-center gap-4">
             <Image src="/logo.png" alt="Logo" width={120} height={80} />
           </Link>
           <div className="flex gap-8 md:order-2">
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Facebook</span>
               <FacebookIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Youtube</span>
               <YoutubeIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Instagram</span>
               <InstagramIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Twitter</span>
               <TwitterIconFilled fontSize={24} strokeWidth={0} />
             </a>
           </div>
         </div>
 
-        <div className="flex gap-6 text-sm font-medium leading-6 text-green-600 dark:text-green-400 sm:gap-14">
+        <div className="flex gap-6 text-sm font-medium leading-6 text-functional-green sm:gap-14">
           <div className="flex flex-col gap-2">
             {navLinks.map(
               (link, index) =>

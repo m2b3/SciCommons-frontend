@@ -6,13 +6,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { Bell } from 'lucide-react';
+import { Check, FileText, UserCheck, UserPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 import '@/api/communities/communities';
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
+import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import TruncateText from '@/components/common/TruncateText';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -49,76 +51,92 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   }, [isSuccess, error, data, refetch]);
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white-secondary shadow-md">
-      <div className="relative h-52 w-full">
-        <Image
-          src={community.banner_pic_url || `data:image/png;base64,${imageData}`}
-          alt="Community Cover"
-          layout="fill"
-          objectFit="cover"
-        />
-      </div>
+    <div className="overflow-hidden rounded-xl border border-common-contrast bg-common-cardBackground">
       <div className="relative p-4">
-        <div className="absolute left-4 top-0 -translate-y-1/2 transform">
-          <div className="relative h-24 w-24">
+        <div className="flex gap-4">
+          <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">
             <Image
               src={community.profile_pic_url || `data:image/png;base64,${imageData}`}
               alt="Profile"
               layout="fill"
               objectFit="cover"
-              className="rounded-full border-4 border-white shadow-md"
             />
           </div>
+          <div className="flex flex-col gap-2">
+            <h2 className="font-bold text-text-primary res-heading-sm">{community.name}</h2>
+            <p className="res-text-sm">
+              <TruncateText
+                text={community.description}
+                maxLines={2}
+                textClassName="text-text-secondary"
+              />
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">
+              <div className="flex items-center">
+                <Users className="mr-1 h-4 w-4" />
+                <span className="text-xs">{community.num_members} Members</span>
+              </div>
+              <div className="flex items-center">
+                <FileText className="mr-1 h-4 w-4" />
+                <span className="text-xs">Published {community.num_articles} Articles</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="mt-12">
-          <h2 className="font-bold text-gray-900 res-heading-sm">{community.name}</h2>
-          <p className="mt-2 text-gray-600 res-text-sm">
-            <TruncateText text={community.description} maxLines={2} />
-          </p>
-        </div>
-        <div className="absolute right-4 top-4">
-          <button className="flex items-center space-x-2 rounded-md bg-gray-200 px-3 py-1 text-gray-700 res-text-xs hover:bg-gray-300">
-            <Bell className="h-5 w-5" />
-            <span>Notifications</span>
-          </button>
-        </div>
+        {/* <div className="absolute right-4 top-4">
+          <Button className="bg-functional-yellowLight/10 hover:bg-functional-yellowLight/5">
+            <ButtonIcon>
+              <Bell className="h-4 w-4 text-functional-yellow" />
+            </ButtonIcon>
+            <ButtonTitle className="text-functional-yellow">Notifications</ButtonTitle>
+          </Button>
+        </div> */}
       </div>
       <div className="flex items-center justify-between px-2">
         <div className="ml-auto flex items-center justify-end space-x-4 p-4">
           {community.is_admin && (
             <>
               <ArticleSubmission communityName={community.name} />
-              <Link href={`/community/${params?.slug}/dashboard`}>
-                <button className="rounded-full bg-black px-4 py-2 text-white res-text-sm">
-                  Dashboard
-                </button>
+              <Link href={`/community/${params?.slug}/settings`}>
+                <Button className="bg-black hover:bg-black">
+                  <ButtonTitle className="text-white">Settings</ButtonTitle>
+                </Button>
               </Link>
             </>
           )}
           {!community.is_admin && community.is_member && (
             <>
               <ArticleSubmission communityName={community.name} />
-              <button className="rounded-full bg-gray-200 px-4 py-2 text-gray-700 res-text-sm">
-                Joined
-              </button>
+              <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
+                <ButtonIcon>
+                  <UserCheck className="size-4 text-text-secondary" />
+                </ButtonIcon>
+                <ButtonTitle className="text-text-secondary">Joined</ButtonTitle>
+              </Button>
             </>
           )}
           {!community.is_admin &&
             !community.is_member &&
             community.join_request_status === 'pending' && (
-              <button className="rounded-full bg-gray-200 px-4 py-2 text-gray-700 res-text-sm">
-                Requested
-              </button>
+              <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
+                <ButtonIcon>
+                  <Check className="size-4 text-text-secondary" />
+                </ButtonIcon>
+                <ButtonTitle className="text-text-secondary">Requested</ButtonTitle>
+              </Button>
             )}
           {!community.is_admin &&
             !community.is_member &&
             community.join_request_status !== 'pending' && (
-              <button
+              <Button
+                className="bg-transparent ring-1 ring-common-contrast hover:bg-common-minimal"
                 onClick={() => handleJoin()}
-                className="rounded-full bg-green-500 px-4 py-2 text-white res-text-sm hover:bg-green-600"
               >
-                Join Community
-              </button>
+                <ButtonIcon>
+                  <UserPlus className="size-4 text-text-secondary" />
+                </ButtonIcon>
+                <ButtonTitle className="text-text-secondary">Join</ButtonTitle>
+              </Button>
             )}
         </div>
       </div>
@@ -130,31 +148,36 @@ export default DisplayCommunity;
 
 export const DisplayCommunitySkeleton: React.FC = () => {
   return (
-    <div className="animate-pulse overflow-hidden rounded-lg bg-white-secondary shadow-md">
-      <div className="relative h-60 w-full bg-gray-300"></div>
-      <div className="relative p-4">
-        <div className="absolute left-4 top-0 -translate-y-1/2 transform">
-          <div className="relative h-24 w-24 rounded-full border-4 bg-gray-300 shadow-md"></div>
-        </div>
-        <div className="mt-12">
-          <div className="h-6 w-2/3 rounded bg-gray-300"></div>
-          <div className="mt-2 h-4 w-full rounded bg-gray-300"></div>
-          <div className="mt-1 h-4 w-5/6 rounded bg-gray-300"></div>
-        </div>
-        <div className="absolute right-4 top-4">
-          <div className="flex items-center space-x-2 rounded-md bg-gray-200 px-3 py-1 text-gray-700">
-            <div className="h-5 w-5 rounded-full bg-gray-300"></div>
-            <span className="h-5 w-20 rounded bg-gray-300"></span>
+    <>
+      <Skeleton className="relative flex rounded-xl border border-common-contrast bg-common-cardBackground">
+        <BlockSkeleton className="aspect-square size-10 rounded-full" />
+        <BlockSkeleton className="absolute right-4 top-4 h-8 w-28" />
+        <div className="ml-4 flex-1">
+          <TextSkeleton className="w-20" />
+          <TextSkeleton className="mt-2 w-32" />
+          <BlockSkeleton className="mt-2" />
+          <div className="mt-2 flex w-full justify-end gap-4">
+            <TextSkeleton className="h-8 w-32" />
+            <TextSkeleton className="h-8 w-32" />
           </div>
+          <BlockSkeleton className="mt-2 h-14" />
         </div>
-      </div>
-      <div className="flex items-center justify-between border-gray-200 px-4 py-2">
-        <div className="flex space-x-6"></div>
-        <div className="flex gap-2">
-          <div className="h-10 w-28 rounded-full bg-gray-300"></div>
-          <div className="h-10 w-28 rounded-full bg-gray-300"></div>
+      </Skeleton>
+      <Skeleton className="border-none bg-transparent">
+        <div className="mt-4 flex gap-6 border-b border-common-minimal p-4">
+          <BlockSkeleton className="h-8 w-32" />
+          <BlockSkeleton className="h-8 w-32" />
+          <BlockSkeleton className="h-8 w-32" />
         </div>
-      </div>
-    </div>
+      </Skeleton>
+      <Skeleton className="relative flex rounded-xl border border-common-contrast bg-common-cardBackground">
+        <BlockSkeleton className="aspect-square size-10 rounded-full" />
+        <div className="ml-4 flex-1">
+          <TextSkeleton className="w-20" />
+          <TextSkeleton className="mt-2 w-32" />
+          <BlockSkeleton className="mt-2" />
+        </div>
+      </Skeleton>
+    </>
   );
 };

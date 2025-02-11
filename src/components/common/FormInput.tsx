@@ -75,10 +75,10 @@ const FormInput = <TFieldValues extends FieldValues>({
           : undefined,
     }),
     className: cn(
-      'mt-1 block w-full px-3 py-2 ring-1 ring-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand res-text-sm focus:ring-1',
+      'mt-1 block w-full px-3 py-2 ring-1 ring-common-contrast rounded-md shadow-sm focus:outline-none focus:ring-functional-green res-text-sm focus:ring-1 placeholder:text-text-tertiary text-text-primary',
       inputClassName,
-      error && !readOnly && !isSubmitting ? 'border-red-500' : 'border-gray-300',
-      readOnly ? 'bg-gray-100' : ''
+      error && !readOnly && !isSubmitting ? 'border-functional-red' : 'border-common-minimal',
+      readOnly ? 'bg-common-minimal' : ''
     ),
   };
 
@@ -86,7 +86,7 @@ const FormInput = <TFieldValues extends FieldValues>({
     <div className="w-full">
       {label && (
         <div className="mb-2 flex items-center space-x-2">
-          <span className={cn('font-medium text-gray-700 res-text-xs', labelClassName)}>
+          <span className={cn('font-medium text-text-secondary res-text-xs', labelClassName)}>
             {label}
           </span>
           {info && (
@@ -107,7 +107,7 @@ const FormInput = <TFieldValues extends FieldValues>({
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
       {error && !readOnly && !isSubmitting && (
-        <p className="mt-2 text-red-600 res-text-xs">{String(error.message)}</p>
+        <p className="mt-2 text-functional-red res-text-xs">{String(error.message)}</p>
       )}
 
       {!error && helperText && !isSubmitting && (
