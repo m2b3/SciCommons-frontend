@@ -57,7 +57,7 @@ const Home = () => {
           </p>
           <div className="flex flex-row items-center space-x-4">
             <Link href="/articles">
-              <Button variant={'gray'} className="w-40 bg-black">
+              <Button variant={'gray'} className="w-40 bg-black text-white dark:text-white">
                 <ButtonTitle>Explore</ButtonTitle>
               </Button>
             </Link>
