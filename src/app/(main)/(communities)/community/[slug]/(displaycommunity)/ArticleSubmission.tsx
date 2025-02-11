@@ -3,10 +3,12 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiGetMyArticles } from '@/api/community-articles/community-articles';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -60,9 +62,12 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="rounded-full border-2 border-green-500 px-4 py-2 text-green-500 transition-colors duration-300 hover:bg-green-500 hover:text-white">
-            + Create
-          </button>
+          <Button className="py-1.5">
+            <ButtonIcon>
+              <Plus className="size-4 text-white" />
+            </ButtonIcon>
+            <ButtonTitle>Create</ButtonTitle>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>

@@ -11,5 +11,5 @@ export type CommunityType = (typeof CommunityType)[keyof typeof CommunityType];
 export const CommunityType = {
   public: 'public',
   hidden: 'hidden',
-  locked: 'locked',
+  private: 'private',
 } as const;

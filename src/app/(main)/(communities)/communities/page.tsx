@@ -83,6 +83,8 @@ const Communities: React.FC = () => {
         emptyStateContent="No communities found"
         emptyStateSubcontent="Try using different keywords"
         emptyStateLogo={<Users size={64} />}
+        title="Communities"
+        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );

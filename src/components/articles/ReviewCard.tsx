@@ -26,6 +26,7 @@ import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
+import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import TruncateText from '../common/TruncateText';
 import ReviewComments from './ReviewComments';
 import ReviewForm from './ReviewForm';
@@ -287,39 +288,15 @@ export default ReviewCard;
 
 export const ReviewCardSkeleton: FC = () => {
   return (
-    <div className="mb-4 animate-pulse rounded-lg border p-4 shadow-sm">
-      <div className="mb-2 flex justify-between">
-        <div>
-          <div className="h-4 w-24 rounded bg-gray-300"></div>
-          <div className="mt-2 flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
-            ))}
-          </div>
-        </div>
-        <div className="h-4 w-32 rounded bg-gray-300"></div>
+    <Skeleton>
+      <TextSkeleton className="w-32" />
+      <TextSkeleton className="w-44" />
+      <BlockSkeleton />
+      <TextSkeleton />
+      <div className="flex w-full justify-between">
+        <TextSkeleton className="h-8 w-28" />
+        <TextSkeleton className="h-8 w-24 bg-functional-blue" />
       </div>
-      <div className="mb-2 h-6 w-48 rounded bg-gray-300"></div>
-      <div className="mb-4 h-20 rounded bg-gray-300"></div>
-      <div className="flex items-center justify-between">
-        <div className="flex space-x-4 text-gray-500">
-          <div className="flex items-center">
-            <div className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
-            <div className="h-4 w-6 rounded bg-gray-300"></div>
-          </div>
-          <div className="flex items-center">
-            <div className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
-            <div className="h-4 w-6 rounded bg-gray-300"></div>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-500">
-          <div className="flex items-center">
-            <div className="mr-1 h-4 w-4 rounded bg-gray-300"></div>
-            <div className="h-4 w-12 rounded bg-gray-300"></div>
-          </div>
-          <div className="h-8 w-20 rounded bg-blue-300"></div>
-        </div>
-      </div>
-    </div>
+    </Skeleton>
   );
 };

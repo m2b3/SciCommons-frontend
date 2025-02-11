@@ -1,6 +1,5 @@
 import React from 'react';
 
-import clsx from 'clsx';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -16,6 +15,7 @@ import { Ratings } from '@/components/ui/ratings';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
+import { Button, ButtonTitle } from '../ui/button';
 import { ReviewCardSkeleton } from './ReviewCard';
 
 interface FormValues {
@@ -141,7 +141,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mb-4 flex flex-col gap-4 rounded-lg border border-gray-200 bg-white-secondary p-4 shadow-sm res-text-sm"
+          className="mb-4 flex flex-col gap-4 rounded-xl bg-common-cardBackground p-4 shadow-sm res-text-sm"
         >
           <div className="">
             <LabeledTooltip label="Rate this article" info="Rate this article" />
@@ -157,7 +157,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                     readonly={false}
                   />
                   {errors.rating && (
-                    <p className="mt-1 text-red-500 res-text-xs">{errors.rating.message}</p>
+                    <p className="mt-1 text-functional-red res-text-xs">{errors.rating.message}</p>
                   )}
                 </>
               )}
@@ -176,57 +176,50 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             maxLengthMessage="Title must not exceed 100 characters"
             info="Please provide a clear and concise title for your article."
             errors={errors}
+            labelClassName="text-text-secondary"
+            inputClassName="bg-common-invert text-text-primary ring-common-contrast"
           />
           <CommentEditor control={control} name="content" />
           {edit ? (
             <div className="ml-auto flex gap-2">
-              <button
-                type="submit"
-                className={clsx(
-                  'self-end rounded bg-blue-600 px-4 py-2 text-white res-text-xs',
-                  editPending && 'cursor-not-allowed opacity-50'
-                )}
+              <Button
+                variant={'blue'}
                 onClick={() => setAction('edit')}
-              >
-                {editPending ? 'Updating...' : 'Update'}
-              </button>
-              <button
+                loading={editPending}
                 type="submit"
-                className={clsx(
-                  'self-end rounded bg-red-600 px-4 py-2 text-white res-text-xs',
-                  deletePending && 'cursor-not-allowed opacity-50'
-                )}
+              >
+                <ButtonTitle>{editPending ? 'Updating...' : 'Update'}</ButtonTitle>
+              </Button>
+              <Button
+                variant={'danger'}
                 onClick={() => setAction('delete')}
+                loading={deletePending}
+                type="submit"
               >
-                {deletePending ? 'Deleting...' : 'Delete'}
-              </button>
-              <button
-                type="button"
-                className="self-end rounded bg-gray-500 px-4 py-2 text-white res-text-xs"
-                onClick={() => setEdit && setEdit(false)}
-              >
-                Cancel
-              </button>
+                <ButtonTitle>{deletePending ? 'Deleting...' : 'Delete'}</ButtonTitle>
+              </Button>
+              <Button variant={'gray'} onClick={() => setEdit && setEdit(false)} type="button">
+                <ButtonTitle>Cancel</ButtonTitle>
+              </Button>
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <button
+              <Button
+                variant={'blue'}
+                className="res-text-xs"
+                loading={isPending}
                 type="submit"
-                className={clsx(
-                  'self-start rounded bg-blue-600 px-4 py-2 text-white res-text-xs',
-                  isPending && 'cursor-not-allowed opacity-50'
-                )}
                 onClick={() => setAction('create')}
               >
                 {isPending ? 'Submitting...' : 'Submit Review'}
-              </button>
-              <span className="text-gray-600 res-text-xs">
+              </Button>
+              <span className="text-text-tertiary res-text-xs">
                 By clicking Submit Review, you agree to our{' '}
-                <a href="#" className="text-blue-600">
+                <a href="#" className="text-functional-blue hover:underline">
                   terms of service
                 </a>{' '}
                 and{' '}
-                <a href="#" className="text-blue-600">
+                <a href="#" className="text-functional-blue hover:underline">
                   privacy policy
                 </a>
                 .

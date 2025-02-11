@@ -33,7 +33,7 @@ const StatusList = ({ slug }: { slug: string }) => {
   });
 
   return (
-    <div className="my-4 rounded-lg bg-white-primary p-4 text-gray-900 shadow-md">
+    <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 text-text-primary">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-medium res-heading-xs">Status</h2>
         <select

@@ -7,7 +7,6 @@ import { useParams } from 'next/navigation';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
-import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
 import DisplayFAQs from '@/components/articles/DisplayFAQs';
@@ -137,9 +136,6 @@ const CommunityArticleDisplayPage: React.FC = () => {
           onMouseEnter={() => setIsRightHovered(true)}
           onMouseLeave={() => setIsRightHovered(false)}
         >
-          <div className="mb-4">
-            {isPending ? <ArticleStatsSkeleton /> : data && <ArticleStats article={data.data} />}
-          </div>
           <RelevantArticles articleId={data?.data.id || 0} />
         </div>
       </div>

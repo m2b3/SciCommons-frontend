@@ -32,7 +32,7 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
   }, [error]);
 
   return (
-    <div className="flex flex-col text-gray-900">
+    <div className="mx-auto flex max-w-5xl flex-col">
       <div className="self-start">
         <TabComponent<ActiveTab>
           tabs={['Details', 'Rules', 'About']}

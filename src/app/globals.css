@@ -30,44 +30,6 @@ body {
 
 @layer base {
   :root {
-    /* Website Colors */
-
-    /* Green colors */
-    --color-green-50: #f0fdf4;
-    --color-green-100: #dcfce7;
-    --color-green-200: #bbf7d0;
-    --color-green-300: #86efac;
-    --color-green-400: #4ade80;
-    --color-green-500: #22c55e;
-    --color-green-600: #16a34a;
-    --color-green-700: #15803d;
-    --color-green-800: #166534;
-    --color-green-900: #14532d;
-
-    /* Neutral colors */
-    --color-gray-50: #f9fafb;
-    --color-gray-100: #f3f4f6;
-    --color-gray-200: #e5e7eb;
-    --color-gray-300: #d1d5db;
-    --color-gray-400: #9ca3af;
-    --color-gray-500: #6b7280;
-    --color-gray-600: #4b5563;
-    --color-gray-700: #374151;
-    --color-gray-800: #1f2937;
-    --color-gray-900: #111827;
-
-    /* Blue colors */
-    --color-blue-50: #eff6ff;
-    --color-blue-100: #dbeafe;
-    --color-blue-200: #bfdbfe;
-    --color-blue-300: #93c5fd;
-    --color-blue-400: #60a5fa;
-    --color-blue-500: #3b82f6;
-    --color-blue-600: #2563eb;
-    --color-blue-700: #1d4ed8;
-    --color-blue-800: #1e40af;
-    --color-blue-900: #1e3a8a;
-
     /* New background color variables */
     --color-white-primary: #ffffff;
     --color-white-secondary: #ffffff;
@@ -111,7 +73,65 @@ body {
 
     --radius: 0.5rem;
 
-    /* color palette */
+    /* Green colors */
+    --color-green-50: 240, 253, 244;
+    --color-green-100: 220, 252, 231;
+    --color-green-200: 187, 247, 208;
+    --color-green-300: 134, 239, 172;
+    --color-green-400: 74, 222, 128;
+    --color-green-500: 34, 197, 94;
+    --color-green-600: 22, 163, 74;
+    --color-green-700: 21, 128, 61;
+    --color-green-800: 22, 101, 52;
+    --color-green-900: 20, 83, 45;
+
+    /* Neutral colors */
+    --color-gray-50: 249, 250, 251;
+    --color-gray-100: 243, 244, 246;
+    --color-gray-200: 229, 231, 235;
+    --color-gray-300: 209, 213, 219;
+    --color-gray-400: 156, 163, 175;
+    --color-gray-500: 107, 114, 128;
+    --color-gray-600: 75, 85, 99;
+    --color-gray-700: 55, 65, 81;
+    --color-gray-800: 31, 41, 55;
+    --color-gray-900: 17, 24, 39;
+
+    /* Blue colors */
+    --color-blue-50: 239, 246, 255;
+    --color-blue-100: 219, 234, 254;
+    --color-blue-200: 191, 219, 254;
+    --color-blue-300: 147, 197, 253;
+    --color-blue-400: 96, 165, 250;
+    --color-blue-500: 59, 130, 246;
+    --color-blue-600: 37, 99, 235;
+    --color-blue-700: 29, 78, 216;
+    --color-blue-800: 30, 64, 175;
+    --color-blue-900: 30, 58, 138;
+
+    /* Red colors */
+    --color-red-100: 255, 236, 235;
+    --color-red-200: 255, 213, 210;
+    --color-red-300: 253, 152, 145;
+    --color-red-400: 248, 113, 104;
+    --color-red-500: 241, 91, 80;
+    --color-red-600: 226, 72, 61;
+    --color-red-700: 201, 55, 44;
+    --color-red-800: 174, 46, 36;
+    --color-red-900: 93, 31, 26;
+    --color-red-1000: 66, 34, 31;
+
+    /* Yellow colors */
+    --color-yellow-100: 255, 247, 214;
+    --color-yellow-200: 248, 230, 160;
+    --color-yellow-300: 245, 205, 71;
+    --color-yellow-400: 226, 178, 3;
+    --color-yellow-500: 207, 159, 2;
+    --color-yellow-600: 179, 134, 0;
+    --color-yellow-700: 148, 111, 0;
+    --color-yellow-800: 127, 95, 1;
+    --color-yellow-900: 83, 63, 4;
+    --color-yellow-1000: 51, 46, 27;
 
     /* Neutral */
     --neutral-0: 255, 255, 255;
@@ -129,45 +149,41 @@ body {
     --neutral-800: 38, 38, 38;
     --neutral-850: 31, 31, 31;
     --neutral-900: 23, 23, 23;
-    --neutral-950: 10, 10, 10;
-
-    /* Blue */
-    --blue-100: 235, 244, 255;
-    --blue-200: 184, 215, 255;
-    --blue-300: 133, 185, 255;
-    --blue-400: 71, 145, 255;
-    --blue-450: 61, 132, 255;
-    --blue-500: 46, 137, 255;
-    --blue-600: 41, 111, 204;
-    --blue-700: 61, 99, 153;
-    --blue-800: 52, 65, 82;
+    --neutral-950: 15, 15, 15;
+    --neutral-1000: 10, 10, 10;
 
     /* Functional Green */
-    --Functional-Green-Green: 47, 201, 109;
-    --Functional-Green-GreenLight: 217, 246, 229;
-    --Functional-Green-Greencontrast: 166, 226, 190;
+    --Functional-Green-Green: var(--color-green-600);
+    --Functional-Green-GreenLight: var(--color-green-400);
+    --Functional-Green-Greencontrast: var(--color-green-700);
 
     /* Functional Blue */
-    --Functional-Blue-Blue: 62, 146, 255;
-    --Functional-Blue-BlueLight: 222, 235, 252;
-    --Functional-Blue-Bluecontrast: 168, 201, 243;
+    --Functional-Blue-Blue: var(--color-blue-600);
+    --Functional-Blue-BlueLight: var(--color-blue-400);
+    --Functional-Blue-Bluecontrast: var(--color-blue-700);
 
     /* Functional Yellow */
-    --Functional-Yellow-Yellow: 252, 181, 42;
-    --Functional-Yellow-YellowLight: 255, 245, 224;
-    --Functional-Yellow-Yellowcontrast: 255, 227, 173;
+    --Functional-Yellow-Yellow: var(--color-yellow-500);
+    --Functional-Yellow-YellowLight: var(--color-yellow-400);
+    --Functional-Yellow-Yellowcontrast: var(--color-yellow-700);
 
     /* Functional Red */
-    --Functional-Red-Red: 255, 91, 86;
-    --Functional-Red-RedLight: 255, 225, 224;
-    --Functional-Red-Redcontrast: 255, 186, 184;
+    --Functional-Red-Red: var(--color-red-600);
+    --Functional-Red-RedLight: var(--color-red-400);
+    --Functional-Red-Redcontrast: var(--color-red-700);
+
+    /* Funtional Gray */
+    --Functional-Gray-Gray: var(--color-gray-300);
+    --Functional-Gray-GrayLight: var(--color-gray-200);
+    --Functional-Gray-Graycontrast: var(--color-gray-400);
 
     /* Common Light */
     --Common-Background: var(--neutral-50);
-    --Common-CardBackground: var(--neutral-0);
-    --Common-Minimal: var(--neutral-150);
-    --Common-Contrast: var(--neutral-200);
-    --Common-HeavyContrast: var(--neutral-300);
+    --Common-CardBackground: var(--neutral-100);
+    --Common-Minimal: var(--neutral-200);
+    --Common-Contrast: var(--neutral-300);
+    --Common-HeavyContrast: var(--neutral-400);
+    --Common-Invert: var(--neutral-0);
 
     /* Accessory Light */
     --Accessory-Accessory1: var(--neutral-0);
@@ -180,122 +196,14 @@ body {
 
     /* Text Light */
     --Text-Primary: var(--neutral-800);
-    --Text-Secondary: var(--neutral-400);
-    --Text-Tertiary: var(--neutral-300);
-
-    /* Berry Theme Light */
-    --Berry-Base: var(--blue-450);
-    --Berry-Background: var(--blue-100);
-    --Berry-Border: var(--blue-200);
-    --Berry-Contrast: var(--blue-300);
-    --Berry-DisplayHeading: var(--blue-700);
-
-    /* Candy background Gradient */
-    --candy-background-berry: linear-gradient(
-      180deg,
-      rgba(85, 187, 255, 0.08) 0%,
-      rgba(85, 187, 255, 0.24) 100%
-    );
-    --candy-background-jelly: linear-gradient(
-      180deg,
-      rgba(255, 112, 184, 0.08) 0%,
-      rgba(255, 112, 184, 0.24) 100%
-    );
-    --candy-background-kiwi: linear-gradient(
-      180deg,
-      rgba(69, 217, 128, 0.08) 0%,
-      rgba(69, 217, 128, 0.24) 100%
-    );
-    --candy-background-lemon: linear-gradient(
-      180deg,
-      rgba(255, 238, 0, 0.08) 0%,
-      rgba(255, 238, 0, 0.24) 100%
-    );
-    --candy-background-plum: linear-gradient(
-      180deg,
-      rgba(141, 112, 255, 0.08) 0%,
-      rgba(141, 112, 255, 0.24) 100%
-    );
-    --candy-background-mint: linear-gradient(
-      180deg,
-      rgba(85, 187, 255, 0.08) 0%,
-      rgba(85, 187, 255, 0.24) 100%
-    );
-    --candy-background-tango: linear-gradient(
-      180deg,
-      rgba(255, 147, 46, 0.08) 0%,
-      rgba(255, 147, 46, 0.24) 100%
-    );
-    --candy-background-cherry: linear-gradient(
-      180deg,
-      rgba(255, 87, 82, 0.08) 0%,
-      rgba(255, 87, 82, 0.24) 100%
-    );
-
-    /* Candy Button Bg Gradient */
-    --candy-buttonbg-berry: linear-gradient(180deg, #5291ff 0%, #4589fe 100%);
-    --candy-buttonbg-jelly: linear-gradient(180deg, #ff70b8 0%, #ff57ac 100%);
-    --candy-buttonbg-kiwi: linear-gradient(180deg, #45d980 0%, #2acb6b 100%);
-    --candy-buttonbg-lemon: linear-gradient(180deg, #ffd502 0%, #f5cc00 100%);
-    --candy-buttonbg-plum: linear-gradient(180deg, #8d7aff 0%, #735cff 100%);
-    --candy-buttonbg-mint: linear-gradient(180deg, #5bf 0%, #29a9ff 100%);
-    --candy-buttonbg-tango: linear-gradient(180deg, #ff932e 0%, #ff7d03 100%);
-    --candy-buttonbg-cherry: linear-gradient(180deg, #ff5752 0%, #ff4039 100%);
-
-    /* Candy Text */
-    --candy-text-berry: #3d84ff;
-    --candy-text-jelly: #ff70b8;
-    --candy-text-kiwi: #37d277;
-    --candy-text-lemon: #f5be00;
-    --candy-text-plum: #8d70ff;
-    --candy-text-mint: #5bf;
-    --candy-text-tango: #ff932e;
-    --candy-text-cherry: #ff5752;
-    --candy-text-lychee: #ff5c92;
+    --Text-Secondary: var(--neutral-600);
+    --Text-Tertiary: var(--neutral-400);
 
     /* Loading */
     --loading: #f2f2f2;
   }
 
   .dark {
-    /* Website Colors */
-
-    /* Green colors */
-    --color-green-50: #052e16;
-    --color-green-100: #0d4c26;
-    --color-green-200: #157139;
-    --color-green-300: #1e9549;
-    --color-green-400: #28bd5c;
-    --color-green-500: #33e06f;
-    --color-green-600: #5ee78e;
-    --color-green-700: #8eedaf;
-    --color-green-800: #bff3cf;
-    --color-green-900: #ebfdf0;
-
-    /* Neutral colors */
-    --color-gray-50: #18181b;
-    --color-gray-100: #27272a;
-    --color-gray-200: #3f3f46;
-    --color-gray-300: #52525b;
-    --color-gray-400: #71717a;
-    --color-gray-500: #a1a1aa;
-    --color-gray-600: #d4d4d8;
-    --color-gray-700: #e4e4e7;
-    --color-gray-800: #f4f4f5;
-    --color-gray-900: #fafafa;
-
-    /* Blue colors */
-    --color-blue-50: #172554;
-    --color-blue-100: #1e3a8a;
-    --color-blue-200: #1e40af;
-    --color-blue-300: #1d4ed8;
-    --color-blue-400: #2563eb;
-    --color-blue-500: #3b82f6;
-    --color-blue-600: #60a5fa;
-    --color-blue-700: #93c5fd;
-    --color-blue-800: #bfdbfe;
-    --color-blue-900: #dbeafe;
-
     /* Background variations */
     --color-white-primary: #111827;
     --color-white-secondary: #1f2937;
@@ -340,11 +248,12 @@ body {
     --radius: 0.5rem;
 
     /* Common Dark */
-    --Common-Background: var(--neutral-800);
-    --Common-CardBackground: var(--neutral-750);
-    --Common-Minimal: var(--neutral-650);
-    --Common-Contrast: var(--neutral-600);
-    --Common-HeavyContrast: var(--neutral-600);
+    --Common-Background: var(--neutral-950);
+    --Common-CardBackground: var(--neutral-900);
+    --Common-Minimal: var(--neutral-800);
+    --Common-Contrast: var(--neutral-750);
+    --Common-HeavyContrast: var(--neutral-650);
+    --Common-Invert: var(--neutral-1000);
 
     /* Accessory Dark */
     --Accessory-Accessory1: var(--neutral-950);
@@ -356,21 +265,23 @@ body {
     --Accessory-Accessory7: var(--neutral-500);
 
     /* Text Dark */
-    --Text-Primary: var(--neutral-200);
-    --Text-Secondary: var(--neutral-500);
-    --Text-tertiary: var(--neutral-600);
+    --Text-Primary: var(--neutral-100);
+    --Text-Secondary: var(--neutral-400);
+    --Text-Tertiary: var(--neutral-500);
 
-    /* Berry Theme Dark */
-    --Berry-Base: var(--blue-400);
-    --Berry-Background: var(--blue-800);
-    --Berry-Border: var(--blue-700);
-    --Berry-Contrast: var(--blue-600);
-    --Berry-DisplayHeading: var(--blue-200);
+    /* Funtional Gray */
+    --Functional-Gray-Gray: var(--color-gray-700);
+    --Functional-Gray-GrayLight: var(--color-gray-600);
+    --Functional-Gray-Graycontrast: var(--color-gray-800);
 
     /* Loading */
     --loading: #3d3d3d;
   }
 }
+
+/* html {
+  scrollbar-gutter: stable;
+} */
 
 @layer base {
   * {
@@ -412,6 +323,18 @@ body {
     background: #555;
   }
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 /* TipTap CSS */
 
 .tiptap p.is-editor-empty:first-child::before {

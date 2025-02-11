@@ -63,7 +63,7 @@ const Articles: React.FC = () => {
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-8">
       <SearchableList<ArticleOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
@@ -79,6 +79,7 @@ const Articles: React.FC = () => {
         emptyStateContent="No Articles Found"
         emptyStateSubcontent="Try searching for something else"
         emptyStateLogo={<FileX2 size={64} />}
+        title="Articles"
       />
     </div>
   );

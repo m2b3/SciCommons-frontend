@@ -11,4 +11,5 @@ export interface CreateCommunityDetails {
   name: string;
   tags: string[];
   type: CommunityType;
+  community_settings?: string;
 }

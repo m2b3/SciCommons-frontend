@@ -52,7 +52,9 @@ export const SessionExpirationDialog: React.FC = () => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={handleDialogClose}>OK</Button>
+          <Button onClick={handleDialogClose} className="text-white res-text-xs">
+            OK
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

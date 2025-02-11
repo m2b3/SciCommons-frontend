@@ -11,16 +11,6 @@ import 'react-quill/dist/quill.snow.css';
 
 // Todo: Remove this component later
 
-// Todo: Remove this component later
-
-// Todo: Remove this component later
-
-// Todo: Remove this component later
-
-// Todo: Remove this component later
-
-// Todo: Remove this component later
-
 // Dynamically import react-quill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 

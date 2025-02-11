@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { ThemeProvider } from 'next-themes';
 import { Inter } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 
@@ -9,6 +8,8 @@ import { SessionExpirationDialog } from '@/HOCs/CheckSessionExpiration';
 import PathTracker from '@/HOCs/withPathTracker';
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
 import BottomBar from '@/components/common/BottomBar';
+import { ThemeProvider } from '@/components/theme-provider';
+import { cn } from '@/lib/utils';
 
 import './globals.css';
 
@@ -47,21 +48,21 @@ export default function RootLayout({
   return (
     <ReactQueryClientProvider>
       <html lang="en">
-        <body className={inter.className}>
+        <body className={cn(inter.className, 'bg-common-background')}>
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
           <SessionExpirationDialog />
           <PathTracker />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            storageKey="nightwind-mode"
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <main className="flex-grow">{children}</main>
           </ThemeProvider>
           <BottomBar />
-          <SonnerToaster richColors position="top-center" />
+          <SonnerToaster
+            richColors
+            position="top-center"
+            className="top-16"
+            closeButton
+            duration={3000}
+          />
         </body>
       </html>
     </ReactQueryClientProvider>

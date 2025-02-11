@@ -1,22 +1,20 @@
 import React, { useEffect } from 'react';
 
 import { AxiosResponse } from 'axios';
-import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
 import { CommunityOut, UpdateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
-import ImageUpload from '@/components/common/ImageUpload';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
-import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import OptionCard from '@/components/communities/OptionCard';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
 import { useAuthStore } from '@/stores/authStore';
 import { FileObj } from '@/types';
 
-type OptionType = 'public' | 'locked' | 'hidden';
+type OptionType = 'public' | 'private' | 'hidden';
 
 interface FormValues {
   description: string;
@@ -64,9 +62,9 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     if (data) {
       const dataToSend: UpdateCommunityDetails = {
         description: formData.description,
-        tags: formData.tags.map((tag) => tag.value),
+        tags: formData.tags?.map((tag) => tag.value),
         type: formData.type,
-        rules: data.data.rules,
+        rules: data.data?.rules,
         about: data.data.about,
       };
 
@@ -100,40 +98,77 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     }
   };
 
-  const options: { name: string; description: string; value: OptionType }[] = [
+  // const options: { name: string; description: string; value: OptionType }[] = [
+  //   {
+  //     name: 'Public',
+  //     description: 'Anyone can join and see the community content.',
+  //     value: 'public',
+  //   },
+  //   {
+  //     name: 'Private',
+  //     description: 'Anyone can see the community but needs permission to join.',
+  //     value: 'private',
+  //   },
+  //   {
+  //     name: 'Hidden',
+  //     description: 'Only invited users can join and see the community content.',
+  //     value: 'hidden',
+  //   },
+  // ];
+
+  const options: { name: string; value: OptionType }[] = [
     {
       name: 'Public',
-      description: 'Anyone can join and see the community content.',
       value: 'public',
     },
     {
-      name: 'Locked',
-      description: 'Anyone can see the community but needs permission to join.',
-      value: 'locked',
+      name: 'Private',
+      value: 'private',
     },
     {
       name: 'Hidden',
-      description: 'Only invited users can join and see the community content.',
       value: 'hidden',
     },
   ];
+
+  const publicCommunitiesSettingsOptions = [
+    {
+      name: 'Anyone can join',
+      value: 'anyone_can_join',
+    },
+    {
+      name: 'Request to join',
+      value: 'request_to_join',
+    },
+  ];
+
+  const optionsDescriptions: { [key: string]: string } = {
+    public: 'Open to all. Anyone can join and view content.',
+    private: 'Listed but requires approval to join. Only members can view content.',
+    hidden: 'Unlisted. Only invited users can join and view content.',
+  };
+
+  const publicCommunitiesSettingsOptionsDescriptions: { [key: string]: string } = {
+    anyone_can_join: 'Anyone can join instantly and participate.',
+    request_to_join: 'Visible to all, but joining requires approval.',
+  };
 
   useEffect(() => {
     if (data) {
       reset({
         description: data.data.description,
-        tags: data.data.tags.map((tag) => ({ label: tag, value: tag })),
+        tags: data.data.tags?.map((tag) => ({ label: tag, value: tag })),
         type: data.data.type as OptionType,
       });
     }
   }, [data, reset]);
 
   return (
-    <div className="my-4 rounded bg-white-primary px-8 py-4 shadow">
+    <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 shadow md:p-6">
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="font-bold res-heading-sm">
           Edit your
-          <span className="text-green-500"> Community </span>
+          <span className="text-functional-green"> Community </span>
           Details
         </h1>
       </div>
@@ -141,7 +176,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
       {data && (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
           {/* Profile Image */}
-          <Controller
+          {/* <Controller
             name="profileImage"
             control={control}
             // rules={{ required: 'Profile Image is required' }}
@@ -154,7 +189,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                 defaultImageURL={data.data.profile_pic_url ? data.data.profile_pic_url : undefined}
               />
             )}
-          />
+          /> */}
           {/* Description */}
           <FormInput<FormValues>
             label="Description"
@@ -170,7 +205,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             errors={errors}
           />
           {/* Tags */}
-          <Controller
+          {/* <Controller
             name="tags"
             control={control}
             rules={{ required: 'Authors are required' }}
@@ -185,7 +220,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                 fieldState={fieldState}
               />
             )}
-          />
+          /> */}
           {/* Community Type */}
           <div>
             <LabeledTooltip
@@ -202,10 +237,10 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                       <OptionCard
                         key={option.value}
                         name={option.name}
-                        description={option.description}
                         value={option.value}
                         selectedValue={field.value}
                         onChange={field.onChange}
+                        showRadio={false}
                       />
                     ))}
                   </>
@@ -213,7 +248,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
               />
             </div>
           </div>
-          <Controller
+          {/* <Controller
             name="bannerImage"
             control={control}
             render={({}) => (
@@ -225,19 +260,16 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                 defaultImageURL={data.data.banner_pic_url ? data.data.banner_pic_url : undefined}
               />
             )}
-          />
+          /> */}
 
-          <button
+          <Button
+            showLoadingSpinner={false}
+            className="w-full"
+            loading={isUpdatePending}
             type="submit"
-            className={clsx(
-              'mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white res-text-sm',
-              {
-                'cursor-not-allowed opacity-50': isUpdatePending,
-              }
-            )}
           >
-            {isUpdatePending ? 'Saving...' : 'Save Changes'}
-          </button>
+            <ButtonTitle>{isUpdatePending ? 'Saving...' : 'Save Changes'}</ButtonTitle>
+          </Button>
         </form>
       )}
     </div>

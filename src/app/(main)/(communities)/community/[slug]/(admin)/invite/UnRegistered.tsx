@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 
-import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers } from '@/api/community-invitations/community-invitations';
 import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -58,7 +58,7 @@ const UnRegistered = () => {
   };
 
   return (
-    <div className="my-4 rounded-lg bg-white-primary p-4 shadow-md">
+    <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
         <Controller
           name="emails"
@@ -98,18 +98,12 @@ const UnRegistered = () => {
           textArea={true}
         />
         <div className="flex justify-end space-x-4 res-text-sm">
-          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
-            Cancel
-          </button>
-          <button
-            className={clsx(
-              'rounded-md px-4 py-2 text-white',
-              isPending ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
-            )}
-            disabled={isPending}
-          >
-            {isPending ? 'Sending...' : 'Send Invitation'}
-          </button>
+          <Button variant={'gray'}>
+            <ButtonTitle>Cancel</ButtonTitle>
+          </Button>
+          <Button loading={isPending} type="submit" showLoadingSpinner={false}>
+            <ButtonTitle>{isPending ? 'Sending...' : 'Send Invitation'}</ButtonTitle>
+          </Button>
         </div>
       </form>
     </div>

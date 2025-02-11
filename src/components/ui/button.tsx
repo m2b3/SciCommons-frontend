@@ -10,31 +10,26 @@ import { Oval } from 'react-loader-spinner';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap gap-2 select-none',
+  'inline-flex items-center justify-center whitespace-nowrap gap-2 select-none text-white transition-all duration-100 ease-in-out rounded-md w-fit px-3 py-2',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-white border-none',
-        destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
-        outline: 'border border-input bg-background shadow-sm',
-        secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
-        affilinks: 'bg-green text-white border-none',
-        igcash: 'bg-hotPink text-white border-none',
-        topsecrets: 'bg-yellow text-black border-none',
-        cwf: 'bg-consultme-purple-500 text-white border-none',
-        vibe: 'bg-vibePink text-white border-none',
-        job_board: ' bg-team-blue-primary text-white border-none',
+        default: 'bg-functional-green hover:bg-functional-greenContrast',
+        danger: 'bg-functional-red hover:bg-functional-redContrast',
+        blue: 'bg-functional-blue hover:bg-functional-blueContrast',
+        gray: 'bg-functional-gray hover:bg-functional-grayContrast text-black dark:text-white',
+        transparent: 'bg-transparent hover:bg-transparent',
+        outline:
+          'bg-transparent border border-common-minimal rounded-sm text-text-primary hover:bg-common-minimal/20',
       },
       size: {
-        default: 'px-3 py-2 text-base rounded-lg',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-10 rounded-md px-8',
+        default: 'text-base',
+        sm: 'h-8 px-3 text-xs',
+        lg: 'h-10 px-8',
         icon: 'h-9 w-9',
       },
       loading: {
-        true: 'bg-gray-400 cursor-not-allowed hover:shadow-none',
+        true: 'opacity-50 cursor-not-allowed hover:shadow-none',
       },
       disabled: {
         true: 'cursor-not-allowed opacity-50 hover:underline-none',
@@ -71,6 +66,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
+  showLoadingSpinner?: boolean;
   children?: React.ReactNode;
   disabled?: boolean;
   loaderColor?: string;
@@ -83,6 +79,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant,
       size,
       loading,
+      showLoadingSpinner = false,
       disabled,
       loaderColor = '#fff',
       asChild = false,
@@ -98,13 +95,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {loading ? (
+        {loading && showLoadingSpinner ? (
           <Oval
             height={16}
             width={16}
             color={loaderColor}
             wrapperStyle={{}}
-            wrapperClass=""
+            wrapperClass="py-1"
             visible={true}
             ariaLabel="oval-loading"
             secondaryColor="#fff"
@@ -136,7 +133,7 @@ const ButtonTitle = React.forwardRef<HTMLDivElement, ButtonTitleProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-center font-semibold leading-6 tracking-wide',
+        'flex items-center justify-center whitespace-nowrap text-sm font-normal',
         className
       )}
     >
