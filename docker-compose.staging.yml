@@ -58,6 +58,9 @@ services:
       - docker_network
       # Connects the container to the 'docker_network' network.
 
+    env_file:
+      - .env.test
+
 networks:
   docker_network:
     driver: bridge

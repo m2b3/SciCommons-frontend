@@ -138,6 +138,9 @@ services:
       - docker_network
       # Connects the container to the 'docker_network' network.
 
+    env_file:
+      - .env.prod
+
 networks:
   docker_network:
     driver: bridge
