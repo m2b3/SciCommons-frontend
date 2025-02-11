@@ -18,7 +18,7 @@ const buttonVariants = cva(
         danger: 'bg-functional-red hover:bg-functional-redContrast',
         blue: 'bg-functional-blue hover:bg-functional-blueContrast',
         gray: 'bg-functional-gray hover:bg-functional-grayContrast text-black dark:text-white',
-        transparent: 'bg-transparent hover:bg-transparent',
+        transparent: 'bg-transparent hover:bg-transparent dark:text-white text-black',
         outline:
           'bg-transparent border border-common-minimal rounded-sm text-text-primary hover:bg-common-minimal/20',
       },
