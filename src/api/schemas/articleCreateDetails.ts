@@ -14,7 +14,7 @@ export interface ArticleCreateDetails {
   article_link?: ArticleCreateDetailsArticleLink;
   authors: Tag[];
   community_name?: ArticleCreateDetailsCommunityName;
-  keywords: string[];
+  // keywords: string[];
   submission_type: ArticleCreateDetailsSubmissionType;
   title: string;
 }

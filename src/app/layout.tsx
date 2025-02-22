@@ -48,7 +48,7 @@ export default function RootLayout({
   return (
     <ReactQueryClientProvider>
       <html lang="en">
-        <body className={cn(inter.className, 'bg-common-background')}>
+        <body className={cn(inter.className, 'relative bg-common-background')}>
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
           <SessionExpirationDialog />
           <PathTracker />

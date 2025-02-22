@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { AxiosResponse } from 'axios';
+import { Pencil, X } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -8,11 +9,11 @@ import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities'
 import { CommunityOut, UpdateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
+import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import OptionCard from '@/components/communities/OptionCard';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
 import { useAuthStore } from '@/stores/authStore';
-import { FileObj } from '@/types';
 
 type OptionType = 'public' | 'private' | 'hidden';
 
@@ -20,8 +21,9 @@ interface FormValues {
   description: string;
   tags: Option[];
   type: OptionType;
-  profileImage: FileObj;
-  bannerImage: FileObj;
+  community_settings?: string;
+  // profileImage: FileObj;
+  // bannerImage: FileObj;
 }
 
 interface EditCommunityDetailsProps {
@@ -44,6 +46,11 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
   } = useForm<FormValues>();
 
   const accessToken = useAuthStore((state) => state.accessToken);
+  const [selectedType, setSelectedType] = useState<OptionType>(data?.data.type as OptionType);
+  const [isEditEnabled, setIsEditEnabled] = useState(false);
+  const [selectedPublicCommunitiesSettings, setSelectedPublicCommunitiesSettings] = useState(
+    data?.data.community_settings as string
+  );
 
   const { mutate, isPending: isUpdatePending } = useCommunitiesApiUpdateCommunity({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -62,59 +69,42 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     if (data) {
       const dataToSend: UpdateCommunityDetails = {
         description: formData.description,
-        tags: formData.tags?.map((tag) => tag.value),
         type: formData.type,
-        rules: data.data?.rules,
-        about: data.data.about,
+        rules: data.data?.rules || [],
+        community_settings: formData.community_settings,
+        // tags: formData.tags?.map((tag) => tag.value),
+        // about: data.data.about,
       };
 
-      const truncateFileName = (file: File): File => {
-        let fileName = file.name;
-        if (fileName.length > 100) {
-          const extension = fileName.split('.').pop() || '';
-          fileName = fileName.slice(0, 96 - extension.length) + '...' + extension;
-        }
-        return new File([file], fileName, { type: file.type });
-      };
+      // const truncateFileName = (file: File): File => {
+      //   let fileName = file.name;
+      //   if (fileName.length > 100) {
+      //     const extension = fileName.split('.').pop() || '';
+      //     fileName = fileName.slice(0, 96 - extension.length) + '...' + extension;
+      //   }
+      //   return new File([file], fileName, { type: file.type });
+      // };
 
-      let profile_pic_file: File | undefined;
-      if (formData.profileImage && formData.profileImage.file) {
-        profile_pic_file = truncateFileName(formData.profileImage.file);
-      }
+      // let profile_pic_file: File | undefined;
+      // if (formData.profileImage && formData.profileImage.file) {
+      //   profile_pic_file = truncateFileName(formData.profileImage.file);
+      // }
 
-      let banner_pic_file: File | undefined;
-      if (formData.bannerImage && formData.bannerImage.file) {
-        banner_pic_file = truncateFileName(formData.bannerImage.file);
-      }
+      // let banner_pic_file: File | undefined;
+      // if (formData.bannerImage && formData.bannerImage.file) {
+      //   banner_pic_file = truncateFileName(formData.bannerImage.file);
+      // }
 
       mutate({
         communityId: Number(data.data.id),
         data: {
           payload: { details: dataToSend },
-          profile_pic_file,
-          banner_pic_file,
+          // profile_pic_file,
+          // banner_pic_file,
         },
       });
     }
   };
-
-  // const options: { name: string; description: string; value: OptionType }[] = [
-  //   {
-  //     name: 'Public',
-  //     description: 'Anyone can join and see the community content.',
-  //     value: 'public',
-  //   },
-  //   {
-  //     name: 'Private',
-  //     description: 'Anyone can see the community but needs permission to join.',
-  //     value: 'private',
-  //   },
-  //   {
-  //     name: 'Hidden',
-  //     description: 'Only invited users can join and see the community content.',
-  //     value: 'hidden',
-  //   },
-  // ];
 
   const options: { name: string; value: OptionType }[] = [
     {
@@ -155,22 +145,48 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   useEffect(() => {
     if (data) {
+      setSelectedType(data.data.type as OptionType);
+      setSelectedPublicCommunitiesSettings(
+        data.data.community_settings ||
+          ((data.data.type == 'public' && 'anyone_can_join') as string)
+      );
       reset({
         description: data.data.description,
         tags: data.data.tags?.map((tag) => ({ label: tag, value: tag })),
         type: data.data.type as OptionType,
+        community_settings: data.data.community_settings,
       });
     }
   }, [data, reset]);
 
   return (
-    <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 shadow md:p-6">
-      <div className="mb-4 flex flex-col items-center justify-center">
-        <h1 className="font-bold res-heading-sm">
+    <div className="relative my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 shadow md:p-6">
+      <div
+        className="absolute hidden aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:right-4 sm:top-4 sm:block md:right-6 md:top-6"
+        onClick={() => setIsEditEnabled(!isEditEnabled)}
+      >
+        {!isEditEnabled ? (
+          <Pencil className="size-5 text-functional-blue" />
+        ) : (
+          <X className="size-5 text-text-secondary" />
+        )}
+      </div>
+      <div className="mb-4 flex items-center justify-between sm:justify-center">
+        <h1 className="text-center font-bold text-text-primary res-heading-sm">
           Edit your
           <span className="text-functional-green"> Community </span>
           Details
         </h1>
+        <div
+          className="aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:hidden"
+          onClick={() => setIsEditEnabled(!isEditEnabled)}
+        >
+          {!isEditEnabled ? (
+            <Pencil className="size-5 text-functional-blue" />
+          ) : (
+            <X className="size-5 text-text-secondary" />
+          )}
+        </div>
       </div>
       {isPending && <DetailsSkeleton />}
       {data && (
@@ -203,6 +219,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             minLengthMessage="Description must be at least 10 characters"
             info="Your community's name should be unique and descriptive."
             errors={errors}
+            readOnly={!isEditEnabled}
           />
           {/* Tags */}
           {/* <Controller
@@ -222,12 +239,12 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             )}
           /> */}
           {/* Community Type */}
-          <div>
+          <div className="w-full">
             <LabeledTooltip
               label="Community Type"
               info="Select the type of community you want to create."
             />
-            <div className="flex flex-col gap-2 md:flex-row">
+            <div className="scrollbar-hide mb-4 flex w-full gap-4 overflow-x-auto">
               <Controller
                 name="type"
                 control={control}
@@ -239,7 +256,11 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                         name={option.name}
                         value={option.value}
                         selectedValue={field.value}
-                        onChange={field.onChange}
+                        onChange={(value) => {
+                          if (!isEditEnabled) return;
+                          field.onChange(value);
+                          setSelectedType(value);
+                        }}
                         showRadio={false}
                       />
                     ))}
@@ -247,6 +268,44 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                 )}
               />
             </div>
+            {selectedType == 'public' && (
+              <>
+                <LabeledTooltip
+                  label="Public Communities Settings"
+                  info="Select the settings for your public community."
+                />
+                <div className="scrollbar-hide mb-4 flex w-full gap-4 overflow-x-auto">
+                  <Controller
+                    name="community_settings"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        {publicCommunitiesSettingsOptions.map((option) => (
+                          <OptionCard
+                            key={option.value}
+                            name={option.name}
+                            // @ts-expect-error: Type mismatch due to dynamic form control
+                            value={option.value}
+                            // @ts-expect-error: Type mismatch due to dynamic form control
+                            selectedValue={field.value}
+                            onChange={(value) => {
+                              if (!isEditEnabled) return;
+                              field.onChange(value);
+                              setSelectedPublicCommunitiesSettings(value);
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
+                  />
+                </div>
+              </>
+            )}
+            <span className="w-full text-wrap text-sm italic text-functional-yellow">
+              {selectedType === 'public'
+                ? publicCommunitiesSettingsOptionsDescriptions[selectedPublicCommunitiesSettings]
+                : optionsDescriptions[selectedType]}
+            </span>
           </div>
           {/* <Controller
             name="bannerImage"
@@ -267,6 +326,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             className="w-full"
             loading={isUpdatePending}
             type="submit"
+            disabled={!isEditEnabled}
           >
             <ButtonTitle>{isUpdatePending ? 'Saving...' : 'Save Changes'}</ButtonTitle>
           </Button>
@@ -280,22 +340,18 @@ export default EditCommunityDetails;
 
 const DetailsSkeleton: React.FC = () => {
   return (
-    <div className="my-6 rounded bg-white px-8 py-4 shadow">
-      <div className="flex flex-col space-y-8">
-        <div className="flex flex-col space-y-4">
-          <div className="flex flex-col space-y-2">
-            <div className="h-44 w-full rounded-md bg-gray-200"></div>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <div className="h-32 w-full rounded-md bg-gray-200"></div>
-          </div>
-        </div>
-        <div className="h-16 w-full rounded-md bg-gray-200"></div>
-        <div className="h-44 w-full rounded-md bg-gray-200"></div>
-        <div className="mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white">
-          Loading...
-        </div>
+    <Skeleton>
+      <TextSkeleton className="w-32" />
+      <BlockSkeleton />
+      <TextSkeleton className="mt-8 w-44" />
+      <BlockSkeleton />
+      <TextSkeleton className="mt-8 w-44" />
+      <div className="flex w-full justify-between gap-2">
+        <BlockSkeleton className="h-12 w-1/3" />
+        <BlockSkeleton className="h-12 w-1/3" />
+        <BlockSkeleton className="h-12 w-1/3" />
       </div>
-    </div>
+      <BlockSkeleton className="mt-4 h-8" />
+    </Skeleton>
   );
 };

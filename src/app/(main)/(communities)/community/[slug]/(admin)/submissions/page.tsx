@@ -120,8 +120,8 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
 
     if (data && data.data.items.length === 0) {
       return (
-        <div className="flex h-32 items-center justify-center rounded-lg bg-white-primary shadow-lg">
-          <h1 className="font-semibold text-gray-500 res-heading-xs">No articles found</h1>
+        <div className="flex h-32 items-center justify-center rounded-xl bg-common-cardBackground">
+          <h1 className="text-text-secondary res-text-xs">No articles found</h1>
         </div>
       );
     }

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArticleOut } from '@/api/schemas';
 import TruncateText from '@/components/common/TruncateText';
 
+import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import ArticleStats from './ArticleStats';
 
 interface DisplayArticleProps {
@@ -17,7 +18,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
 
   return (
     <div
-      className={`flex flex-col items-start rounded-xl border border-common-contrast bg-common-cardBackground p-4 shadow-sm res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}
+      className={`flex flex-col items-start rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}
     >
       {hasImage && (
         <div className="mb-4 w-full sm:mb-0 sm:mr-4 sm:w-1/3">
@@ -51,10 +52,10 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
             />
           </p>
         </div>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Keywords</h3>
           <TruncateText text={article.keywords.join(', ')} maxLines={2} />
-        </div>
+        </div> */}
         <div>
           <h3 className="mb-2 font-semibold text-text-secondary res-text-xs">Article Links</h3>
           {article.article_pdf_urls.length === 0 && (
@@ -73,7 +74,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
             <div key={index} className="mb-1">
               <a
                 href={link}
-                className="text-blue-600 res-text-xs hover:underline"
+                className="text-functional-blue res-text-xs hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -83,9 +84,9 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           ))}
         </div>
         {article.is_submitter && (
-          <Link href={`/article/${article.slug}/official-stats`}>
+          <Link href={`/article/${article.slug}/settings`}>
             <button className="absolute bottom-0 right-0 rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs">
-              Dashboard
+              Settings
             </button>
           </Link>
         )}
@@ -101,20 +102,40 @@ export default DisplayArticle;
 
 export const DisplayArticleSkeleton: React.FC = () => {
   return (
-    <div className="">
-      <div className="flex animate-pulse items-start rounded-xl border border-common-contrast p-4 shadow-sm">
-        <div className="mr-4 h-auto w-1/3">
-          <div className="h-52 w-full rounded-xl bg-common-minimal" />
+    <>
+      <Skeleton className="flex flex-col items-start rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+        <TextSkeleton className="h-10" />
+        <TextSkeleton className="mt-4 h-6 w-20" />
+        <TextSkeleton />
+        <TextSkeleton className="w-48" />
+        <TextSkeleton className="mt-4 h-6 w-20" />
+        <TextSkeleton />
+        <TextSkeleton />
+        <TextSkeleton />
+        <TextSkeleton className="w-48" />
+        <TextSkeleton className="mt-4 h-6 w-20" />
+        <div className="flex w-full flex-wrap items-center gap-4">
+          <TextSkeleton className="h-8 w-20" />
+          <TextSkeleton className="h-8 w-20" />
+          <TextSkeleton className="h-8 w-20" />
+          <TextSkeleton className="h-8 w-20" />
         </div>
-        <div className="flex-1 space-y-4">
-          <div className="h-6 rounded bg-common-minimal" />
-          <div className="h-4 w-3/4 rounded bg-common-minimal" />
-          <div className="h-4 rounded bg-common-minimal" />
-          <div className="h-4 w-1/2 rounded bg-common-minimal" />
-          <div className="h-4 rounded bg-common-minimal" />
+      </Skeleton>
+      <Skeleton className="border-none bg-transparent">
+        <div className="mt-4 flex gap-6 border-b border-common-minimal p-4">
+          <BlockSkeleton className="h-8 w-32" />
+          <BlockSkeleton className="h-8 w-32" />
+          <BlockSkeleton className="h-8 w-32" />
         </div>
-      </div>
-      <div className="mt-4 h-64 w-full animate-pulse rounded-xl bg-common-minimal" />
-    </div>
+      </Skeleton>
+      <Skeleton className="relative flex rounded-xl border border-common-contrast bg-common-cardBackground">
+        <BlockSkeleton className="aspect-square size-10 rounded-full" />
+        <div className="ml-4 flex-1">
+          <TextSkeleton className="w-20" />
+          <TextSkeleton className="mt-2 w-32" />
+          <BlockSkeleton className="mt-2" />
+        </div>
+      </Skeleton>
+    </>
   );
 };

@@ -18,6 +18,7 @@ interface LabeledSelectorProps {
   options?: string[];
   fieldState: ControllerFieldState;
   maxOptions?: number;
+  readonly?: boolean;
 }
 
 const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
@@ -31,6 +32,7 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
     onChange,
     fieldState,
     maxOptions,
+    readonly = false,
   }) => {
     return (
       <div>
@@ -65,6 +67,7 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
               no results found.
             </p>
           }
+          readOnly={readonly}
         />
         {fieldState.error && (
           <p className="mt-1 text-xs text-functional-red">{fieldState.error.message}</p>

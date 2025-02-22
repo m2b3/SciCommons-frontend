@@ -53,7 +53,8 @@ const CreateCommunity: React.FC = () => {
     mutation: {
       onSuccess: (data) => {
         toast.success('Community created successfully! Redirecting to community page...');
-        router.push(`/community/${data.data.slug}`);
+        // router.push(`/community/${data.data.slug}`);
+        router.push(`/communities`);
       },
       onError: (error) => {
         showErrorToast(error);
@@ -120,8 +121,6 @@ const CreateCommunity: React.FC = () => {
       community_settings: data.type == 'public' ? data.community_settings : undefined,
     };
 
-    console.log(dataToSend);
-
     createCommunity({
       data: { payload: { details: dataToSend } },
     });
@@ -147,8 +146,8 @@ const CreateCommunity: React.FC = () => {
             placeholder="Enter your community name"
             register={register}
             requiredMessage="Title is required"
-            maxLengthValue={10}
-            maxLengthMessage="Name must not exceed 10 characters"
+            maxLengthValue={100}
+            maxLengthMessage="Name must not exceed 100 characters"
             info="Your community's name should be unique and descriptive."
             errors={errors}
           />
@@ -161,10 +160,10 @@ const CreateCommunity: React.FC = () => {
             placeholder="Briefly describe your community"
             register={register}
             requiredMessage="Description is required"
-            minLengthValue={10}
-            maxLengthValue={100}
-            minLengthMessage="Description must be at least 10 characters"
-            maxLengthMessage="Description must not exceed 100 characters"
+            minLengthValue={1}
+            maxLengthValue={500}
+            minLengthMessage="Description must be at least 1 characters"
+            maxLengthMessage="Description must not exceed 500 characters"
             info="Your community's name should be unique and descriptive."
             errors={errors}
           />
@@ -257,6 +256,7 @@ const CreateCommunity: React.FC = () => {
             showLoadingSpinner={false}
             loading={isPending}
             className="mx-auto w-full max-w-2xl"
+            type="submit"
           >
             <ButtonTitle>{isPending ? 'Loading...' : 'Create Community'}</ButtonTitle>
           </Button>

@@ -32,7 +32,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
-  const { mutate, data, isSuccess, error } = useCommunitiesApiJoinJoinCommunity({
+  const { mutate, data, isSuccess, error, isPending } = useCommunitiesApiJoinJoinCommunity({
     request: axiosConfig,
   });
 
@@ -62,9 +62,21 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
               objectFit="cover"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <h2 className="font-bold text-text-primary res-heading-sm">{community.name}</h2>
-            <p className="res-text-sm">
+          <div className="flex w-full flex-col gap-2">
+            <h2
+              className="w-[95%] text-wrap font-bold text-text-primary res-heading-sm"
+              style={{
+                wordBreak: 'break-word',
+              }}
+            >
+              {community.name}
+            </h2>
+            <p
+              className="w-[95%] res-text-sm"
+              style={{
+                wordBreak: 'break-word',
+              }}
+            >
               <TruncateText
                 text={community.description}
                 maxLines={2}
@@ -78,7 +90,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
               </div>
               <div className="flex items-center">
                 <FileText className="mr-1 h-4 w-4" />
-                <span className="text-xs">Published {community.num_articles} Articles</span>
+                <span className="text-xs">{community.num_published_articles} Articles</span>
               </div>
             </div>
           </div>
@@ -131,6 +143,8 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
               <Button
                 className="bg-transparent ring-1 ring-common-contrast hover:bg-common-minimal"
                 onClick={() => handleJoin()}
+                loading={isPending}
+                showLoadingSpinner={true}
               >
                 <ButtonIcon>
                   <UserPlus className="size-4 text-text-secondary" />

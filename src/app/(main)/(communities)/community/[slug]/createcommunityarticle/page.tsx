@@ -24,7 +24,7 @@ const defaultFormValues: SubmitArticleFormValues = {
   title: '',
   abstract: '',
   authors: [],
-  keywords: [],
+  // keywords: [],
   article_link: '',
   pdfFiles: [],
 };
@@ -146,7 +146,7 @@ const CommunityArticleForm: NextPage = () => {
           label: author.label,
         })),
         article_link: formData.article_link || undefined,
-        keywords: formData.keywords.map((keyword) => keyword.value),
+        // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
         community_name: params?.slug,
       },

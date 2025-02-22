@@ -23,7 +23,7 @@ const defaultFormValues: SubmitArticleFormValues = {
   title: '',
   abstract: '',
   authors: [],
-  keywords: [],
+  // keywords: [],
   article_link: '',
   pdfFiles: [],
 };
@@ -141,7 +141,7 @@ const ArticleForm: React.FC = () => {
           label: author.label,
         })),
         article_link: formData.article_link || '',
-        keywords: formData.keywords.map((keyword) => keyword.value),
+        // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
         community_name: null,
       },
@@ -186,29 +186,31 @@ const ArticleForm: React.FC = () => {
   };
 
   return (
-    <div className="container py-4 text-gray-900">
-      <div className="mb-4 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold">
-          Submit an
-          <span className="text-green-500"> Article</span>
-        </h1>
-        <p className="text-gray-600">
-          Share your latest research with the community and receive valuable feedback.
-        </p>
+    <div className="container p-0 res-text-sm md:px-8 md:py-4">
+      <div className="mx-auto w-full max-w-5xl border-common-contrast p-4 py-8 md:rounded-xl md:border md:bg-common-cardBackground md:p-8">
+        <div className="mb-4 flex flex-col items-center justify-center">
+          <h1 className="text-3xl font-bold text-text-primary">
+            Submit an
+            <span className="text-functional-green"> Article</span>
+          </h1>
+          <p className="mt-2 text-center text-text-tertiary">
+            Share your latest research with the community and receive valuable feedback.
+          </p>
+        </div>
+        <SubmitArticleForm
+          {...{
+            handleSubmit,
+            onSubmit,
+            control,
+            register,
+            errors,
+            isPending,
+            activeTab,
+            setActiveTab,
+            onSearch: handleSearch,
+          }}
+        />
       </div>
-      <SubmitArticleForm
-        {...{
-          handleSubmit,
-          onSubmit,
-          control,
-          register,
-          errors,
-          isPending,
-          activeTab,
-          setActiveTab,
-          onSearch: handleSearch,
-        }}
-      />
     </div>
   );
 };

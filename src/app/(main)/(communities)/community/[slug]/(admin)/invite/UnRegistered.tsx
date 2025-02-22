@@ -21,6 +21,7 @@ const UnRegistered = () => {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { errors },
   } = useForm<IUnRegisteredProps>({
@@ -42,6 +43,7 @@ const UnRegistered = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      reset();
       toast.success('Invitation sent successfully!');
     }
   }, [isSuccess]);
@@ -54,12 +56,12 @@ const UnRegistered = () => {
       body: data.content,
     };
 
-    mutate({ communityId: 1, data: dataToSend });
+    mutate({ communityId: 8, data: dataToSend });
   };
 
   return (
     <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <Controller
           name="emails"
           control={control}
@@ -86,17 +88,22 @@ const UnRegistered = () => {
           info="Provide a subject for the invitation email."
           errors={errors}
         />
-        <FormInput<IUnRegisteredProps>
-          label="Content"
-          name="content"
-          type="text"
-          placeholder="Enter the content"
-          register={register}
-          requiredMessage="Content is required"
-          info="Provide the content for the invitation email."
-          errors={errors}
-          textArea={true}
-        />
+        <div className="flex flex-col gap-2">
+          <FormInput<IUnRegisteredProps>
+            label="Content"
+            name="content"
+            type="text"
+            placeholder="Enter the content"
+            register={register}
+            requiredMessage="Content is required"
+            info="Provide the content for the invitation email."
+            errors={errors}
+            textArea={true}
+          />
+          <span className="rex-text-xs italic text-functional-yellow">
+            (A referral link will be automatically attached with the email body.)
+          </span>
+        </div>
         <div className="flex justify-end space-x-4 res-text-sm">
           <Button variant={'gray'}>
             <ButtonTitle>Cancel</ButtonTitle>

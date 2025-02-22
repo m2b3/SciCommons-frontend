@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 
 import { AxiosResponse } from 'axios';
-import { Plus, Trash2 } from 'lucide-react';
+import { PlusIcon, Trash2 } from 'lucide-react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
 import { CommunityOut } from '@/api/schemas';
+import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/authStore';
 
 interface AddRulesProps {
@@ -60,7 +62,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
 
   useEffect(() => {
     if (data) {
-      const rules = data.data.rules.map((rule) => ({ rule }));
+      const rules = data.data.rules?.map((rule) => ({ rule }));
       reset({
         rules: rules,
       });
@@ -68,57 +70,71 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
   }, [data, reset]);
 
   return (
-    <div className="my-4 rounded bg-white-primary px-8 py-4 shadow res-text-sm">
-      {isPending && <div>Loading...</div>}
-      <form onSubmit={handleSubmit((data) => onSubmit(data.rules))} className="space-y-8">
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex flex-col items-center">
-            <div className="flex items-center justify-center gap-2 self-start">
-              <label
-                htmlFor={`rules.${index}.rule`}
-                className="text-md block font-medium text-gray-700"
-              >
-                Rule {index + 1}
-              </label>
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                className="text-red-600 hover:text-red-900"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+    <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-sm">
+      {isPending && RuleLoading()}
+      {data && (
+        <form onSubmit={handleSubmit((data) => onSubmit(data.rules))} className="space-y-4">
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col items-center">
+              <div className="flex items-center justify-center gap-2 self-start">
+                <label
+                  htmlFor={`rules.${index}.rule`}
+                  className="block font-medium text-text-secondary res-text-xs"
+                >
+                  Rule {index + 1}
+                </label>
+              </div>
+              <Controller
+                control={control}
+                name={`rules.${index}.rule`}
+                render={({ field }) => (
+                  <div className="mt-2 flex w-full items-center justify-between gap-2">
+                    <input
+                      {...field}
+                      placeholder="Add Rule"
+                      id={`rules.${index}.rule`}
+                      className="block w-full rounded-md px-3 py-2 text-text-primary shadow-sm ring-1 ring-common-contrast res-text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green sm:text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="flex aspect-square h-full items-center justify-center rounded-md bg-functional-redContrast/10 p-2.5 hover:bg-functional-redContrast/15"
+                    >
+                      <Trash2 className="size-4 text-functional-red" />
+                    </button>
+                  </div>
+                )}
+              />
             </div>
-            <Controller
-              control={control}
-              name={`rules.${index}.rule`}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  placeholder="Add Rule"
-                  id={`rules.${index}.rule`}
-                  className="mt-1 block w-full rounded-md border-2 border-gray-300 px-4 py-2 shadow-md focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              )}
-            />
+          ))}
+          <div className="flex items-center justify-end gap-4">
+            <Button variant={'blue'} type="button" onClick={() => append({ rule: '' })}>
+              <ButtonIcon>
+                <PlusIcon className="size-4" />
+              </ButtonIcon>
+              <ButtonTitle>Add Rule</ButtonTitle>
+            </Button>
+            <Button
+              variant={'default'}
+              type="submit"
+              loading={isUpdatePending}
+              showLoadingSpinner={false}
+            >
+              <ButtonTitle> {isUpdatePending ? 'Updating...' : 'Update'}</ButtonTitle>
+            </Button>
           </div>
-        ))}
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => append({ rule: '' })}
-            className="flex items-center text-green-600 hover:text-green-900"
-          >
-            <Plus className="mr-1 h-5 w-5" /> Add Rule
-          </button>
-          <button
-            type="submit"
-            className="rounded-md bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-          >
-            {isUpdatePending ? 'Updating...' : 'Update'}
-          </button>
-        </div>
-      </form>
+        </form>
+      )}
     </div>
+  );
+};
+
+const RuleLoading = () => {
+  return (
+    <Skeleton>
+      <TextSkeleton className="w-44" />
+      <BlockSkeleton className="h-8" />
+    </Skeleton>
   );
 };
 

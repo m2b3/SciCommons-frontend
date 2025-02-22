@@ -33,4 +33,5 @@ export interface CommunityOut {
   slug: string;
   tags: string[];
   type: CommunityType;
+  community_settings?: string;
 }

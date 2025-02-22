@@ -67,14 +67,14 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
           <span>{formatDate(article.updated_at)}</span>
         </div>
       </div>
-      <div className="mt-4 flex gap-4">
+      <div className="mt-4 flex w-4/5 flex-wrap gap-4">
         <Button
           className="gap-0 rounded-md bg-functional-blue/20 px-2 py-1 text-xs hover:bg-functional-blue/10"
           onClick={() => handleReaction('upvote')}
         >
           <ButtonIcon>
             <ThumbsUp
-              className={`mr-2 size-4 cursor-pointer text-functional-blue`}
+              className={`mr-0 size-4 cursor-pointer text-functional-blue`}
               fill={data?.data.user_reaction === 1 ? 'currentColor' : 'transparent'}
             />
           </ButtonIcon>
