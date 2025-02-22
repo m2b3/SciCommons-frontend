@@ -12,7 +12,9 @@ interface TextSkeletonProps {
 }
 
 const Skeleton = ({ className, children }: SkeletonProps) => {
-  return <div className={cn('w-full animate-pulse space-y-2 p-4', className)}>{children}</div>;
+  return (
+    <div className={cn('flex w-full animate-pulse flex-col gap-2 p-4', className)}>{children}</div>
+  );
 };
 
 const TextSkeleton = ({ className }: TextSkeletonProps) => {

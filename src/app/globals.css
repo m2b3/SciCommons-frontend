@@ -201,6 +201,10 @@ body {
 
     /* Loading */
     --loading: #f2f2f2;
+
+    --scrollbar-track-color: var(--Common-Background);
+    --scrollbar-thumb-color: var(--neutral-300);
+    --scrollbar-thumb-hover-color: var(--neutral-400);
   }
 
   .dark {
@@ -276,6 +280,10 @@ body {
 
     /* Loading */
     --loading: #3d3d3d;
+
+    --scrollbar-track-color: var(--Common-Background);
+    --scrollbar-thumb-color: var(--neutral-800);
+    --scrollbar-thumb-hover-color: var(--neutral-700);
   }
 }
 
@@ -364,4 +372,77 @@ body {
     translateZ(calc(var(--abs-offset) * -30rem)) translateX(calc(var(--direction) * -8rem));
   filter: blur(calc(var(--abs-offset) * 0.5rem));
   transition: all 0.3s ease-out;
+}
+
+/* width */
+/* ::-webkit-scrollbar {
+  width: 8px;
+} */
+
+/* Track */
+/* ::-webkit-scrollbar-track {
+  background: rgba(var(--scrollbar-track-color));
+} */
+
+/* Handle */
+/* ::-webkit-scrollbar-thumb {
+  background: rgba(var(--scrollbar-thumb-color));
+  border-radius: 12px;
+} */
+
+/* Handle on hover */
+/* ::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--scrollbar-thumb-hover-color));
+} */
+
+@property --bg-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: '<angle>';
+}
+
+@keyframes spin {
+  from {
+    --bg-angle: 0deg;
+  }
+  to {
+    --bg-angle: -360deg;
+  }
+}
+
+.animated-border {
+  animation: spin 4s infinite linear;
+  background:
+    linear-gradient(
+        to bottom,
+        rgba(var(--Common-CardBackground)),
+        rgba(var(--Common-CardBackground))
+      )
+      padding-box,
+    conic-gradient(
+        from var(--bg-angle),
+        rgb(var(--Functional-Green-Green)) 10%,
+        rgb(var(--Common-Contrast)) 50%,
+        rgb(var(--Common-Contrast)) 75%,
+        rgb(var(--Common-Contrast)) 100%
+      )
+      border-box;
+  border: 1px solid transparent;
+  animation-play-state: running;
+}
+
+@media (min-width: 768px) {
+  .animated-border {
+    background:
+      linear-gradient(to bottom, rgba(var(--Common-Background)), rgba(var(--Common-Background)))
+        padding-box,
+      conic-gradient(
+          from var(--bg-angle),
+          rgb(var(--Functional-Green-Green)) 10%,
+          rgb(var(--Common-Contrast)) 50%,
+          rgb(var(--Common-Contrast)) 75%,
+          rgb(var(--Common-Contrast)) 100%
+        )
+        border-box;
+  }
 }

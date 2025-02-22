@@ -42,7 +42,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
   }, [isSuccess, error, data]);
 
   return (
-    <div className="relative flex flex-col items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs hover:shadow-md hover:shadow-common-minimal">
+    <div className="relative flex h-full flex-col items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs hover:shadow-md hover:shadow-common-minimal">
       <div className="relative size-10 flex-shrink-0 sm:mr-4">
         <Image
           src={community.profile_pic_url || `data:image/png;base64,${imageData}`}
@@ -57,7 +57,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
             {community.name}
           </h3>
         </Link>
-        <p className="mb-4 line-clamp-2 text-base text-text-secondary">{community.description}</p>
+        <p className="mb-4 line-clamp-2 text-sm text-text-secondary">{community.description}</p>
         <div className="flex flex-wrap items-center gap-4 text-text-secondary">
           <div className="flex items-center">
             <Users className="mr-1 h-4 w-4" />
@@ -65,7 +65,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
           </div>
           <div className="flex items-center">
             <FileText className="mr-1 h-4 w-4" />
-            <span className="text-xs">Published {community.num_articles} Articles</span>
+            <span className="text-xs">{community.num_published_articles} Articles</span>
           </div>
         </div>
       </div>

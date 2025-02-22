@@ -16,7 +16,7 @@ interface ArticleCardProps {
 
 const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs">
+    <div className="flex flex-col gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs hover:shadow-md hover:shadow-common-minimal">
       <div className="flex">
         <div className="min-w-0 flex-grow gap-4 pr-4">
           <Link
@@ -26,20 +26,20 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
                 : `/article/${article.slug}`
             }
           >
-            <h2 className="truncate font-semibold text-text-primary res-text-lg hover:underline">
+            <h2 className="line-clamp-2 text-wrap font-semibold text-text-primary res-text-lg hover:underline">
               {article.title}
             </h2>
           </Link>
-          <p className="mt-2 line-clamp-2 overflow-hidden text-ellipsis text-text-primary">
+          <p className="mt-2 line-clamp-2 overflow-hidden text-ellipsis text-wrap text-text-primary">
             {article.abstract}
           </p>
-          <p className="mt-2 truncate text-text-secondary">
+          <p className="mt-2 text-text-secondary">
             Authors: {article.authors.map((author) => author.label).join(', ')}
           </p>
-          <p className="mt-1 truncate text-text-secondary">
+          <p className="mt-1 text-text-secondary">
             Published Community/Journal: {article.community_article?.community.name}
           </p>
-          <div className="mt-2 flex flex-wrap">
+          {/* <div className="mt-2 flex flex-wrap">
             {article.keywords.map((keyword, index) => (
               <span
                 key={index}
@@ -48,7 +48,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
                 {keyword}
               </span>
             ))}
-          </div>
+          </div> */}
         </div>
         {article.article_image_url && (
           <div className="ml-4 flex-none">

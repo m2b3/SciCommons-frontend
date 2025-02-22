@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 
 type OptionType = 'public' | 'private' | 'hidden';
@@ -10,6 +11,7 @@ interface OptionCardProps {
   selectedValue: OptionType;
   onChange: (value: OptionType) => void;
   showRadio?: boolean;
+  showSwitch?: boolean;
 }
 
 const OptionCard = ({
@@ -18,7 +20,10 @@ const OptionCard = ({
   selectedValue,
   onChange,
   showRadio = true,
+  showSwitch = false,
 }: OptionCardProps) => {
+  const showRadioFinal = showRadio && !showSwitch;
+  const showSwitchFinal = showSwitch && !showRadio;
   return (
     <div
       className={cn(
@@ -39,9 +44,14 @@ const OptionCard = ({
           className={cn(
             'form-radio aspect-square h-4 w-4 bg-functional-green text-functional-green',
             {
-              hidden: !showRadio,
+              hidden: !showRadioFinal,
             }
           )}
+        />
+        <Switch
+          className={cn('', {
+            hidden: !showSwitchFinal,
+          })}
         />
         <div className="whitespace-nowrap font-semibold text-text-primary res-text-sm">{name}</div>
       </div>

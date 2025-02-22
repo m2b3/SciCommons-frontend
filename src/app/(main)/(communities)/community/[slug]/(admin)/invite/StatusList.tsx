@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import { MailIcon } from 'lucide-react';
+import { Check, Clock, MailIcon, X } from 'lucide-react';
 
 import { useCommunitiesApiInvitationGetCommunityInvitations } from '@/api/community-invitations/community-invitations';
+import { Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 const StatusList = ({ slug }: { slug: string }) => {
@@ -47,31 +49,35 @@ const StatusList = ({ slug }: { slug: string }) => {
           <option value="Rejected">Rejected</option>
         </select>
       </div>
-      {error && <p className="text-red-500 res-text-sm">An error occurred.</p>}
+      {error && <p className="text-functional-red res-text-sm">An error occurred.</p>}
       {isPending && Array.from({ length: 2 }).map((_, index) => filteredItemSkeleton(index))}
-      {filteredItems?.length === 0 && <p className="text-gray-500 res-text-sm">No items found.</p>}
+      {filteredItems?.length === 0 && (
+        <p className="text-text-secondary res-text-sm">No items found.</p>
+      )}
       {filteredItems &&
         filteredItems.map((item, index) => (
           <div
             key={index}
-            className="mb-2 flex items-center justify-between rounded-md border border-gray-200 p-4"
+            className={cn(
+              'mb-2 flex items-center justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-4'
+            )}
           >
             <div>
               {item.email ? (
                 <div>
                   <div className="flex items-center">
-                    <MailIcon className="mr-2" />
-                    <p className="res-text-sm">{item.email}</p>
+                    <MailIcon className="mr-2 size-4" />
+                    <p className="text-text-primary res-text-sm">{item.email}</p>
                   </div>
-                  <p className="text-gray-500 res-text-xs">
+                  <p className="text-text-tertiary res-text-xs">
                     Sent at {dayjs(item.invited_at).format('YYYY-MM-DD HH:mm:ss')}
                   </p>
                 </div>
               ) : (
                 <div>
-                  <p className="font-bold res-text-sm">{item.username}</p>
-                  <p className="text-green-500 res-text-sm">View Profile</p>
-                  <p className="text-gray-500 res-text-xs">
+                  <p className="font-bold text-text-primary res-text-sm">{item.username}</p>
+                  <p className="text-functional-green res-text-sm">View Profile</p>
+                  <p className="text-text-tertiary res-text-xs">
                     Sent at {dayjs(item.invited_at).format('YYYY-MM-DD HH:mm:ss')}
                   </p>
                 </div>
@@ -80,12 +86,15 @@ const StatusList = ({ slug }: { slug: string }) => {
             <div>
               <span
                 className={clsx(
-                  'rounded-full px-3 py-1 text-white res-text-xs',
-                  item.status === 'Accepted' && 'bg-green-500',
-                  item.status === 'Pending' && 'bg-gray-400',
-                  item.status === 'Rejected' && 'bg-red-500'
+                  'flex items-center gap-1 res-text-xs',
+                  item.status === 'Accepted' && 'text-functional-green',
+                  item.status === 'Pending' && 'text-text-secondary',
+                  item.status === 'Rejected' && 'text-functional-red'
                 )}
               >
+                {item.status === 'Accepted' && <Check className="size-3 text-functional-green" />}
+                {item.status === 'Pending' && <Clock className="size-3 text-text-secondary" />}
+                {item.status === 'Rejected' && <X className="size-3 text-functional-red" />}
                 {item.status}
               </span>
             </div>
@@ -99,19 +108,12 @@ export default StatusList;
 
 const filteredItemSkeleton = (key: number) => {
   return (
-    <div
+    <Skeleton
+      className="mb-4 flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4"
       key={key}
-      className="mb-2 flex animate-pulse items-center justify-between rounded-md border border-gray-200 bg-gray-100 p-4"
     >
-      <div>
-        <div className="flex items-center">
-          <div className="h-6 w-20 bg-gray-200"></div>
-        </div>
-        <div className="h-4 w-10 bg-gray-200"></div>
-      </div>
-      <div>
-        <div className="rounded-full bg-gray-200 px-3 py-1"></div>
-      </div>
-    </div>
+      <TextSkeleton className="w-28" />
+      <TextSkeleton className="w-56" />
+    </Skeleton>
   );
 };

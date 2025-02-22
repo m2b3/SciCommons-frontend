@@ -1,18 +1,19 @@
+import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
+
 const CommunityInvitationSkeletonLoader = () => {
   return (
-    <div className="flex animate-pulse flex-col items-center space-y-4">
-      <div className="h-14 w-14 rounded-full bg-gray-300"></div>
-      <div className="h-6 w-48 rounded bg-gray-300"></div>
-      <div className="flex space-x-2">
-        <div className="h-4 w-4 rounded bg-gray-300"></div>
-        <div className="h-4 w-24 rounded bg-gray-300"></div>
+    <Skeleton className="flex w-full flex-col items-start gap-4 p-0">
+      <BlockSkeleton className="aspect-square size-12 shrink-0 rounded-full" />
+      <TextSkeleton className="w-24" />
+      <TextSkeleton className="w-32" />
+      <TextSkeleton />
+      <TextSkeleton />
+      <TextSkeleton />
+      <div className="flex w-full flex-row justify-end gap-4">
+        <BlockSkeleton className="h-10 w-28" />
+        <BlockSkeleton className="h-10 w-28" />
       </div>
-      <div className="h-12 w-96 rounded bg-gray-300"></div>
-      <div className="flex space-x-4 self-end">
-        <div className="h-8 w-20 rounded bg-gray-400"></div>
-        <div className="h-8 w-20 rounded bg-gray-400"></div>
-      </div>
-    </div>
+    </Skeleton>
   );
 };
 

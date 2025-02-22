@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
@@ -110,8 +110,10 @@ const NavBar: React.FC = () => {
 export default NavBar;
 
 const CreateDropdown: React.FC = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant={'default'}
@@ -124,13 +126,13 @@ const CreateDropdown: React.FC = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/submitarticle">Submit Article</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/createcommunity">Create Community</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/posts/createpost">Create Post</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

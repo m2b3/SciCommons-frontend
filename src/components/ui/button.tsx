@@ -84,33 +84,54 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       loaderColor = '#fff',
       asChild = false,
       children,
+      onClick,
       ...props
     },
     ref
   ) => {
     const Comp = asChild ? Slot : 'button';
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (loading || disabled) {
+        event.preventDefault();
+        return;
+      }
+      if (onClick) {
+        onClick(event);
+      }
+    };
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, loading, disabled, className }))}
         ref={ref}
+        onClick={handleClick}
         {...props}
       >
-        {loading && showLoadingSpinner ? (
-          <Oval
-            height={16}
-            width={16}
-            color={loaderColor}
-            wrapperStyle={{}}
-            wrapperClass="py-1"
-            visible={true}
-            ariaLabel="oval-loading"
-            secondaryColor="#fff"
-            strokeWidth={6}
-            strokeWidthSecondary={6}
-          />
-        ) : (
-          children
-        )}
+        <div className="relative flex items-center justify-center">
+          {loading && showLoadingSpinner && (
+            <Oval
+              height={16}
+              width={16}
+              color={loaderColor}
+              wrapperStyle={{}}
+              wrapperClass="absolute"
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#fff"
+              strokeWidth={6}
+              strokeWidthSecondary={6}
+            />
+          )}
+          <span
+            className={cn('flex items-center gap-2', {
+              invisible: loading && showLoadingSpinner,
+              visible: !loading || !showLoadingSpinner,
+            })}
+          >
+            {children}
+          </span>
+        </div>
       </Comp>
     );
   }

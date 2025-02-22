@@ -10,7 +10,7 @@ export interface FileObj {
 export interface SubmitArticleFormValues {
   title: string;
   abstract: string;
-  keywords: Option[];
+  // keywords: Option[];
   article_link?: string;
   authors: Option[];
   pdfFiles: FileObj[];

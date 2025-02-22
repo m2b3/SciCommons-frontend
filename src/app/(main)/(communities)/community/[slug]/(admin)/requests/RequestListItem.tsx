@@ -2,8 +2,11 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import clsx from 'clsx';
 import dayjs from 'dayjs';
+import { Check, X } from 'lucide-react';
+
+import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
+import { Button, ButtonTitle } from '@/components/ui/button';
 
 interface RequestListItemProps {
   name: string;
@@ -27,54 +30,55 @@ const RequestListItem: React.FC<RequestListItemProps> = ({
   communityId,
 }) => {
   return (
-    <div className="mb-2 flex items-center justify-between rounded-md border p-4 shadow-md">
-      <div className="flex items-center">
+    <div className="mb-2 flex items-start justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:items-center">
+      <div className="flex flex-col items-start gap-4 md:flex-row">
         <Image
           src={profilePicture ? profilePicture : '/images/default-avatar.png'}
           alt={name}
           width={48}
           height={48}
-          className="mr-4 rounded-full"
+          className="aspect-square shrink-0 rounded-full"
         />
         <div className="flex flex-col gap-2">
           <div>
-            <p className="font-bold">{name}</p>
-            <p className="text-sm text-gray-500">
+            <p className="font-bold text-text-primary">{name}</p>
+            <p className="text-sm text-text-tertiary">
               Requested on {dayjs(requestedAt).format('DD MMM YYYY')}
             </p>
           </div>
-          <p className="cursor-pointer text-green-500">View Profile</p>
+          {/* <p className="cursor-pointer text-green-500">View Profile</p> */}
         </div>
       </div>
       <div className="flex space-x-4">
         {status === 'pending' && (
           <>
-            <button
-              className={clsx(
-                'rounded-md px-4 py-2',
-                isPending
-                  ? 'bg-gray-200 text-gray-700'
-                  : 'bg-green-500 text-white hover:bg-green-600'
-              )}
+            <Button
+              variant={'default'}
               onClick={() => handleAction(joinRequestId, 'approve', communityId)}
               disabled={isPending}
+              type="button"
             >
-              Accept
-            </button>
-            <button
-              className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+              <ButtonTitle>Accept</ButtonTitle>
+            </Button>
+            <Button
+              variant={'danger'}
               onClick={() => handleAction(joinRequestId, 'reject', communityId)}
               disabled={isPending}
+              type="button"
             >
-              Reject
-            </button>
+              <ButtonTitle>Reject</ButtonTitle>
+            </Button>
           </>
         )}
         {status === 'approved' && (
-          <span className="rounded-md bg-green-500 px-4 py-2 text-white">Approved</span>
+          <span className="flex items-center gap-1 text-functional-green res-text-xs">
+            <Check className="size-3" /> Approved
+          </span>
         )}
         {status === 'rejected' && (
-          <span className="rounded-md bg-red-500 px-4 py-2 text-white">Rejected</span>
+          <span className="flex items-center gap-1 text-functional-red res-text-xs">
+            <X className="size-3" /> Rejected
+          </span>
         )}
       </div>
     </div>
@@ -85,21 +89,13 @@ export default RequestListItem;
 
 export const RequestListItemSkeleton = () => {
   return (
-    <div className="mb-2 flex animate-pulse items-center justify-between rounded-md border p-4 shadow-md">
-      <div className="flex items-center">
-        <div className="mr-4 h-12 w-12 rounded-full bg-gray-300"></div>
-        <div className="flex flex-col gap-2">
-          <div>
-            <div className="h-4 w-24 rounded bg-gray-300"></div>
-            <div className="mt-2 h-3 w-32 rounded bg-gray-300"></div>
-          </div>
-          <div className="h-4 w-16 rounded bg-gray-300"></div>
-        </div>
+    <Skeleton className="flex flex-row gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+      <BlockSkeleton className="aspect-square size-12 shrink-0 rounded-full" />
+      <div className="flex flex-col gap-2">
+        <TextSkeleton className="w-24" />
+        <TextSkeleton className="w-56" />
+        <TextSkeleton className="mt-2 w-32" />
       </div>
-      <div className="flex space-x-4">
-        <div className="h-8 w-20 rounded bg-gray-300"></div>
-        <div className="h-8 w-20 rounded bg-gray-300"></div>
-      </div>
-    </div>
+    </Skeleton>
   );
 };

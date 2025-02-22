@@ -13,7 +13,7 @@ interface AuthState {
 }
 
 const AUTH_COOKIE_NAME = 'auth_token';
-const TOKEN_EXPIRATION_TIME = 3 * 60 * 60 * 1000; // 3 hours
+const TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 1 day
 
 export const useAuthStore = create<AuthState>()(
   persist(

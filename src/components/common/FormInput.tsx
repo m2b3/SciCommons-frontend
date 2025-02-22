@@ -78,7 +78,7 @@ const FormInput = <TFieldValues extends FieldValues>({
       'mt-1 block w-full px-3 py-2 ring-1 ring-common-contrast rounded-md shadow-sm focus:outline-none focus:ring-functional-green res-text-sm focus:ring-1 placeholder:text-text-tertiary text-text-primary',
       inputClassName,
       error && !readOnly && !isSubmitting ? 'border-functional-red' : 'border-common-minimal',
-      readOnly ? 'bg-common-minimal' : ''
+      readOnly ? 'bg-common-cardBackground md:bg-common-minimal focus:ring-common-contrast' : ''
     ),
   };
 

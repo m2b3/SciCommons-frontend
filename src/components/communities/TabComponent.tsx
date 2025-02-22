@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import clsx from 'clsx';
 
@@ -17,11 +17,19 @@ const TabComponent = <ActiveTabType extends string>({
 }: TabComponentProps<ActiveTabType>) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleTabClick = (tab: ActiveTabType) => {
     setActiveTab(tab);
     router.push(`${pathname}?tab=${tab}`);
   };
+
+  useEffect(() => {
+    const tab = searchParams?.get('tab');
+    if (tab && tabs.includes(tab as ActiveTabType)) {
+      setActiveTab(tab as ActiveTabType);
+    }
+  }, [searchParams]);
 
   return (
     <div className="flex gap-1 rounded-md bg-common-cardBackground p-1 text-text-primary shadow res-text-sm">

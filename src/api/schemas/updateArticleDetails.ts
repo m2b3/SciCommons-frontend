@@ -15,7 +15,7 @@ export interface UpdateArticleDetails {
   abstract: UpdateArticleDetailsAbstract;
   authors: UpdateArticleDetailsAuthors;
   faqs?: FAQSchema[];
-  keywords: UpdateArticleDetailsKeywords;
+  keywords?: UpdateArticleDetailsKeywords;
   submission_type: UpdateArticleDetailsSubmissionType;
   title: UpdateArticleDetailsTitle;
 }

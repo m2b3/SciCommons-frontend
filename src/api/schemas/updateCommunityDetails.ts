@@ -8,9 +8,10 @@ import type { CommunityType } from './communityType';
 import type { UpdateCommunityDetailsAbout } from './updateCommunityDetailsAbout';
 
 export interface UpdateCommunityDetails {
-  about: UpdateCommunityDetailsAbout;
+  about?: UpdateCommunityDetailsAbout;
   description: string;
   rules: string[];
-  tags: string[];
+  tags?: string[];
   type: CommunityType;
+  community_settings?: string;
 }

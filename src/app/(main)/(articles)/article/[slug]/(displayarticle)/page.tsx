@@ -102,7 +102,7 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   // );
   // return <SplitScreenLayout leftSide={LeftSide} rightSide={RightSide} />;
   return (
-    <div className="w-full px-6 py-4">
+    <div className="w-full p-4 py-4 md:px-6">
       {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
       {data && (
         <div className="mt-4">
