@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { Info } from 'lucide-react';
 import { ControllerFieldState } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import MultipleSelector, { Option } from '@/components/ui/multiple-selector';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+import CustomTooltip from './CustomTooltip';
 
 interface LabeledSelectorProps {
   label: string;
@@ -38,18 +38,9 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
       <div>
         <label className="mb-2 flex items-center font-medium text-text-secondary res-text-xs">
           {label}
-          <span className="over:text-text-secondary ml-2 cursor-pointer text-text-tertiary">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info size={16} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-white text-black">
-                  <p className="res-text-xs">{tooltipText}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </span>
+          <div className="ml-2">
+            <CustomTooltip info={tooltipText} />
+          </div>
         </label>
         <MultipleSelector
           value={value}

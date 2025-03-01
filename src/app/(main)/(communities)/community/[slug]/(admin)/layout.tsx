@@ -19,27 +19,27 @@ export default function CommunityAdminLayout({ children }: { children: React.Rea
     {
       href: `/community/${params?.slug}/settings`,
       label: 'Settings',
-      icon: <Settings className="mr-3 dark:text-gray-300" />,
+      icon: <Settings className="mr-3 text-text-primary" />,
     },
     {
       href: `/community/${params?.slug}/invite`,
       label: 'Invite',
-      icon: <Mail className="mr-3 dark:text-gray-300" />,
+      icon: <Mail className="mr-3 text-text-primary" />,
     },
     {
       href: `/community/${params?.slug}/submissions`,
       label: 'Articles',
-      icon: <FileText className="mr-3 dark:text-gray-300" />,
+      icon: <FileText className="mr-3 text-text-primary" />,
     },
     {
       href: `/community/${params?.slug}/roles`,
       label: 'Roles',
-      icon: <Users className="mr-3 dark:text-gray-300" />,
+      icon: <Users className="mr-3 text-text-primary" />,
     },
     {
       href: `/community/${params?.slug}/requests`,
       label: 'Requests',
-      icon: <GitBranch className="mr-3 dark:text-gray-300" />,
+      icon: <GitBranch className="mr-3 text-text-primary" />,
     },
   ];
 

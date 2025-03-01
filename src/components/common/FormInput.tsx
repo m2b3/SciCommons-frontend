@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Info } from 'lucide-react';
 import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+
+import CustomTooltip from './CustomTooltip';
 
 interface InputProps<TFieldValues extends FieldValues> {
   label?: string;
@@ -89,20 +89,7 @@ const FormInput = <TFieldValues extends FieldValues>({
           <span className={cn('font-medium text-text-secondary res-text-xs', labelClassName)}>
             {label}
           </span>
-          {info && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button>
-                    <Info size={14} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="res-text-xs">{info}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          {info && <CustomTooltip info={info} />}
         </div>
       )}
       {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}

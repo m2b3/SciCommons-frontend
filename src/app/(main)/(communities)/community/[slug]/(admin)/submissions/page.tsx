@@ -12,6 +12,7 @@ import {
 import { ArticleOut, ArticleStatus } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import TabComponent from '@/components/communities/TabComponent';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/authStore';
 
 type Action = 'approve' | 'reject' | 'publish';
@@ -68,45 +69,53 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
   const renderActionButtons = (article: ArticleOut) => {
     if (activeTab === 'submitted') {
       return (
-        <>
-          <button
-            className="mr-2 rounded-lg bg-green-500 px-4 py-2 text-white res-text-xs hover:bg-green-600"
-            onClick={() => handleAction('approve', Number(article.community_article?.id))}
-            disabled={
+        <div className="flex gap-2">
+          <Button
+            loading={
               actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
             }
+            onClick={() => handleAction('approve', Number(article.community_article?.id))}
+            type="button"
           >
-            {actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
-              ? 'Approving...'
-              : 'Approve'}
-          </button>
-          <button
-            className="rounded-lg bg-red-500 px-4 py-2 text-white res-text-xs hover:bg-red-600"
-            onClick={() => handleAction('reject', Number(article.community_article?.id))}
-            disabled={
+            <ButtonTitle>
+              {actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
+                ? 'Approving...'
+                : 'Approve'}
+            </ButtonTitle>
+          </Button>
+          <Button
+            variant={'danger'}
+            loading={
               actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
             }
+            onClick={() => handleAction('reject', Number(article.community_article?.id))}
+            type="button"
           >
-            {actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
-              ? 'Rejecting...'
-              : 'Reject'}
-          </button>
-        </>
+            <ButtonTitle>
+              {actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
+                ? 'Rejecting...'
+                : 'Reject'}
+            </ButtonTitle>
+          </Button>
+        </div>
       );
     } else if (activeTab === 'accepted') {
       return (
         <div className="flex space-x-2">
-          <button
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white res-text-xs hover:bg-blue-600"
-            onClick={() => handleAction('publish', Number(article.community_article?.id))}
-            disabled={
+          <Button
+            variant={'blue'}
+            loading={
               actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
             }
+            onClick={() => handleAction('publish', Number(article.community_article?.id))}
+            type="button"
           >
-            {actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
-              ? 'Publishing...'
-              : 'Publish'}
-          </button>
+            <ButtonTitle>
+              {actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
+                ? 'Publishing...'
+                : 'Publish'}
+            </ButtonTitle>
+          </Button>
         </div>
       );
     }
