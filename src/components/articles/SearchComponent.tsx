@@ -69,11 +69,11 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ onSearch }) => {
           }}
           className="rounded-full px-3 py-2"
           type="button"
+          disabled={loading}
         >
           <ButtonTitle className="text-xs">Search</ButtonTitle>
         </Button>
       </div>
-      {/* {loading && <span className="text-xs text-text-tertiary">Loading...</span>} */}
       {error && <span className="text-sm text-functional-red">{error}</span>}
     </div>
   );

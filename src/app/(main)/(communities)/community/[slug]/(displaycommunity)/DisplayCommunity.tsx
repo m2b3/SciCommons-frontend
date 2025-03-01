@@ -32,7 +32,13 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
-  const { mutate, data, isSuccess, error, isPending } = useCommunitiesApiJoinJoinCommunity({
+  const {
+    mutate,
+    data,
+    isSuccess: isJoinSuccess,
+    error,
+    isPending,
+  } = useCommunitiesApiJoinJoinCommunity({
     request: axiosConfig,
   });
 
@@ -41,14 +47,14 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isJoinSuccess) {
       toast.success(`${data.data.message}`);
       refetch();
     }
     if (error) {
       showErrorToast(error);
     }
-  }, [isSuccess, error, data, refetch]);
+  }, [isJoinSuccess, error, data, refetch]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-common-contrast bg-common-cardBackground">

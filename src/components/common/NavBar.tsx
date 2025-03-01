@@ -32,7 +32,8 @@ import useStore from '@/hooks/useStore';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
-import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
+import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
@@ -113,30 +114,53 @@ const CreateDropdown: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant={'default'}
-          className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
-        >
-          <ButtonIcon>
+    <TooltipProvider delayDuration={10}>
+      <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={'default'}
+            className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
+          >
             <Plus size={16} />
-          </ButtonIcon>
-          <ButtonTitle className="hidden lg:block">Create</ButtonTitle>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-          <Link href="/submitarticle">Submit Article</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-          <Link href="/createcommunity">Create Community</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-          <Link href="/posts/createpost">Create Post</Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            <span className="hidden lg:block">Create</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent sideOffset={12}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+                <Link href="/submitarticle">Submit Article</Link>
+              </DropdownMenuItem>
+            </TooltipTrigger>
+            <TooltipContent side="left" sideOffset={8}>
+              Write and submit an article
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+                <Link href="/createcommunity">Create Community</Link>
+              </DropdownMenuItem>
+            </TooltipTrigger>
+            <TooltipContent side="left" sideOffset={8}>
+              Start a new community journal
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+                <Link href="/posts/createpost">Create Post</Link>
+              </DropdownMenuItem>
+            </TooltipTrigger>
+            <TooltipContent side="left" sideOffset={8}>
+              Share your thoughts with a post
+            </TooltipContent>
+          </Tooltip>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </TooltipProvider>
   );
 };
 

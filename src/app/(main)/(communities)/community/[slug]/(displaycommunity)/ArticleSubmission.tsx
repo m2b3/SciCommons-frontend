@@ -6,7 +6,10 @@ import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useCommunitiesArticlesApiGetMyArticles } from '@/api/community-articles/community-articles';
+import {
+  useCommunitiesArticlesApiGetMyArticles,
+  useCommunitiesArticlesApiSubmitArticle,
+} from '@/api/community-articles/community-articles';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import {
@@ -23,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleSubmissionProps {
@@ -47,8 +51,22 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     }
   );
 
+  const { mutate, isPending: isArticleSubmissionPending } = useCommunitiesArticlesApiSubmitArticle({
+    request: axiosConfig,
+  });
+
   const handleSubmitArticle = (articleSlug: string) => {
-    router.push(`/article/${articleSlug}/submit?name=${communityName}&tab=Submit`);
+    mutate(
+      { articleSlug: articleSlug || '', communityName: communityName },
+      {
+        onSuccess: () => {
+          toast.success('Article submitted successfully');
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -77,7 +95,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="p-0 sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">Submit your Article</DialogTitle>
         </DialogHeader>
@@ -87,7 +105,15 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
               Array.from({ length: 5 }).map((_, index) => <ArticleCardSkeleton key={index} />)}
 
             {data && data.data.items.length === 0 && (
-              <p className="text-center text-text-secondary">You have no articles to submit</p>
+              <div className="flex w-full flex-col items-center justify-center">
+                <p className="text-center text-text-secondary">You have no articles to submit</p>
+                <Button
+                  className="mx-auto mt-4"
+                  onClick={() => router.push(`/community/${communityName}/createcommunityarticle`)}
+                >
+                  <ButtonTitle>Create Article</ButtonTitle>
+                </Button>
+              </div>
             )}
             {data &&
               data.data.items.map((article) => (
@@ -96,6 +122,8 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
                   <Button
                     className="absolute bottom-4 right-4"
                     onClick={() => handleSubmitArticle(String(article.slug))}
+                    type="button"
+                    disabled={isArticleSubmissionPending}
                   >
                     <ButtonTitle>Submit</ButtonTitle>
                   </Button>
