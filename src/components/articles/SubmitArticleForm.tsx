@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 import {
   Control,
   Controller,
@@ -15,6 +16,7 @@ import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { cn } from '@/lib/utils';
 import { SubmitArticleFormValues } from '@/types';
 
+import PdfIcon from '../ui/Icons/PdfIcon';
 import { Button, ButtonTitle } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import SearchComponent from './SearchComponent';
@@ -30,6 +32,7 @@ interface SubmitArticleFormProps {
   setActiveTab: React.Dispatch<React.SetStateAction<'upload' | 'search'>>;
   onSearch: (query: string) => void;
   showPrivateCheckOption?: boolean;
+  articleData: any;
 }
 
 const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
@@ -43,6 +46,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
   setActiveTab,
   onSearch,
   showPrivateCheckOption = false,
+  articleData,
 }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -197,7 +201,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
           />
         )}
       /> */}
-      <div className="mb-4 space-y-2">
+      <div className="space-y-2">
         <label className="block text-sm font-medium text-text-secondary">Submission Type</label>
         <Controller
           name="submissionType"
@@ -253,10 +257,22 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
           )}
         />
       </div>
+      {activeTab === 'search' && articleData?.pdfLink && (
+        <div className="flex flex-col gap-2">
+          <label className="block text-sm font-medium text-text-secondary">PDF</label>
+          <a
+            href={articleData?.pdfLink}
+            target="_blank"
+            className="text-functional-green hover:underline"
+          >
+            <PdfIcon className="mt-1 size-8 shrink-0 cursor-pointer" />
+          </a>
+        </div>
+      )}
       <Button
         showLoadingSpinner={false}
         loading={isPending}
-        className="mx-auto w-full"
+        className="mx-auto mt-4 w-full"
         type="submit"
       >
         <ButtonTitle>{isPending ? 'Loading...' : 'Submit Article'}</ButtonTitle>

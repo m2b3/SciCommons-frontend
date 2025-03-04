@@ -10,6 +10,7 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
@@ -67,9 +68,12 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
           <span>{formatDate(article.updated_at)}</span>
         </div>
       </div>
-      <div className="mt-4 flex w-4/5 flex-wrap gap-4">
+      <div className="mt-4 flex w-4/5 flex-wrap">
         <Button
-          className="gap-0 rounded-md bg-functional-blue/20 px-2 py-1 text-xs hover:bg-functional-blue/10"
+          variant={'transparent'}
+          className={cn(
+            'gap-0 rounded-md bg-functional-blue/20 px-2 py-1 text-xs hover:bg-functional-blue/10'
+          )}
           onClick={() => handleReaction('upvote')}
         >
           <ButtonIcon>
@@ -78,11 +82,11 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
               fill={data?.data.user_reaction === 1 ? 'currentColor' : 'transparent'}
             />
           </ButtonIcon>
-          <ButtonTitle className="font-normal text-text-secondary">
+          <ButtonTitle className="text-xs font-normal text-text-secondary">
             {data?.data.likes} likes
           </ButtonTitle>
         </Button>
-        <div className="flex items-center p-1 text-xs">
+        <div className="flex items-center p-1 px-2 text-xs">
           <Star
             className="mr-2 size-4 text-functional-yellow"
             fill="currentColor"
@@ -90,11 +94,11 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
           />
           <span className="text-text-secondary">{article.total_reviews} Reviews and Ratings</span>
         </div>
-        <div className="flex items-center p-1 text-xs">
+        <div className="flex items-center p-1 px-2 text-xs">
           <MessageCircle className="mr-2 size-4 text-text-secondary" />
           <span className="text-text-secondary">{article.total_comments} Comments</span>
         </div>
-        <div className="flex items-center p-1 text-xs">
+        <div className="flex items-center p-1 px-2 text-xs">
           <MessageSquare className="mr-2 size-4 text-text-secondary" />
           <span className="text-text-secondary">{article.total_discussions} Discussions</span>
         </div>

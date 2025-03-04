@@ -17,4 +17,5 @@ export interface ArticleCreateDetails {
   // keywords: string[];
   submission_type: ArticleCreateDetailsSubmissionType;
   title: string;
+  pdf_link?: string;
 }

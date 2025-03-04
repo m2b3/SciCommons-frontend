@@ -25,7 +25,7 @@ const CommentEditor = <TFieldValues extends FieldValues>({
     control,
     rules: {
       required: 'Comment is required',
-      minLength: { value: 50, message: 'Comment must be at least 50 characters' },
+      minLength: { value: 1, message: 'Add a valid comment' },
     },
   });
 

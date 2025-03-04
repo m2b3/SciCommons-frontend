@@ -143,7 +143,7 @@ const RegisterForm: React.FC = () => {
             helperText="3-30 characters. No spaces or special symbols."
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
           />
           <div className="grid grid-cols-2 gap-4">
             <FormInput
@@ -155,7 +155,7 @@ const RegisterForm: React.FC = () => {
               requiredMessage="First Name is required"
               errors={errors}
               labelClassName="text-black/90"
-              inputClassName="bg-white text-black"
+              inputClassName="bg-neutral-150 text-black ring-neutral-200"
             />
             <FormInput
               label="Last Name"
@@ -166,7 +166,7 @@ const RegisterForm: React.FC = () => {
               requiredMessage="Last Name is required"
               errors={errors}
               labelClassName="text-black/90"
-              inputClassName="bg-white text-black"
+              inputClassName="bg-neutral-150 text-black ring-neutral-200"
             />
           </div>
 
@@ -181,7 +181,7 @@ const RegisterForm: React.FC = () => {
             patternMessage="Enter a valid email address."
             errors={errors}
             labelClassName="text-black/90"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
           />
 
           <FormInput
@@ -195,7 +195,8 @@ const RegisterForm: React.FC = () => {
             minLengthMessage="Password must be at least 8 characters long."
             errors={errors}
             labelClassName="text-black/90"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
+            eyeBtnClassName="text-black/40 hover:text-black/60"
           />
 
           <FormInput
@@ -209,7 +210,8 @@ const RegisterForm: React.FC = () => {
             patternValue={new RegExp(watch('password'))}
             patternMessage="Passwords must match."
             labelClassName="text-black/90"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
+            eyeBtnClassName="text-black/40 hover:text-black/60"
           />
 
           <Button type="submit" loading={isPending} className="w-full" showLoadingSpinner={true}>

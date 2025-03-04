@@ -143,7 +143,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           refetch={refetch}
         />
       ) : (
-        <div className="mb-4 rounded-lg border bg-white-secondary p-4 shadow-sm res-text-sm">
+        <div className="mb-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-sm">
           <div className="mb-2 flex justify-between">
             <div className="flex items-center gap-4">
               <div>

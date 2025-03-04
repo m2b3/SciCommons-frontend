@@ -6,6 +6,7 @@ interface ArticleData {
   authors: string[];
   abstract: string;
   link: string;
+  pdfLink?: string;
 }
 
 interface ArticleState {
@@ -114,6 +115,10 @@ function parseData(query: string, data: any, source: string): ArticleData | null
     let arxivId = query.split(':')[1];
     arxivId = arxivId.trim();
     if (entries.length === 0) return null;
+    const links = Array.from(entries[0].getElementsByTagName('link'));
+    const pdfLink = links
+      .find((link) => link.getAttribute('title') === 'pdf')
+      ?.getAttribute('href');
     return {
       title:
         entries[0].getElementsByTagName('title')[0]?.textContent?.trim() || 'No title available',
@@ -124,6 +129,7 @@ function parseData(query: string, data: any, source: string): ArticleData | null
         entries[0].getElementsByTagName('summary')[0]?.textContent?.replace(/\n/g, ' ')?.trim() ||
         'No abstract available',
       link: `https://arxiv.org/abs/${arxivId}`,
+      pdfLink: pdfLink || '',
     };
   } else if (source === 'PubMed') {
     let pmid = query.split(':')[1];

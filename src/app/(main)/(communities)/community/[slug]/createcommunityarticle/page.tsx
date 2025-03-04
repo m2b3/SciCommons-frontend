@@ -200,6 +200,7 @@ const CommunityArticleForm: NextPage = () => {
             setActiveTab,
             onSearch: handleSearch,
             showPrivateCheckOption: true,
+            articleData,
           }}
         />
       </div>

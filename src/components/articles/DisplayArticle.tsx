@@ -3,10 +3,13 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Link2 } from 'lucide-react';
+
 import { ArticleOut } from '@/api/schemas';
 import TruncateText from '@/components/common/TruncateText';
 
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
+import PdfIcon from '../ui/Icons/PdfIcon';
 import ArticleStats from './ArticleStats';
 
 interface DisplayArticleProps {
@@ -58,20 +61,22 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </div> */}
         <div>
           <h3 className="mb-2 font-semibold text-text-secondary res-text-xs">Article Links</h3>
-          {article.article_pdf_urls.length === 0 && (
-            <div className="mb-1">
+          {article?.article_link && (
+            <div className="mb-1 flex items-center gap-2">
+              <Link2 size={16} className="text-text-tertiary" />
               <a
                 href={article.article_link || '#'}
                 className="text-functional-blue res-text-xs hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {article.article_link?.split('/').pop() || article.article_link}
+                {article?.article_link?.split('/').pop() || article.article_link}
               </a>
             </div>
           )}
           {article.article_pdf_urls.map((link, index) => (
-            <div key={index} className="mb-1">
+            <div key={index} className="mb-1 flex items-center gap-2">
+              <PdfIcon className="size-4 shrink-0" />
               <a
                 href={link}
                 className="text-functional-blue res-text-xs hover:underline"
