@@ -117,6 +117,7 @@ const ArticleForm: React.FC = () => {
         authors: articleData.authors.map((author) => ({ label: author, value: author })),
         abstract: articleData.abstract,
         article_link: articleData.link,
+        pdf_link: articleData.pdfLink,
       };
       reset(newData);
 
@@ -144,6 +145,7 @@ const ArticleForm: React.FC = () => {
         // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
         community_name: null,
+        pdf_link: articleData?.pdfLink || undefined,
       },
     };
 
@@ -208,6 +210,7 @@ const ArticleForm: React.FC = () => {
             activeTab,
             setActiveTab,
             onSearch: handleSearch,
+            articleData,
           }}
         />
       </div>

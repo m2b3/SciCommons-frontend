@@ -20,7 +20,7 @@ const FileUpload = <TFieldValues extends FieldValues>({
   control,
   name,
 }: FileUploadProps<TFieldValues>) => {
-  const MAX_FILES = 2; // Maximum number of files that can be uploaded
+  const MAX_FILES = 1; // Maximum number of files that can be uploaded
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // Maximum file size in bytes
 
   const {
@@ -175,7 +175,7 @@ const FileUpload = <TFieldValues extends FieldValues>({
                           ? fileObj.errorMessage
                           : formatFileSize(fileObj.file.size)}
                     </span>
-                    {fileObj.status === 'completed' && (
+                    {(fileObj.status === 'completed' || fileObj.status === 'error') && (
                       <X
                         size={18}
                         className="ml-2 shrink-0 cursor-pointer text-text-tertiary hover:text-text-primary"

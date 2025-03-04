@@ -99,7 +99,7 @@ const LoginForm: React.FC = () => {
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
           />
           <FormInput<ILoginForm>
             label="Password"
@@ -111,7 +111,8 @@ const LoginForm: React.FC = () => {
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
+            eyeBtnClassName="text-black/40 hover:text-black/60"
           />
           {/* Remember me and forgot password */}
           <div className="mb-6 flex items-center justify-between res-text-sm">

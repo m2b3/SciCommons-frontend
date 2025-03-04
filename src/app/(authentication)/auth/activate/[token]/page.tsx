@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { MoveLeftIcon, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
@@ -50,23 +51,30 @@ const ActivateAccount = ({ params }: { params: { token: string } }) => {
   }, [isActivated, router]);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
-      <div className="w-full max-w-md rounded-md p-6 md:bg-white md:shadow-md md:dark:bg-gray-900">
-        <div className="mb-6 text-center">
+    <div className="relative flex h-dvh flex-col items-center justify-center bg-black p-4 sm:p-0">
+      <Image
+        src="/images/assets/bg-auth-pages.webp"
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        className="z-0"
+      />
+      <div className="relative flex h-fit w-full flex-col gap-6 overflow-y-auto rounded-xl bg-white px-8 py-12 sm:w-[540px] sm:justify-center sm:px-10 sm:py-14 md:shadow-[0px_4px_200px_-40px_rgba(66,182,95,0.5)]">
+        <div className="text-center">
           <div className="flex items-center justify-center">
             <Image src="/auth/activateaccount.png" alt="logo" width={80} height={80} />
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="mt-4 text-2xl font-bold text-black">
             {isPending
               ? 'Activating your Account...'
               : isError
-                ? error?.response?.data.message || ErrorMessage
+                ? 'Error Activating Account'
                 : 'Account Activated'}
           </h1>
-          <div className="mt-2 text-gray-500 dark:text-gray-400">
+          <div className="mt-2 text-sm text-text-secondary">
             {isPending ? (
               <div className="mt-4 flex justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-dashed border-brand"></div>
+                <RefreshCcw className="spin-animation h-8 w-8 shrink-0 text-functional-green" />
               </div>
             ) : isError ? (
               `${error?.response?.data.message || ErrorMessage}`
@@ -77,22 +85,9 @@ const ActivateAccount = ({ params }: { params: { token: string } }) => {
         </div>
         <Link
           href="/auth/login"
-          className="mt-4 flex items-center justify-center text-brand transition-colors duration-300 hover:text-brand-dark dark:text-brand-dark dark:hover:text-brand"
+          className="mt-2 flex items-center justify-center text-xs text-functional-green hover:underline"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="mr-1 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
+          <MoveLeftIcon className="mr-1 size-4 shrink-0" />
           Back to Sign in
         </Link>
       </div>
