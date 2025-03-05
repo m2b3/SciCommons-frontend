@@ -1,8 +1,16 @@
----
-### **Please follow our [Contribution guide](https://github.com/m2b3/SciCommons-frontend/blob/main/CONTRIBUTING.md) to start contributing to this repo.**
+<p align="center">
+  <img src="https://cdn.scicommons.org/logo.png" alt="SciCommons Logo" width="150">
+</p>
+
 ---
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## 📢 Feature List for SciCommons GSoC 2025 is Now Available!
+> You can access it here:  
+> 🔗 [GSoC 2025 Feature List](https://github.com/m2b3/SciCommons-frontend/blob/main/gsoc/GSoC_2025_Feature_List.md)
+
+
+### **Please follow our [Contribution guide](https://github.com/m2b3/SciCommons-frontend/blob/main/CONTRIBUTING.md) to start contributing to this repo.**
+
 
 ## Getting Started
 
