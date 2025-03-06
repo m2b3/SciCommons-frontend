@@ -33,7 +33,10 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
   const { mutate, isPending } = useUsersApiAuthResetPassword({
     mutation: {
       onSuccess: () => {
-        toast.success('Password reset successfully');
+        toast.success('Password reset successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         router.push('/auth/login');
       },
       onError: (err) => {

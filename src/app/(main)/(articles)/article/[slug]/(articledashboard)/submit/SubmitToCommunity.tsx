@@ -45,7 +45,10 @@ const SubmitToCommunity = ({ slug }: { slug: string }) => {
       {
         onSuccess: () => {
           reset();
-          toast.success('Article submitted successfully');
+          toast.success('Article submitted successfully', {
+            duration: 2000,
+            position: 'top-right',
+          });
         },
         onError: (error) => {
           showErrorToast(error);

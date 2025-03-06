@@ -41,11 +41,17 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
     mutation: {
       onSuccess: (data) => {
         refetch();
-        toast.success(`${data.data.message}`);
+        toast.success(`${data.data.message}`, {
+          duration: 2000,
+          position: 'top-right',
+        });
         setActionInProgress({ action: 'approve', articleId: null });
       },
       onError: (error) => {
-        toast.error(`${error.response?.data.message}`);
+        toast.error(`${error.response?.data.message}`, {
+          duration: 2000,
+          position: 'top-right',
+        });
         setActionInProgress({ action: 'approve', articleId: null });
       },
     },
@@ -57,7 +63,10 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      toast.error(`${error.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [error]);
 

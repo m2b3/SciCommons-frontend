@@ -55,7 +55,10 @@ export default function UnRegisteredUsersInvitation({
 
   useEffect(() => {
     if (isRespondSuccess) {
-      toast.success(respondData.data.message);
+      toast.success(respondData.data.message, {
+        duration: 2000,
+        position: 'top-right',
+      });
       if (action === 'accept') {
         router.push(`/community/${communityId}`);
       } else {
@@ -67,7 +70,10 @@ export default function UnRegisteredUsersInvitation({
   useEffect(() => {
     if (respondError) {
       console.error(respondError);
-      toast.error(respondError.response?.data.message || 'Failed to respond to invitation');
+      toast.error(respondError.response?.data.message || 'Failed to respond to invitation', {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [respondError]);
 

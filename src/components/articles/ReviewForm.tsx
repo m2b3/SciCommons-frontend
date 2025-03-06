@@ -93,7 +93,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         { data: reviewData, reviewId: reviewId },
         {
           onSuccess: () => {
-            toast.success('Review updated successfully');
+            toast.success('Review updated successfully', {
+              duration: 2000,
+              position: 'top-right',
+            });
             refetch && refetch();
             setEdit && setEdit(false);
           },
@@ -107,7 +110,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         { reviewId: reviewId },
         {
           onSuccess: () => {
-            toast.success('Review deleted successfully');
+            toast.success('Review deleted successfully', {
+              duration: 2000,
+              position: 'top-right',
+            });
             refetch && refetch();
             setEdit && setEdit(false);
           },
@@ -123,7 +129,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           onSuccess: () => {
             reset();
             refetch && refetch();
-            toast.success('Review submitted successfully');
+            toast.success('Review submitted successfully', {
+              duration: 2000,
+              position: 'top-right',
+            });
           },
           onError: (error) => {
             reset();

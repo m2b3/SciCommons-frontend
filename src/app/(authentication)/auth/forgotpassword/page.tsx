@@ -30,7 +30,10 @@ const ForgotPasswordForm: React.FC = () => {
   const { isSuccess, mutate, isPending } = useUsersApiAuthRequestReset({
     mutation: {
       onSuccess: () => {
-        toast.success('Password reset email sent successfully');
+        toast.success('Password reset email sent successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (err) => {
         showErrorToast(err);

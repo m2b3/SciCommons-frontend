@@ -67,7 +67,10 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
 
       if (requireAuth) {
         if (!isAuthenticated) {
-          toast.error('You need to be logged in to view this page');
+          toast.error('You need to be logged in to view this page', {
+            duration: 2000,
+            position: 'top-right',
+          });
           router.push('/auth/login');
         } else if (isTokenExpired()) {
           setShowExpirationDialog(true);
