@@ -14,6 +14,7 @@ import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
+import { emailSchema, matchPassword, passwordSchema, usernameSchema } from '@/constants/zod-schema';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 import SignUpSuccess from './SignUpSuccess';
@@ -131,13 +132,8 @@ const RegisterForm: React.FC = () => {
             type="text"
             placeholder="e.g., john_doe"
             register={register}
-            patternValue={/^[a-z0-9._]+$/}
-            patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
+            schema={usernameSchema}
             requiredMessage="Username is required"
-            minLengthValue={3}
-            minLengthMessage="Username must be at least 3 characters"
-            maxLengthValue={30}
-            maxLengthMessage="Username cannot exceed 30 characters"
             errors={errors}
             isSubmitting={isSubmitting}
             helperText="3-30 characters. No spaces or special symbols."
@@ -169,7 +165,6 @@ const RegisterForm: React.FC = () => {
               inputClassName="bg-white text-black"
             />
           </div>
-
           <FormInput
             label="Email"
             name="email"
@@ -177,13 +172,11 @@ const RegisterForm: React.FC = () => {
             placeholder="e.g., john.doe@example.com"
             register={register}
             requiredMessage="Email is required"
-            patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            patternMessage="Enter a valid email address."
+            schema={emailSchema}
             errors={errors}
             labelClassName="text-black/90"
             inputClassName="bg-white text-black"
           />
-
           <FormInput
             label="Password"
             name="password"
@@ -191,13 +184,13 @@ const RegisterForm: React.FC = () => {
             placeholder="Create a password"
             register={register}
             requiredMessage="Password is required"
-            minLengthValue={8}
-            minLengthMessage="Password must be at least 8 characters long."
+            schema={passwordSchema}
+            //minLengthValue={8}
+            //minLengthMessage="Password must be at least 8 characters long."
             errors={errors}
             labelClassName="text-black/90"
             inputClassName="bg-white text-black"
           />
-
           <FormInput
             label="Confirm Password"
             name="confirm_password"
@@ -206,8 +199,7 @@ const RegisterForm: React.FC = () => {
             register={register}
             requiredMessage="Confirm Password is required"
             errors={errors}
-            patternValue={new RegExp(watch('password'))}
-            patternMessage="Passwords must match."
+            schema={matchPassword(new RegExp(watch('password')))}
             labelClassName="text-black/90"
             inputClassName="bg-white text-black"
           />
