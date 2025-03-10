@@ -217,12 +217,20 @@ const RegisterForm: React.FC = () => {
           </Button>
         </form>
 
-        <p className="text-gray-800 res-text-sm dark:text-gray-300">
-          Already have an account?{' '}
-          <Link href="/auth/login" className="text-brand hover:underline">
-            Login
-          </Link>
-        </p>
+        <div className="mt-4 res-text-sm">
+          <p className="text-gray-800 res-text-sm dark:text-gray-300">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-brand hover:underline">
+              Login
+            </Link>
+          </p>
+          <p className="text-gray-800 res-text-sm dark:text-gray-300">
+            Already registered but not activated?{' '}
+            <Link href="/auth/resendverificationemail" className="text-brand hover:underline">
+              Resend Activation Link
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
