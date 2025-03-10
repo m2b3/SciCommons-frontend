@@ -30,19 +30,31 @@ const Footer: React.FC = () => {
             <Image src="/logo.png" alt="Logo" width={120} height={80} />
           </Link>
           <div className="flex gap-8 md:order-2">
-            <a href="#" className="text-gray-400">
+            <a
+              href="#"
+              className="text-gray-400 opacity-50 transition-opacity duration-300 hover:opacity-100"
+            >
               <span className="sr-only">Facebook</span>
               <FacebookIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a
+              href="#"
+              className="text-gray-400 opacity-70 transition-opacity duration-300 hover:opacity-100"
+            >
               <span className="sr-only">Youtube</span>
               <YoutubeIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a
+              href="#"
+              className="text-gray-400 opacity-70 transition-opacity duration-300 hover:opacity-100"
+            >
               <span className="sr-only">Instagram</span>
               <InstagramIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a
+              href="#"
+              className="text-gray-400 opacity-70 transition-opacity duration-300 hover:opacity-100"
+            >
               <span className="sr-only">Twitter</span>
               <TwitterIconFilled fontSize={24} strokeWidth={0} />
             </a>
