@@ -33,7 +33,10 @@ const ResendVerificationForm: React.FC = () => {
   const { mutate, isPending } = useUsersApiAuthResendActivation({
     mutation: {
       onSuccess: () => {
-        toast.success('Verification email sent successfully');
+        toast.success('Verification email sent successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         setIsEmailSent(true);
       },
       onError: (err) => {

@@ -26,7 +26,10 @@ const ActivateAccount = ({ params }: { params: { token: string } }) => {
         {
           onSuccess: () => {
             setIsActivated(true);
-            toast.success('Account activated successfully! Redirecting to login page...');
+            toast.success('Account activated successfully! Redirecting to login page...', {
+              duration: 2000,
+              position: 'top-right',
+            });
           },
         }
       );

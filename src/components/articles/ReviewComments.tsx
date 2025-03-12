@@ -46,7 +46,11 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
         console.error(error);
         toast.error(
           (error.response?.data as { message?: string })?.message ||
-            'An error occurred while creating the comment.'
+            'An error occurred while creating the comment.',
+          {
+            duration: 2000,
+            position: 'top-right',
+          }
         );
       },
     },
@@ -57,12 +61,19 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
     mutation: {
       onSuccess: () => {
         refetch();
-        toast.success('Comment updated successfully.');
+        toast.success('Comment updated successfully.', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (error) => {
         toast.error(
           (error.response?.data as { message?: string })?.message ||
-            'An error occurred while updating the comment.'
+            'An error occurred while updating the comment.',
+          {
+            duration: 2000,
+            position: 'top-right',
+          }
         );
       },
     },
@@ -72,12 +83,19 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
     mutation: {
       onSuccess: () => {
         refetch();
-        toast.success('Comment deleted successfully.');
+        toast.success('Comment deleted successfully.', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (error) => {
         toast.error(
           (error.response?.data as { message?: string })?.message ||
-            'An error occurred while deleting the comment.'
+            'An error occurred while deleting the comment.',
+          {
+            duration: 2000,
+            position: 'top-right',
+          }
         );
       },
     },

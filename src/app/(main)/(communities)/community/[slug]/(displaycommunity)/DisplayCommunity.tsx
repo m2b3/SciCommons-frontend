@@ -40,7 +40,10 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success(`${data.data.message}`);
+      toast.success(`${data.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
       refetch();
     }
     if (error) {

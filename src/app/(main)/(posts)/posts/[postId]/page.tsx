@@ -76,7 +76,10 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
     request: requestConfig,
     mutation: {
       onSuccess: (data) => {
-        toast.success(`${data.data.message}`);
+        toast.success(`${data.data.message}`, {
+          duration: 2000,
+          position: 'top-right',
+        });
         refetchBookMark();
       },
       onError: (error) => {

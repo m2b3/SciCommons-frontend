@@ -58,7 +58,10 @@ const MultiLabelSelector: React.FC<LabeledSelectorProps> = React.memo(
           disabled={disabled}
           maxSelected={maxOptions || undefined}
           onMaxSelected={(maxLimit) => {
-            toast.error(`You can only create ${maxLimit} options.`);
+            toast.error(`You can only create ${maxLimit} options.`, {
+              duration: 2000,
+              position: 'top-right',
+            });
           }}
           emptyIndicator={
             <p className="text-center leading-10 text-gray-600 res-text-base">no results found.</p>
