@@ -43,13 +43,13 @@ const ForgotPasswordForm: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+    <div className="bg-blue-45 flex h-screen flex-col items-center justify-center">
       <div className="w-full max-w-md rounded-md p-6 res-text-sm md:bg-white md:shadow-md md:dark:bg-gray-900">
         <div className="mb-6 text-center">
           <div className="flex items-center justify-center">
             <Image src="/auth/forgotpassword.png" alt="logo" width={80} height={80} />
           </div>
-          <h1 className="mt-4 font-bold res-text-xl">
+          <h1 className="mt-4 font-bold text-black res-text-xl">
             {isSuccess ? 'Password Reset Email Sent' : 'Forgot Your Password'}
           </h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">
