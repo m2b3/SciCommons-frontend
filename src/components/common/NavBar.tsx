@@ -138,18 +138,18 @@ const ProfileDropdown: React.FC = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Link href="/myprofile" className="flex items-center ">
+          <Link href="/myprofile" className="flex items-center">
             <User size={16} className="mr-2" /> Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/mycontributions" className="flex items-center ">
+          <Link href="/mycontributions" className="flex items-center">
             <NotebookTabs size={16} className="mr-2" /> Contributions
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <div className="flex items-center space-x-2">
-            Dark Mode{' '}
+            {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
             <Switch
               className="ml-2"
               checked={theme === 'dark'}
