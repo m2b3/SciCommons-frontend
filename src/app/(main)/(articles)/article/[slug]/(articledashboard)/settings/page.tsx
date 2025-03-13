@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import { toast } from 'sonner';
 
@@ -14,7 +14,8 @@ import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDet
 
 type ActiveTab = 'Details' | 'FAQs';
 
-const ArticleSettings = ({ params }: { params: { slug: string } }) => {
+const ArticleSettings = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
@@ -93,4 +94,7 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(ArticleSettings, 'article', (props) => props.params.slug);
+export default withAuth(ArticleSettings, 'article', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import { Card, LineChart, Title } from '@tremor/react';
 
@@ -10,7 +10,8 @@ import TruncateText from '@/components/common/TruncateText';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
-const Dashboard = ({ params }: { params: { slug: string } }) => {
+const Dashboard = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error } = useArticlesApiGetArticleOfficialStats(params?.slug || '', {
@@ -133,4 +134,7 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(Dashboard, 'article', (props) => props.params.slug);
+export default withAuth(Dashboard, 'article', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

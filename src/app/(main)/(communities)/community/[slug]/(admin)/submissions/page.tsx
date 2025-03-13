@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
 
@@ -16,7 +16,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 type Action = 'approve' | 'reject' | 'publish';
 
-const Submissions = ({ params }: { params: { slug: string } }) => {
+const Submissions = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
@@ -153,4 +154,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(Submissions, 'community', (props) => props.params.slug);
+export default withAuth(Submissions, 'community', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

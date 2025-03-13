@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
@@ -14,7 +14,8 @@ import EditCommunityDetails from './EditCommunityDetails';
 
 type ActiveTab = 'Details' | 'Rules' | 'About';
 
-const Preferences = ({ params }: { params: { slug: string } }) => {
+const Preferences = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
 
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -49,4 +50,7 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(Preferences, 'community', (props) => props.params.slug);
+export default withAuth(Preferences, 'community', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

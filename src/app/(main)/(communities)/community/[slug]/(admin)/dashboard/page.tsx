@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import { Card, LineChart, Title } from '@tremor/react';
 import { FilePlus, FileText, Users } from 'lucide-react';
@@ -11,7 +11,8 @@ import ArticleHighlightCard from '@/components/articles/ArticleHighlightCard';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
-const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
+const CommunityDashboard = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error } = useCommunitiesApiGetCommunityDashboard(params?.slug || '', {
@@ -157,4 +158,7 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(CommunityDashboard, 'community', (props) => props.params.slug);
+export default withAuth(CommunityDashboard, 'community', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

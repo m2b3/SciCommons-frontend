@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,7 +12,9 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthActivate } from '@/api/users-auth/users-auth';
 import { ErrorMessage } from '@/constants';
 
-const ActivateAccount = ({ params }: { params: { token: string } }) => {
+const ActivateAccount = (props: { params: Promise<{ token: string }> }) => {
+  const params = use(props.params);
+
   const router = useRouter();
   const [isActivated, setIsActivated] = useState(false);
   const [countdown, setCountdown] = useState(5);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
 
@@ -13,7 +13,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 import RequestListItem, { RequestListItemSkeleton } from './RequestListItem';
 
-const Requests = ({ params }: { params: { slug: string } }) => {
+const Requests = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
@@ -115,4 +116,7 @@ const Requests = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(Requests, 'community', (props) => props.params.slug);
+export default withAuth(Requests, 'community', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});
