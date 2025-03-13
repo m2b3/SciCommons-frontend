@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import { YooptaContentValue } from '@yoopta/editor';
 
@@ -20,7 +20,8 @@ import CommunityStats, { CommunityStatsSkeleton } from './CommunityStats';
 import DisplayCommunity, { DisplayCommunitySkeleton } from './DisplayCommunity';
 import RelevantCommunities from './RelevantCommunities';
 
-const Community = ({ params }: { params: { slug: string } }) => {
+const Community = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useStore(useAuthStore, (state) => state.accessToken);
   const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
 

@@ -46,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryClientProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
           <SessionExpirationDialog />

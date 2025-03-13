@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 
 import Image from 'next/image';
 
@@ -29,7 +29,8 @@ import { Reaction } from '@/types';
 
 import SocialShare from './SocialShare';
 
-const PostDetailPage = ({ params }: { params: { postId: number } }) => {
+const PostDetailPage = (props: { params: Promise<{ postId: number }> }) => {
+  const params = use(props.params);
   dayjs.extend(relativeTime);
 
   const accessToken = useAuthStore((state) => state.accessToken);

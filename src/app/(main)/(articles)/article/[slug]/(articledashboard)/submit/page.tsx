@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, use } from 'react';
 
 import { withAuth } from '@/HOCs/withAuth';
 import TabComponent from '@/components/communities/TabComponent';
@@ -10,7 +10,8 @@ import SubmitToCommunity from './SubmitToCommunity';
 
 type ActiveTab = 'Submit' | 'Status';
 
-const SubmitArticleToCommunity = ({ params }: { params: { slug: string } }) => {
+const SubmitArticleToCommunity = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Submit');
 
   return (
@@ -32,4 +33,7 @@ const SubmitArticleToCommunity = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(SubmitArticleToCommunity, 'article', (props) => props.params.slug);
+export default withAuth(SubmitArticleToCommunity, 'article', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});
