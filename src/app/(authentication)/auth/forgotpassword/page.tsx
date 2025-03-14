@@ -49,7 +49,7 @@ const ForgotPasswordForm: React.FC = () => {
           <div className="flex items-center justify-center">
             <Image src="/auth/forgotpassword.png" alt="logo" width={80} height={80} />
           </div>
-          <h1 className="mt-4 font-bold res-text-xl">
+          <h1 className="text-gray-500 mt-4 font-bold res-text-xl">
             {isSuccess ? 'Password Reset Email Sent' : 'Forgot Your Password'}
           </h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">
@@ -83,9 +83,9 @@ const ForgotPasswordForm: React.FC = () => {
             </Link>
           </>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-md space-y-2 p-4">
+          <form onSubmit={handleSubmit(onSubmit)} className=" text-gray-500 mx-auto max-w-md space-y-2 p-4">
             <FormInput<IForgotPasswordForm>
-              label="Email Address"
+              label="Email Address  "
               name="email"
               type="email"
               placeholder="Enter your email"
