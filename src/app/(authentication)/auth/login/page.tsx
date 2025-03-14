@@ -14,6 +14,7 @@ import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
+import { emailOrUsernameSchema } from '@/constants/zod-schema';
 import { usePathTracker } from '@/hooks/usePathTracker';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -94,8 +95,7 @@ const LoginForm: React.FC = () => {
             placeholder="Username or Email"
             register={register}
             requiredMessage="Username or Email is required"
-            patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/}
-            patternMessage="Enter a valid email or username"
+            schema={emailOrUsernameSchema}
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"

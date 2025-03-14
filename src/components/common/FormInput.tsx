@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Info } from 'lucide-react';
 import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
+import { ZodSchema } from 'zod';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -11,8 +12,6 @@ interface InputProps<TFieldValues extends FieldValues> {
   type: string;
   placeholder?: string;
   requiredMessage?: string;
-  patternMessage?: string;
-  patternValue?: RegExp;
   minLengthValue?: number;
   minLengthMessage?: string;
   maxLengthValue?: number;
@@ -28,6 +27,7 @@ interface InputProps<TFieldValues extends FieldValues> {
   inputClassName?: string;
   labelClassName?: string;
   helperTextClassName?: string;
+  schema?: ZodSchema<unknown>;
 }
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -37,12 +37,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   placeholder,
   register,
   requiredMessage,
-  patternMessage,
-  patternValue,
-  minLengthValue,
-  minLengthMessage,
-  maxLengthValue,
-  maxLengthMessage,
   errors,
   isSubmitting = false,
   readOnly = false,
@@ -52,6 +46,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   inputClassName,
   labelClassName,
   helperTextClassName,
+  schema,
 }: InputProps<TFieldValues>): JSX.Element => {
   const error = errors[name];
 
@@ -61,18 +56,16 @@ const FormInput = <TFieldValues extends FieldValues>({
     readOnly,
     ...register(name as Path<TFieldValues>, {
       required: requiredMessage ? { value: true, message: requiredMessage } : undefined,
-      pattern:
-        patternValue && patternMessage
-          ? { value: patternValue, message: patternMessage }
-          : undefined,
-      minLength:
-        minLengthValue && minLengthMessage
-          ? { value: minLengthValue, message: minLengthMessage }
-          : undefined,
-      maxLength:
-        maxLengthValue && maxLengthMessage
-          ? { value: maxLengthValue, message: maxLengthMessage }
-          : undefined,
+      validate: (value) => {
+        if (schema) {
+          const validationResult = schema.safeParse(value);
+          console.log(validationResult?.error);
+          if (!validationResult.success) {
+            return validationResult.error.errors[0]?.message || 'Invalid input';
+          }
+        }
+        return true;
+      },
     }),
     className: cn(
       'mt-1 block w-full px-3 py-2 ring-1 ring-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand res-text-sm focus:ring-1',
