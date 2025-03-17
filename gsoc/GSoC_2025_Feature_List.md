@@ -12,7 +12,10 @@ SciCommons is an open-source platform aimed at improving the scientific peer rev
   
 **Mobile-Friendly Interface:**  
 - Ensure a fully responsive design with a Progressive Web App (PWA) approach.  
-- Side-panel navigation with overlay functionality on mobile.    
+- Side-panel navigation with overlay functionality on mobile.
+
+**Efficient API calls and caching in frontend**
+- Optimize the current implementation of Tanstack Query leveraging well-managed cache keys and TTL
 
 ### 2. PWA & Cross-Platform Compatibility
 **Optimizing SciCommons for PWA:**  
