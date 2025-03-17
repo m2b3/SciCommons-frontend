@@ -40,7 +40,16 @@ const LoginForm: React.FC = () => {
     mutation: {
       onSuccess: (data) => {
         toast.success('Logged in successfully');
-        setAccessToken(data.data.token);
+        setAccessToken(
+          data.data.token,
+          data.data.user || {
+            id: 0,
+            username: '',
+            email: '',
+            first_name: '',
+            last_name: '',
+          }
+        );
         const previousPath = getPreviousPath();
 
         // Redirect logic

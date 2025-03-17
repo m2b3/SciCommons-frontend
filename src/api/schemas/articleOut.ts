@@ -35,4 +35,5 @@ export interface ArticleOut {
   total_reviews: number;
   updated_at: string;
   user: UserStats;
+  total_ratings: number;
 }

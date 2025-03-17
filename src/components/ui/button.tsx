@@ -10,7 +10,7 @@ import { Oval } from 'react-loader-spinner';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap gap-2 select-none text-white transition-all duration-100 ease-in-out rounded-md w-fit px-3 py-2',
+  'inline-flex items-center justify-center whitespace-nowrap gap-2 select-none text-white transition-all duration-100 ease-in-out rounded-md w-fit px-3 py-2 h-fit',
   {
     variants: {
       variant: {
@@ -154,7 +154,7 @@ const ButtonTitle = React.forwardRef<HTMLDivElement, ButtonTitleProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-center whitespace-nowrap text-sm font-normal',
+        'flex items-center justify-center whitespace-nowrap text-xs font-normal sm:text-sm',
         className
       )}
     >

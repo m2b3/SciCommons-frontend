@@ -30,4 +30,6 @@ export interface ReviewOut {
   user: UserStats;
   version?: number;
   versions: ReviewVersionSchema[];
+  avatar: string;
+  comments_ratings: number;
 }

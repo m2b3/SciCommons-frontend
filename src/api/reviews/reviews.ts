@@ -834,3 +834,68 @@ export const useArticlesReviewApiDeleteComment = <
 
   return useMutation(mutationOptions);
 };
+/**
+ * @summary Fetch Review Rating
+ */
+export const fetchReviewRating = (
+  reviewId: number,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<{ rating: number }>(
+    { url: `/api/articles/reviews/${reviewId}/rating/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getFetchReviewRatingQueryKey = (reviewId: number) => {
+  return [`/api/articles/reviews/${reviewId}/rating/`] as const;
+};
+
+export const getFetchReviewRatingQueryOptions = <
+  TData = Awaited<ReturnType<typeof fetchReviewRating>>,
+  TError = ErrorType<Message>,
+>(
+  reviewId: number,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchReviewRating>>, TError, TData>>;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFetchReviewRatingQueryKey(reviewId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchReviewRating>>> = ({ signal }) =>
+    fetchReviewRating(reviewId, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!reviewId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof fetchReviewRating>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type FetchReviewRatingQueryResult = NonNullable<
+  Awaited<ReturnType<typeof fetchReviewRating>>
+>;
+export type FetchReviewRatingQueryError = ErrorType<Message>;
+
+export const useFetchReviewRating = <
+  TData = FetchReviewRatingQueryResult,
+  TError = FetchReviewRatingQueryError,
+>(
+  reviewId: number,
+  options?: {
+    query?: Partial<UseQueryOptions<FetchReviewRatingQueryResult, TError, TData>>;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getFetchReviewRatingQueryOptions(reviewId, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};

@@ -9,6 +9,8 @@ import {
   MessageCircle,
   Pencil,
   Shield,
+  Star,
+  StarIcon,
   ThumbsDown,
   ThumbsUp,
   UserCircle,
@@ -21,13 +23,13 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
-import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import TruncateText from '../common/TruncateText';
+import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
 import ReviewComments from './ReviewComments';
 import ReviewForm from './ReviewForm';
 
@@ -42,7 +44,6 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   const [edit, setEdit] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState<number>(review.versions.length);
   const [displayComments, setDisplayComments] = useState<boolean>(false);
-  const imageData = useIdenticon(40);
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
@@ -108,14 +109,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     switch (reviewType) {
       case 'reviewer':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 font-medium text-purple-800 res-text-xs">
+          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800 dark:bg-purple-950 dark:text-purple-400">
             <UserCircle className="mr-1 h-3 w-3" />
             Reviewer
           </span>
         );
       case 'moderator':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 font-medium text-blue-800 res-text-xs">
+          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
             <Shield className="mr-1 h-3 w-3" />
             Moderator
           </span>
@@ -143,12 +144,16 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           refetch={refetch}
         />
       ) : (
-        <div className="mb-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-sm">
+        <div className="mb-4 rounded-xl border-common-contrast res-text-sm sm:border sm:bg-common-cardBackground sm:p-4">
           <div className="mb-2 flex justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <div>
                 <Image
-                  src={`data:image/png;base64,${imageData}`}
+                  src={
+                    review.user.profile_pic_url
+                      ? review.user.profile_pic_url
+                      : `data:image/png;base64,${review.avatar}`
+                  }
                   alt={review.user.username}
                   width={32}
                   height={32}
@@ -156,38 +161,38 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="flex items-center gap-2 font-bold">
+                <span className="flex items-center gap-2 font-bold text-text-secondary">
                   by {review.anonymous_name || review.user.username}
                   {review.is_author && (
                     <Pencil
                       size={16}
                       onClick={() => setEdit(!edit)}
-                      className="cursor-pointer hover:text-green-500"
+                      className="cursor-pointer hover:text-functional-green"
                     />
                   )}
                   {getReviewTypeTag(review.review_type || '')}
                 </span>
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <svg
+                    <Star
                       key={i}
-                      className={`h-4 w-4 ${i < currentVersion.rating ? 'text-green-500' : 'text-gray-300'}`}
+                      size={14}
                       fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.287 3.948a1 1 0 00.95.69h4.193c.969 0 1.371 1.24.588 1.81l-3.39 2.463a1 1 0 00-.364 1.118l1.287 3.948c.3.921-.755 1.688-1.54 1.118l-3.39-2.463a1 1 0 00-1.175 0l-3.39 2.463c-.785.57-1.84-.197-1.54-1.118l1.287-3.948a1 1 0 00-.364-1.118L2.222 9.375c-.784-.57-.38-1.81.588-1.81h4.193a1 1 0 00.95-.69l1.287-3.948z" />
-                    </svg>
+                      className={`${
+                        i < currentVersion.rating ? 'text-functional-yellow' : 'text-text-tertiary'
+                      }`}
+                    />
                   ))}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-gray-500 res-text-xs">
+            <div className="flex flex-wrap items-center justify-end gap-2 text-xs text-text-tertiary">
               <div className="">
                 <select
                   id="version-select"
                   value={selectedVersion}
                   onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
-                  className="rounded border-gray-300 p-1"
+                  className="rounded border border-common-minimal p-1"
                 >
                   <option value={review.versions.length}>Latest</option>
                   {review.versions
@@ -202,27 +207,36 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               ({dayjs(currentVersion.created_at).fromNow()})
             </div>
           </div>
-          <h3 className="mb-2 font-semibold res-text-base">
-            <TruncateText text={currentVersion.subject} maxLines={2} />
+          <h3 className="mb-2 mt-4 font-semibold res-text-base">
+            <TruncateText
+              text={currentVersion.subject}
+              maxLines={2}
+              textClassName="text-text-primary"
+            />
           </h3>
 
-          <div className="mb-4 text-gray-700">
-            <TruncateText text={currentVersion.content} maxLines={4} isHTML />
+          <div className="mb-4">
+            <TruncateText
+              text={currentVersion.content}
+              maxLines={4}
+              isHTML
+              textClassName="text-text-primary"
+            />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex space-x-4 text-gray-500">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex space-x-4 text-text-secondary">
               <div className="flex items-center">
                 {data?.data.user_reaction === 1 ? (
                   <button
                     onClick={() => handleReaction('upvote')}
-                    className="text-green-500 hover:text-green-700"
+                    className="text-functional-green hover:text-functional-greenContrast"
                   >
                     <ThumbsUp className="mr-1 h-4 w-4" />
                   </button>
                 ) : (
                   <button
                     onClick={() => handleReaction('upvote')}
-                    className="text-gray-500 hover:text-green-500"
+                    className="text-text-secondary hover:text-functional-green"
                   >
                     <ThumbsUp className="mr-1 h-4 w-4" />
                   </button>
@@ -234,14 +248,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 {data?.data.user_reaction === -1 ? (
                   <button
                     onClick={() => handleReaction('downvote')}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-functional-red hover:text-functional-redContrast"
                   >
                     <ThumbsDown className="mr-1 h-4 w-4" />
                   </button>
                 ) : (
                   <button
                     onClick={() => handleReaction('downvote')}
-                    className="text-gray-500 hover:text-red-500"
+                    className="text-text-secondary hover:text-functional-red"
                   >
                     <ThumbsDown className="mr-1 h-4 w-4" />
                   </button>
@@ -249,36 +263,42 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 <span>{data?.data.dislikes}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2 text-gray-500">
-              <div className="flex items-center">
-                <MessageCircle className="mr-1 h-4 w-4" />
-                <button
-                  onClick={() => setDisplayComments(!displayComments)}
-                  className="hover:underline focus:outline-none"
-                >
+            <div className="flex items-center space-x-2 text-text-secondary">
+              <button
+                onClick={() => setDisplayComments((prev) => !prev)}
+                className="flex items-center gap-2 text-xs hover:underline focus:outline-none"
+              >
+                {review?.comments_ratings > 0 && (
+                  <div className="flex items-center gap-1 text-functional-yellow">
+                    <StarIcon className="h-3.5 w-3.5 shrink-0" fill="currentColor" />
+                    <span>{review?.comments_ratings}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="h-3.5 w-3.5 shrink-0" />
                   {review.comments_count} comments
-                </button>
-              </div>
+                </div>
+              </button>
               {canApprove && (
-                <button
-                  onClick={handleApprove}
+                <Button
                   disabled={review.is_approved || approveArticlePending}
-                  className={`flex items-center rounded-full px-3 py-1 font-medium res-text-xs ${
-                    review.is_approved
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                  }`}
+                  onClick={handleApprove}
+                  variant={review.is_approved ? 'default' : 'blue'}
                 >
-                  <CheckCircle className="mr-1 h-4 w-4" />
-                  {review.is_approved ? 'Approved' : 'Approve'}
-                </button>
+                  <ButtonIcon>
+                    <CheckCircle className="h-4 w-4" />
+                  </ButtonIcon>
+                  <ButtonTitle>{review.is_approved ? 'Approved' : 'Approve'}</ButtonTitle>
+                </Button>
               )}
             </div>
           </div>
+          {displayComments && (
+            <div className="mt-4 w-full">
+              <ReviewComments reviewId={Number(review.id)} displayComments={displayComments} />
+            </div>
+          )}
         </div>
-      )}
-      {displayComments && (
-        <ReviewComments reviewId={Number(review.id)} displayComments={displayComments} />
       )}
     </>
   );

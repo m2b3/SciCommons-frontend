@@ -6,16 +6,16 @@ import { cn } from '@/lib/utils';
 
 const ratingVariants = {
   default: {
-    star: 'text-foreground',
-    emptyStar: 'text-muted-foreground',
+    star: 'text-text-primary',
+    emptyStar: 'text-text-tertiary',
   },
   destructive: {
-    star: 'text-red-500',
-    emptyStar: 'text-red-200',
+    star: 'text-functional-red',
+    emptyStar: 'text-functional-red',
   },
   yellow: {
-    star: 'text-yellow-500',
-    emptyStar: 'text-yellow-200',
+    star: 'text-functional-yellow',
+    emptyStar: 'text-functional-yellow',
   },
 };
 
@@ -59,7 +59,7 @@ const Ratings = ({
     ) : null;
 
   return (
-    <div className={cn('flex items-center gap-2')} {...props}>
+    <div className={cn('flex h-fit items-center gap-1')} {...props}>
       {[...Array(fullStars)].map((_, i) =>
         React.cloneElement(Icon, {
           key: i,

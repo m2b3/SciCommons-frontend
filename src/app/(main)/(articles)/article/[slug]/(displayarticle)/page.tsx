@@ -56,7 +56,9 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
           title: 'Reviews',
           content: (
             <div className="flex flex-col gap-2">
-              <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
+              {!data.data.is_submitter && (
+                <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
+              )}
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
               {reviewsData?.data.items.length === 0 && (
                 <EmptyState
