@@ -97,30 +97,34 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
   };
 
   return (
-    <div className="rounded-md bg-white-secondary text-gray-900">
+    <div className="">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
         buttonText="Post Comment"
       />
       {isPending &&
-        Array.from({ length: 5 }).map((_, index) => (
+        Array.from({ length: 3 }).map((_, index) => (
           <div
-            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300"
+            className="rounded-ls relative mt-4 h-20 w-full animate-pulse bg-common-minimal"
             key={index}
-          ></div>
+          />
         ))}
       {data && data.data.length > 0 && (
-        <>
+        <div className="flex flex-col border-common-minimal">
+          <span className="mb-2 text-sm font-bold text-text-tertiary">Comments:</span>
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <label htmlFor="depth-select" className="flex items-center text-sm font-medium">
+              <label
+                htmlFor="depth-select"
+                className="flex items-center text-sm font-medium text-text-secondary"
+              >
                 <Layers size={16} className="mr-1" />
                 <span>Depth:</span>
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-white-primary p-1 text-sm text-gray-900"
+                className="rounded border bg-common-background p-1 text-sm"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >
@@ -134,16 +138,16 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
             </div>
             <button
               onClick={toggleAllComments}
-              className="flex items-center text-blue-500 transition-colors duration-200 hover:text-blue-600"
+              className="flex items-center text-xs text-functional-blue transition-colors duration-200 hover:text-functional-blueContrast"
             >
               {isAllCollapsed ? (
                 <>
-                  <ChevronsDown size={16} className="mr-1" />
+                  <ChevronsDown size={14} className="mr-1" />
                   <span>Expand All</span>
                 </>
               ) : (
                 <>
-                  <ChevronsUp size={16} className="mr-1" />
+                  <ChevronsUp size={14} className="mr-1" />
                   <span>Collapse All</span>
                 </>
               )}
@@ -160,7 +164,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
             onDeleteComment={deleteCommentbyId}
             contentType={ContentTypeEnum.articlesdiscussioncomment}
           />
-        </>
+        </div>
       )}
     </div>
   );

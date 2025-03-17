@@ -21,4 +21,5 @@ export interface DiscussionOut {
   topic: string;
   updated_at: string;
   user: UserStats;
+  avatar?: string;
 }

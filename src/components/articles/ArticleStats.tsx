@@ -88,18 +88,21 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
         </Button>
         <div className="flex items-center p-1 px-2 text-xs">
           <Star
-            className="mr-2 size-4 text-functional-yellow"
+            className="mr-1 size-4 text-functional-yellow"
             fill="currentColor"
             strokeWidth={0}
           />
-          <span className="text-text-secondary">{article.total_reviews} Reviews and Ratings</span>
+          <span className="text-text-secondary">
+            {article.total_reviews > 0 && `${article.total_ratings} ratings &`}{' '}
+            {article.total_reviews} reviews
+          </span>
         </div>
         <div className="flex items-center p-1 px-2 text-xs">
-          <MessageCircle className="mr-2 size-4 text-text-secondary" />
+          <MessageCircle className="mr-1 size-4 text-text-secondary" />
           <span className="text-text-secondary">{article.total_comments} Comments</span>
         </div>
         <div className="flex items-center p-1 px-2 text-xs">
-          <MessageSquare className="mr-2 size-4 text-text-secondary" />
+          <MessageSquare className="mr-1 size-4 text-text-secondary" />
           <span className="text-text-secondary">{article.total_discussions} Discussions</span>
         </div>
       </div>

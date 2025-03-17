@@ -12,10 +12,12 @@ function convertToCommentData(backendComment: ReviewCommentOut): CommentData {
     is_author: backendComment.is_author || false,
     // review specific
     anonymous_name: backendComment.anonymous_name,
+    avatar: backendComment.avatar,
     rating: backendComment.rating || 0,
     review_version: true,
     isReview: true,
     isNew: false,
+    is_deleted: backendComment.is_deleted || false,
   };
 
   return convertedComment;

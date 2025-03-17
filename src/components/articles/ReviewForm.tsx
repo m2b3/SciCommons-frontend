@@ -141,7 +141,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mb-4 flex flex-col gap-4 rounded-xl bg-common-cardBackground p-4 shadow-sm res-text-sm"
+          className="mb-4 flex flex-col gap-4 rounded-xl res-text-sm sm:bg-common-cardBackground sm:p-4"
         >
           <div className="">
             <LabeledTooltip label="Rate this article" info="Rate this article" />

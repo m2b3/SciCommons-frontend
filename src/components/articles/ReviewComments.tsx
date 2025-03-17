@@ -10,6 +10,7 @@ import {
   useArticlesReviewApiDeleteComment,
   useArticlesReviewApiListReviewComments,
   useArticlesReviewApiUpdateComment,
+  useFetchReviewRating,
 } from '@/api/reviews/reviews';
 import { ContentTypeEnum, ReviewCommentOut } from '@/api/schemas';
 import { CommentData } from '@/components/common/Comment';
@@ -17,6 +18,8 @@ import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import convertToCommentData from '@/lib/convertReviewCommentData';
 import { useAuthStore } from '@/stores/authStore';
+
+import { BlockSkeleton, Skeleton } from '../common/Skeleton';
 
 interface ReviewCommentsProps {
   reviewId: number;
@@ -34,6 +37,14 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
   const { data, refetch, isPending } = useArticlesReviewApiListReviewComments(reviewId, {
     query: { enabled: displayComments },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
+  const {
+    data: ratings,
+    isPending: isRatingsLoading,
+    isError: isRatingsError,
+  } = useFetchReviewRating(reviewId, {
+    query: { enabled: displayComments, retry: 5 },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -159,31 +170,39 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
   };
 
   return (
-    <div className="rounded-md bg-white-secondary p-4 text-gray-900">
+    <div className="flex flex-col border-t border-common-contrast pt-4">
+      <span className="mb-2 text-sm font-bold text-text-tertiary">Add Comment:</span>
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
         buttonText="Post Comment"
-        isReview
+        isReview={true}
+        initialRating={ratings?.data.rating || 0}
+        isRatingsLoading={isRatingsLoading}
+        isRatingsError={isRatingsError}
       />
-      {isPending &&
-        Array.from({ length: 5 }).map((_, index) => (
-          <div
-            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300"
-            key={index}
-          ></div>
-        ))}
+      {isPending && (
+        <Skeleton className="mt-4 gap-4 p-0">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <BlockSkeleton key={index} />
+          ))}
+        </Skeleton>
+      )}
       {data && data.data.length > 0 && (
-        <>
+        <div className="flex flex-col border-common-minimal pt-4">
+          <span className="mb-2 text-sm font-bold text-text-tertiary">Comments:</span>
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <label htmlFor="depth-select" className="flex items-center text-sm font-medium">
+              <label
+                htmlFor="depth-select"
+                className="flex items-center text-sm font-medium text-text-secondary"
+              >
                 <Layers size={16} className="mr-1" />
                 <span>Depth:</span>
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-white-primary p-1 text-sm"
+                className="rounded border bg-common-background p-1 text-sm"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >
@@ -197,16 +216,16 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
             </div>
             <button
               onClick={toggleAllComments}
-              className="flex items-center text-blue-500 transition-colors duration-200 hover:text-blue-600"
+              className="flex items-center text-xs text-functional-blue transition-colors duration-200 hover:text-functional-blueContrast"
             >
               {isAllCollapsed ? (
                 <>
-                  <ChevronsDown size={16} className="mr-1" />
+                  <ChevronsDown size={14} className="mr-1" />
                   <span>Expand All</span>
                 </>
               ) : (
                 <>
-                  <ChevronsUp size={16} className="mr-1" />
+                  <ChevronsUp size={14} className="mr-1" />
                   <span>Collapse All</span>
                 </>
               )}
@@ -221,7 +240,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
             onDeleteComment={deleteCommentbyId}
             contentType={ContentTypeEnum.articlesreviewcomment}
           />
-        </>
+        </div>
       )}
     </div>
   );

@@ -58,6 +58,7 @@ export function convertToDiscussionCommentData(backendComment: DiscussionComment
     anonymous_name: backendComment.anonymous_name,
     review_version: false,
     isNew: false,
+    avatar: backendComment.avatar,
   };
 
   return convertedComment;

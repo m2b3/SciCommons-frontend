@@ -21,7 +21,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
 
   return (
     <div
-      className={`flex flex-col items-start rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}
+      className={`flex flex-col items-start rounded-xl border-common-contrast res-text-xs sm:border sm:bg-common-cardBackground sm:p-4 ${hasImage ? 'sm:flex-row' : ''}`}
     >
       {hasImage && (
         <div className="mb-4 w-full sm:mb-0 sm:mr-4 sm:w-1/3">
@@ -42,7 +42,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </h2>
         <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Abstract</h3>
-          <p className="text-text-primary">
+          <p className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
           </p>
         </div>
@@ -108,7 +108,7 @@ export default DisplayArticle;
 export const DisplayArticleSkeleton: React.FC = () => {
   return (
     <>
-      <Skeleton className="flex flex-col items-start rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+      <Skeleton className="flex flex-col items-start rounded-xl border-common-contrast sm:border sm:bg-common-cardBackground sm:p-4">
         <TextSkeleton className="h-10" />
         <TextSkeleton className="mt-4 h-6 w-20" />
         <TextSkeleton />

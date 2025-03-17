@@ -16,4 +16,5 @@ export interface DiscussionCommentOut {
   is_author?: boolean;
   replies: DiscussionCommentOut[];
   upvotes: number;
+  avatar?: string;
 }

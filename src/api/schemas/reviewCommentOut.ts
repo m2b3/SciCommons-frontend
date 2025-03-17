@@ -10,6 +10,7 @@ import type { UserStats } from './userStats';
 
 export interface ReviewCommentOut {
   anonymous_name?: string;
+  avatar?: string;
   author: UserStats;
   content: string;
   created_at: string;
@@ -18,4 +19,5 @@ export interface ReviewCommentOut {
   rating?: ReviewCommentOutRating;
   replies: ReviewCommentOut[];
   upvotes: number;
+  is_deleted?: boolean;
 }

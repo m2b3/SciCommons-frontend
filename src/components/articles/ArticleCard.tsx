@@ -16,7 +16,7 @@ interface ArticleCardProps {
 
 const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs hover:shadow-md hover:shadow-common-minimal">
+    <div className="flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal md:p-6">
       <div className="flex">
         <div className="min-w-0 flex-grow gap-4 pr-4">
           <Link
@@ -33,7 +33,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
           <p className="mt-2 line-clamp-2 overflow-hidden text-ellipsis text-wrap text-text-primary">
             {article.abstract}
           </p>
-          <p className="mt-2 text-text-secondary">
+          <p className="mt-2 line-clamp-2 text-wrap text-text-secondary">
             Authors: {article.authors.map((author) => author.label).join(', ')}
           </p>
           {article.community_article?.community.name && (
@@ -74,16 +74,19 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
       </div>
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center">
-          <Star className="h-5 w-5 text-functional-yellow" />
-          <span className="ml-1 text-text-secondary">{article.total_reviews} ratings</span>
+          <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
+          <span className="text-xs text-text-secondary">
+            {article.total_reviews > 0 && `${article.total_ratings} ratings &`}{' '}
+            {article.total_reviews} reviews
+          </span>
         </div>
         <div className="flex items-center">
-          <MessageSquare className="h-5 w-5 text-text-secondary" />
-          <span className="ml-1 text-text-secondary">{article.total_comments} comments</span>
+          <MessageSquare className="h-3.5 text-text-secondary" />
+          <span className="text-xs text-text-secondary">{article.total_comments} comments</span>
         </div>
         <div className="flex items-center">
-          <User className="h-5 w-5 text-text-secondary" />
-          <span className="ml-1 text-text-secondary">{0} discussions</span>
+          <User className="h-3.5 text-text-secondary" />
+          <span className="text-xs text-text-secondary">{0} discussions</span>
         </div>
       </div>
     </div>

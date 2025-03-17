@@ -63,7 +63,7 @@ const Articles: React.FC = () => {
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto p-2 py-8 md:p-8">
       <SearchableList<ArticleOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
