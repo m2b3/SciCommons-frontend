@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 
 import { withAuth } from '@/HOCs/withAuth';
 import TabComponent from '@/components/communities/TabComponent';
@@ -11,7 +11,8 @@ import UnRegistered from './UnRegistered';
 
 type ActiveTab = 'Registered' | 'UnRegistered' | 'Status';
 
-const Invite = ({ params }: { params: { slug: string } }) => {
+const Invite = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Registered');
 
   return (
@@ -30,4 +31,7 @@ const Invite = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(Invite, 'community', (props) => props.params.slug);
+export default withAuth(Invite, 'community', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

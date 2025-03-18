@@ -1,7 +1,7 @@
 'use client';
 
 // Todo: Render this component on server side
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
@@ -19,7 +19,8 @@ import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
-const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
+const ArticleDisplayPage = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
 

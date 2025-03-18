@@ -1,12 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 
 import { withAuth } from '@/HOCs/withAuth';
 import Notifications from '@/components/common/Notifications';
 
-const ArticleNotifications = ({ params }: { params: { slug: string } }) => {
+const ArticleNotifications = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   return <Notifications article_slug={params?.slug} />;
 };
 
-export default withAuth(ArticleNotifications, 'article', (props) => props.params.slug);
+export default withAuth(ArticleNotifications, 'article', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});

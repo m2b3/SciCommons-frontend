@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -19,7 +19,9 @@ interface IResetPasswordForm {
   confirmPassword: string;
 }
 
-const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
+const ResetPasswordForm = (props: { params: Promise<{ token: string }> }) => {
+  const params = use(props.params);
+
   const router = useRouter();
   const {
     register,

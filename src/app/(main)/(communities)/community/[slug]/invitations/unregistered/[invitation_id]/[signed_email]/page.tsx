@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -16,11 +16,10 @@ import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInv
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
-export default function UnRegisteredUsersInvitation({
-  params,
-}: {
-  params: { slug: string; invitation_id: string; signed_email: string };
+export default function UnRegisteredUsersInvitation(props: {
+  params: Promise<{ slug: string; invitation_id: string; signed_email: string }>;
 }) {
+  const params = use(props.params);
   const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
 

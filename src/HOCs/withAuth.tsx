@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ComponentType, useEffect, useState } from 'react';
+import React, { ComponentType, use, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -21,14 +21,17 @@ type DashboardType = 'article' | 'community' | null;
 export function withAuth<P extends WithAuthProps>(
   WrappedComponent: ComponentType<P>,
   dashboardType: DashboardType = null,
-  getResourceId?: (props: P) => string | undefined
+  getResourceId?: (props: P) => string | undefined | Promise<string>
 ) {
   const WithAuthComponent: React.FC<P> = (props) => {
     const router = useRouter();
     const { isAuthenticated, accessToken, initializeAuth } = useAuthStore();
     const [isInitializing, setIsInitializing] = useState(true);
 
-    const resourceId = getResourceId ? getResourceId(props) : undefined;
+    const resourceIdPromise = getResourceId ? getResourceId(props) : undefined;
+
+    const resourceId =
+      resourceIdPromise instanceof Promise ? use(resourceIdPromise) : resourceIdPromise;
 
     const params: UsersCommonApiCheckPermissionParams = {
       dashboard_type: dashboardType || undefined,

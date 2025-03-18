@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
@@ -15,7 +15,8 @@ import UsersListItem from './UsersListItem';
 type ActiveTab = 'Members' | 'Moderators' | 'Reviewers' | 'Admins';
 
 // Todo: Optimize the code to reduce the number of lines
-const Roles = ({ params }: { params: { slug: string } }) => {
+const Roles = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Members');
 
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -151,7 +152,10 @@ const Roles = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default withAuth(Roles, 'community', (props) => props.params.slug);
+export default withAuth(Roles, 'community', async (props) => {
+  const params = await props.params;
+  return params.slug;
+});
 
 const UsersListItemSkeleton: React.FC = () => {
   return (
