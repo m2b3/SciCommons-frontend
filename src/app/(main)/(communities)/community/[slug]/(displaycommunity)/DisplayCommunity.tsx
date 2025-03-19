@@ -77,7 +77,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
             >
               {community.name}
             </h2>
-            <p
+            <div
               className="w-[95%] res-text-sm"
               style={{
                 wordBreak: 'break-word',
@@ -88,7 +88,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 maxLines={2}
                 textClassName="text-text-secondary"
               />
-            </p>
+            </div>
             <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">
               <div className="flex items-center">
                 <Users className="mr-1 h-4 w-4" />

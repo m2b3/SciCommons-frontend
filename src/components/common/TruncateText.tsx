@@ -37,7 +37,7 @@ const TruncateText = ({
 
   return (
     <div>
-      <div
+      <span
         ref={textRef}
         className={cn('text-text-primary', textClassName, {
           'overflow-hidden': !isExpanded && isTruncated,

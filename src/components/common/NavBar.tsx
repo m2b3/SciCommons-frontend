@@ -168,6 +168,7 @@ const ProfileDropdown: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
   const imageData = useIdenticon(40);
   const { handleAppInstall } = usePWAInstallPrompt('install');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -175,7 +176,7 @@ const ProfileDropdown: React.FC = () => {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Image
           src={`data:image/png;base64,${imageData}`}
@@ -185,18 +186,18 @@ const ProfileDropdown: React.FC = () => {
           className="cursor-pointer rounded-full"
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>
+      <DropdownMenuContent sideOffset={12}>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/myprofile" className="flex items-center">
             <User size={16} className="mr-2" /> Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/mycontributions" className="flex items-center">
             <NotebookTabs size={16} className="mr-2" /> Contributions
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <button
             onClick={handleAppInstall}
             id="install"
@@ -207,7 +208,7 @@ const ProfileDropdown: React.FC = () => {
             Install
           </button>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <button onClick={handleLogout} className="flex items-center text-functional-red">
             <LogOut size={16} className="mr-2" />
             Logout

@@ -42,7 +42,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
   }, [isSuccess, error, data]);
 
   return (
-    <div className="relative flex h-full flex-col items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs hover:shadow-md hover:shadow-common-minimal">
+    <div className="relative flex h-full flex-col items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal">
       <div className="relative size-10 flex-shrink-0 sm:mr-4">
         <Image
           src={community.profile_pic_url || `data:image/png;base64,${imageData}`}

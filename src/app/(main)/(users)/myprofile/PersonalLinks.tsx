@@ -15,9 +15,9 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
   const { register } = useFormContext();
 
   return (
-    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white-secondary p-6 shadow-md">
-      <h2 className="font-bold res-text-xl">Personal Links</h2>
-      <p className="mt-2 text-gray-600">
+    <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
+      <h2 className="font-bold text-text-primary res-text-xl">Personal Links</h2>
+      <p className="mt-2 text-sm text-text-tertiary">
         These are the professional profiles you have provided. We have verified them to ensure the
         legitimacy of your account.
       </p>

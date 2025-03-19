@@ -12,9 +12,9 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
   const { control } = useFormContext();
 
   return (
-    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white-secondary p-6 shadow-md">
-      <h2 className="mb-4 text-2xl font-bold">Research Interests</h2>
-      <p className="mb-6 text-gray-600">
+    <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
+      <h2 className="mb-2 font-bold text-text-primary res-text-xl">Research Interests</h2>
+      <p className="mb-6 text-sm text-text-tertiary">
         Select or add keywords that represent your research interests.
       </p>
       <Controller

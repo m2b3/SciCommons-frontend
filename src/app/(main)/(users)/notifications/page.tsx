@@ -2,7 +2,11 @@
 
 import React, { useEffect } from 'react';
 
+import { Check, CheckCheck, SquareArrowOutUpRight } from 'lucide-react';
+
 import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
+import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/authStore';
 
 const NotificationPage: React.FC = () => {
@@ -47,48 +51,63 @@ const NotificationPage: React.FC = () => {
   // };
 
   return (
-    <div className="mx-auto min-h-screen max-w-4xl p-4">
-      <h1 className="mb-4 text-center text-2xl font-bold">Notifications</h1>
-      <ul>
-        {isPending &&
-          Array.from({ length: 2 }).map((_, index) => (
-            <NotificationCardSkeletonLoader key={index} />
-          ))}
+    <div className="mx-auto max-w-4xl p-4">
+      <h1 className="mb-6 text-center text-4xl font-bold text-text-primary sm:my-6">
+        Notifications
+      </h1>
+      <ul className="flex w-full flex-col items-center gap-4">
+        {isPending && <NotificationCardSkeletonLoader />}
         {data &&
           data.data.map((notif) => (
             <li
               key={notif.id}
-              className={`mb-2 rounded p-4 ${notif.isRead ? 'bg-gray-200' : 'bg-white-secondary shadow-md'}`}
+              className={`w-full rounded-xl border p-4 ${notif.isRead ? 'border-common-minimal bg-common-background' : 'border-common-contrast bg-common-cardBackground'}`}
             >
-              <p className={`font-medium ${notif.isRead ? 'text-gray-600' : 'text-gray-900'}`}>
+              <p
+                className={`text-base font-medium ${notif.isRead ? 'text-text-secondary' : 'text-text-primary'}`}
+              >
                 {notif.message}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-text-tertiary">
                 {notif.notificationType} - {new Date(notif.createdAt).toLocaleDateString()}
                 {/* {new Date(notif.expiresAt).toLocaleDateString()} */}
               </p>
-              {notif.content && <p className="text-sm text-gray-500">{notif.content}</p>}
+              {notif.content && <p className="mt-2 text-sm text-text-secondary">{notif.content}</p>}
               <div className="mt-2 flex items-center justify-between">
                 {/* Display View only if the link is present */}
                 {notif.link && (
-                  <a href={notif.link} className="text-green-500 hover:text-green-700">
+                  <a
+                    href={notif.link}
+                    className="flex items-center gap-1 text-sm text-functional-green hover:text-functional-greenContrast"
+                  >
                     View
+                    <SquareArrowOutUpRight size={12} className="inline" />
                   </a>
                 )}
-                {!notif.isRead && (
-                  <button
-                    className="rounded bg-green-500 px-2 py-1 text-sm text-white hover:bg-green-700"
-                    onClick={() => markAsRead(notif.id)}
+                {!notif.isRead ? (
+                  <Button onClick={() => markAsRead(notif.id)} className="px-3 py-1.5">
+                    <ButtonIcon>
+                      <Check size={14} />
+                    </ButtonIcon>
+                    <ButtonTitle className="sm:text-xs">Mark as Read</ButtonTitle>
+                  </Button>
+                ) : (
+                  <Button
+                    className="px-3 py-1.5 text-text-tertiary hover:bg-transparent"
+                    variant={'outline'}
                   >
-                    Mark as Read
-                  </button>
+                    <ButtonIcon>
+                      <CheckCheck size={14} />
+                    </ButtonIcon>
+                    <ButtonTitle className="sm:text-xs">Read</ButtonTitle>
+                  </Button>
                 )}
               </div>
             </li>
           ))}
       </ul>
       {data?.data.length === 0 && (
-        <p className="text-center text-gray-500">No notifications to show.</p>
+        <p className="text-center text-text-tertiary">No notifications to show.</p>
       )}
     </div>
   );
@@ -98,10 +117,10 @@ export default NotificationPage;
 
 const NotificationCardSkeletonLoader: React.FC = () => {
   return (
-    <div className="mb-2 animate-pulse rounded bg-white-secondary p-4 shadow-lg">
-      <div className="mb-2 h-4 w-1/2 bg-gray-200"></div>
-      <div className="mb-2 h-4 w-1/4 bg-gray-200"></div>
-      <div className="h-4 w-3/4 bg-gray-200"></div>
-    </div>
+    <Skeleton className="w-full gap-4">
+      <BlockSkeleton className="h-28 rounded-xl" />
+      <BlockSkeleton className="h-28 rounded-xl" />
+      <BlockSkeleton className="h-28 rounded-xl" />
+    </Skeleton>
   );
 };

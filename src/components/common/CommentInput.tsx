@@ -23,6 +23,7 @@ interface CommentInputProps {
   isRatingsError?: boolean;
   // Reply specific props
   isReply?: boolean;
+  isAuthor?: boolean;
 }
 
 interface FormInputs {
@@ -40,6 +41,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
   isRatingsError = false,
   isRatingsLoading = false,
   isReply = false,
+  isAuthor = false,
 }) => {
   const {
     register,
@@ -86,7 +88,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
         )}
       </div>
       <div className="flex w-full justify-between">
-        {isReview && !isReply && (
+        {isReview && !isAuthor && !isReply && (
           <>
             {isRatingsLoading ? (
               <Skeleton className="p-0">
