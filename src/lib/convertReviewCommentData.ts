@@ -13,7 +13,7 @@ function convertToCommentData(backendComment: ReviewCommentOut): CommentData {
     // review specific
     anonymous_name: backendComment.anonymous_name,
     avatar: backendComment.avatar,
-    rating: backendComment.rating || 0,
+    rating: backendComment.rating ?? undefined,
     review_version: true,
     isReview: true,
     isNew: false,

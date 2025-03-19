@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useUsersApiGetMe, useUsersApiUpdateUser } from '@/api/users/users';
-import Button from '@/components/common/Button';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -146,10 +146,7 @@ const Home: React.FC = () => {
 
   return (
     <FormProvider {...methods}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="min-h-screen bg-gray-100 py-8 text-gray-900 res-text-sm"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="py-8 res-text-sm">
         <div className="container mx-auto px-4">
           <Profile
             errors={errors}
@@ -162,8 +159,8 @@ const Home: React.FC = () => {
           <ResearchInterests editMode={editMode} />
           {editMode && (
             <div className="mx-auto mt-6 max-w-4xl">
-              <Button type="submit" isPending={isPending}>
-                Save Changes
+              <Button type="submit" disabled={isPending} className="w-full">
+                <ButtonTitle>Save Changes</ButtonTitle>
               </Button>
             </div>
           )}

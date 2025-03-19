@@ -295,7 +295,11 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           </div>
           {displayComments && (
             <div className="mt-4 w-full">
-              <ReviewComments reviewId={Number(review.id)} displayComments={displayComments} />
+              <ReviewComments
+                reviewId={Number(review.id)}
+                displayComments={displayComments}
+                isAuthor={review.is_author}
+              />
             </div>
           )}
         </div>

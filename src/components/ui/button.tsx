@@ -20,7 +20,7 @@ const buttonVariants = cva(
         gray: 'bg-functional-gray hover:bg-functional-grayContrast text-black dark:text-white',
         transparent: 'bg-transparent hover:bg-transparent dark:text-white text-black',
         outline:
-          'bg-transparent border border-common-minimal rounded-sm text-text-primary hover:bg-common-minimal/20',
+          'bg-transparent border border-common-minimal text-text-primary hover:bg-common-minimal/20',
       },
       size: {
         default: 'text-base',

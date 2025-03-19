@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import Image from 'next/image';
 
-import { Edit, Save } from 'lucide-react';
+import { Edit, Pencil, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
@@ -21,9 +21,9 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col rounded-lg bg-white-secondary p-6 shadow-md md:flex-row">
+    <div className="mx-auto flex max-w-4xl flex-col rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:flex-row md:p-6">
       <div className="relative mx-auto mb-6 flex items-center justify-center md:mb-0 md:mr-6 md:w-1/3">
-        <div className="h-40 w-40 overflow-hidden rounded-full bg-gray-100">
+        <div className="aspect-square h-40 w-40 shrink-0 overflow-hidden rounded-full border-2 border-common-minimal bg-common-minimal">
           <Image
             src={previewImage || profilePicture}
             alt="Profile"
@@ -57,27 +57,20 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
             ) as HTMLInputElement;
             if (fileInput) fileInput.click();
           }}
-          className="absolute bottom-1 right-1 rounded-full bg-blue-500 p-2 text-white transition-colors hover:bg-blue-600 md:bottom-40 md:right-14"
+          className="absolute bottom-1 right-1 rounded-full bg-functional-blue p-2 text-white transition-colors hover:bg-functional-blueContrast md:bottom-40 md:right-14"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-          </svg>
+          <Pencil size={18} className="text-white" />
         </button>
       </div>
       <div className="w-full md:w-2/3">
         <h2 className="mb-6 flex items-center font-bold res-text-xl">
-          <span>Your Profile</span>
+          <span className="text-text-primary">Your Profile</span>
           <button
             type="button"
             onClick={() => setEditMode((prev) => !prev)}
-            className="ml-4 text-blue-500 hover:text-blue-600"
+            className="ml-4 text-functional-blue hover:text-functional-blueContrast"
           >
-            {editMode ? <Save size={24} /> : <Edit size={24} />}
+            {editMode ? <Save size={18} /> : <Edit size={18} />}
           </button>
         </h2>
         <div className="space-y-4">

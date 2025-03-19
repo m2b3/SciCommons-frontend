@@ -24,17 +24,22 @@ import { BlockSkeleton, Skeleton } from '../common/Skeleton';
 interface ReviewCommentsProps {
   reviewId: number;
   displayComments: boolean;
+  isAuthor?: boolean;
 }
 
 // Todo 1: Fix the issue with highlighting new comments
 // Todo 2: Add Generic Types for the comments
 // Todo 3: Add ToolTip for depth select
 
-const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayComments }) => {
+const ReviewComments: React.FC<ReviewCommentsProps> = ({
+  reviewId,
+  displayComments,
+  isAuthor = false,
+}) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
-  const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
+  const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(true);
   const { data, refetch, isPending } = useArticlesReviewApiListReviewComments(reviewId, {
     query: { enabled: displayComments },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -44,7 +49,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
     isPending: isRatingsLoading,
     isError: isRatingsError,
   } = useFetchReviewRating(reviewId, {
-    query: { enabled: displayComments, retry: 5 },
+    query: { enabled: displayComments && !isAuthor, retry: 5 },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -180,6 +185,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({ reviewId, displayCommen
         initialRating={ratings?.data.rating || 0}
         isRatingsLoading={isRatingsLoading}
         isRatingsError={isRatingsError}
+        isAuthor={isAuthor}
       />
       {isPending && (
         <Skeleton className="mt-4 gap-4 p-0">

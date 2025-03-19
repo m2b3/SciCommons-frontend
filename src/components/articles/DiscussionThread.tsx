@@ -108,12 +108,12 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="mr-4 flex-grow cursor-pointer font-bold res-text-base">
+                <div className="mr-4 flex-grow cursor-pointer font-bold res-text-base">
                   <TruncateText text={discussion.topic} maxLines={2} />
-                </p>
-                <p>
+                </div>
+                <div>
                   <TruncateText text={discussion.content} maxLines={3} />
-                </p>
+                </div>
               </div>
               <div className="mt-4 flex items-center text-gray-500 res-text-xs">
                 <button className="mr-4 flex items-center space-x-1">

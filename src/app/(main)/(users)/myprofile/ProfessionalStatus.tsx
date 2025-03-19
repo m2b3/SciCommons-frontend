@@ -4,6 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 
 import { IProfileForm } from './page';
 
@@ -24,13 +25,13 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
   };
 
   return (
-    <div className="mx-auto mt-6 max-w-4xl rounded-lg bg-white-secondary p-6 shadow-md">
-      <h2 className="mb-4 font-bold res-text-xl">Academic or Professional Status</h2>
-      <p className="mb-6 text-gray-600">
+    <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
+      <h2 className="font-bold text-text-primary res-text-xl">Academic or Professional Status</h2>
+      <p className="mb-4 pt-2 text-sm text-text-tertiary">
         Provide your academic or professional status to help us ensure relevant content.
       </p>
       {fields.map((field, index) => (
-        <div key={field.id} className="mb-6 border-b pb-6 last:border-b-0">
+        <div key={field.id} className="border-b pb-6 last:border-b-0">
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-6">
             <div className="md:col-span-3">
               <FormInput
@@ -64,26 +65,34 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
               patternMessage="Invalid year format (use 'Present' for current positions)"
               readOnly={!editMode}
             />
-            <div className="flex justify-center space-x-2">
+            <div className="flex h-full w-full items-end justify-center">
               {fields.length < 3 && editMode && (
-                <button
-                  type="button"
+                <Button
+                  variant={'blue'}
+                  className="w-full py-2.5"
                   onClick={addNewStatus}
-                  className="text-blue-600 hover:text-blue-800"
                   title="Add new status"
+                  type="button"
                 >
-                  <Plus size={20} />
-                </button>
+                  <ButtonIcon>
+                    <Plus size={16} />
+                  </ButtonIcon>
+                  <ButtonTitle>Add Status</ButtonTitle>
+                </Button>
               )}
               {index > 0 && editMode && (
-                <button
-                  type="button"
+                <Button
+                  variant={'danger'}
+                  className="w-full py-2.5"
                   onClick={() => remove(index)}
-                  className="text-red-600 hover:text-red-800"
                   title="Remove this status"
+                  type="button"
                 >
-                  <Trash2 size={20} />
-                </button>
+                  <ButtonIcon>
+                    <Trash2 size={16} />
+                  </ButtonIcon>
+                  <ButtonTitle>Remove Status</ButtonTitle>
+                </Button>
               )}
             </div>
           </div>
@@ -95,10 +104,11 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
             <button
               type="button"
               onClick={addNewStatus}
-              className="flex text-blue-600 hover:text-blue-800"
+              className="flex items-center text-sm text-functional-blue hover:text-functional-blueContrast"
               title="Add new status"
             >
-              <Plus size={20} /> Status
+              <Plus size={14} />
+              &nbsp;Status
             </button>
           </div>
         </div>

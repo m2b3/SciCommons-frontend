@@ -42,18 +42,18 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </h2>
         <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Abstract</h3>
-          <p className="text-base text-text-primary">
+          <div className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
-          </p>
+          </div>
         </div>
         <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Authors</h3>
-          <p className="text-text-primary">
+          <div className="text-text-primary">
             <TruncateText
               text={article.authors.map((author) => author.label).join(', ')}
               maxLines={2}
             />
-          </p>
+          </div>
         </div>
         {/* <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Keywords</h3>

@@ -105,7 +105,7 @@ const Comment: React.FC<CommentProps> = ({
     },
   });
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [highlight, setHighlight] = useState(isNew);
@@ -186,19 +186,17 @@ const Comment: React.FC<CommentProps> = ({
               </div>
             )}
           </div>
-          {is_author && (
-            <div className="hidden items-center gap-2 sm:flex">
-              {hasReplies && (
-                <button
-                  onClick={() => setIsCollapsed(!isCollapsed)}
-                  className="flex items-center gap-1 text-xs text-functional-blue hover:text-functional-blueContrast"
-                >
-                  {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                  {isCollapsed ? 'Show' : 'Hide'} Replies
-                </button>
-              )}
-            </div>
-          )}
+          <div className="hidden items-center gap-2 sm:flex">
+            {hasReplies && (
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="flex items-center gap-1 text-xs text-functional-blue hover:text-functional-blueContrast"
+              >
+                {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                {isCollapsed ? 'Show' : 'Hide'} Replies
+              </button>
+            )}
+          </div>
         </div>
         {isEditing ? (
           <div className="mt-2 pl-2">
@@ -212,9 +210,9 @@ const Comment: React.FC<CommentProps> = ({
             />
           </div>
         ) : (
-          <p className="mt-2 pl-2">
+          <div className="mt-2 pl-2">
             <TruncateText text={content} maxLines={4} />
-          </p>
+          </div>
         )}
         {!is_deleted && (
           <div className="mt-4 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
@@ -272,19 +270,19 @@ const Comment: React.FC<CommentProps> = ({
                 >
                   <Trash2 size={16} />
                 </button>
-                <div className="flex items-center space-x-2 sm:hidden">
-                  {hasReplies && (
-                    <button
-                      onClick={() => setIsCollapsed(!isCollapsed)}
-                      className="flex items-center gap-1 text-xs text-functional-blue hover:text-functional-blueContrast"
-                    >
-                      {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                      {isCollapsed ? 'Show' : 'Hide'} Replies
-                    </button>
-                  )}
-                </div>
               </>
             )}
+            <div className="flex items-center space-x-2 sm:hidden">
+              {hasReplies && (
+                <button
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  className="flex items-center gap-1 text-xs text-functional-blue hover:text-functional-blueContrast"
+                >
+                  {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                  {isCollapsed ? 'Show' : 'Hide'} Replies
+                </button>
+              )}
+            </div>
             {/* <button className="flex items-center space-x-1">
             <Award size={16} />
             <span className="text-xs">Award</span>
