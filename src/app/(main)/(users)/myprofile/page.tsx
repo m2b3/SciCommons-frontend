@@ -61,7 +61,10 @@ const Home: React.FC = () => {
     },
     mutation: {
       onSuccess: () => {
-        toast.success('Profile updated successfully');
+        toast.success('Profile updated successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         refetch();
         setEditMode(false);
       },

@@ -18,5 +18,5 @@ export const showErrorToast = (
   defaultMessage: string = 'An error occurred. Please try again later.'
 ): void => {
   const message = error?.response?.data?.message || defaultMessage;
-  toast.error(message);
+  toast.error(message, { duration: 2000, position: 'top-right' });
 };

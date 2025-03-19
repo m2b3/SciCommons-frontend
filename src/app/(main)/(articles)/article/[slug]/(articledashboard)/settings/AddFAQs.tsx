@@ -63,10 +63,16 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success('FAQs updated successfully');
+      toast.success('FAQs updated successfully', {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
     if (error) {
-      toast.error(`${error.response?.data.message}`);
+      toast.error(`${error.response?.data.message}`, {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [isSuccess, error]);
 

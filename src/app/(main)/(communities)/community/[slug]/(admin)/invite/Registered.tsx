@@ -41,7 +41,10 @@ const Registered = () => {
   useEffect(() => {
     if (isSuccess) {
       console.log(data);
-      toast.success('Invitation sent successfully!');
+      toast.success('Invitation sent successfully!', {
+        duration: 2000,
+        position: 'top-right',
+      });
     }
   }, [isSuccess, data]);
 

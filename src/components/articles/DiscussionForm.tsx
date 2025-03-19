@@ -38,7 +38,10 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
-        toast.success('Discussion created successfully');
+        toast.success('Discussion created successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         setShowForm(false);
         reset();
       },

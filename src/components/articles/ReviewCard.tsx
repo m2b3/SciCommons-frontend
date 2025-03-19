@@ -71,7 +71,10 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
       mutation: {
         onSuccess: (data) => {
           refetch && refetch();
-          toast.success(data.data.message);
+          toast.success(data.data.message, {
+            duration: 2000,
+            position: 'top-right',
+          });
         },
         onError: (error) => {
           showErrorToast(error);

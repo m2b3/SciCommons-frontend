@@ -49,7 +49,10 @@ const CreateCommunity: React.FC = () => {
     },
     mutation: {
       onSuccess: (data) => {
-        toast.success('Community created successfully! Redirecting to community page...');
+        toast.success('Community created successfully! Redirecting to community page...', {
+          duration: 2000,
+          position: 'top-right',
+        });
         router.push(`/community/${data.data.slug}`);
       },
       onError: (error) => {

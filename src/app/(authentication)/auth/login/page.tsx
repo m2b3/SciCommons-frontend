@@ -39,7 +39,10 @@ const LoginForm: React.FC = () => {
   const { isPending, mutate: logInUser } = useUsersApiAuthLoginUser({
     mutation: {
       onSuccess: (data) => {
-        toast.success('Logged in successfully');
+        toast.success('Logged in successfully', {
+          duration: 2000,
+          position: 'top-right',
+        });
         setAccessToken(data.data.token);
         const previousPath = getPreviousPath();
 

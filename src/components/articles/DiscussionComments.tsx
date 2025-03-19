@@ -51,7 +51,10 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
     mutation: {
       onSuccess: () => {
         refetch();
-        toast.success('Comment updated successfully.');
+        toast.success('Comment updated successfully.', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (error) => {
         showErrorToast(error);
@@ -63,7 +66,10 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
     mutation: {
       onSuccess: () => {
         refetch();
-        toast.success('Comment deleted successfully.');
+        toast.success('Comment deleted successfully.', {
+          duration: 2000,
+          position: 'top-right',
+        });
       },
       onError: (error) => {
         showErrorToast(error);
