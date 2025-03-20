@@ -86,7 +86,9 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
         </div>
         <div className="flex items-center">
           <User className="h-3.5 text-text-secondary" />
-          <span className="text-xs text-text-secondary">{0} discussions</span>
+          <span className="text-xs text-text-secondary">
+            {article.total_discussions} discussions
+          </span>
         </div>
       </div>
     </div>
