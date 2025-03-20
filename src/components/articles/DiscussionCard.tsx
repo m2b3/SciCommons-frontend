@@ -4,11 +4,9 @@ import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MessageSquare, Share2 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 
 import { DiscussionOut } from '@/api/schemas';
-
-
 
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import DiscussionComments from './DiscussionComments';
@@ -94,16 +92,16 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
           </div>
           <div className="mt-2 flex items-center text-xs text-text-tertiary">
             <button
-              className="mr-4 flex items-center space-x-1"
+              className="mr-4 flex cursor-pointer items-center space-x-1 hover:underline"
               onClick={() => setDisplayComments((prev) => !prev)}
             >
               <MessageSquare size={14} />
               <span>{discussion.comments_count} comments</span>
             </button>
-            <button className="flex items-center space-x-1">
+            {/* <button className="flex items-center space-x-1">
               <Share2 size={14} />
               <span>Share</span>
-            </button>
+            </button> */}
           </div>
         </div>
         {/* <div className="flex flex-col gap-2">

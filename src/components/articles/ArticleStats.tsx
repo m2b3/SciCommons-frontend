@@ -10,10 +10,8 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
-import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
-import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
 
 interface ArticleStatsProps {
   article: ArticleOut;
@@ -69,7 +67,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
         </div>
       </div>
       <div className="mt-4 flex w-4/5 flex-wrap">
-        <Button
+        {/* <Button
           variant={'transparent'}
           className={cn(
             'gap-0 rounded-md bg-functional-blue/20 px-2 py-1 text-xs hover:bg-functional-blue/10'
@@ -85,7 +83,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
           <ButtonTitle className="text-xs font-normal text-text-secondary">
             {data?.data.likes} likes
           </ButtonTitle>
-        </Button>
+        </Button> */}
         <div className="flex items-center p-1 px-2 text-xs">
           <Star
             className="mr-1 size-4 text-functional-yellow"
@@ -93,8 +91,8 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
             strokeWidth={0}
           />
           <span className="text-text-secondary">
-            {article.total_reviews > 0 && `${article.total_ratings} ratings &`}{' '}
-            {article.total_reviews} reviews
+            {article.total_reviews > 0 && `Avg. Rating: ${article.total_ratings} |`} Reviews:{' '}
+            {article.total_reviews}
           </span>
         </div>
         <div className="flex items-center p-1 px-2 text-xs">

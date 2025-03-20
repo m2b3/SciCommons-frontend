@@ -11,8 +11,6 @@ import {
   Shield,
   Star,
   StarIcon,
-  ThumbsDown,
-  ThumbsUp,
   UserCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -224,7 +222,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex space-x-4 text-text-secondary">
+            {/* <div className="flex space-x-4 text-text-secondary">
               <div className="flex items-center">
                 {data?.data.user_reaction === 1 ? (
                   <button
@@ -262,8 +260,8 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 )}
                 <span>{data?.data.dislikes}</span>
               </div>
-            </div>
-            <div className="flex items-center space-x-2 text-text-secondary">
+            </div> */}
+            <div className="ml-auto flex items-center space-x-2 text-text-secondary">
               <button
                 onClick={() => setDisplayComments((prev) => !prev)}
                 className="flex items-center gap-2 text-xs hover:underline focus:outline-none"
