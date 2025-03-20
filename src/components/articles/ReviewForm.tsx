@@ -34,6 +34,7 @@ interface ReviewFormProps {
   setEdit?: (edit: boolean) => void;
   refetch?: () => void;
   communityId?: number | null;
+  is_submitter?: boolean; // Todo: Remove this after testing
 }
 
 type ActionType = 'create' | 'edit' | 'delete';
@@ -48,6 +49,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   reviewId,
   refetch,
   communityId,
+  is_submitter = false,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
@@ -148,7 +150,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             <Controller
               name="rating"
               control={control}
-              rules={{ validate: (value) => (value > 0 ? true : 'A valid rating must be given') }}
+              // rules={{ validate: (value) => (value > 0 ? true : 'A valid rating must be given') }}
+              rules={{
+                validate: (value) => {
+                  if (!is_submitter) {
+                    return value > 0 ? true : 'A valid rating must be given';
+                  }
+                  return true;
+                },
+              }}
               render={({ field }) => (
                 <>
                   <Ratings
