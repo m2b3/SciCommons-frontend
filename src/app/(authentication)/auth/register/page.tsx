@@ -206,8 +206,8 @@ const RegisterForm: React.FC = () => {
             register={register}
             requiredMessage="Confirm Password is required"
             errors={errors}
-            patternValue={new RegExp(watch('password'))}
-            patternMessage="Passwords must match."
+            validate={(value) => value === watch('password')}
+            validateMessage="Passwords do not match."
             labelClassName="text-black/90"
             inputClassName="bg-white text-black"
           />
