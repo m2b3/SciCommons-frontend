@@ -13,6 +13,8 @@ interface InputProps<TFieldValues extends FieldValues> {
   requiredMessage?: string;
   patternMessage?: string;
   patternValue?: RegExp;
+  validate?: (value: string) => boolean;
+  validateMessage?: string;
   minLengthValue?: number;
   minLengthMessage?: string;
   maxLengthValue?: number;
@@ -39,6 +41,8 @@ const FormInput = <TFieldValues extends FieldValues>({
   requiredMessage,
   patternMessage,
   patternValue,
+  validate,
+  validateMessage,
   minLengthValue,
   minLengthMessage,
   maxLengthValue,
@@ -61,6 +65,8 @@ const FormInput = <TFieldValues extends FieldValues>({
     readOnly,
     ...register(name as Path<TFieldValues>, {
       required: requiredMessage ? { value: true, message: requiredMessage } : undefined,
+      validate:
+        validate && validateMessage ? (value) => validate(value) || validateMessage : undefined,
       pattern:
         patternValue && patternMessage
           ? { value: patternValue, message: patternMessage }

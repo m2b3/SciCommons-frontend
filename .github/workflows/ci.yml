@@ -13,18 +13,18 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.11.1
+          node-version: '20.11.1'
+          cache: 'yarn' # Cache Yarn dependencies
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile --ignore-engines
 
       - name: Run ESLint
         run: yarn lint
@@ -38,18 +38,18 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: lint
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.11.1
+          node-version: '20.11.1'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile --ignore-engines
 
       - name: Run tests
         run: yarn test
@@ -57,18 +57,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: [lint, test]
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.11.1
+          node-version: '20.11.1'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile --ignore-engines
 
       - name: Build project
         run: yarn build

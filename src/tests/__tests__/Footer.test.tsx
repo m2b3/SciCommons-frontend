@@ -13,6 +13,15 @@ jest.mock('next/link', () => {
   return MockLink;
 });
 
+// Mock the next/image component
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt, ...props }: { src: string; alt: string; [key: string]: any }) => {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={alt} {...props} />;
+  },
+}));
+
 describe('Footer', () => {
   it('renders without crashing', () => {
     render(<Footer />);
@@ -36,7 +45,7 @@ describe('Footer', () => {
 
   it('displays copyright information', () => {
     render(<Footer />);
-    expect(screen.getByText(/© 2023 SciCommons. All rights reserved./)).toBeInTheDocument();
+    expect(screen.getByText(/© 2024 SciCommons. All rights reserved./)).toBeInTheDocument();
   });
 
   it('displays Terms and Conditions link', () => {
@@ -52,7 +61,7 @@ describe('Footer', () => {
   it('applies correct CSS classes for light mode', () => {
     render(<Footer />);
     const footer = screen.getByRole('contentinfo');
-    expect(footer).toHaveClass('bg-gray-200');
+    expect(footer).toHaveClass('bg-functional-green/10');
   });
 
   // Note: Testing dark mode might require additional setup or a different approach
