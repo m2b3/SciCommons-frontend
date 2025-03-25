@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-functional-green p-4 text-center text-sm font-semibold text-white dark:text-black">
+      <div className="mb-16 block w-full bg-functional-green p-4 text-center text-sm font-semibold text-white dark:text-black sm:mb-16 md:mb-0 lg:mb-0">
         © 2024 SciCommons. All rights reserved.
         <span className="mx-4">|</span>
         <Link href="/terms-and-conditions" className="hover:underline">
