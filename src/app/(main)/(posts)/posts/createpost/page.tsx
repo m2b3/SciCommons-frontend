@@ -149,10 +149,10 @@ const CreatePostPage: React.FC = () => {
     <div className="grid min-h-screen grid-cols-1 text-dark-primary md:grid-cols-[1fr_260px] lg:grid-cols-[1fr_360px]">
       <div className="h-full w-full px-8">
         <div className="mx-auto mt-10 h-fit w-full max-w-[720px] rounded-common-xl border border-gray-100 bg-gray-50 p-6 shadow-common">
-          <h1 className="mb-6 text-3xl font-semibold text-gray-700">Create a New Post</h1>
+          <h1 className="mb-6 text-3xl font-semibold text-black">Create a New Post</h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="title" className="mb-1 block text-sm font-medium text-black">
                 Title
               </label>
               <input
@@ -164,7 +164,7 @@ const CreatePostPage: React.FC = () => {
               {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>}
             </div>
             <div>
-              <label htmlFor="content" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="content" className="mb-1 block text-sm font-medium text-black">
                 Content
               </label>
               <textarea
@@ -181,7 +181,7 @@ const CreatePostPage: React.FC = () => {
               )}
             </div>
             <div className="mt-2 flex w-full flex-row flex-wrap">
-              <span className="text-sm text-gray-700">Hashtags used: </span>
+              <span className="text-sm text-black">Hashtags used: </span>
               <span className="flex w-full flex-wrap">{renderTextWithHashtags(postBody)}</span>
             </div>
             <div className="flex justify-end">
@@ -231,12 +231,12 @@ const CreatePostPage: React.FC = () => {
           </div>
         )}
         <div className="mt-4 flex flex-col gap-4">
-          <h4 className="font-bold text-primary">Popular Hashtags</h4>
+          <h4 className="text-2xl font-bold text-black">Popular Hashtags</h4>
           <div className="flex flex-wrap gap-2">
             {HashtagsList.map((hashtagObj, index) => (
               <div
                 key={index}
-                className="flex cursor-pointer flex-wrap items-center gap-1 rounded-full bg-gray-200 px-3 py-2"
+                className="flex cursor-pointer flex-wrap items-center gap-1 rounded-full bg-gray-900 px-3 py-2"
                 onClick={() => {
                   const newPostBody = `${postBody} ${hashtagObj.hashtag}`;
                   setPostBody(newPostBody);
