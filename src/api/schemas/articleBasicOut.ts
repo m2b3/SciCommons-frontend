@@ -14,7 +14,7 @@ export interface ArticleBasicOut {
   id?: ArticleBasicOutId;
   is_submitter: boolean;
   slug?: ArticleBasicOutSlug;
-  /** @maxLength 255 */
+  /** @maxLength 500 */
   title: string;
   total_discussions: number;
   total_reviews: number;

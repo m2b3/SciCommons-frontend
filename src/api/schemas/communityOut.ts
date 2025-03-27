@@ -6,21 +6,29 @@
  */
 import type { CommunityOutAbout } from './communityOutAbout';
 import type { CommunityOutBannerPicUrl } from './communityOutBannerPicUrl';
+import type { CommunityOutCommunitySettings } from './communityOutCommunitySettings';
 import type { CommunityOutCreatedAt } from './communityOutCreatedAt';
+import type { CommunityOutIsAdmin } from './communityOutIsAdmin';
+import type { CommunityOutIsMember } from './communityOutIsMember';
+import type { CommunityOutIsModerator } from './communityOutIsModerator';
+import type { CommunityOutIsReviewer } from './communityOutIsReviewer';
 import type { CommunityOutJoinRequestStatus } from './communityOutJoinRequestStatus';
 import type { CommunityOutProfilePicUrl } from './communityOutProfilePicUrl';
+import type { CommunityOutRules } from './communityOutRules';
+import type { CommunityOutTags } from './communityOutTags';
 import type { CommunityType } from './communityType';
 
 export interface CommunityOut {
   about: CommunityOutAbout;
   banner_pic_url?: CommunityOutBannerPicUrl;
+  community_settings?: CommunityOutCommunitySettings;
   created_at?: CommunityOutCreatedAt;
   description: string;
   id: number;
-  is_admin?: boolean;
-  is_member?: boolean;
-  is_moderator?: boolean;
-  is_reviewer?: boolean;
+  is_admin?: CommunityOutIsAdmin;
+  is_member?: CommunityOutIsMember;
+  is_moderator?: CommunityOutIsModerator;
+  is_reviewer?: CommunityOutIsReviewer;
   join_request_status?: CommunityOutJoinRequestStatus;
   name: string;
   num_articles: number;
@@ -29,9 +37,8 @@ export interface CommunityOut {
   num_published_articles: number;
   num_reviewers: number;
   profile_pic_url?: CommunityOutProfilePicUrl;
-  rules: string[];
+  rules?: CommunityOutRules;
   slug: string;
-  tags: string[];
+  tags?: CommunityOutTags;
   type: CommunityType;
-  community_settings?: string;
 }

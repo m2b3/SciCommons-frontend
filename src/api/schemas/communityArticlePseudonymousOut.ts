@@ -5,8 +5,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CommunityInvitationDetails {
-  description: string;
-  name: string;
-  num_members: number;
+export interface CommunityArticlePseudonymousOut {
+  is_pseudonymous: boolean;
 }

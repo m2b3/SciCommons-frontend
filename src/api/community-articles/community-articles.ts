@@ -21,6 +21,7 @@ import type {
   ArticleOut,
   CommunitiesArticlesApiGetMyArticlesParams,
   CommunitiesArticlesApiListCommunityArticlesByStatusParams,
+  CommunityArticlePseudonymousOut,
   Message,
   PaginatedArticlesResponse,
 } from '.././schemas';
@@ -530,6 +531,170 @@ export const useCommunitiesArticlesApiApproveArticle = <
   TContext
 > => {
   const mutationOptions = getCommunitiesArticlesApiApproveArticleMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * @summary Is Article Pseudonymous
+ */
+export const communitiesArticlesApiIsArticlePseudonymous = (
+  communityArticleId: number,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CommunityArticlePseudonymousOut>(
+    { url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getCommunitiesArticlesApiIsArticlePseudonymousQueryKey = (
+  communityArticleId: number
+) => {
+  return [`/api/communities/${communityArticleId}/pseudonymous/`] as const;
+};
+
+export const getCommunitiesArticlesApiIsArticlePseudonymousQueryOptions = <
+  TData = Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
+  TError = ErrorType<Message>,
+>(
+  communityArticleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getCommunitiesArticlesApiIsArticlePseudonymousQueryKey(communityArticleId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>
+  > = ({ signal }) =>
+    communitiesArticlesApiIsArticlePseudonymous(communityArticleId, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!communityArticleId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type CommunitiesArticlesApiIsArticlePseudonymousQueryResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>
+>;
+export type CommunitiesArticlesApiIsArticlePseudonymousQueryError = ErrorType<Message>;
+
+/**
+ * @summary Is Article Pseudonymous
+ */
+export const useCommunitiesArticlesApiIsArticlePseudonymous = <
+  TData = Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
+  TError = ErrorType<Message>,
+>(
+  communityArticleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getCommunitiesArticlesApiIsArticlePseudonymousQueryOptions(
+    communityArticleId,
+    options
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Make Article Pseudonymous
+ */
+export const communitiesArticlesApiMakeArticlePseudonymous = (
+  communityArticleId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    { url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'POST' },
+    options
+  );
+};
+
+export const getCommunitiesArticlesApiMakeArticlePseudonymousMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+    TError,
+    { communityArticleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+  TError,
+  { communityArticleId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+    { communityArticleId: number }
+  > = (props) => {
+    const { communityArticleId } = props ?? {};
+
+    return communitiesArticlesApiMakeArticlePseudonymous(communityArticleId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CommunitiesArticlesApiMakeArticlePseudonymousMutationResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>
+>;
+
+export type CommunitiesArticlesApiMakeArticlePseudonymousMutationError = ErrorType<Message>;
+
+/**
+ * @summary Make Article Pseudonymous
+ */
+export const useCommunitiesArticlesApiMakeArticlePseudonymous = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+    TError,
+    { communityArticleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+  TError,
+  { communityArticleId: number },
+  TContext
+> => {
+  const mutationOptions = getCommunitiesArticlesApiMakeArticlePseudonymousMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

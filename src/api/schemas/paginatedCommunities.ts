@@ -4,10 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { CommunityOut } from './communityOut';
+import type { CommunityListOut } from './communityListOut';
 
 export interface PaginatedCommunities {
-  items: CommunityOut[];
+  items: CommunityListOut[];
   num_pages: number;
   page: number;
   per_page: number;

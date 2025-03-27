@@ -13,7 +13,9 @@ import type { UserStats } from './userStats';
 export interface ReviewOut {
   anonymous_name?: string;
   article_id: number;
+  avatar?: string;
   comments_count?: number;
+  comments_ratings?: number;
   community_article?: ReviewOutCommunityArticle;
   content: string;
   created_at: string;
@@ -30,6 +32,4 @@ export interface ReviewOut {
   user: UserStats;
   version?: number;
   versions: ReviewVersionSchema[];
-  avatar: string;
-  comments_ratings: number;
 }

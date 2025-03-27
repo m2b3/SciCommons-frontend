@@ -11,6 +11,7 @@ import type { UserStats } from './userStats';
 export interface DiscussionOut {
   anonymous_name?: string;
   article_id: number;
+  avatar?: string;
   comments_count?: number;
   content: string;
   created_at: string;
@@ -21,5 +22,4 @@ export interface DiscussionOut {
   topic: string;
   updated_at: string;
   user: UserStats;
-  avatar?: string;
 }
