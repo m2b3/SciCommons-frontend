@@ -3,6 +3,12 @@ import React from 'react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import {
+  githubUrlSchema,
+  linkedInUrlSchema,
+  scholarUrlSchema,
+  urlSchema,
+} from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -29,8 +35,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/}
-          patternMessage="Invalid URL format"
+          schema={urlSchema}
           requiredMessage="Home page URL is required"
           readOnly={!editMode}
         />
@@ -41,8 +46,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/}
-          patternMessage="Invalid LinkedIn URL"
+          schema={linkedInUrlSchema}
           requiredMessage="LinkedIn URL is required"
           readOnly={!editMode}
         />
@@ -53,8 +57,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/github\.com\/.*$/}
-          patternMessage="Invalid GitHub URL"
+          schema={githubUrlSchema}
           requiredMessage="GitHub URL is required"
           readOnly={!editMode}
         />
@@ -65,8 +68,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/scholar\.google\.com\/.*$/}
-          patternMessage="Invalid Google Scholar URL"
+          schema={scholarUrlSchema}
           requiredMessage="Google Scholar URL is required"
           readOnly={!editMode}
         />

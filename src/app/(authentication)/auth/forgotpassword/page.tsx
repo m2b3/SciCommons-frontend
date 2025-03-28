@@ -12,6 +12,7 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthRequestReset } from '@/api/users-auth/users-auth';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
+import { emailSchema } from '@/constants/zod-schema';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IForgotPasswordForm {
@@ -91,8 +92,7 @@ const ForgotPasswordForm: React.FC = () => {
               placeholder="Enter your email"
               register={register}
               requiredMessage="Email is required"
-              patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/}
-              patternMessage="Enter a valid email address"
+              schema={emailSchema}
               errors={errors}
             />
             <div>
