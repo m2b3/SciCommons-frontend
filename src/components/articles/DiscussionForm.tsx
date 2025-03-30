@@ -8,11 +8,7 @@ import {
   getArticlesDiscussionApiListDiscussionsQueryKey,
   useArticlesDiscussionApiCreateDiscussion,
 } from '@/api/discussions/discussions';
-import {
-  DiscussionOut,
-  PaginatedDiscussionSchema,
-  UserStats,
-} from '@/api/schemas';
+import { DiscussionOut, PaginatedDiscussionSchema, UserStats } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -75,11 +71,10 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
                   community: communityId,
                   comments_count: 0,
                   user: {
-                    // Provide a complete UserStats object
-                    id: 0, // Or some default user ID
-                    username: 'Unknown User', // Or some default username
+                    id: 0,
+                    username: 'Unknown User',
                     reputation_score: 0,
-                    reputation_level: 'Beginner', // Or some default level
+                    reputation_level: 'Beginner',
                   } as UserStats,
                 } as DiscussionOut,
               ],
