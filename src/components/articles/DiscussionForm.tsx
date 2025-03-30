@@ -1,9 +1,18 @@
 import React from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useArticlesDiscussionApiCreateDiscussion } from '@/api/discussions/discussions';
+import {
+  getArticlesDiscussionApiListDiscussionsQueryKey,
+  useArticlesDiscussionApiCreateDiscussion,
+} from '@/api/discussions/discussions';
+import {
+  DiscussionOut,
+  PaginatedDiscussionSchema,
+  UserStats,
+} from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -22,6 +31,8 @@ interface DiscussionFormProps {
 
 const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId, communityId }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -37,13 +48,72 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
   const { mutate } = useArticlesDiscussionApiCreateDiscussion({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
+      onMutate: async (variables) => {
+        const { data: newDiscussion } = variables;
+        const queryKey = getArticlesDiscussionApiListDiscussionsQueryKey(articleId, {
+          community_id: communityId ?? undefined,
+        });
+
+        await queryClient.cancelQueries({ queryKey });
+
+        const previousDiscussions = queryClient.getQueryData(queryKey) as
+          | PaginatedDiscussionSchema
+          | undefined;
+
+        queryClient.setQueryData(queryKey, (oldData: PaginatedDiscussionSchema | undefined) => {
+          if (oldData && oldData.items) {
+            return {
+              ...oldData,
+              items: [
+                {
+                  id: Date.now(),
+                  topic: newDiscussion.topic,
+                  content: newDiscussion.content,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  article_id: articleId,
+                  community: communityId,
+                  comments_count: 0,
+                  user: {
+                    // Provide a complete UserStats object
+                    id: 0, // Or some default user ID
+                    username: 'Unknown User', // Or some default username
+                    reputation_score: 0,
+                    reputation_level: 'Beginner', // Or some default level
+                  } as UserStats,
+                } as DiscussionOut,
+              ],
+            };
+          }
+          return oldData;
+        });
+
+        return { previousDiscussions };
+      },
       onSuccess: () => {
         toast.success('Discussion created successfully');
         setShowForm(false);
         reset();
+        queryClient.invalidateQueries({
+          queryKey: getArticlesDiscussionApiListDiscussionsQueryKey(articleId),
+        });
       },
-      onError: (error) => {
+      onError: (error, variables, context) => {
+        const queryKey = getArticlesDiscussionApiListDiscussionsQueryKey(articleId, {
+          community_id: communityId || 0,
+        });
+        queryClient.setQueryData(
+          queryKey,
+          context?.previousDiscussions as PaginatedDiscussionSchema | undefined
+        );
         showErrorToast(error);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: getArticlesDiscussionApiListDiscussionsQueryKey(articleId, {
+            community_id: communityId || 0,
+          }),
+        });
       },
     },
   });
