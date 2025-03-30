@@ -120,7 +120,7 @@ const RegisterForm: React.FC = () => {
           width={60}
           height={20}
           src={'/logo.png'}
-          className="mx-auto mb-2 md:mb-6"
+          className="mx-auto mb-2 cursor-pointer md:mb-6"
           onClick={() => router.push('/')}
         />
         <h4 className="text-xl font-bold text-black md:text-2xl">Create your free Account</h4>
