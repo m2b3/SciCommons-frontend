@@ -28,7 +28,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
   const [showForm, setShowForm] = useState<boolean>(false);
   const [discussionId, setDiscussionId] = useState<number | null>(null);
 
-  const { data, isPending, error, refetch } = useArticlesDiscussionApiListDiscussions(
+  const { data, isPending, error } = useArticlesDiscussionApiListDiscussions(
     articleId,
     { community_id: communityId || 0 },
     { request: { headers: { Authorization: `Bearer ${accessToken}` } } }
@@ -70,12 +70,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
       </div>
 
       {showForm ? (
-        <DiscussionForm
-          setShowForm={setShowForm}
-          articleId={articleId}
-          communityId={communityId}
-          refetchDiscussions={refetch}
-        />
+        <DiscussionForm setShowForm={setShowForm} articleId={articleId} communityId={communityId} />
       ) : (
         <>
           {isPending && (
