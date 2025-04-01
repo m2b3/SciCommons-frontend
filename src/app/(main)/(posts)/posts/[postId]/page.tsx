@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import Image from 'next/image';
 
@@ -36,6 +36,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
   const { data, isLoading } = usePostsApiGetPost(params.postId);
   const imageData = useIdenticon(40);
+  const [showComments, setShowComments] = useState(false);
 
   const { data: reactions, refetch: refetchLikes } = useUsersCommonApiGetReactionCount(
     'posts.post',
@@ -181,10 +182,20 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                 )}
                 <span className="text-xs">{reactions?.data.dislikes}</span>
               </button>
-              <button className="flex items-center space-x-1 transition hover:text-green-500">
+
+              {/* <button className="flex items-center space-x-1 transition hover:text-green-500">
+                <MessageCircle size={16} />
+                <span className="text-xs">{data.data.comments_count} comments</span>
+              </button> */}
+
+              <button
+                className="flex items-center space-x-1 transition hover:text-green-500"
+                onClick={() => setShowComments(!showComments)}
+              >
                 <MessageCircle size={16} />
                 <span className="text-xs">{data.data.comments_count} comments</span>
               </button>
+
               <SocialShare
                 url={`${window.location.origin}/posts/${params.postId}`}
                 title={data?.data?.title || 'Check out this post'}

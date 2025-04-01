@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,6 +12,7 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
+import RedditStyleComments from '@/components/common/PostComments';
 import TruncateText from '@/components/common/TruncateText';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -23,6 +26,8 @@ const PostCard = (post: PostOut) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
   const imageData = useIdenticon(40);
+
+  const [showComments, setShowComments] = useState(false);
 
   const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
 
@@ -88,38 +93,63 @@ const PostCard = (post: PostOut) => {
           </div>
         )}
 
-        <div className="flex items-center space-x-6 text-gray-500">
-          <button className="flex items-center space-x-1 transition hover:text-blue-500">
-            {data?.data?.user_reaction === 1 ? (
-              <ThumbsUp
-                size={20}
-                className="text-blue-500"
-                onClick={() => handleReaction('upvote')}
-              />
-            ) : (
-              <ThumbsUp size={20} onClick={() => handleReaction('upvote')} />
+        <div className="border-t border-gray-300 pt-4">
+          {/* Buttons Section */}
+          <div className="mb-4 flex items-center space-x-6 text-gray-500">
+            <button className="flex items-center space-x-1 transition hover:text-blue-500">
+              {data?.data?.user_reaction === 1 ? (
+                <ThumbsUp
+                  size={20}
+                  className="text-blue-500"
+                  onClick={() => handleReaction('upvote')}
+                />
+              ) : (
+                <ThumbsUp size={20} onClick={() => handleReaction('upvote')} />
+              )}
+              <span>{data?.data?.likes}</span>
+            </button>
+
+            <button className="flex items-center space-x-1 transition hover:text-red-500">
+              {data?.data.user_reaction === -1 ? (
+                <ThumbsDown
+                  size={20}
+                  className="text-red-500"
+                  onClick={() => handleReaction('downvote')}
+                />
+              ) : (
+                <ThumbsDown size={20} onClick={() => handleReaction('downvote')} />
+              )}
+            </button>
+
+            <button
+              className="flex items-center space-x-1 transition-all duration-500 ease-in-out hover:text-green-500"
+              onClick={() => setShowComments(!showComments)}
+            >
+              <MessageCircle size={16} />
+              <span>{post.comments_count} comments</span>
+            </button>
+
+            <button className="flex items-center space-x-1 transition hover:text-purple-500">
+              <Share2 size={16} />
+              <span>Share</span>
+            </button>
+          </div>
+
+          {/* Comments Section (Now Placed Below) */}
+          <div
+            className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${
+              showComments ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+            }`}
+          >
+            {showComments && (
+              <div className="border-t border-gray-300 pt-4">
+                <h3 className="mb-4 text-lg font-semibold text-gray-500">Comments</h3>
+                <div className="space-y-4">
+                  <RedditStyleComments postId={post?.id ?? 0} />
+                </div>
+              </div>
             )}
-            <span>{data?.data?.likes}</span>
-          </button>
-          <button className="flex items-center space-x-1 transition hover:text-red-500">
-            {data?.data.user_reaction === -1 ? (
-              <ThumbsDown
-                size={20}
-                className="text-red-500"
-                onClick={() => handleReaction('downvote')}
-              />
-            ) : (
-              <ThumbsDown size={20} onClick={() => handleReaction('downvote')} />
-            )}
-          </button>
-          <button className="flex items-center space-x-1 transition hover:text-green-500">
-            <MessageCircle size={16} />
-            <span>{post.comments_count} comments</span>
-          </button>
-          <button className="flex items-center space-x-1 transition hover:text-purple-500">
-            <Share2 size={16} />
-            <span>Share</span>
-          </button>
+          </div>
         </div>
       </div>
     </div>
