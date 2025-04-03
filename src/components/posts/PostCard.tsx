@@ -62,7 +62,7 @@ const PostCard = (post: PostOut) => {
               height={36}
             />
             <div className="flex items-center">
-              <h3 className="font-semibold text-gray-900 res-text-sm">{post.author.username}</h3>
+              <h3 className="font-semibold text-primary res-text-sm">{post.author.username}</h3>
               <span className="mx-2 text-gray-400">&middot;</span>
               <p className="text-gray-400">{dayjs(post?.created_at).fromNow()}</p>
             </div>
