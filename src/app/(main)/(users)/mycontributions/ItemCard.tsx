@@ -43,15 +43,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
               : `/posts/${slug}`
         }
       >
-        <h4 className="text-sm font-semibold text-gray-800">{title}</h4>
+        <h4 className="text-sm font-semibold text-dark-primary">{title}</h4>
       </Link>
       <p className="text-xs text-gray-600">
         {role && memberCount ? `${role} · ${memberCount} members` : subtitle}
       </p>
       {type && (
         <span
-          className={`mt-1 inline-block rounded-full px-2 py-1 text-xs font-semibold 
-          ${
+          className={`mt-1 inline-block rounded-full px-2 py-1 text-xs font-semibold ${
             type === 'Article'
               ? 'bg-blue-100 text-blue-800'
               : type === 'Community'
