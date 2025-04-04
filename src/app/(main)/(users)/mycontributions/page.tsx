@@ -326,7 +326,7 @@ const ContributionsPage: React.FC = () => {
                 </div>
 
                 <div className="rounded-lg bg-white-primary p-4 shadow-md sm:p-6">
-                  <h2 className="mb-4 text-xl font-semibold">
+                  <h2 className="mb-4 text-xl font-semibold text-dark-primary">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                   </h2>
                   {tabContent[activeTab].length === 0 && (

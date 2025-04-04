@@ -20,7 +20,7 @@ const ContributionCard: React.FC<ContributionCardProps> = ({
       </div>
     </div>
     <div>
-      <h3 className="text-base font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-base font-semibold text-dark-primary">{title}</h3>
       <p className="mt-1 text-2xl font-bold text-blue-600">{count}</p>
       <p className="mt-1 text-xs text-gray-600">{description}</p>
     </div>
