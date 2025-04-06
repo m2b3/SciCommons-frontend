@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 
+import { useParams, useRouter } from 'next/navigation';
+
 import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -33,6 +35,9 @@ interface EditArticleDetailsProps {
 }
 
 const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
+  const router = useRouter();
+  const params = useParams<{ slug: string }>();
+
   const { title, abstract, authors, keywords, submissionType, defaultImageURL, articleId } = props;
   const {
     control,
@@ -92,6 +97,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
   useEffect(() => {
     if (isSuccess) {
       toast.success('Article details updated successfully');
+      router.push(`/article/${params?.slug}`); // Redirect to the article page
     }
     if (updateError) {
       toast.error(`${updateError.response?.data.message}`);

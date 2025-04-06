@@ -24,7 +24,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, image, bio, locatio
       />
     </div>
     <div className="text-center sm:text-left">
-      <h2 className="text-2xl font-bold text-gray-900">{name}</h2>
+      <h2 className="text-2xl font-bold text-dark-primary">{name}</h2>
       <p className="mt-2 max-w-2xl text-gray-600">{bio}</p>
       <div className="mt-4 flex flex-wrap justify-center gap-4 sm:justify-start">
         {location && (
