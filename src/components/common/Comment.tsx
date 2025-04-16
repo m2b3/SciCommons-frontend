@@ -161,12 +161,20 @@ const Comment: React.FC<CommentProps> = ({
           <div className="absolute bottom-1 left-2 top-10 w-[1px] bg-gray-300" />
         )}
         <Image
-          src={author.profile_pic_url || `data:image/png;base64,${imageData}`}
+          src={
+            author.profile_pic_url
+              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${author.profile_pic_url}`
+              : `data:image/png;base64,${imageData}`
+          }
           alt={author.username}
           width={32}
           height={32}
           className="rounded-full"
+          onError={(e) => {
+            e.currentTarget.src = `/default-avatar.png`; // fallback image in /public
+          }}
         />
+
       </div>
 
       <div className="flex-grow res-text-sm">
