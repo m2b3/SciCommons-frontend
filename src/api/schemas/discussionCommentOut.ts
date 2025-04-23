@@ -15,6 +15,7 @@ export interface DiscussionCommentOut {
   created_at: string;
   id?: DiscussionCommentOutId;
   is_author?: boolean;
+  is_pseudonymous?: boolean;
   replies: DiscussionCommentOut[];
   upvotes: number;
 }

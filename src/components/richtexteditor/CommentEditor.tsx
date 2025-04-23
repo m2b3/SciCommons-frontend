@@ -6,6 +6,7 @@ import { EditorContent, Editor as TipTapEditor, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit';
 import { Control, FieldValues, Path, useController, useWatch } from 'react-hook-form';
 
+import { BlockSkeleton, Skeleton } from '../common/Skeleton';
 import MenuBar from './MenuBar';
 
 interface CommentEditorProps<TFieldValues extends FieldValues> {
@@ -71,7 +72,9 @@ const CommentEditor = <TFieldValues extends FieldValues>({
   }, [content, editor]);
 
   return !editorLoaded ? (
-    <div className="h-24 animate-pulse rounded bg-gray-200"></div>
+    <Skeleton className="p-0">
+      <BlockSkeleton className="h-32 rounded-xl" />
+    </Skeleton>
   ) : (
     <div>
       <MenuBar editor={editor} />

@@ -62,6 +62,7 @@ export * from './communitiesArticlesApiGetMyArticlesParams';
 export * from './communitiesArticlesApiListCommunityArticlesByStatusParams';
 export * from './communitiesArticlesApiManageArticleAction';
 export * from './communitiesArticlesApiManageArticleParams';
+export * from './communitiesArticlesApiToggleArticlePseudonymousParams';
 export * from './communityArticleOut';
 export * from './communityArticleOutId';
 export * from './communityArticleOutModeratorId';

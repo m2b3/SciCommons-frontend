@@ -459,3 +459,22 @@ body {
 .spin-animation {
   animation: spin-loader 1s linear infinite;
 }
+
+.rounded-tab {
+  --r: 0.8em; /* control the curvature */
+
+  border-inline: var(--r) solid #0000;
+  border-radius: calc(2 * var(--r)) calc(2 * var(--r)) 0 0 / var(--r);
+  mask:
+    radial-gradient(var(--r) at var(--r) 0, #0000 98%, #000 101%) calc(-1 * var(--r)) 100%/100%
+      var(--r) repeat-x,
+    conic-gradient(#000 0 0) padding-box;
+}
+.rounded-tab.left {
+  border-left-width: 0;
+  border-top-left-radius: var(--r);
+}
+.rounded-tab.right {
+  border-right-width: 0;
+  border-top-right-radius: var(--r);
+}

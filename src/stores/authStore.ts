@@ -2,7 +2,13 @@ import Cookies from 'js-cookie';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { AuthenticatedUserType } from '@/api/schemas';
+export interface AuthenticatedUserType {
+  email: string;
+  first_name: string;
+  id: number;
+  last_name: string;
+  username: string;
+}
 
 interface AuthState {
   isAuthenticated: boolean;

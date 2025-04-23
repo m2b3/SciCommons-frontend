@@ -18,6 +18,8 @@ import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
+import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
+
 interface DiscussionCommentsProps {
   discussionId: number;
 }
@@ -35,17 +37,18 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
     }
   );
 
-  const { mutate: createComment } = useArticlesDiscussionApiCreateComment({
-    mutation: {
-      onSuccess: () => {
-        refetch();
+  const { mutate: createComment, isPending: isCreateCommentPending } =
+    useArticlesDiscussionApiCreateComment({
+      mutation: {
+        onSuccess: () => {
+          refetch();
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
       },
-      onError: (error) => {
-        showErrorToast(error);
-      },
-    },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    });
   const { mutate: UpdateComment } = useArticlesDiscussionApiUpdateComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
@@ -102,14 +105,16 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
         buttonText="Post Comment"
+        isPending={isCreateCommentPending}
       />
-      {isPending &&
-        Array.from({ length: 3 }).map((_, index) => (
-          <div
-            className="rounded-ls relative mt-4 h-20 w-full animate-pulse bg-common-minimal"
-            key={index}
-          />
-        ))}
+      {isPending && (
+        <div className="mt-4 flex w-full animate-pulse items-center justify-center gap-2">
+          <div className="w-5">
+            <InfiniteSpinnerAnimation color="#737373" strokeWidth={16} />
+          </div>
+          <span className="text-xs text-text-secondary">Loading Comments</span>
+        </div>
+      )}
       {data && data.data.length > 0 && (
         <div className="flex flex-col border-common-minimal">
           <span className="mb-2 text-sm font-bold text-text-tertiary">Comments:</span>

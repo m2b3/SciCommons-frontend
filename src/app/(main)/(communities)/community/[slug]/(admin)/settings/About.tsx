@@ -78,10 +78,10 @@ const About: React.FC<AboutProps> = ({ data }) => {
     if (content && data) {
       const dataToSend: UpdateCommunityDetails = {
         description: data.data.description,
-        tags: data.data.tags,
+        // tags: data.data.tags,
         type: data.data.type,
         rules: data.data.rules,
-        about: content,
+        // about: content,
       };
 
       mutate({ communityId: data.data.id, data: { payload: { details: dataToSend } } });

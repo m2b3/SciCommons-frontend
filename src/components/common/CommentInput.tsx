@@ -24,6 +24,7 @@ interface CommentInputProps {
   // Reply specific props
   isReply?: boolean;
   isAuthor?: boolean;
+  isPending?: boolean;
 }
 
 interface FormInputs {
@@ -42,6 +43,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
   isRatingsLoading = false,
   isReply = false,
   isAuthor = false,
+  isPending = false,
 }) => {
   const {
     register,
@@ -128,7 +130,13 @@ const CommentInput: React.FC<CommentInputProps> = ({
             )}
           </>
         )}
-        <Button type="submit" variant={'blue'} className={'ml-auto'}>
+        <Button
+          type="submit"
+          variant={'blue'}
+          className={'ml-auto'}
+          loading={isPending}
+          showLoadingSpinner
+        >
           <ButtonIcon>
             <Send size={16} />
           </ButtonIcon>

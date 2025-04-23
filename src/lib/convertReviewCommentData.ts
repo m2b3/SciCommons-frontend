@@ -11,8 +11,6 @@ function convertToCommentData(backendComment: ReviewCommentOut): CommentData {
     replies: backendComment.replies.map(convertToCommentData),
     is_author: backendComment.is_author || false,
     // review specific
-    anonymous_name: backendComment.anonymous_name,
-    avatar: backendComment.avatar,
     rating: backendComment.rating ?? undefined,
     review_version: true,
     isReview: true,

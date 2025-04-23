@@ -86,7 +86,8 @@ export default function RegisteredUsersInvitation({
             <div className="">
               <Image
                 className="rounded-full"
-                src={data.data.profile_pic_url || '/auth/login.png'}
+                // src={data.data.profile_pic_url || '/auth/login.png'}
+                src={'/auth/login.png'}
                 alt={data.data.name || 'Community Profile Picture'}
                 width={60}
                 height={60}

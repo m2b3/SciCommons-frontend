@@ -21,6 +21,7 @@ import type {
   ArticleOut,
   CommunitiesArticlesApiGetMyArticlesParams,
   CommunitiesArticlesApiListCommunityArticlesByStatusParams,
+  CommunitiesArticlesApiToggleArticlePseudonymousParams,
   CommunityArticlePseudonymousOut,
   Message,
   PaginatedArticlesResponse,
@@ -625,76 +626,82 @@ export const useCommunitiesArticlesApiIsArticlePseudonymous = <
 };
 
 /**
- * @summary Make Article Pseudonymous
+ * @summary Toggle Article Pseudonymous
  */
-export const communitiesArticlesApiMakeArticlePseudonymous = (
+export const communitiesArticlesApiToggleArticlePseudonymous = (
   communityArticleId: number,
+  params: CommunitiesArticlesApiToggleArticlePseudonymousParams,
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Message>(
-    { url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'POST' },
+    { url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'POST', params },
     options
   );
 };
 
-export const getCommunitiesArticlesApiMakeArticlePseudonymousMutationOptions = <
+export const getCommunitiesArticlesApiToggleArticlePseudonymousMutationOptions = <
   TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+    Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
     TError,
-    { communityArticleId: number },
+    { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+  Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
   TError,
-  { communityArticleId: number },
+  { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
   TContext
 > => {
   const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
-    { communityArticleId: number }
+    Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
+    { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams }
   > = (props) => {
-    const { communityArticleId } = props ?? {};
+    const { communityArticleId, params } = props ?? {};
 
-    return communitiesArticlesApiMakeArticlePseudonymous(communityArticleId, requestOptions);
+    return communitiesArticlesApiToggleArticlePseudonymous(
+      communityArticleId,
+      params,
+      requestOptions
+    );
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CommunitiesArticlesApiMakeArticlePseudonymousMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>
+export type CommunitiesArticlesApiToggleArticlePseudonymousMutationResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>
 >;
 
-export type CommunitiesArticlesApiMakeArticlePseudonymousMutationError = ErrorType<Message>;
+export type CommunitiesArticlesApiToggleArticlePseudonymousMutationError = ErrorType<Message>;
 
 /**
- * @summary Make Article Pseudonymous
+ * @summary Toggle Article Pseudonymous
  */
-export const useCommunitiesArticlesApiMakeArticlePseudonymous = <
+export const useCommunitiesArticlesApiToggleArticlePseudonymous = <
   TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+    Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
     TError,
-    { communityArticleId: number },
+    { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesArticlesApiMakeArticlePseudonymous>>,
+  Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
   TError,
-  { communityArticleId: number },
+  { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
   TContext
 > => {
-  const mutationOptions = getCommunitiesArticlesApiMakeArticlePseudonymousMutationOptions(options);
+  const mutationOptions =
+    getCommunitiesArticlesApiToggleArticlePseudonymousMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

@@ -76,8 +76,8 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
         <div className="flex items-center">
           <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
           <span className="text-xs text-text-secondary">
-            {article.total_reviews > 0 && `${article.total_ratings} ratings &`}{' '}
-            {article.total_reviews} reviews
+            {article.total_reviews > 0 && `Avg. Rating: ${article.total_ratings} |`} Reviews:{' '}
+            {article.total_reviews}
           </span>
         </div>
         <div className="flex items-center">

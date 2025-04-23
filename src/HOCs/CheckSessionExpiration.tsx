@@ -45,14 +45,14 @@ export const SessionExpirationDialog: React.FC = () => {
   return (
     <Dialog open={showDialog} onOpenChange={handleDialogClose}>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="text-left">
           <DialogTitle>Session Expired</DialogTitle>
           <DialogDescription>
             Your session has expired. Please log in again to continue.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <Button onClick={handleDialogClose} className="text-white res-text-xs">
+        <DialogFooter className="flex flex-row items-center justify-end">
+          <Button onClick={handleDialogClose} className="w-full max-w-20 text-white res-text-xs">
             OK
           </Button>
         </DialogFooter>

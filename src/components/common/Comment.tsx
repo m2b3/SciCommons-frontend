@@ -43,8 +43,6 @@ export interface CommentData {
   replies: CommentData[];
   is_author?: boolean;
   // Review specific
-  anonymous_name?: string;
-  avatar?: string;
   rating?: number;
   isReview?: boolean;
   review_version?: boolean;
@@ -77,8 +75,6 @@ const Comment: React.FC<CommentProps> = ({
   is_deleted,
   rating,
   isReview = false,
-  anonymous_name,
-  avatar,
   onAddReply,
   onUpdateComment,
   onDeleteComment,
@@ -164,7 +160,13 @@ const Comment: React.FC<CommentProps> = ({
           <div className="absolute bottom-1 left-3.5 top-10 w-[1px] bg-common-heavyContrast md:left-4" />
         )}
         <Image
-          src={author.profile_pic_url ? author.profile_pic_url : `data:image/png;base64,${avatar}`}
+          src={
+            author.profile_pic_url
+              ? author.profile_pic_url.startsWith('http')
+                ? author.profile_pic_url
+                : `data:image/png;base64,${author.profile_pic_url}`
+              : `/images/assets/user-icon.png`
+          }
           alt={author.username}
           width={32}
           height={32}
@@ -176,7 +178,10 @@ const Comment: React.FC<CommentProps> = ({
           <div>
             <div className="flex flex-wrap items-center">
               <span className="mr-2 text-sm font-semibold text-text-secondary">
-                {anonymous_name || author.username}
+                {author.username}
+                {is_author && (
+                  <span className="ml-1 text-xs font-normal text-text-tertiary">(You)</span>
+                )}
               </span>
               <span className="text-xs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
             </div>

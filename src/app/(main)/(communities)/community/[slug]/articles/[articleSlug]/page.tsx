@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useParams } from 'next/navigation';
 
@@ -20,8 +20,6 @@ import { useAuthStore } from '@/stores/authStore';
 const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
-
-  const [isRightHovered, setIsRightHovered] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params?.articleSlug || '',
@@ -114,7 +112,22 @@ const CommunityArticleDisplayPage: React.FC = () => {
 
   return (
     <div className="w-full p-4 py-4 md:px-6">
-      {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
+      {isPending ? (
+        <DisplayArticleSkeleton />
+      ) : (
+        data && (
+          <div className="flex flex-col">
+            <DisplayArticle article={data.data} />
+            <div className="-z-10 rounded-md bg-functional-yellow/10 px-3 py-1 sm:-mt-6 sm:rounded-xl sm:px-4 sm:py-2 sm:pt-7">
+              <span className="text-xs text-functional-yellowContrast">
+                {data.data.community_article?.is_pseudonymous
+                  ? 'Community admin has enabled pseudonymous reviews & discussions. Your name won’t be shown.'
+                  : 'Community admin has disabled pseudonymous reviews & discussions. Your name will be visible.'}
+              </span>
+            </div>
+          </div>
+        )
+      )}
       {data && (
         <div className="mt-4">
           <TabNavigation tabs={tabs} />
