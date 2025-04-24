@@ -2,7 +2,6 @@
 
 import React, { useEffect } from 'react';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -58,16 +57,16 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
 
   return (
     <div className="overflow-hidden rounded-xl border border-common-contrast bg-common-cardBackground">
-      <div className="relative p-4">
+      <div className="relative p-4 md:p-6">
         <div className="flex gap-4">
-          <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">
+          {/* <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">
             <Image
               src={community.profile_pic_url || `data:image/png;base64,${imageData}`}
               alt="Profile"
               layout="fill"
               objectFit="cover"
             />
-          </div>
+          </div> */}
           <div className="flex w-full flex-col gap-2">
             <h2
               className="w-[95%] text-wrap font-bold text-text-primary res-heading-sm"

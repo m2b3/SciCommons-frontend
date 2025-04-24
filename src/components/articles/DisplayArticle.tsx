@@ -1,16 +1,43 @@
-import React from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Link2 } from 'lucide-react';
+import { Link2, Settings } from 'lucide-react';
+import { toast } from 'sonner';
 
+import { useCommunitiesArticlesApiToggleArticlePseudonymous } from '@/api/community-articles/community-articles';
 import { ArticleOut } from '@/api/schemas';
 import TruncateText from '@/components/common/TruncateText';
+import { useDebounceFunction } from '@/hooks/useDebounceThrottle';
+import { useAuthStore } from '@/stores/authStore';
 
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import PdfIcon from '../ui/Icons/PdfIcon';
+import { Button } from '../ui/button';
+import { Switch } from '../ui/switch';
 import ArticleStats from './ArticleStats';
+
+// Dynamically import Drawer components
+const Drawer = lazy(() => import('../ui/drawer').then((mod) => ({ default: mod.Drawer })));
+const DrawerClose = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerClose }))
+);
+const DrawerContent = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerContent }))
+);
+const DrawerFooter = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerFooter }))
+);
+const DrawerHeader = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerHeader }))
+);
+const DrawerTitle = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerTitle }))
+);
+const DrawerTrigger = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerTrigger }))
+);
 
 interface DisplayArticleProps {
   article: ArticleOut;
@@ -18,6 +45,45 @@ interface DisplayArticleProps {
 
 const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
   const hasImage = !!article.article_image_url;
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const [isPseudonymous, setIsPseudonymous] = useState(true);
+
+  useEffect(() => {
+    setIsPseudonymous(article.is_pseudonymous);
+  }, [article.is_pseudonymous]);
+
+  const {
+    mutate,
+    data: mutationData,
+    isSuccess: isMutationSuccess,
+    isError: isMutationError,
+  } = useCommunitiesArticlesApiToggleArticlePseudonymous({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
+
+  const handleMakePseudonymous = (value: boolean) => {
+    article.id &&
+      mutate({
+        communityArticleId: Number(article.id),
+        params: { pseudonymous: value },
+      });
+
+    // if (data?.status === 200) {
+    //   toast.success(data.data.message);
+    // }
+  };
+
+  useEffect(() => {
+    if (isMutationSuccess) {
+      toast.success(`${mutationData.data.message}`);
+    }
+    if (isMutationError) {
+      toast.error('Update failed');
+      setIsPseudonymous(article.is_pseudonymous);
+    }
+  }, [isMutationSuccess, mutationData, isMutationError]);
+
+  const debouncedIsPseudonymous = useDebounceFunction(handleMakePseudonymous, 500);
 
   return (
     <div
@@ -88,13 +154,60 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
             </div>
           ))}
         </div>
-        {article.is_submitter && (
-          <Link href={`/article/${article.slug}/settings`}>
-            <button className="absolute bottom-0 right-0 rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs">
-              Settings
-            </button>
-          </Link>
-        )}
+        <div className="absolute bottom-0 right-0 flex items-center gap-2">
+          {article.is_submitter && (
+            <Link href={`/article/${article.slug}/settings`}>
+              <Button className="rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs hover:bg-black">
+                Edit Article
+              </Button>
+            </Link>
+          )}
+          {article.community_article && article.community_article?.is_admin && (
+            <Suspense
+              fallback={
+                <Button className="rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs hover:bg-black">
+                  <Settings size={18} className="animate-spin" />
+                </Button>
+              }
+            >
+              <Drawer>
+                <DrawerTrigger>
+                  <Button className="rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs hover:bg-black">
+                    <Settings size={18} />
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent className="flex flex-col items-center">
+                  <DrawerHeader className="flex flex-col items-center">
+                    <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="flex h-full w-full flex-col items-center justify-center p-4">
+                    <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-6">
+                      <div className="flex w-full items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-base text-text-secondary">
+                            Make article reviews and discussion <strong>Pseudomynous</strong>
+                          </span>
+                          <span className="text-xs text-text-tertiary">
+                            (If enabled, all reviews and discussions will remain pseudonymous.)
+                          </span>
+                        </div>
+                        <Switch
+                          className="data-[state=checked]:bg-functional-blue"
+                          checked={isPseudonymous}
+                          onCheckedChange={(value) => {
+                            setIsPseudonymous(value);
+                            debouncedIsPseudonymous(value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            </Suspense>
+          )}
+        </div>
+
         <div className="mt-4 w-full">
           <ArticleStats article={article} />
         </div>

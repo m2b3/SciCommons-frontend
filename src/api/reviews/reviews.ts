@@ -25,6 +25,7 @@ import type {
   PaginatedReviewSchema,
   ReviewCommentCreateSchema,
   ReviewCommentOut,
+  ReviewCommentRatingByUserOut,
   ReviewCommentUpdateSchema,
   ReviewOut,
   ReviewUpdateSchema,
@@ -835,63 +836,71 @@ export const useArticlesReviewApiDeleteComment = <
   return useMutation(mutationOptions);
 };
 /**
- * @summary Fetch Review Rating
+ * @summary Get Rating
  */
-export const fetchReviewRating = (
+export const articlesReviewApiGetRating = (
   reviewId: number,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<{ rating: number }>(
+  return customInstance<ReviewCommentRatingByUserOut>(
     { url: `/api/articles/reviews/${reviewId}/rating/`, method: 'GET', signal },
     options
   );
 };
 
-export const getFetchReviewRatingQueryKey = (reviewId: number) => {
+export const getArticlesReviewApiGetRatingQueryKey = (reviewId: number) => {
   return [`/api/articles/reviews/${reviewId}/rating/`] as const;
 };
 
-export const getFetchReviewRatingQueryOptions = <
-  TData = Awaited<ReturnType<typeof fetchReviewRating>>,
+export const getArticlesReviewApiGetRatingQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesReviewApiGetRating>>,
   TError = ErrorType<Message>,
 >(
   reviewId: number,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchReviewRating>>, TError, TData>>;
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData>
+    >;
     request?: SecondParameter<typeof customInstance>;
   }
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFetchReviewRatingQueryKey(reviewId);
+  const queryKey = queryOptions?.queryKey ?? getArticlesReviewApiGetRatingQueryKey(reviewId);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchReviewRating>>> = ({ signal }) =>
-    fetchReviewRating(reviewId, requestOptions, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetRating>>> = ({
+    signal,
+  }) => articlesReviewApiGetRating(reviewId, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!reviewId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof fetchReviewRating>>,
+    Awaited<ReturnType<typeof articlesReviewApiGetRating>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type FetchReviewRatingQueryResult = NonNullable<
-  Awaited<ReturnType<typeof fetchReviewRating>>
+export type ArticlesReviewApiGetRatingQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesReviewApiGetRating>>
 >;
-export type FetchReviewRatingQueryError = ErrorType<Message>;
+export type ArticlesReviewApiGetRatingQueryError = ErrorType<Message>;
 
-export const useFetchReviewRating = <
-  TData = FetchReviewRatingQueryResult,
-  TError = FetchReviewRatingQueryError,
+/**
+ * @summary Get Rating
+ */
+export const useArticlesReviewApiGetRating = <
+  TData = Awaited<ReturnType<typeof articlesReviewApiGetRating>>,
+  TError = ErrorType<Message>,
 >(
   reviewId: number,
   options?: {
-    query?: Partial<UseQueryOptions<FetchReviewRatingQueryResult, TError, TData>>;
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData>
+    >;
     request?: SecondParameter<typeof customInstance>;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getFetchReviewRatingQueryOptions(reviewId, options);
+  const queryOptions = getArticlesReviewApiGetRatingQueryOptions(reviewId, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

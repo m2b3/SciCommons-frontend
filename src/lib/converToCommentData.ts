@@ -36,7 +36,6 @@ export function convertToCommentData(backendComment: ReviewCommentOut): CommentD
     replies: backendComment.replies.map(convertToCommentData),
     is_author: backendComment.is_author || false,
     // review specific
-    anonymous_name: backendComment.anonymous_name,
     rating: backendComment.rating || 0,
     review_version: true,
     isReview: true,
@@ -55,10 +54,8 @@ export function convertToDiscussionCommentData(backendComment: DiscussionComment
     upvotes: backendComment.upvotes,
     replies: backendComment.replies.map(convertToDiscussionCommentData),
     is_author: backendComment.is_author || false,
-    anonymous_name: backendComment.anonymous_name,
     review_version: false,
     isNew: false,
-    avatar: backendComment.avatar,
   };
 
   return convertedComment;

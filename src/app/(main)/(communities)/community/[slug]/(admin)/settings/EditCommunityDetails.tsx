@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useCommunitiesApiUpdateCommunity } from '@/api/communities/communities';
-import { CommunityOut, UpdateCommunityDetails } from '@/api/schemas';
+import { CommunityOut, CommunityOutCommunitySettings, UpdateCommunityDetails } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
@@ -21,7 +21,7 @@ interface FormValues {
   description: string;
   tags: Option[];
   type: OptionType;
-  community_settings?: string;
+  community_settings?: CommunityOutCommunitySettings | undefined;
   // profileImage: FileObj;
   // bannerImage: FileObj;
 }

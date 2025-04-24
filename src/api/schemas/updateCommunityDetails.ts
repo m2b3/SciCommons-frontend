@@ -5,13 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CommunityType } from './communityType';
-import type { UpdateCommunityDetailsAbout } from './updateCommunityDetailsAbout';
+import type { UpdateCommunityDetailsCommunitySettings } from './updateCommunityDetailsCommunitySettings';
+import type { UpdateCommunityDetailsRules } from './updateCommunityDetailsRules';
 
 export interface UpdateCommunityDetails {
-  about?: UpdateCommunityDetailsAbout;
+  community_settings?: UpdateCommunityDetailsCommunitySettings;
   description: string;
-  rules: string[];
-  tags?: string[];
+  rules?: UpdateCommunityDetailsRules;
   type: CommunityType;
-  community_settings?: string;
 }

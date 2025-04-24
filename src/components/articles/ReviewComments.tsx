@@ -8,9 +8,9 @@ import { toast } from 'sonner';
 import {
   useArticlesReviewApiCreateComment,
   useArticlesReviewApiDeleteComment,
+  useArticlesReviewApiGetRating,
   useArticlesReviewApiListReviewComments,
   useArticlesReviewApiUpdateComment,
-  useFetchReviewRating,
 } from '@/api/reviews/reviews';
 import { ContentTypeEnum, ReviewCommentOut } from '@/api/schemas';
 import { CommentData } from '@/components/common/Comment';
@@ -19,7 +19,7 @@ import RenderComments from '@/components/common/RenderComments';
 import convertToCommentData from '@/lib/convertReviewCommentData';
 import { useAuthStore } from '@/stores/authStore';
 
-import { BlockSkeleton, Skeleton } from '../common/Skeleton';
+import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
 
 interface ReviewCommentsProps {
   reviewId: number;
@@ -48,26 +48,27 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
     data: ratings,
     isPending: isRatingsLoading,
     isError: isRatingsError,
-  } = useFetchReviewRating(reviewId, {
+  } = useArticlesReviewApiGetRating(reviewId, {
     query: { enabled: displayComments && !isAuthor, retry: 5 },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
-  const { mutate: createComment } = useArticlesReviewApiCreateComment({
-    mutation: {
-      onSuccess: () => {
-        refetch();
+  const { mutate: createComment, isPending: isCreateCommentPending } =
+    useArticlesReviewApiCreateComment({
+      mutation: {
+        onSuccess: () => {
+          refetch();
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(
+            (error.response?.data as { message?: string })?.message ||
+              'An error occurred while creating the comment.'
+          );
+        },
       },
-      onError: (error) => {
-        console.error(error);
-        toast.error(
-          (error.response?.data as { message?: string })?.message ||
-            'An error occurred while creating the comment.'
-        );
-      },
-    },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    });
   const { mutate: UpdateComment, data: updatedComment } = useArticlesReviewApiUpdateComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
@@ -186,13 +187,15 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
         isRatingsLoading={isRatingsLoading}
         isRatingsError={isRatingsError}
         isAuthor={isAuthor}
+        isPending={isCreateCommentPending}
       />
       {isPending && (
-        <Skeleton className="mt-4 gap-4 p-0">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <BlockSkeleton key={index} />
-          ))}
-        </Skeleton>
+        <div className="mt-4 flex w-full animate-pulse items-center justify-center gap-2">
+          <div className="w-5">
+            <InfiniteSpinnerAnimation color="#737373" strokeWidth={16} />
+          </div>
+          <span className="text-xs text-text-secondary">Loading Comments</span>
+        </div>
       )}
       {data && data.data.length > 0 && (
         <div className="flex flex-col border-common-minimal pt-4">

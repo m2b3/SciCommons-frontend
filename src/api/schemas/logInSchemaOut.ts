@@ -4,23 +4,15 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { LogInUserSchemaOut } from './logInUserSchemaOut';
 
 /**
  * Output schema for user log in responses. Indicates the status of the
 login attempt and provides a corresponding message.
  */
-
-export interface AuthenticatedUserType {
-  email: string;
-  first_name: string;
-  id: number;
-  last_name: string;
-  username: string;
-}
-
 export interface LogInSchemaOut {
   message: string;
   status: string;
   token: string;
-  user: AuthenticatedUserType | null;
+  user: LogInUserSchemaOut;
 }

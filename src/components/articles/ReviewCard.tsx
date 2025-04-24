@@ -6,6 +6,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   CheckCircle,
+  ChevronDown,
+  ChevronUp,
   MessageCircle,
   Pencil,
   Shield,
@@ -149,8 +151,10 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 <Image
                   src={
                     review.user.profile_pic_url
-                      ? review.user.profile_pic_url
-                      : `data:image/png;base64,${review.avatar}`
+                      ? review.user.profile_pic_url?.startsWith('http')
+                        ? review.user.profile_pic_url
+                        : `data:image/png;base64,${review.user.profile_pic_url}`
+                      : `/images/assets/user-icon.png`
                   }
                   alt={review.user.username}
                   width={32}
@@ -160,13 +164,16 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               </div>
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 font-bold text-text-secondary">
-                  by {review.anonymous_name || review.user.username}
+                  {review.user.username}
                   {review.is_author && (
-                    <Pencil
-                      size={16}
-                      onClick={() => setEdit(!edit)}
-                      className="cursor-pointer hover:text-functional-green"
-                    />
+                    <>
+                      <span className="text-xs font-normal text-text-tertiary">(You)</span>
+                      <Pencil
+                        size={14}
+                        onClick={() => setEdit(!edit)}
+                        className="cursor-pointer hover:text-functional-green"
+                      />
+                    </>
                   )}
                   {getReviewTypeTag(review.review_type || '')}
                 </span>
@@ -266,15 +273,20 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 onClick={() => setDisplayComments((prev) => !prev)}
                 className="flex items-center gap-2 text-xs hover:underline focus:outline-none"
               >
-                {review?.comments_ratings > 0 && (
+                {typeof review?.comments_ratings === 'number' && review.comments_ratings > 0 && (
                   <div className="flex items-center gap-1 text-functional-yellow">
                     <StarIcon className="h-3.5 w-3.5 shrink-0" fill="currentColor" />
-                    <span>{review?.comments_ratings}</span>
+                    <span>{review.comments_ratings}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1">
                   <MessageCircle className="h-3.5 w-3.5 shrink-0" />
                   {review.comments_count} comments
+                  {displayComments ? (
+                    <ChevronUp className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
+                  )}
                 </div>
               </button>
               {canApprove && (

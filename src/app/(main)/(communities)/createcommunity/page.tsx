@@ -116,7 +116,7 @@ const CreateCommunity: React.FC = () => {
     const dataToSend: CreateCommunityDetails = {
       name: data.name,
       description: data.description,
-      tags: data.tags?.map((tag) => tag.value),
+      // tags: data.tags?.map((tag) => tag.value),
       type: data.type,
       community_settings: data.type == 'public' ? data.community_settings : undefined,
     };

@@ -1,21 +1,17 @@
 import React from 'react';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { CommunityBasicOut } from '@/api/schemas';
-import useIdenticon from '@/hooks/useIdenticons';
 
 interface CommunityHighlightCardProps {
   community: CommunityBasicOut;
 }
 
 const CommunityHighlightCard: React.FC<CommunityHighlightCardProps> = ({ community }) => {
-  const imageData = useIdenticon(32);
-
   return (
     <div className="flex items-start">
-      <Image
+      {/* <Image
         src={
           community.profile_pic_url
             ? community.profile_pic_url
@@ -25,7 +21,7 @@ const CommunityHighlightCard: React.FC<CommunityHighlightCardProps> = ({ communi
         width={32}
         height={32}
         className="mr-4 h-12 w-12 rounded-full"
-      />
+      /> */}
       <div>
         <Link href={`/community/${community.name}`}>
           <p className="mb-1 text-gray-700 hover:underline">{community.name}</p>

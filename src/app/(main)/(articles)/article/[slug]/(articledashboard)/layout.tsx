@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 
-import { Settings } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 import Sidebar from '@/components/common/Sidebar';
 
@@ -31,8 +31,8 @@ export default function ArticleAuthorLayout({ children }: { children: React.Reac
     // },
     {
       href: `/article/${params?.slug}/settings`,
-      label: 'Settings',
-      icon: <Settings className="mr-3" />,
+      label: 'Edit',
+      icon: <Pencil className="mr-3" />,
     },
   ];
   return (

@@ -95,7 +95,8 @@ export default function UnRegisteredUsersInvitation({
           <>
             <div className="relative size-10 flex-shrink-0 sm:mr-4">
               <Image
-                src={data.data.profile_pic_url || `data:image/png;base64,${imageData}`}
+                // src={data.data.profile_pic_url || `data:image/png;base64,${imageData}`}
+                src={`data:image/png;base64,${imageData}`}
                 alt={data.data.name}
                 fill
                 className="rounded-full object-cover"

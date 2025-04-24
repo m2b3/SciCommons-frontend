@@ -1,6 +1,5 @@
 import { FC, useEffect } from 'react';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { FileText, Users } from 'lucide-react';
@@ -10,6 +9,7 @@ import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-co
 import { CommunityOut } from '@/api/schemas';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
@@ -43,15 +43,15 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
 
   return (
     <div className="relative flex h-full flex-col items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal">
-      <div className="relative size-10 flex-shrink-0 sm:mr-4">
+      {/* <div className="relative size-10 flex-shrink-0 sm:mr-4">
         <Image
           src={community.profile_pic_url || `data:image/png;base64,${imageData}`}
           alt={community.name}
           fill
           className="rounded-full object-cover"
         />
-      </div>
-      <div className="w-full flex-1">
+      </div> */}
+      <div className="w-full flex-1 pb-4 sm:pb-0">
         <Link href={`/community/${encodeURIComponent(community.name)}`}>
           <h3 className="mb-2 truncate font-bold text-text-primary res-text-base hover:underline">
             {community.name}
@@ -69,6 +69,17 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
           </div>
         </div>
       </div>
+      <span
+        className={cn(
+          'rounded-tab absolute bottom-0 right-4 px-2 pb-0.5 pt-1 text-xs font-semibold capitalize text-white',
+          {
+            'bg-emerald-600 dark:bg-emerald-900': community.type === 'public',
+            'bg-purple-600 dark:bg-purple-900': community.type === 'private',
+          }
+        )}
+      >
+        {community.type}
+      </span>
       {/* Enable this when auth is fixed. Handle cases for logged in and logged out users. */}
       {/* <div className="absolute right-6 top-6 flex gap-4">
         {community.is_admin && (

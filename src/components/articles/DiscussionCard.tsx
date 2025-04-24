@@ -64,17 +64,19 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
             <Image
               src={
                 discussion.user.profile_pic_url
-                  ? discussion.user.profile_pic_url
-                  : `data:image/png;base64,${discussion.avatar}`
+                  ? discussion.user.profile_pic_url?.startsWith('http')
+                    ? discussion.user.profile_pic_url
+                    : `data:image/png;base64,${discussion.user.profile_pic_url}`
+                  : `/images/assets/user-icon.png`
               }
-              alt={discussion.anonymous_name || discussion.user.username}
+              alt={discussion.user.username}
               width={32}
               height={32}
               className="mr-2 aspect-square h-7 w-7 rounded-full md:h-8 md:w-8"
             />
             <div>
               <span className="text-sm font-semibold text-text-secondary">
-                {discussion.anonymous_name}
+                {discussion.user.username}
               </span>
               <span className="ml-2 text-xs text-text-tertiary">
                 • {dayjs(discussion.created_at).fromNow()}

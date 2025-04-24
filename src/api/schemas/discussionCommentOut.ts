@@ -10,11 +10,12 @@ import type { UserStats } from './userStats';
 export interface DiscussionCommentOut {
   anonymous_name?: string;
   author: UserStats;
+  avatar?: string;
   content: string;
   created_at: string;
   id?: DiscussionCommentOutId;
   is_author?: boolean;
+  is_pseudonymous?: boolean;
   replies: DiscussionCommentOut[];
   upvotes: number;
-  avatar?: string;
 }
