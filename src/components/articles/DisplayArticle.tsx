@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { Link2, Settings } from 'lucide-react';
 import { toast } from 'sonner';
+import { useMediaQuery } from 'usehooks-ts';
 
 import { useCommunitiesArticlesApiToggleArticlePseudonymous } from '@/api/community-articles/community-articles';
 import { ArticleOut } from '@/api/schemas';
@@ -20,14 +21,8 @@ import ArticleStats from './ArticleStats';
 
 // Dynamically import Drawer components
 const Drawer = lazy(() => import('../ui/drawer').then((mod) => ({ default: mod.Drawer })));
-const DrawerClose = lazy(() =>
-  import('../ui/drawer').then((mod) => ({ default: mod.DrawerClose }))
-);
 const DrawerContent = lazy(() =>
   import('../ui/drawer').then((mod) => ({ default: mod.DrawerContent }))
-);
-const DrawerFooter = lazy(() =>
-  import('../ui/drawer').then((mod) => ({ default: mod.DrawerFooter }))
 );
 const DrawerHeader = lazy(() =>
   import('../ui/drawer').then((mod) => ({ default: mod.DrawerHeader }))
@@ -39,6 +34,17 @@ const DrawerTrigger = lazy(() =>
   import('../ui/drawer').then((mod) => ({ default: mod.DrawerTrigger }))
 );
 
+// Dynamically import Sheet components
+const Sheet = lazy(() => import('../ui/sheet').then((mod) => ({ default: mod.Sheet })));
+const SheetContent = lazy(() =>
+  import('../ui/sheet').then((mod) => ({ default: mod.SheetContent }))
+);
+const SheetHeader = lazy(() => import('../ui/sheet').then((mod) => ({ default: mod.SheetHeader })));
+const SheetTitle = lazy(() => import('../ui/sheet').then((mod) => ({ default: mod.SheetTitle })));
+const SheetTrigger = lazy(() =>
+  import('../ui/sheet').then((mod) => ({ default: mod.SheetTrigger }))
+);
+
 interface DisplayArticleProps {
   article: ArticleOut;
 }
@@ -47,6 +53,8 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
   const hasImage = !!article.article_image_url;
   const accessToken = useAuthStore((state) => state.accessToken);
   const [isPseudonymous, setIsPseudonymous] = useState(true);
+  const isDesktop = useMediaQuery('(min-width: 640px)');
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
     setIsPseudonymous(article.is_pseudonymous);
@@ -67,10 +75,6 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         communityArticleId: Number(article.id),
         params: { pseudonymous: value },
       });
-
-    // if (data?.status === 200) {
-    //   toast.success(data.data.message);
-    // }
   };
 
   useEffect(() => {
@@ -154,62 +158,112 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
             </div>
           ))}
         </div>
-        <div className="absolute bottom-0 right-0 flex items-center gap-2">
+
+        <div className="mt-4 w-full">
+          <ArticleStats article={article} />
+        </div>
+
+        <div className="mb-2 flex w-full items-center justify-end gap-2 sm:absolute sm:bottom-0 sm:right-0 sm:mb-0 sm:w-fit">
           {article.is_submitter && (
             <Link href={`/article/${article.slug}/settings`}>
-              <Button className="rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs hover:bg-black">
+              <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
                 Edit Article
-              </Button>
+              </div>
             </Link>
           )}
           {article.community_article && article.community_article?.is_admin && (
             <Suspense
               fallback={
-                <Button className="rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs hover:bg-black">
+                <Button
+                  className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
+                  variant={'inverted'}
+                >
                   <Settings size={18} className="animate-spin" />
                 </Button>
               }
             >
-              <Drawer>
-                <DrawerTrigger>
-                  <Button className="rounded-lg border border-common-contrast bg-black px-4 py-2 text-white res-text-xs hover:bg-black">
-                    <Settings size={18} />
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent className="flex flex-col items-center">
-                  <DrawerHeader className="flex flex-col items-center">
-                    <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
-                  </DrawerHeader>
-                  <div className="flex h-full w-full flex-col items-center justify-center p-4">
-                    <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-6">
-                      <div className="flex w-full items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-base text-text-secondary">
-                            Make article reviews and discussion <strong>Pseudomynous</strong>
-                          </span>
-                          <span className="text-xs text-text-tertiary">
-                            (If enabled, all reviews and discussions will remain pseudonymous.)
-                          </span>
+              {isDesktop ? (
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                  <SheetTrigger>
+                    <Button
+                      className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
+                      variant={'inverted'}
+                    >
+                      <Settings size={18} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    isOpen={isSheetOpen}
+                    className="flex flex-col items-center p-0 pt-4"
+                  >
+                    <SheetHeader className="flex flex-col items-center">
+                      <SheetTitle className="text-2xl font-bold">Settings</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex h-full w-full flex-col items-center p-4">
+                      <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
+                        <div className="flex w-full items-center justify-between">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base text-text-secondary">
+                              Make article reviews and discussion <strong>Pseudomynous</strong>
+                            </span>
+                            <span className="text-xs text-text-tertiary">
+                              (If enabled, all reviews and discussions will remain pseudonymous.)
+                            </span>
+                          </div>
+                          <Switch
+                            className="data-[state=checked]:bg-functional-blue"
+                            checked={isPseudonymous}
+                            onCheckedChange={(value) => {
+                              setIsPseudonymous(value);
+                              debouncedIsPseudonymous(value);
+                            }}
+                          />
                         </div>
-                        <Switch
-                          className="data-[state=checked]:bg-functional-blue"
-                          checked={isPseudonymous}
-                          onCheckedChange={(value) => {
-                            setIsPseudonymous(value);
-                            debouncedIsPseudonymous(value);
-                          }}
-                        />
                       </div>
                     </div>
-                  </div>
-                </DrawerContent>
-              </Drawer>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <Drawer>
+                  <DrawerTrigger>
+                    <Button
+                      className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
+                      variant={'inverted'}
+                    >
+                      <Settings size={18} />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent className="flex flex-col items-center p-0 pt-4">
+                    <DrawerHeader className="flex flex-col items-center">
+                      <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
+                    </DrawerHeader>
+                    <div className="flex h-full w-full flex-col items-center p-4">
+                      <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
+                        <div className="flex w-full items-center justify-between">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base text-text-secondary">
+                              Make article reviews and discussion <strong>Pseudomynous</strong>
+                            </span>
+                            <span className="text-xs text-text-tertiary">
+                              (If enabled, all reviews and discussions will remain pseudonymous.)
+                            </span>
+                          </div>
+                          <Switch
+                            className="data-[state=checked]:bg-functional-blue"
+                            checked={isPseudonymous}
+                            onCheckedChange={(value) => {
+                              setIsPseudonymous(value);
+                              debouncedIsPseudonymous(value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              )}
             </Suspense>
           )}
-        </div>
-
-        <div className="mt-4 w-full">
-          <ArticleStats article={article} />
         </div>
       </div>
     </div>

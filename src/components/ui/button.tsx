@@ -21,6 +21,7 @@ const buttonVariants = cva(
         transparent: 'bg-transparent hover:bg-transparent dark:text-white text-black',
         outline:
           'bg-transparent border border-common-minimal text-text-primary hover:bg-common-minimal/20',
+        inverted: 'bg-white text-black dark:bg-black dark:text-white',
       },
       size: {
         default: 'text-base',
