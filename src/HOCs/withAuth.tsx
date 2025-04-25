@@ -94,7 +94,7 @@ export function withAuth<P extends WithAuthProps>(
     ]);
 
     if (isInitializing || isLoading) {
-      return <Loader type="dots" color="green" size="small" text="Loading..." />;
+      return <Loader />;
     }
 
     if (!isAuthenticated || !accessToken) {

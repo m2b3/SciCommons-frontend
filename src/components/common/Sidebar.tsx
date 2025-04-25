@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -23,6 +23,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -55,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
         </div>
       </div>
       <div className="fixed left-0 top-14 z-10 md:hidden">
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <button className="px-2 py-4">
               <Menu size={24} className="text-text-secondary" />
@@ -65,6 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
             side="left"
             className="calc(100vh - 14rem) top-14"
             closeButtonClassName="right-6 top-10"
+            isOpen={isOpen}
           >
             <nav className="flex flex-col space-y-2 py-4">
               <Link

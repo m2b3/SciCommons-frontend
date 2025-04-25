@@ -118,8 +118,8 @@ const CommunityArticleDisplayPage: React.FC = () => {
         data && (
           <div className="flex flex-col">
             <DisplayArticle article={data.data} />
-            <div className="-z-10 rounded-md bg-functional-yellow/10 px-3 py-1 sm:-mt-6 sm:rounded-xl sm:px-4 sm:py-2 sm:pt-7">
-              <span className="text-xs text-functional-yellowContrast">
+            <div className="-z-10 rounded-md bg-functional-blue/10 px-3 py-1 sm:-mt-6 sm:rounded-xl sm:px-4 sm:py-2 sm:pt-7">
+              <span className="text-xs text-functional-blueContrast">
                 {data.data.community_article?.is_pseudonymous
                   ? 'Community admin has enabled pseudonymous reviews & discussions. Your name won’t be shown.'
                   : 'Community admin has disabled pseudonymous reviews & discussions. Your name will be visible.'}
