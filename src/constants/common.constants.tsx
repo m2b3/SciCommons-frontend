@@ -216,3 +216,9 @@ export const HashtagsList = [
   { hashtag: '#KnowledgeDiscovery' },
   { hashtag: '#ComputationalBiology' },
 ];
+
+export const SCREEN_WIDTH_SM = 640; // 40rem
+export const SCREEN_WIDTH_MD = 768; // 48rem
+export const SCREEN_WIDTH_LG = 1024; // 64rem
+export const SCREEN_WIDTH_XL = 1280; // 80rem
+export const SCREEN_WIDTH_2XL = 1536; // 96rem

@@ -5,9 +5,24 @@ type AnyFunction = (...args: any) => any;
 
 export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
   const timeoutIdRef = React.useRef<number | null>(null);
-  const initialBackgroundColor = React.useMemo(() => document.body.style.backgroundColor, []);
   const setBackgroundColorOnScale = true;
   const noBodyStyles = true;
+  const [initialBackgroundColor, setInitialBackgroundColor] = React.useState<string | undefined>(
+    undefined
+  );
+  const TRANSITIONS = {
+    DURATION: 0.5,
+    EASE: [0.32, 0.72, 0, 1],
+  };
+  const BORDER_RADIUS = 8;
+  const WINDOW_TOP_OFFSET = 26;
+
+  React.useEffect(() => {
+    if (typeof document !== 'undefined') {
+      setInitialBackgroundColor(document.body.style.backgroundColor);
+    }
+  }, []);
+
   function chain<T>(...fns: T[]) {
     return (...args: T extends AnyFunction ? Parameters<T> : never) => {
       for (const fn of fns) {
@@ -17,7 +32,9 @@ export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
       }
     };
   }
+
   const noop = () => () => {};
+
   function assignStyle(
     element: HTMLElement | null | undefined,
     style: Partial<CSSStyleDeclaration>
@@ -31,6 +48,7 @@ export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
       element.style.cssText = prevStyle;
     };
   }
+
   const isVertical = (direction: DrawerDirection) => {
     switch (direction) {
       case 'top':
@@ -43,15 +61,11 @@ export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
         return direction;
     }
   };
-  const TRANSITIONS = {
-    DURATION: 0.5,
-    EASE: [0.32, 0.72, 0, 1],
-  };
-  const BORDER_RADIUS = 8;
-  const WINDOW_TOP_OFFSET = 26;
+
   function getScale() {
     return (window.innerWidth - WINDOW_TOP_OFFSET) / window.innerWidth;
   }
+
   React.useEffect(() => {
     if (isOpen) {
       if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);

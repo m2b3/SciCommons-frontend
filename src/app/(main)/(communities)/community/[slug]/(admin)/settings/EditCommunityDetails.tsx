@@ -160,7 +160,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
   }, [data, reset]);
 
   return (
-    <div className="relative my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 shadow md:p-6">
+    <div className="relative my-4 rounded-xl border-common-contrast sm:border sm:bg-common-cardBackground sm:p-4 md:p-6">
       <div
         className="absolute hidden aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:right-4 sm:top-4 sm:block md:right-6 md:top-6"
         onClick={() => setIsEditEnabled(!isEditEnabled)}

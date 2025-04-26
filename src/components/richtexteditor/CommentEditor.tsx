@@ -49,6 +49,7 @@ const CommentEditor = <TFieldValues extends FieldValues>({
           'flex flex-col px-4 py-3 justify-start border-b border-r border-l border-common-contrast items-start w-full gap-3 pt-4 rounded-bl-md rounded-br-md outline-none',
       },
     },
+    immediatelyRender: false,
     content: field.value as string,
     onCreate: () => setEditorLoaded(true),
     onUpdate({ editor }) {

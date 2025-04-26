@@ -129,7 +129,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
 
     if (data && data.data.items.length === 0) {
       return (
-        <div className="flex h-32 items-center justify-center rounded-xl bg-common-cardBackground">
+        <div className="flex h-32 items-center justify-center rounded-xl sm:bg-common-cardBackground">
           <h1 className="text-text-secondary res-text-xs">No articles found</h1>
         </div>
       );
@@ -139,7 +139,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
       <div className="flex min-h-screen max-w-6xl flex-col space-y-4">
         {data &&
           data.data.items.map((article, index) => (
-            <div className="relative flex flex-col gap-2 p-2" key={index}>
+            <div className="relative flex flex-col gap-2 sm:p-2" key={index}>
               <div className="absolute bottom-4 right-4">{renderActionButtons(article)}</div>
               <ArticleCard article={article} />
             </div>
@@ -149,8 +149,8 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="self-start">
+    <div className="flex w-full flex-col">
+      <div className="w-full self-start">
         <TabComponent
           tabs={['submitted', 'under_review', 'accepted', 'published', 'rejected']}
           activeTab={activeTab}

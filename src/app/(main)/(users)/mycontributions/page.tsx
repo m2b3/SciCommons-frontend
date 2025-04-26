@@ -7,7 +7,6 @@ import {
   Award,
   Book,
   Bookmark,
-  ChevronDown,
   FileText,
   MessageCircle,
   MessageSquare,
@@ -114,7 +113,7 @@ const ContributionsPage: React.FC = () => {
   });
 
   const [activeTab, setActiveTab] = useState<
-    'articles' | 'communities' | 'posts' | 'favorites' | 'bookmarks'
+    'articles' | 'communities' | 'favorites' | 'bookmarks'
   >('articles');
   const [isTabsOpen, setIsTabsOpen] = useState(false);
 
@@ -164,7 +163,7 @@ const ContributionsPage: React.FC = () => {
         title: article.title,
         subtitle: `${article.status} on ${article.date}`,
         slug: article.slug,
-        iconColor: 'bg-green-100 text-green-600',
+        iconColor: 'bg-functional-green/10 text-functional-green',
       })) || [],
     communities:
       communitiesData?.data.map((community) => ({
@@ -172,7 +171,7 @@ const ContributionsPage: React.FC = () => {
         icon: Users,
         title: community.name,
         subtitle: `${community.role} · ${community.members_count} members`,
-        iconColor: 'bg-purple-100 text-purple-600',
+        iconColor: 'bg-functional-blue/10 text-functional-blue',
         role: community.role,
         slug: community.name,
         memberCount: community.members_count,
@@ -193,10 +192,10 @@ const ContributionsPage: React.FC = () => {
         subtitle: favorite.details,
         iconColor:
           favorite.type === 'Article'
-            ? 'bg-blue-100 text-blue-600'
+            ? 'bg-functional-green/10 text-functional-green'
             : favorite.type === 'Community'
-              ? 'bg-green-100 text-green-600'
-              : 'bg-yellow-100 text-yellow-600',
+              ? 'bg-functional-blue/10 text-functional-blue'
+              : 'bg-functional-yellow/10 text-functional-yellow',
         type: favorite.type,
         slug: favorite.slug,
       })) || [],
@@ -205,7 +204,7 @@ const ContributionsPage: React.FC = () => {
         icon: Bookmark,
         title: bookmark.title,
         subtitle: bookmark.details,
-        iconColor: 'bg-yellow-100 text-yellow-600',
+        iconColor: 'bg-functional-yellow/10 text-functional-yellow',
         type: bookmark.type,
         slug: bookmark.slug,
       })) || [],
@@ -214,7 +213,7 @@ const ContributionsPage: React.FC = () => {
   const tabContent: Record<typeof activeTab, Array<ItemCardProps>> = {
     articles: userData?.articles || [],
     communities: userData?.communities || [],
-    posts: userData?.posts || [],
+    // posts: userData?.posts || [],
     favorites: userData?.favorites || [],
     bookmarks: userData?.bookmarks || [],
   };
@@ -248,7 +247,7 @@ const ContributionsPage: React.FC = () => {
   ]);
 
   return (
-    <div className="bg-gray-100 text-gray-900 res-text-sm">
+    <div className="bg-common-background res-text-sm">
       {isPending && (
         <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <ProfileHeaderSkeleton />
@@ -279,14 +278,14 @@ const ContributionsPage: React.FC = () => {
 
               <ReputationBadge level={userData.reputationLevel} score={userData.reputationScore} />
 
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-6 md:gap-6 lg:grid-cols-4">
                 {userData.contributions?.map((contribution, index) => (
                   <ContributionCard key={index} {...contribution} />
                 ))}
               </div>
 
               <div className="mt-8">
-                <div className="sm:hidden">
+                {/* <div className="sm:hidden">
                   <button
                     className="flex w-full items-center justify-between rounded-lg bg-white-primary px-4 py-2 text-left font-semibold text-gray-800 shadow"
                     onClick={() => setIsTabsOpen(!isTabsOpen)}
@@ -312,8 +311,8 @@ const ContributionsPage: React.FC = () => {
                       ))}
                     </div>
                   )}
-                </div>
-                <div className="mb-4 hidden space-x-2 overflow-x-auto sm:flex">
+                </div> */}
+                <div className="scrollbar-hide flex overflow-x-auto">
                   {(Object.keys(tabContent) as Array<keyof typeof tabContent>).map((tab) => (
                     <TabButton
                       key={tab}
@@ -325,12 +324,12 @@ const ContributionsPage: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="rounded-lg bg-white-primary p-4 shadow-md sm:p-6">
-                  <h2 className="mb-4 text-xl font-semibold">
+                <div className="py-6">
+                  <h2 className="mb-4 text-xl font-semibold text-text-primary">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                   </h2>
                   {tabContent[activeTab].length === 0 && (
-                    <p className="text-gray-500">No {activeTab} found</p>
+                    <p className="text-xs text-text-tertiary">No {activeTab} found</p>
                   )}
                   {tabContent[activeTab].map((item, index) => (
                     <ItemCard key={index} {...item} />

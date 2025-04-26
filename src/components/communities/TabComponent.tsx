@@ -32,18 +32,21 @@ const TabComponent = <ActiveTabType extends string>({
   }, [searchParams]);
 
   return (
-    <div className="flex gap-1 rounded-md bg-common-cardBackground p-1 text-text-primary shadow res-text-sm">
+    <div className="scrollbar-hide flex w-full gap-2 overflow-x-auto rounded-full p-1 text-xs text-text-primary">
       {tabs.map((tab) => (
         <button
           key={tab}
-          className={clsx('rounded-md px-4 py-2 transition-all duration-300', {
-            'bg-common-contrast shadow-md': tab === activeTab,
-            'text-text-secondary': tab !== activeTab,
-            'hover:bg-common-minimal': tab !== activeTab,
-          })}
+          className={clsx(
+            'w-fit whitespace-nowrap rounded-full px-3 py-1.5 capitalize transition-all duration-200',
+            {
+              'bg-common-contrast': tab === activeTab,
+              'bg-common-minimal/40 text-text-secondary': tab !== activeTab,
+              'hover:bg-common-contrast/50': tab !== activeTab,
+            }
+          )}
           onClick={() => handleTabClick(tab as ActiveTabType)}
         >
-          {tab}
+          {tab.replace('_', ' ')}
         </button>
       ))}
     </div>

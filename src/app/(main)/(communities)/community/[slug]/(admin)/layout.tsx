@@ -46,7 +46,7 @@ export default function CommunityAdminLayout({ children }: { children: React.Rea
   return (
     <div className="flex">
       <Sidebar baseHref={`/community/${params?.slug}`} links={links} />
-      <main className="ml-10 flex-1 p-4 pl-2 md:ml-64 md:pl-4">{children}</main>
+      <main className="mt-6 w-full flex-1 p-4 md:ml-64 md:mt-0 md:pl-4">{children}</main>
     </div>
   );
 }
