@@ -28,7 +28,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   memberCount,
   slug,
 }) => (
-  <div className="mb-4 flex items-start space-x-3 rounded-lg bg-white-primary p-4 shadow">
+  <div className="mb-4 flex items-start space-x-3 rounded-lg border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal">
     <div className={`flex-shrink-0 rounded-full p-2 ${iconColor}`}>
       <Icon className="h-5 w-5" />
     </div>
@@ -43,15 +43,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
               : `/posts/${slug}`
         }
       >
-        <h4 className="text-sm font-semibold text-gray-800">{title}</h4>
+        <h4 className="text-sm font-semibold text-text-primary">{title}</h4>
       </Link>
-      <p className="text-xs text-gray-600">
+      <p className="text-xs text-text-secondary">
         {role && memberCount ? `${role} · ${memberCount} members` : subtitle}
       </p>
       {type && (
         <span
-          className={`mt-1 inline-block rounded-full px-2 py-1 text-xs font-semibold 
-          ${
+          className={`mt-1 inline-block rounded-full px-2 py-1 text-xs font-semibold ${
             type === 'Article'
               ? 'bg-blue-100 text-blue-800'
               : type === 'Community'

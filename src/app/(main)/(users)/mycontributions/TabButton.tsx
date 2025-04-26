@@ -9,7 +9,9 @@ interface TabButtonProps {
 const TabButton: React.FC<TabButtonProps> = ({ active, onClick, children }) => (
   <button
     className={`rounded-t-lg px-3 py-2 text-sm font-semibold ${
-      active ? 'bg-white text-blue-600' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+      active
+        ? 'bg-white text-blue-600'
+        : 'bg-common-cardBackground text-text-secondary hover:bg-common-minimal'
     }`}
     onClick={onClick}
   >

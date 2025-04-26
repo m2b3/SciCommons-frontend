@@ -13,7 +13,7 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, image, bio, location, website }) => (
-  <div className="mb-8 flex flex-col items-center space-y-4 rounded-lg bg-white-primary p-6 shadow-md sm:flex-row sm:items-start sm:space-x-6 sm:space-y-0">
+  <div className="mb-8 flex flex-col items-center space-y-4 rounded-lg border border-common-contrast bg-common-cardBackground p-6 hover:shadow-md hover:shadow-common-minimal sm:flex-row sm:items-start sm:space-x-6 sm:space-y-0">
     <div className="flex-shrink-0">
       <Image
         src={image}
@@ -24,11 +24,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, image, bio, locatio
       />
     </div>
     <div className="text-center sm:text-left">
-      <h2 className="text-2xl font-bold text-gray-900">{name}</h2>
-      <p className="mt-2 max-w-2xl text-gray-600">{bio}</p>
+      <h2 className="text-2xl font-bold text-text-primary">{name}</h2>
+      <p className="mt-2 max-w-2xl text-text-secondary">{bio}</p>
       <div className="mt-4 flex flex-wrap justify-center gap-4 sm:justify-start">
         {location && (
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-text-secondary">
             <MapPin className="mr-1 h-4 w-4" />
             <span>{location}</span>
           </div>
@@ -49,7 +49,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, image, bio, locatio
 export default ProfileHeader;
 
 export const ProfileHeaderSkeleton: React.FC = () => (
-  <div className="mb-8 flex animate-pulse flex-col items-center space-y-4 rounded-lg bg-white p-6 shadow-md sm:flex-row sm:items-start sm:space-x-6 sm:space-y-0">
+  <div className="mb-8 flex animate-pulse flex-col items-center space-y-4 rounded-lg border border-common-contrast bg-common-cardBackground p-6 shadow-md sm:flex-row sm:items-start sm:space-x-6 sm:space-y-0">
     <div className="flex-shrink-0">
       <div className="h-32 w-32 rounded-full bg-gray-300"></div>
     </div>

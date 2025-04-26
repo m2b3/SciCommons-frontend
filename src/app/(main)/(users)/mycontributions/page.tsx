@@ -248,7 +248,7 @@ const ContributionsPage: React.FC = () => {
   ]);
 
   return (
-    <div className="bg-gray-100 text-gray-900 res-text-sm">
+    <div className="bg-gray-100 text-gray-900 res-text-sm dark:bg-background dark:text-gray-100">
       {isPending && (
         <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <ProfileHeaderSkeleton />
@@ -325,7 +325,7 @@ const ContributionsPage: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="rounded-lg bg-white-primary p-4 shadow-md sm:p-6">
+                <div className="rounded-lg border border-common-contrast bg-background p-4 hover:shadow-md hover:shadow-common-minimal sm:p-6">
                   <h2 className="mb-4 text-xl font-semibold">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                   </h2>
