@@ -4,9 +4,12 @@ import React, { useEffect, useState } from 'react';
 
 import { Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useMediaQuery } from 'usehooks-ts';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
+import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDetails';
@@ -18,6 +21,7 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   // const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
   const [isEditEnabled, setIsEditEnabled] = useState(false);
+  const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   const { data, isPending, error } = useArticlesApiGetArticle(
     params?.slug || '',
@@ -44,17 +48,7 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
         />
       </div> */}
       {/* {activeTab === 'Details' && ( */}
-      <div className="relative w-full rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
-        <div
-          className="absolute hidden aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:right-4 sm:top-4 sm:block md:right-6 md:top-6"
-          onClick={() => setIsEditEnabled(!isEditEnabled)}
-        >
-          {!isEditEnabled ? (
-            <Pencil className="size-5 text-functional-blue" />
-          ) : (
-            <X className="size-5 text-text-secondary" />
-          )}
-        </div>
+      <div className="relative w-full rounded-xl border-common-contrast sm:border sm:bg-common-cardBackground sm:p-6">
         <div className="mb-4 flex items-center justify-between sm:justify-center">
           <h1 className="font-bold text-text-primary res-heading-base">
             Edit your
@@ -62,7 +56,10 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
             Details
           </h1>
           <div
-            className="aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:hidden"
+            className={cn(
+              'aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast',
+              isDesktop ? 'absolute right-4 top-4' : ''
+            )}
             onClick={() => setIsEditEnabled(!isEditEnabled)}
           >
             {!isEditEnabled ? (

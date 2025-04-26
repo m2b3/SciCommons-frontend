@@ -11,11 +11,11 @@ interface FeatureTileProps {
 const FeatureTile: React.FC<FeatureTileProps> = ({ item }) => {
   return (
     <div className="flex flex-col gap-4 rounded-common-xl border border-common-contrast bg-common-background/70 p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
+      <div className="flex items-center gap-4">
         <div className="rounded-full">{item?.icon}</div>
-        <h3 className="text-xl font-bold text-text-primary">{item?.heading}</h3>
+        <h3 className="text-base font-bold text-text-primary md:text-xl">{item?.heading}</h3>
       </div>
-      <div className="w-full text-base text-text-secondary">{item?.content}</div>
+      <div className="w-full text-sm text-text-secondary md:text-base">{item?.content}</div>
     </div>
   );
 };

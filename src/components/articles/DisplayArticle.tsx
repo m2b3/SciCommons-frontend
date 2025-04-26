@@ -10,6 +10,7 @@ import { useMediaQuery } from 'usehooks-ts';
 import { useCommunitiesArticlesApiToggleArticlePseudonymous } from '@/api/community-articles/community-articles';
 import { ArticleOut } from '@/api/schemas';
 import TruncateText from '@/components/common/TruncateText';
+import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useDebounceFunction } from '@/hooks/useDebounceThrottle';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -53,7 +54,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
   const hasImage = !!article.article_image_url;
   const accessToken = useAuthStore((state) => state.accessToken);
   const [isPseudonymous, setIsPseudonymous] = useState(true);
-  const isDesktop = useMediaQuery('(min-width: 640px)');
+  const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -185,12 +186,9 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
               {isDesktop ? (
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                   <SheetTrigger>
-                    <Button
-                      className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
-                      variant={'inverted'}
-                    >
+                    <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
                       <Settings size={18} />
-                    </Button>
+                    </div>
                   </SheetTrigger>
                   <SheetContent
                     isOpen={isSheetOpen}
@@ -226,12 +224,9 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
               ) : (
                 <Drawer>
                   <DrawerTrigger>
-                    <Button
-                      className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
-                      variant={'inverted'}
-                    >
+                    <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
                       <Settings size={18} />
-                    </Button>
+                    </div>
                   </DrawerTrigger>
                   <DrawerContent className="flex flex-col items-center p-0 pt-4">
                     <DrawerHeader className="flex flex-col items-center">

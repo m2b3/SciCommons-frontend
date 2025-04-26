@@ -60,7 +60,7 @@ const UnRegistered = () => {
   };
 
   return (
-    <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+    <div className="my-4 rounded-xl border-common-contrast sm:border sm:bg-common-cardBackground sm:p-4">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <Controller
           name="emails"
@@ -100,7 +100,7 @@ const UnRegistered = () => {
             errors={errors}
             textArea={true}
           />
-          <span className="rex-text-xs italic text-functional-yellow">
+          <span className="text-xs italic text-functional-yellow">
             (A referral link will be automatically attached with the email body.)
           </span>
         </div>

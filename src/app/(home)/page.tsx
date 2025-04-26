@@ -69,7 +69,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="relative z-20 -mt-8 rounded-t-3xl bg-[#F6F6F6] p-12 pb-20 dark:bg-[#141414]">
+      <div className="relative z-20 -mt-8 rounded-t-3xl bg-common-background p-12 pb-20">
         <p className="w-full pb-8 text-center text-xl font-bold text-text-tertiary md:text-2xl">
           Our Supporters
         </p>
@@ -110,10 +110,12 @@ const Home = () => {
                 value={faq?.ques}
               >
                 <AccordionTrigger className="w-full p-5" defaultIconNeeded={true}>
-                  <span className="w-full text-left text-base text-text-primary">{faq?.ques}</span>
+                  <span className="w-full text-left text-sm text-text-primary md:text-base">
+                    {faq?.ques}
+                  </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
-                  <span className="text-text-secondary">{faq?.ans}</span>
+                  <span className="text-xs text-text-secondary md:text-sm">{faq?.ans}</span>
                 </AccordionContent>
               </AccordionItem>
             ))}

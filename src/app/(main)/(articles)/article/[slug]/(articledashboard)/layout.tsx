@@ -36,9 +36,9 @@ export default function ArticleAuthorLayout({ children }: { children: React.Reac
     },
   ];
   return (
-    <div className="flex">
+    <div className="relative flex">
       <Sidebar baseHref={`/article/${params?.slug}`} links={links} />
-      <main className="ml-10 flex-1 p-4 pl-2 md:ml-64 md:pl-4">{children}</main>
+      <main className="mt-6 flex-1 p-4 md:ml-64 md:mt-0 md:pl-4">{children}</main>
     </div>
   );
 }
