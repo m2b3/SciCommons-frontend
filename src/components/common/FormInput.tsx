@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Info } from 'lucide-react';
+import { Eye, EyeOff, Info } from 'lucide-react';
 import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -54,6 +54,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   helperTextClassName,
 }: InputProps<TFieldValues>): JSX.Element => {
   const error = errors[name];
+  const [showPassword, setShowPassword] = useState(false);
 
   const commonProps = {
     id: String(name),
@@ -105,7 +106,23 @@ const FormInput = <TFieldValues extends FieldValues>({
           )}
         </div>
       )}
-      {textArea ? <textarea {...commonProps} rows={4} /> : <input {...commonProps} type={type} />}
+      {textArea ? (
+        <textarea {...commonProps} rows={4} />
+      ) : type === 'password' ? (
+        <div className="relative">
+          <input {...commonProps} type={showPassword ? 'text' : 'password'} />
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+      ) : (
+        <input {...commonProps} type={type} />
+      )}
       {error && !readOnly && !isSubmitting && (
         <p className="mt-2 text-red-600 res-text-xs">{String(error.message)}</p>
       )}
