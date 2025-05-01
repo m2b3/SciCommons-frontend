@@ -82,19 +82,19 @@ const CreateDropdown: React.FC = () => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mb-6 w-48 rounded-common-lg border border-gray-300 bg-gray-100 py-2 dark:border-gray-700 dark:bg-gray-950">
-        <DropdownMenuItem className="py-2 hover:bg-gray-900">
+        <DropdownMenuItem asChild className="py-2 hover:bg-gray-900">
           <Link href="/submitarticle">
-            <span className="p-4 text-sm text-gray-500">Submit Article</span>
+            <div className="p-4 text-sm text-gray-500">Submit Article</div>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="py-2 hover:bg-gray-900">
+        <DropdownMenuItem asChild className="py-2 hover:bg-gray-900">
           <Link href="/createcommunity" className="text-gray-500">
-            <span className="p-4 text-sm text-gray-500">Create Community</span>
+            <div className="p-4 text-sm text-gray-500">Create Community</div>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="py-2 hover:bg-gray-900">
+        <DropdownMenuItem asChild className="py-2 hover:bg-gray-900">
           <Link href="/posts/createpost" className="text-gray-500">
-            <span className="p-4 text-sm text-gray-500">Create Post</span>
+            <div className="p-4 text-sm text-gray-500">Create Post</div>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
