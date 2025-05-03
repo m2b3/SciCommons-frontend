@@ -223,7 +223,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               >
                 {isPending ? 'Submitting...' : 'Submit Review'}
               </Button>
-              <span className="text-text-tertiary res-text-xs">
+              {/* <span className="text-text-tertiary res-text-xs">
                 By clicking Submit Review, you agree to our{' '}
                 <a href="#" className="text-functional-blue hover:underline">
                   terms of service
@@ -233,7 +233,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                   privacy policy
                 </a>
                 .
-              </span>
+              </span> */}
             </div>
           )}
         </form>

@@ -58,7 +58,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
-    setIsPseudonymous(article.is_pseudonymous);
+    setIsPseudonymous(article.is_pseudonymous || false);
   }, [article.is_pseudonymous]);
 
   const {
@@ -84,7 +84,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
     }
     if (isMutationError) {
       toast.error('Update failed');
-      setIsPseudonymous(article.is_pseudonymous);
+      setIsPseudonymous(article.is_pseudonymous || false);
     }
   }, [isMutationSuccess, mutationData, isMutationError]);
 

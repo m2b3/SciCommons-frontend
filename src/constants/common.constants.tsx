@@ -222,3 +222,8 @@ export const SCREEN_WIDTH_MD = 768; // 48rem
 export const SCREEN_WIDTH_LG = 1024; // 64rem
 export const SCREEN_WIDTH_XL = 1280; // 80rem
 export const SCREEN_WIDTH_2XL = 1536; // 96rem
+
+export const FIVE_MINUTES_IN_MS = 1000 * 60 * 5; // 5 minutes in milliseconds
+export const TEN_MINUTES_IN_MS = 1000 * 60 * 10; // 10 minutes in milliseconds
+export const FIFTEEN_MINUTES_IN_MS = 1000 * 60 * 15; // 15 minutes in milliseconds
+export const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30; // 30 minutes in milliseconds

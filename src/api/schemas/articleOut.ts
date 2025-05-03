@@ -24,7 +24,7 @@ export interface ArticleOut {
   created_at: string;
   faqs: FAQSchema[];
   id?: ArticleOutId;
-  is_pseudonymous: boolean;
+  is_pseudonymous?: boolean;
   is_submitter: boolean;
   slug?: ArticleOutSlug;
   submission_type: SubmissionType;

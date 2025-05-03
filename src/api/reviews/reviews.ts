@@ -464,7 +464,7 @@ export const articlesReviewApiCreateComment = (
 };
 
 export const getArticlesReviewApiCreateCommentMutationOptions = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -498,13 +498,13 @@ export type ArticlesReviewApiCreateCommentMutationResult = NonNullable<
   Awaited<ReturnType<typeof articlesReviewApiCreateComment>>
 >;
 export type ArticlesReviewApiCreateCommentMutationBody = BodyType<ReviewCommentCreateSchema>;
-export type ArticlesReviewApiCreateCommentMutationError = ErrorType<unknown>;
+export type ArticlesReviewApiCreateCommentMutationError = ErrorType<Message>;
 
 /**
  * @summary Create Comment
  */
 export const useArticlesReviewApiCreateComment = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -544,7 +544,7 @@ export const getArticlesReviewApiListReviewCommentsQueryKey = (reviewId: number)
 
 export const getArticlesReviewApiListReviewCommentsQueryOptions = <
   TData = Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   reviewId: number,
   options?: {
@@ -577,14 +577,14 @@ export const getArticlesReviewApiListReviewCommentsQueryOptions = <
 export type ArticlesReviewApiListReviewCommentsQueryResult = NonNullable<
   Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>
 >;
-export type ArticlesReviewApiListReviewCommentsQueryError = ErrorType<unknown>;
+export type ArticlesReviewApiListReviewCommentsQueryError = ErrorType<Message>;
 
 /**
  * @summary List Review Comments
  */
 export const useArticlesReviewApiListReviewComments = <
   TData = Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   reviewId: number,
   options?: {
