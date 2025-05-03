@@ -22,12 +22,16 @@ import type {
   FavoriteItemSchema,
   Message,
   NotificationSchema,
+  PaginatedArticlesResponse,
+  PaginatedCommunities,
   UserArticleSchema,
   UserCommunitySchema,
   UserDetails,
   UserPostSchema,
   UserStats,
   UsersApiGetNotificationsParams,
+  UsersApiListMyArticlesParams,
+  UsersApiListMyCommunitiesParams,
   UsersApiUpdateUserBody,
 } from '.././schemas';
 
@@ -232,7 +236,7 @@ export const useUsersApiGetUserStats = <
 };
 
 /**
- * @summary Get My Articles
+ * @summary Get Contributed Articles
  */
 export const usersApiGetMyArticles = (
   options?: SecondParameter<typeof customInstance>,
@@ -277,7 +281,7 @@ export type UsersApiGetMyArticlesQueryResult = NonNullable<
 export type UsersApiGetMyArticlesQueryError = ErrorType<Message>;
 
 /**
- * @summary Get My Articles
+ * @summary Get Contributed Articles
  */
 export const useUsersApiGetMyArticles = <
   TData = Awaited<ReturnType<typeof usersApiGetMyArticles>>,
@@ -298,20 +302,167 @@ export const useUsersApiGetMyArticles = <
 };
 
 /**
+ * @summary Get My Articles
+ */
+export const usersApiListMyArticles = (
+  params?: UsersApiListMyArticlesParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedArticlesResponse>(
+    { url: `/api/users/my-articles`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersApiListMyArticlesQueryKey = (params?: UsersApiListMyArticlesParams) => {
+  return [`/api/users/my-articles`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersApiListMyArticlesQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiListMyArticles>>,
+  TError = ErrorType<Message>,
+>(
+  params?: UsersApiListMyArticlesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiListMyArticles>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiListMyArticlesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiListMyArticles>>> = ({ signal }) =>
+    usersApiListMyArticles(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiListMyArticles>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiListMyArticlesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiListMyArticles>>
+>;
+export type UsersApiListMyArticlesQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get My Articles
+ */
+export const useUsersApiListMyArticles = <
+  TData = Awaited<ReturnType<typeof usersApiListMyArticles>>,
+  TError = ErrorType<Message>,
+>(
+  params?: UsersApiListMyArticlesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiListMyArticles>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiListMyArticlesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
  * @summary Get My Communities
+ */
+export const usersApiListMyCommunities = (
+  params?: UsersApiListMyCommunitiesParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedCommunities>(
+    { url: `/api/users/my-communities`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersApiListMyCommunitiesQueryKey = (params?: UsersApiListMyCommunitiesParams) => {
+  return [`/api/users/my-communities`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersApiListMyCommunitiesQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiListMyCommunities>>,
+  TError = ErrorType<Message>,
+>(
+  params?: UsersApiListMyCommunitiesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiListMyCommunities>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiListMyCommunitiesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiListMyCommunities>>> = ({
+    signal,
+  }) => usersApiListMyCommunities(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiListMyCommunities>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiListMyCommunitiesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiListMyCommunities>>
+>;
+export type UsersApiListMyCommunitiesQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get My Communities
+ */
+export const useUsersApiListMyCommunities = <
+  TData = Awaited<ReturnType<typeof usersApiListMyCommunities>>,
+  TError = ErrorType<Message>,
+>(
+  params?: UsersApiListMyCommunitiesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersApiListMyCommunities>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiListMyCommunitiesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * @summary Get Contributed Communities
  */
 export const usersApiGetMyCommunities = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<UserCommunitySchema[]>(
-    { url: `/api/users/my-communities`, method: 'GET', signal },
+    { url: `/api/users/contributed-communities`, method: 'GET', signal },
     options
   );
 };
 
 export const getUsersApiGetMyCommunitiesQueryKey = () => {
-  return [`/api/users/my-communities`] as const;
+  return [`/api/users/contributed-communities`] as const;
 };
 
 export const getUsersApiGetMyCommunitiesQueryOptions = <
@@ -344,7 +495,7 @@ export type UsersApiGetMyCommunitiesQueryResult = NonNullable<
 export type UsersApiGetMyCommunitiesQueryError = ErrorType<Message>;
 
 /**
- * @summary Get My Communities
+ * @summary Get Contributed Communities
  */
 export const useUsersApiGetMyCommunities = <
   TData = Awaited<ReturnType<typeof usersApiGetMyCommunities>>,

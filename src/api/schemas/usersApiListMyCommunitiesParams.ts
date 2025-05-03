@@ -5,8 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UsersApiGetMyArticlesParams = {
+export type UsersApiListMyCommunitiesParams = {
+  search?: string | null;
+  sort?: string | null;
   page?: number;
   per_page?: number;
-  search?: string | null;
 };

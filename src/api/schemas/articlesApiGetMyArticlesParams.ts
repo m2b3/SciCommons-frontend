@@ -5,7 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UsersApiGetMyArticlesParams = {
+export type ArticlesApiGetMyArticlesParams = {
   page?: number;
   per_page?: number;
   search?: string | null;

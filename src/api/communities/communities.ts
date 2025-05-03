@@ -369,7 +369,7 @@ export const communitiesApiDeleteCommunity = (
 };
 
 export const getCommunitiesApiDeleteCommunityMutationOptions = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -403,13 +403,13 @@ export type CommunitiesApiDeleteCommunityMutationResult = NonNullable<
   Awaited<ReturnType<typeof communitiesApiDeleteCommunity>>
 >;
 
-export type CommunitiesApiDeleteCommunityMutationError = ErrorType<unknown>;
+export type CommunitiesApiDeleteCommunityMutationError = ErrorType<Message>;
 
 /**
  * @summary Delete Community
  */
 export const useCommunitiesApiDeleteCommunity = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<

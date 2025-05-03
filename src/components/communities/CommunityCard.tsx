@@ -71,10 +71,11 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
       </div>
       <span
         className={cn(
-          'rounded-tab absolute bottom-0 right-4 px-2 pb-0.5 pt-1 text-xs font-semibold capitalize text-white',
+          'rounded-tab absolute bottom-0 right-4 px-2 pb-0.5 pt-1 text-xs font-normal capitalize text-white',
           {
             'bg-emerald-600 dark:bg-emerald-900': community.type === 'public',
             'bg-purple-600 dark:bg-purple-900': community.type === 'private',
+            'bg-rose-600 dark:bg-rose-900': community.type === 'hidden',
           }
         )}
       >
