@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MessageCircle, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { PostOut } from '@/api/schemas';
 import {
@@ -15,6 +17,7 @@ import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
+import SocialShare from '../../app/(main)/(posts)/posts/[postId]/SocialShare';
 import Hashtag from './Hashtag';
 
 type Reaction = 'upvote' | 'downvote';
@@ -41,6 +44,14 @@ const PostCard = (post: PostOut) => {
       },
     },
   });
+
+  const [origin, setOrigin] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   const handleReaction = (reaction: Reaction) => {
     if (reaction === 'upvote' && post.id)
@@ -117,7 +128,11 @@ const PostCard = (post: PostOut) => {
             <span>{post.comments_count} comments</span>
           </button>
           <button className="flex items-center space-x-1 transition hover:text-purple-500">
-            <Share2 size={16} />
+            <SocialShare
+              url={`${origin}/posts/${post.id}`}
+              title={post?.title || 'Check out this post'}
+              description={post?.content}
+            />
             <span>Share</span>
           </button>
         </div>
