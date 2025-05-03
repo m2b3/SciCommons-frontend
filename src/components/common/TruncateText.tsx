@@ -35,7 +35,7 @@ const TruncateText = ({
     <div>
       <div
         ref={textRef}
-        className={`${!isExpanded && isTruncated ? 'overflow-hidden' : ''} text-gray-700`}
+        className={`${!isExpanded && isTruncated ? 'overflow-hidden' : ''} text-black`}
         style={{
           display: '-webkit-box',
           WebkitLineClamp: !isExpanded && isTruncated ? maxLines : 'unset',

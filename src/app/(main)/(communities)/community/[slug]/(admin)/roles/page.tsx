@@ -37,14 +37,19 @@ const Roles = ({ params }: { params: { slug: string } }) => {
   }, [error]);
 
   return (
-    <div className="flex flex-col">
-      <div className="self-start">
-        <TabComponent<ActiveTab>
-          tabs={['Members', 'Moderators', 'Reviewers', 'Admins']}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+    <div>
+      <div className="flex flex-col">
+        <div className="w-[310px] overflow-x-auto sm:w-full">
+          <div className="flex w-max gap-2 px-1">
+            <TabComponent<ActiveTab>
+              tabs={['Members', 'Moderators', 'Reviewers', 'Admins']}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+        </div>
       </div>
+
       {/* Todo: Reduce the number of lines of code */}
       {activeTab === 'Members' && (
         <div className="my-4 flex flex-col">

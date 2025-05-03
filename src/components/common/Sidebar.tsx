@@ -22,6 +22,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
   const pathname = usePathname();
+  const [open, setOpen] = React.useState(false);
 
   return (
     <>
@@ -51,9 +52,9 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
         </div>
       </div>
       <div className="fixed left-0 top-10 z-10 md:hidden">
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <button className="px-2 py-4">
+            <button className="px-2 py-8">
               <Menu size={24} />
             </button>
           </SheetTrigger>
@@ -73,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setOpen(false)}
                   className={`flex items-center rounded-md px-4 py-2 ${
                     pathname === link.href ? 'bg-black text-white' : 'hover:bg-gray-200'
                   }`}
