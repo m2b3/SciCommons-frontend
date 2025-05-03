@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Facebook, Linkedin, Mail, Share2, Twitter } from 'lucide-react';
+import { Facebook, Link, Linkedin, Mail, Share2, Twitter } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -64,6 +64,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ url, title, description }) =>
             Email
           </Button>
           <Button variant="outline" onClick={copyToClipboard}>
+            <Link className="mr-2 h-4 w-4" />
             Copy Link
           </Button>
         </div>
