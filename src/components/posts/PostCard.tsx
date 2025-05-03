@@ -123,10 +123,12 @@ const PostCard = (post: PostOut) => {
               <ThumbsDown size={20} onClick={() => handleReaction('downvote')} />
             )}
           </button>
-          <button className="flex items-center space-x-1 transition hover:text-green-500">
-            <MessageCircle size={16} />
-            <span>{post.comments_count} comments</span>
-          </button>
+          <Link href={`/posts/${post.id}`}>
+            <button className="flex items-center space-x-1 transition hover:text-green-500">
+              <MessageCircle size={16} />
+              <span>{post.comments_count} comments</span>
+            </button>
+          </Link>
           <button className="flex items-center space-x-1 transition hover:text-purple-500">
             <SocialShare
               url={`${origin}/posts/${post.id}`}
