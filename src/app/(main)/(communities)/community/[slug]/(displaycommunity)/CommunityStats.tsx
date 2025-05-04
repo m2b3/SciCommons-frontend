@@ -8,7 +8,7 @@ interface CommunityStatsProps {
 
 const CommunityStats: React.FC<CommunityStatsProps> = ({ community }) => {
   return (
-    <div className="rounded-md border-2 border-gray-200 bg-white-secondary p-4">
+    <div className="rounded-xl border border-common-contrast bg-common-cardBackground p-4">
       <h2 className="mb-4 font-semibold text-gray-800 res-heading-xs">Community Stats</h2>
       <div className="flex flex-col space-y-4">
         <div className="flex items-center text-gray-700">

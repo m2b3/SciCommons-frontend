@@ -11,11 +11,11 @@ function convertToCommentData(backendComment: ReviewCommentOut): CommentData {
     replies: backendComment.replies.map(convertToCommentData),
     is_author: backendComment.is_author || false,
     // review specific
-    anonymous_name: backendComment.anonymous_name,
-    rating: backendComment.rating || 0,
+    rating: backendComment.rating ?? undefined,
     review_version: true,
     isReview: true,
     isNew: false,
+    is_deleted: backendComment.is_deleted || false,
   };
 
   return convertedComment;

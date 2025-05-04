@@ -4,10 +4,9 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { StatusFilter } from './statusFilter';
 
 export type UsersApiGetMyArticlesParams = {
-  status_filter?: StatusFilter | null;
   page?: number;
-  limit?: number;
+  per_page?: number;
+  search?: string | null;
 };

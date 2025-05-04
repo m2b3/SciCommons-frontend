@@ -24,14 +24,15 @@ export interface ArticleOut {
   created_at: string;
   faqs: FAQSchema[];
   id?: ArticleOutId;
+  is_pseudonymous?: boolean;
   is_submitter: boolean;
-  keywords: string[];
   slug?: ArticleOutSlug;
   submission_type: SubmissionType;
-  /** @maxLength 255 */
+  /** @maxLength 500 */
   title: string;
   total_comments: number;
   total_discussions: number;
+  total_ratings: number;
   total_reviews: number;
   updated_at: string;
   user: UserStats;

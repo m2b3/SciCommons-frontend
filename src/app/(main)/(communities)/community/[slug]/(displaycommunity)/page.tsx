@@ -2,23 +2,20 @@
 
 import React, { useEffect } from 'react';
 
-import { YooptaContentValue } from '@yoopta/editor';
+import { CircleXIcon } from 'lucide-react';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
-import SplitScreenLayout from '@/components/common/SplitScreenLayout';
+import EmptyState from '@/components/common/EmptyState';
 import TabNavigation from '@/components/ui/tab-navigation';
 import useStore from '@/hooks/useStore';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 import AssessmentsList from './AssessmentsList';
-import CommunityAbout from './CommunityAbout';
 import CommunityArticles from './CommunityArticles';
-import CommunityRules, { CommunityRulesSkeleton } from './CommunityRules';
-import CommunityStats, { CommunityStatsSkeleton } from './CommunityStats';
+import CommunityRules from './CommunityRules';
 import DisplayCommunity, { DisplayCommunitySkeleton } from './DisplayCommunity';
-import RelevantCommunities from './RelevantCommunities';
 
 const Community = ({ params }: { params: { slug: string } }) => {
   const accessToken = useStore(useAuthStore, (state) => state.accessToken);
@@ -40,12 +37,29 @@ const Community = ({ params }: { params: { slug: string } }) => {
     ? [
         {
           title: 'Articles',
-          content: <CommunityArticles communityId={data.data.id} />,
+          content:
+            data.data.type == 'private' && !data.data.is_member ? (
+              <EmptyState
+                logo={<CircleXIcon className="size-8 text-text-secondary" />}
+                content="Join to Access"
+                subcontent="This is a private community. Become a member to view and contribute."
+              />
+            ) : (
+              <CommunityArticles communityId={data.data.id} />
+            ),
         },
-        {
-          title: 'About',
-          content: <CommunityAbout about={data.data.about as YooptaContentValue} />,
-        },
+        // {
+        //   title: 'About',
+        //   content: <CommunityAbout about={data.data.about as YooptaContentValue} />,
+        // },
+        ...(data.data.rules || data.data.is_member
+          ? [
+              {
+                title: 'Rules',
+                content: <CommunityRules community={data.data} />,
+              },
+            ]
+          : []),
         ...(data.data.is_moderator || data.data.is_reviewer
           ? [
               {
@@ -57,8 +71,8 @@ const Community = ({ params }: { params: { slug: string } }) => {
       ]
     : [];
 
-  const LeftSide = (
-    <>
+  return (
+    <div className="container h-fit p-4 md:px-12">
       {isPending ? (
         <DisplayCommunitySkeleton />
       ) : (
@@ -69,60 +83,6 @@ const Community = ({ params }: { params: { slug: string } }) => {
           <TabNavigation tabs={tabs} />
         </div>
       )}
-    </>
-  );
-
-  const RightSide = (
-    <>
-      {isPending ? (
-        <div className="flex flex-col gap-4 shadow-md">
-          <CommunityStatsSkeleton />
-          <CommunityRulesSkeleton />
-        </div>
-      ) : (
-        data && (
-          <div className="flex flex-col gap-4">
-            <CommunityStats community={data.data} />
-            <CommunityRules community={data.data} />
-            <RelevantCommunities communityId={data.data.id} />
-          </div>
-        )
-      )}
-    </>
-  );
-
-  return (
-    <div className="container mx-auto">
-      {/* Mobile Layout */}
-      <div className="lg:hidden">
-        <div className="p-4">
-          {isPending ? (
-            <DisplayCommunitySkeleton />
-          ) : (
-            data && <DisplayCommunity community={data.data} refetch={refetch} />
-          )}
-        </div>
-        {data && (
-          <>
-            <div className="p-4">
-              <TabNavigation tabs={tabs} />
-            </div>
-            <div className="p-4">
-              <RelevantCommunities communityId={data.data.id} />
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Desktop Layout */}
-      <div className="hidden lg:block">
-        <SplitScreenLayout
-          leftSide={LeftSide}
-          rightSide={RightSide}
-          leftWidth="w-2/3"
-          rightWidth="w-1/3"
-        />
-      </div>
     </div>
   );
 };

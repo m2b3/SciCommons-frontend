@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import clsx from 'clsx';
 
@@ -17,25 +17,36 @@ const TabComponent = <ActiveTabType extends string>({
 }: TabComponentProps<ActiveTabType>) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleTabClick = (tab: ActiveTabType) => {
     setActiveTab(tab);
     router.push(`${pathname}?tab=${tab}`);
   };
 
+  useEffect(() => {
+    const tab = searchParams?.get('tab');
+    if (tab && tabs.includes(tab as ActiveTabType)) {
+      setActiveTab(tab as ActiveTabType);
+    }
+  }, [searchParams]);
+
   return (
-    <div className="flex rounded-md bg-white-secondary p-1 text-gray-900 shadow res-text-sm">
+    <div className="scrollbar-hide flex w-full gap-2 overflow-x-auto rounded-full p-1 text-xs text-text-primary">
       {tabs.map((tab) => (
         <button
           key={tab}
-          className={clsx('rounded-md px-4 py-2 transition-all duration-300', {
-            'bg-white-primary shadow-md': tab === activeTab,
-            'text-gray-500': tab !== activeTab,
-            'hover:bg-white-primary': tab !== activeTab,
-          })}
+          className={clsx(
+            'w-fit whitespace-nowrap rounded-full px-3 py-1.5 capitalize transition-all duration-200',
+            {
+              'bg-common-contrast': tab === activeTab,
+              'bg-common-minimal/40 text-text-secondary': tab !== activeTab,
+              'hover:bg-common-contrast/50': tab !== activeTab,
+            }
+          )}
           onClick={() => handleTabClick(tab as ActiveTabType)}
         >
-          {tab}
+          {tab.replace('_', ' ')}
         </button>
       ))}
     </div>

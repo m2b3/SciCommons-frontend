@@ -70,6 +70,7 @@ interface MultipleSelectorProps {
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>,
     'value' | 'placeholder' | 'disabled'
   >;
+  readOnly?: boolean;
 }
 
 export interface MultipleSelectorRef {
@@ -182,6 +183,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       triggerSearchOnFocus = false,
       commandProps,
       inputProps,
+      readOnly = false,
     }: MultipleSelectorProps,
     ref: React.Ref<MultipleSelectorRef>
   ) => {
@@ -292,6 +294,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             e.stopPropagation();
           }}
           onSelect={(value: string) => {
+            if (readOnly) return;
             if (selected.length >= maxSelected) {
               onMaxSelected?.(selected.length);
               return;
@@ -395,24 +398,26 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                   data-disabled={disabled || undefined}
                 >
                   {option.label}
-                  <button
-                    className={cn(
-                      'ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
-                      (disabled || option.fixed) && 'hidden'
-                    )}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleUnselect(option);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onClick={() => handleUnselect(option)}
-                  >
-                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </button>
+                  {!readOnly && (
+                    <button
+                      className={cn(
+                        'ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
+                        (disabled || option.fixed) && 'hidden'
+                      )}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleUnselect(option);
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={() => handleUnselect(option)}
+                    >
+                      <X className="h-3 w-3 text-text-secondary hover:text-common-invert" />
+                    </button>
+                  )}
                 </Badge>
               );
             })}
@@ -437,7 +442,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               }}
               placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : placeholder}
               className={cn(
-                'flex-1 bg-transparent outline-none placeholder:text-muted-foreground',
+                'flex-1 rounded-md bg-common-background px-2 text-sm outline-none ring-1 ring-common-contrast placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green',
                 {
                   'w-full': hidePlaceholderWhenSelected,
                   'px-3 py-2': selected.length === 0,
@@ -445,17 +450,18 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 },
                 inputProps?.className
               )}
+              readOnly={readOnly}
             />
           </div>
         </div>
         <div className="relative">
           {open && (
-            <CommandList className="absolute top-1 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
+            <CommandList className="absolute top-1 z-10 w-full rounded-md border border-common-contrast bg-common-background text-text-secondary shadow-md outline-none animate-in">
               {isLoading ? (
                 <>{loadingIndicator}</>
               ) : (
                 <>
-                  {EmptyItem()}
+                  {/* {EmptyItem()} */}
                   {CreatableItem()}
                   {!selectFirstItem && <CommandItem value="-" className="hidden" />}
                   {Object.entries(selectables).map(([key, dropdowns]) => (

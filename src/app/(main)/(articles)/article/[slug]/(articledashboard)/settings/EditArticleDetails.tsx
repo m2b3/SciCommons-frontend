@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
 
-import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useArticlesApiUpdateArticle } from '@/api/articles/articles';
 import { ArticleUpdateSchema } from '@/api/schemas';
 import FormInput from '@/components/common/FormInput';
-import ImageUpload from '@/components/common/ImageUpload';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
+import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { FileObj } from '@/types';
 
@@ -17,7 +18,7 @@ interface FormValues {
   title: string;
   abstract: string;
   authors: Option[];
-  keywords: Option[];
+  // keywords: Option[];
   submissionType: 'Public' | 'Private';
   articleImageFile: FileObj;
 }
@@ -27,13 +28,24 @@ interface EditArticleDetailsProps {
   title: string;
   abstract: string;
   authors: Option[];
-  keywords: Option[];
+  // keywords: Option[];
   submissionType: 'Public' | 'Private';
   defaultImageURL: string | null;
+  isEditEnabled: boolean;
+  setIsEditEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
-  const { title, abstract, authors, keywords, submissionType, defaultImageURL, articleId } = props;
+  const {
+    title,
+    abstract,
+    authors,
+    submissionType,
+    defaultImageURL,
+    articleId,
+    isEditEnabled,
+    setIsEditEnabled,
+  } = props;
   const {
     control,
     register,
@@ -44,7 +56,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
       title: title,
       abstract: abstract,
       authors: authors,
-      keywords: keywords,
+      // keywords: keywords,
       submissionType: submissionType,
     },
   });
@@ -68,25 +80,26 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
           value: author.value,
           label: author.label,
         })),
-        keywords: formData.keywords.map((keyword) => keyword.value),
+        // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
       },
     };
-    let image_file: File | undefined;
-    if (formData.articleImageFile && formData.articleImageFile.file) {
-      const originalFile = formData.articleImageFile.file;
-      let fileName = originalFile.name;
+    // let image_file: File | undefined;
+    // if (formData.articleImageFile && formData.articleImageFile.file) {
+    //   const originalFile = formData.articleImageFile.file;
+    //   let fileName = originalFile.name;
 
-      // Truncate filename if it's longer than 100 characters
-      if (fileName.length > 100) {
-        const extension = fileName.split('.').pop() || '';
-        fileName = fileName.slice(0, 96 - extension.length) + '...' + extension;
-      }
+    //   // Truncate filename if it's longer than 100 characters
+    //   if (fileName.length > 100) {
+    //     const extension = fileName.split('.').pop() || '';
+    //     fileName = fileName.slice(0, 96 - extension.length) + '...' + extension;
+    //   }
 
-      image_file = new File([originalFile], fileName, { type: originalFile.type });
-    }
+    //   image_file = new File([originalFile], fileName, { type: originalFile.type });
+    // }
 
-    mutate({ articleId, data: { details: dataToSend, image_file } });
+    // mutate({ articleId, data: { details: dataToSend, image_file } });
+    mutate({ articleId, data: { details: dataToSend } });
   };
 
   useEffect(() => {
@@ -100,7 +113,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
-      <Controller
+      {/* <Controller
         name="articleImageFile"
         control={control}
         render={({}) => (
@@ -112,7 +125,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
             defaultImageURL={defaultImageURL || undefined}
           />
         )}
-      />
+      /> */}
       <FormInput<FormValues>
         label="Title"
         name="title"
@@ -124,6 +137,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         minLengthMessage="Description must be at least 10 characters"
         info="Your community's name should be unique and descriptive."
         errors={errors}
+        readOnly={!isEditEnabled}
       />
       <FormInput<FormValues>
         label="Abstract"
@@ -137,6 +151,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         minLengthMessage="Description must be at least 10 characters"
         info="Your community's name should be unique and descriptive."
         errors={errors}
+        readOnly={!isEditEnabled}
       />
       <Controller
         name="authors"
@@ -151,10 +166,11 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
             value={value}
             onChange={onChange}
             fieldState={fieldState}
+            readonly={!isEditEnabled}
           />
         )}
       />
-      <Controller
+      {/* <Controller
         name="keywords"
         control={control}
         rules={{ required: 'Authors are required' }}
@@ -169,44 +185,53 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
             fieldState={fieldState}
           />
         )}
-      />
+      /> */}
       <div className="mb-4 space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Submission Type</label>
+        <label className="block text-sm font-medium text-text-secondary">Submission Type</label>
         <Controller
           name="submissionType"
           control={control}
           render={({ field: { onChange, value } }) => (
             <div className="mt-1 flex gap-2">
-              <button
+              <Button
+                className={cn(
+                  'w-fit cursor-pointer rounded-lg border px-4 py-2',
+                  value === 'Public'
+                    ? 'border-functional-green bg-functional-green/10'
+                    : 'border-common-contrast'
+                )}
                 type="button"
-                onClick={() => onChange('Public')}
-                className={`rounded-md px-4 py-2 ${
-                  value === 'Public' ? 'bg-gray-500 text-white' : 'bg-gray-200 text-gray-700'
-                }`}
+                variant={'outline'}
+                onClick={() => isEditEnabled && onChange('Public')}
               >
-                Public
-              </button>
-              <button
+                <ButtonTitle className="text-base">Public</ButtonTitle>
+              </Button>
+              {/* <Button
+                className={cn(
+                  'w-fit cursor-pointer rounded-lg border px-4 py-2',
+                  value === 'Private'
+                    ? 'border-functional-green bg-functional-green/10'
+                    : 'border-common-contrast'
+                )}
                 type="button"
-                onClick={() => onChange('Private')}
-                className={`rounded-md px-4 py-2 ${
-                  value === 'Private' ? 'bg-gray-500 text-white' : 'bg-gray-200 text-gray-700'
-                }`}
+                variant={'outline'}
+                onClick={() => isEditEnabled && onChange('Private')}
               >
-                Private
-              </button>
+                <ButtonTitle className="text-base">Private</ButtonTitle>
+              </Button> */}
             </div>
           )}
         />
       </div>
-      <button
+      <Button
+        showLoadingSpinner={false}
+        loading={isUpdatePending}
+        className="mx-auto w-full"
         type="submit"
-        className={clsx('mx-auto max-w-md rounded-md bg-green-500 px-4 py-2 text-white', {
-          'cursor-not-allowed opacity-50': isUpdatePending,
-        })}
+        disabled={!isEditEnabled}
       >
-        {isUpdatePending ? 'Saving...' : 'Save Changes'}
-      </button>
+        <ButtonTitle>{isUpdatePending ? 'Loading...' : 'Submit Article'}</ButtonTitle>
+      </Button>
     </form>
   );
 };
@@ -215,15 +240,17 @@ export default EditArticleDetails;
 
 export const EditArticleDetailsSkeleton = () => {
   return (
-    <div>
-      <div className="flex flex-col space-y-8">
-        <div className="h-80 w-full bg-gray-200"></div>
-        <div className="h-8 w-full bg-gray-200"></div>
-        <div className="h-32 w-full bg-gray-200"></div>
-        <div className="h-8 w-full bg-gray-200"></div>
-        <div className="h-8 w-full bg-gray-200"></div>
-        <div className="h-8 w-36 bg-gray-200"></div>
-      </div>
-    </div>
+    <Skeleton>
+      <TextSkeleton className="w-32" />
+      <TextSkeleton className="h-10" />
+      <TextSkeleton className="mt-4 w-32" />
+      <TextSkeleton className="h-10" />
+      <TextSkeleton className="mt-4 w-32" />
+      <BlockSkeleton />
+      <TextSkeleton className="mt-4 w-32" />
+      <BlockSkeleton className="h-72" />
+      <TextSkeleton className="mt-4 w-32" />
+      <TextSkeleton className="h-10" />
+    </Skeleton>
   );
 };

@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Send } from 'lucide-react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Ratings } from '@/components/ui/ratings';
 import { cn } from '@/lib/utils';
+
+import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
+import CustomTooltip from './CustomTooltip';
+import { BlockSkeleton, Skeleton } from './Skeleton';
 
 interface CommentInputProps {
   onSubmit: (content: string, rating?: number) => void;
@@ -14,6 +18,13 @@ interface CommentInputProps {
   // Review specific props
   initialRating?: number;
   isReview?: boolean;
+  // Ratings specific props
+  isRatingsLoading?: boolean;
+  isRatingsError?: boolean;
+  // Reply specific props
+  isReply?: boolean;
+  isAuthor?: boolean;
+  isPending?: boolean;
 }
 
 interface FormInputs {
@@ -26,8 +37,13 @@ const CommentInput: React.FC<CommentInputProps> = ({
   placeholder,
   buttonText,
   initialContent = '',
-  initialRating = 0,
+  initialRating,
   isReview = false,
+  isRatingsError = false,
+  isRatingsLoading = false,
+  isReply = false,
+  isAuthor = false,
+  isPending = false,
 }) => {
   const {
     register,
@@ -45,32 +61,14 @@ const CommentInput: React.FC<CommentInputProps> = ({
     reset({ content: '', rating: 0 });
   };
 
+  useEffect(() => {
+    if (initialRating !== undefined) {
+      setValue('rating', initialRating);
+    }
+  }, [initialRating, setValue]);
+
   return (
-    <form onSubmit={handleSubmit(onSubmitForm)} className="mb-4 mt-2 flex flex-col gap-2">
-      <div>
-        {isReview && (
-          <Controller
-            name="rating"
-            control={control}
-            rules={{
-              validate: (value) => ((value ?? 0) > 0 ? true : 'A valid rating must be given'),
-            }}
-            render={({ field }) => (
-              <>
-                <Ratings
-                  rating={field.value || 0}
-                  onRatingChange={(newRating) => setValue('rating', newRating)}
-                  size={14}
-                  readonly={false}
-                />
-                {errors.rating && (
-                  <p className="mt-1 text-sm text-red-500">{errors.rating.message}</p>
-                )}
-              </>
-            )}
-          />
-        )}
-      </div>
+    <form onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-2">
       <div>
         <textarea
           {...register('content', {
@@ -80,23 +78,70 @@ const CommentInput: React.FC<CommentInputProps> = ({
           })}
           placeholder={placeholder}
           className={cn(
-            'w-full rounded-common-lg bg-white px-3 py-2 text-black ring-1 ring-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-gray-950 dark:text-white dark:ring-gray-700 focus:dark:ring-green-500',
+            'block w-full rounded-md px-3 py-2 text-text-primary shadow-sm ring-1 ring-common-contrast res-text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green',
             {
-              'border-red-500': errors.content,
+              'border-functional-red': errors.content,
             }
           )}
           rows={3}
         />
-        {errors.content && <p className="mt-1 text-sm text-red-500">{errors.content.message}</p>}
+        {errors.content && (
+          <p className="mt-1 text-sm text-functional-red">{errors.content.message}</p>
+        )}
       </div>
-      <div className="mt-2 flex justify-end">
-        <button
+      <div className="flex w-full justify-between">
+        {isReview && !isAuthor && !isReply && (
+          <>
+            {isRatingsLoading ? (
+              <Skeleton className="p-0">
+                <BlockSkeleton className="h-8 w-24" />
+              </Skeleton>
+            ) : (
+              <Controller
+                name="rating"
+                control={control}
+                // rules={{
+                //   validate: (value) => ((value ?? 0) > 0 ? true : 'A valid rating must be given'),
+                // }}
+                render={({ field }) => (
+                  <div className="flex flex-col items-start">
+                    <div className="mb-2 flex items-center gap-1">
+                      <span className="text-sm font-bold text-text-tertiary">
+                        {initialRating && initialRating > 0 ? 'Update' : 'Add'} Ratings:
+                      </span>
+                      <CustomTooltip info={'Add your ratings to this review'} />
+                    </div>
+                    <Ratings
+                      rating={field.value || 0}
+                      onRatingChange={(newRating) => setValue('rating', newRating)}
+                      size={14}
+                      readonly={false}
+                      variant="yellow"
+                    />
+                    {errors.rating && (
+                      <p className="mt-1 text-sm text-functional-red">{errors.rating.message}</p>
+                    )}
+                    {isRatingsError && (
+                      <p className="mt-1 text-sm text-functional-red">Error fetching the ratings</p>
+                    )}
+                  </div>
+                )}
+              />
+            )}
+          </>
+        )}
+        <Button
           type="submit"
-          className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          variant={'blue'}
+          className={'ml-auto'}
+          loading={isPending}
+          showLoadingSpinner
         >
-          <Send size={16} className="mr-2" />
-          {buttonText}
-        </button>
+          <ButtonIcon>
+            <Send size={16} />
+          </ButtonIcon>
+          <ButtonTitle>{buttonText}</ButtonTitle>
+        </Button>
       </div>
     </form>
   );

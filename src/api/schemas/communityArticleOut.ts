@@ -12,6 +12,8 @@ import type { CommunityArticleOutStatus } from './communityArticleOutStatus';
 export interface CommunityArticleOut {
   community: ArticleCommunityDetails;
   id: number;
+  is_admin: boolean;
+  is_pseudonymous: boolean;
   moderator_id?: CommunityArticleOutModeratorId;
   published_at: CommunityArticleOutPublishedAt;
   reviewer_ids?: number[];

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesMembersApiGetCommunityMembers } from '@/api/community-members/community-members';
+import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import TabComponent from '@/components/communities/TabComponent';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -51,7 +52,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.members.length === 0 && (
-            <p className="p-4 text-gray-500 shadow">No members exist in this community.</p>
+            <p className="p-4 text-text-secondary">No members exist in this community.</p>
           )}
           {data &&
             data.data.members.map((item, index) => (
@@ -77,7 +78,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.moderators.length === 0 && (
-            <p className="p-4 text-gray-500 shadow">No moderators exist in this community.</p>
+            <p className="p-4 text-text-secondary">No moderators exist in this community.</p>
           )}
           {data &&
             data.data.moderators.map((item, index) => (
@@ -103,7 +104,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.reviewers.length === 0 && (
-            <p className="p-4 text-gray-500 shadow">No reviewers exist in this community.</p>
+            <p className="p-4 text-text-secondary">No reviewers exist in this community.</p>
           )}
           {data &&
             data.data.reviewers.map((item, index) => (
@@ -155,28 +156,13 @@ export default withAuth(Roles, 'community', (props) => props.params.slug);
 
 const UsersListItemSkeleton: React.FC = () => {
   return (
-    <div className="mb-2 flex items-center justify-between rounded-md border p-4 shadow-md">
-      <div className="flex items-center">
-        <div className="mr-4 h-12 w-12 animate-pulse rounded-full bg-gray-300"></div>
-        <div>
-          <div className="mb-2 h-4 w-32 animate-pulse rounded bg-gray-300"></div>
-          <div className="mb-2 h-3 w-24 animate-pulse rounded bg-gray-300"></div>
-          <div className="mt-2 flex items-center text-gray-500">
-            <div className="mr-4 flex items-center">
-              <div className="mr-1 h-4 w-4 animate-pulse rounded-full bg-gray-300"></div>
-              <div className="h-3 w-20 animate-pulse rounded bg-gray-300"></div>
-            </div>
-            <div className="flex items-center">
-              <div className="mr-1 h-4 w-4 animate-pulse rounded-full bg-gray-300"></div>
-              <div className="h-3 w-20 animate-pulse rounded bg-gray-300"></div>
-            </div>
-          </div>
-        </div>
+    <Skeleton className="mb-4 flex flex-row gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+      <BlockSkeleton className="aspect-square size-12 shrink-0 rounded-full" />
+      <div className="flex flex-col gap-2">
+        <TextSkeleton className="w-24" />
+        <TextSkeleton className="w-56" />
+        <TextSkeleton className="mt-2 w-32" />
       </div>
-      <div className="flex space-x-4">
-        <div className="w-16 animate-pulse rounded-md bg-gray-300 px-4 py-2"></div>
-        <div className="w-16 animate-pulse rounded-md bg-gray-300 px-4 py-2"></div>
-      </div>
-    </div>
+    </Skeleton>
   );
 };

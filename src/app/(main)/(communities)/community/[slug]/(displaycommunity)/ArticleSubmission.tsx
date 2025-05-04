@@ -3,14 +3,18 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useCommunitiesArticlesApiGetMyArticles } from '@/api/community-articles/community-articles';
+import {
+  useCommunitiesArticlesApiGetMyArticles,
+  useCommunitiesArticlesApiSubmitArticle,
+} from '@/api/community-articles/community-articles';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleSubmissionProps {
@@ -46,8 +51,22 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     }
   );
 
+  const { mutate, isPending: isArticleSubmissionPending } = useCommunitiesArticlesApiSubmitArticle({
+    request: axiosConfig,
+  });
+
   const handleSubmitArticle = (articleSlug: string) => {
-    router.push(`/article/${articleSlug}/submit?name=${communityName}&tab=Submit`);
+    mutate(
+      { articleSlug: articleSlug || '', communityName: communityName },
+      {
+        onSuccess: () => {
+          toast.success('Article submitted successfully');
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -60,9 +79,12 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="rounded-full border-2 border-green-500 px-4 py-2 text-green-500 transition-colors duration-300 hover:bg-green-500 hover:text-white">
-            + Create
-          </button>
+          <Button className="py-1.5">
+            <ButtonIcon>
+              <Plus className="size-4 text-white" />
+            </ButtonIcon>
+            <ButtonTitle>Create</ButtonTitle>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
@@ -75,33 +97,40 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
       </DropdownMenu>
       <DialogContent className="p-0 sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="px-6 py-2 text-2xl text-gray-500">
-            Submit your Article
-          </DialogTitle>
+          <DialogTitle className="text-2xl">Submit your Article</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="max-h-[80vh] px-6">
-          <div className="my-2 flex flex-col space-y-4 text-sm">
+        <ScrollArea className="relative max-h-[80vh] w-full p-4 pt-0 sm:p-6 sm:pt-0">
+          <div className="my-2 flex w-full flex-col space-y-4 text-sm">
             {isPending &&
               Array.from({ length: 5 }).map((_, index) => <ArticleCardSkeleton key={index} />)}
 
             {data && data.data.items.length === 0 && (
-              <p className="text-center text-gray-500">You have no articles to submit</p>
+              <div className="flex w-full flex-col items-center justify-center">
+                <p className="text-center text-text-secondary">You have no articles to submit</p>
+                <Button
+                  className="mx-auto mt-4"
+                  onClick={() => router.push(`/community/${communityName}/createcommunityarticle`)}
+                >
+                  <ButtonTitle>Create Article</ButtonTitle>
+                </Button>
+              </div>
             )}
             {data &&
               data.data.items.map((article) => (
-                <div key={article.id} className="relative mx-auto max-w-3xl">
+                <div key={article.id} className="relative w-full">
                   <ArticleCard key={article.id} article={article} />
-                  <button
+                  <Button
+                    className="absolute bottom-4 right-4"
                     onClick={() => handleSubmitArticle(String(article.slug))}
-                    className="absolute bottom-4 right-4 w-auto rounded-md bg-green-500 px-2 py-1 text-sm text-white hover:bg-green-600"
+                    type="button"
+                    disabled={isArticleSubmissionPending}
                   >
-                    Submit
-                  </button>
+                    <ButtonTitle>Submit</ButtonTitle>
+                  </Button>
                 </div>
               ))}
           </div>
         </ScrollArea>
-        <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>
   );

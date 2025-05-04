@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
@@ -8,15 +8,14 @@ import TabComponent from '@/components/communities/TabComponent';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
-import About from './About';
+// import About from './About';
 import AddRules from './AddRules';
 import EditCommunityDetails from './EditCommunityDetails';
 
 type ActiveTab = 'Details' | 'Rules' | 'About';
 
 const Preferences = ({ params }: { params: { slug: string } }) => {
-  const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
-
+  const [activeTab, setActiveTab] = useState<ActiveTab>('Details');
   const accessToken = useAuthStore((state) => state.accessToken);
 
   // Get Community Details
@@ -32,10 +31,11 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
   }, [error]);
 
   return (
-    <div className="flex flex-col text-gray-900">
+    <div className="mx-auto flex max-w-5xl flex-col">
       <div className="self-start">
         <TabComponent<ActiveTab>
-          tabs={['Details', 'Rules', 'About']}
+          // tabs={['Details', 'Rules', 'About']}
+          tabs={['Details', 'Rules']}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
@@ -44,7 +44,7 @@ const Preferences = ({ params }: { params: { slug: string } }) => {
         <EditCommunityDetails data={data} isPending={isPending} refetch={refetch} />
       )}
       {activeTab === 'Rules' && <AddRules data={data} isPending={isPending} />}
-      {activeTab === 'About' && <About data={data} />}
+      {/* {activeTab === 'About' && <About data={data} />} */}
     </div>
   );
 };

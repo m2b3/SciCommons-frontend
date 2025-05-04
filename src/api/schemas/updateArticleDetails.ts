@@ -7,7 +7,6 @@
 import type { FAQSchema } from './fAQSchema';
 import type { UpdateArticleDetailsAbstract } from './updateArticleDetailsAbstract';
 import type { UpdateArticleDetailsAuthors } from './updateArticleDetailsAuthors';
-import type { UpdateArticleDetailsKeywords } from './updateArticleDetailsKeywords';
 import type { UpdateArticleDetailsSubmissionType } from './updateArticleDetailsSubmissionType';
 import type { UpdateArticleDetailsTitle } from './updateArticleDetailsTitle';
 
@@ -15,7 +14,6 @@ export interface UpdateArticleDetails {
   abstract: UpdateArticleDetailsAbstract;
   authors: UpdateArticleDetailsAuthors;
   faqs?: FAQSchema[];
-  keywords: UpdateArticleDetailsKeywords;
   submission_type: UpdateArticleDetailsSubmissionType;
   title: UpdateArticleDetailsTitle;
 }

@@ -28,9 +28,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
   memberCount,
   slug,
 }) => (
-  <div className="mb-4 flex items-start space-x-3 rounded-lg bg-white-primary p-4 shadow">
-    <div className={`flex-shrink-0 rounded-full p-2 ${iconColor}`}>
-      <Icon className="h-5 w-5" />
+  <div className="mb-4 flex items-start gap-3 rounded-r-md border-l-4 border-common-contrast bg-common-cardBackground p-3 sm:gap-4 sm:p-4">
+    <div className={`flex-shrink-0 rounded-full p-1.5 sm:p-2 ${iconColor}`}>
+      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
     </div>
     <div className="flex-grow">
       {/* Type could be post, article, or community. Write a conditional statement to display the type */}
@@ -43,20 +43,21 @@ const ItemCard: React.FC<ItemCardProps> = ({
               : `/posts/${slug}`
         }
       >
-        <h4 className="text-sm font-semibold text-gray-800">{title}</h4>
+        <h4 className="line-clamp-2 text-wrap text-sm font-semibold text-text-primary hover:underline">
+          {title}
+        </h4>
       </Link>
-      <p className="text-xs text-gray-600">
+      <p className="mt-1 text-xs text-text-tertiary">
         {role && memberCount ? `${role} · ${memberCount} members` : subtitle}
       </p>
       {type && (
         <span
-          className={`mt-1 inline-block rounded-full px-2 py-1 text-xs font-semibold 
-          ${
+          className={`mt-2 inline-block rounded-full px-2 py-1 text-xs font-semibold ${
             type === 'Article'
-              ? 'bg-blue-100 text-blue-800'
+              ? 'bg-functional-green/10 text-functional-green'
               : type === 'Community'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-yellow-100 text-yellow-800'
+                ? 'bg-functional-blue/10 text-functional-blue'
+                : 'bg-functional-yellow/10 text-functional-yellow'
           }`}
         >
           {type}
@@ -70,10 +71,10 @@ const ItemCard: React.FC<ItemCardProps> = ({
     </div>
     {role && (
       <div className="flex-shrink-0" title={role}>
-        {role === 'Admin' && <Crown className="h-5 w-5 text-yellow-500" />}
-        {role === 'Moderator' && <Shield className="h-5 w-5 text-green-500" />}
-        {role === 'Reviewer' && <Eye className="h-5 w-5 text-blue-500" />}
-        {role === 'Member' && <UserCircle className="h-5 w-5 text-gray-500" />}
+        {role === 'Admin' && <Crown className="h-3 w-3 text-functional-yellow" />}
+        {role === 'Moderator' && <Shield className="h-3 w-3 text-functional-green" />}
+        {role === 'Reviewer' && <Eye className="h-3 w-3 text-functional-blue" />}
+        {role === 'Member' && <UserCircle className="h-3 w-3 text-text-secondary" />}
       </div>
     )}
   </div>

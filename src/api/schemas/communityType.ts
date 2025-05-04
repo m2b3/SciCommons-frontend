@@ -10,6 +10,6 @@ export type CommunityType = (typeof CommunityType)[keyof typeof CommunityType];
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CommunityType = {
   public: 'public',
+  private: 'private',
   hidden: 'hidden',
-  locked: 'locked',
 } as const;

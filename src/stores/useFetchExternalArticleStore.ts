@@ -6,6 +6,7 @@ interface ArticleData {
   authors: string[];
   abstract: string;
   link: string;
+  pdfLink?: string;
 }
 
 interface ArticleState {
@@ -25,17 +26,21 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
     let apiUrl = '';
     let source = '';
 
-    const lowerQuery = query.toLowerCase();
+    let lowerQuery = query.toLowerCase();
+    lowerQuery = lowerQuery.trim();
 
     if (lowerQuery.startsWith('10.')) {
+      lowerQuery = lowerQuery.trim();
       apiUrl = `https://api.crossref.org/works/${query}`;
       source = 'CrossRef';
     } else if (lowerQuery.startsWith('arxiv:')) {
-      const arxivId = query.split(':')[1];
+      let arxivId = query.split(':')[1];
+      arxivId = arxivId.trim();
       apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
       source = 'arXiv';
     } else if (lowerQuery.startsWith('pmid:')) {
-      const pmid = query.split(':')[1];
+      let pmid = query.split(':')[1];
+      pmid = pmid.trim();
       apiUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`;
       source = 'PubMed';
     } else {
@@ -46,6 +51,13 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
       return;
     }
 
+    const emptyParsedData = {
+      title: '',
+      authors: [],
+      abstract: '',
+      link: '',
+    };
+
     try {
       const response = await axios.get(apiUrl);
       const parsedData = parseData(query, response.data, source);
@@ -55,6 +67,7 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
         set({
           error: `Article not found in ${source}. Please check your input and try again.`,
           loading: false,
+          articleData: emptyParsedData,
         });
       }
     } catch (error) {
@@ -63,17 +76,20 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
           set({
             error: `Article not found in ${source}. Please check your input and try again.`,
             loading: false,
+            articleData: emptyParsedData,
           });
         } else {
           set({
             error: `Error fetching article from ${source}: ${error.response.statusText}`,
             loading: false,
+            articleData: emptyParsedData,
           });
         }
       } else {
         set({
           error: `Failed to fetch article from ${source}. Please try again later.`,
           loading: false,
+          articleData: emptyParsedData,
         });
       }
     }
@@ -96,18 +112,28 @@ function parseData(query: string, data: any, source: string): ArticleData | null
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(data, 'text/xml');
     const entries = xmlDoc.getElementsByTagName('entry');
+    let arxivId = query.split(':')[1];
+    arxivId = arxivId.trim();
     if (entries.length === 0) return null;
+    const links = Array.from(entries[0].getElementsByTagName('link'));
+    const pdfLink = links
+      .find((link) => link.getAttribute('title') === 'pdf')
+      ?.getAttribute('href');
     return {
-      title: entries[0].getElementsByTagName('title')[0]?.textContent || 'No title available',
+      title:
+        entries[0].getElementsByTagName('title')[0]?.textContent?.trim() || 'No title available',
       authors: Array.from(entries[0].getElementsByTagName('author')).map(
         (author) => author.getElementsByTagName('name')[0]?.textContent || ''
       ),
       abstract:
-        entries[0].getElementsByTagName('summary')[0]?.textContent || 'No abstract available',
-      link: `https://arxiv.org/abs/${query.split(':')[1]}`,
+        entries[0].getElementsByTagName('summary')[0]?.textContent?.replace(/\n/g, ' ')?.trim() ||
+        'No abstract available',
+      link: `https://arxiv.org/abs/${arxivId}`,
+      pdfLink: pdfLink || '',
     };
   } else if (source === 'PubMed') {
-    const pmid = query.split(':')[1];
+    let pmid = query.split(':')[1];
+    pmid = pmid.trim();
     if (!data.result || !data.result[pmid]) return null;
     const result = data.result[pmid];
     return {

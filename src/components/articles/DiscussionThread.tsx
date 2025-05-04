@@ -18,7 +18,6 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
-import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
@@ -33,7 +32,6 @@ interface DiscussionThreadProps {
 
 const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDiscussionId }) => {
   dayjs.extend(relativeTime);
-  const imageData = useIdenticon(40);
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error } = useArticlesDiscussionApiGetDiscussion(discussionId, {
@@ -94,26 +92,32 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <Image
-                  src={discussion.user.profile_pic_url || `data:image/png;base64,${imageData}`}
-                  alt={discussion.anonymous_name || discussion.user.username}
+                  src={
+                    discussion.user.profile_pic_url
+                      ? discussion.user.profile_pic_url?.startsWith('http')
+                        ? discussion.user.profile_pic_url
+                        : `data:image/png;base64,${discussion.user.profile_pic_url}`
+                      : `/images/assets/user-icon.png`
+                  }
+                  alt={discussion.user.username}
                   width={32}
                   height={32}
                   className="mr-2 rounded-full"
                 />
                 <div>
-                  <span>{discussion.anonymous_name}</span>
+                  <span>{discussion.user.username}</span>
                   <span className="ml-2 text-gray-500 res-text-xs">
                     • {dayjs(discussion.created_at).fromNow()}
                   </span>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="mr-4 flex-grow cursor-pointer font-bold res-text-base">
+                <div className="mr-4 flex-grow cursor-pointer font-bold res-text-base">
                   <TruncateText text={discussion.topic} maxLines={2} />
-                </p>
-                <p>
+                </div>
+                <div>
                   <TruncateText text={discussion.content} maxLines={3} />
-                </p>
+                </div>
               </div>
               <div className="mt-4 flex items-center text-gray-500 res-text-xs">
                 <button className="mr-4 flex items-center space-x-1">

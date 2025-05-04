@@ -6,6 +6,7 @@ import { EditorContent, Editor as TipTapEditor, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit';
 import { Control, FieldValues, Path, useController, useWatch } from 'react-hook-form';
 
+import { BlockSkeleton, Skeleton } from '../common/Skeleton';
 import MenuBar from './MenuBar';
 
 interface CommentEditorProps<TFieldValues extends FieldValues> {
@@ -25,7 +26,7 @@ const CommentEditor = <TFieldValues extends FieldValues>({
     control,
     rules: {
       required: 'Comment is required',
-      minLength: { value: 50, message: 'Comment must be at least 50 characters' },
+      minLength: { value: 1, message: 'Add a valid comment' },
     },
   });
 
@@ -45,9 +46,10 @@ const CommentEditor = <TFieldValues extends FieldValues>({
     editorProps: {
       attributes: {
         class:
-          'flex flex-col px-4 py-3 justify-start border-b border-r border-l border-gray-700 items-start w-full gap-3 pt-4 rounded-bl-md rounded-br-md outline-none',
+          'flex flex-col px-4 py-3 justify-start border-b border-r border-l border-common-contrast items-start w-full gap-3 pt-4 rounded-bl-md rounded-br-md outline-none',
       },
     },
+    immediatelyRender: false,
     content: field.value as string,
     onCreate: () => setEditorLoaded(true),
     onUpdate({ editor }) {
@@ -71,12 +73,14 @@ const CommentEditor = <TFieldValues extends FieldValues>({
   }, [content, editor]);
 
   return !editorLoaded ? (
-    <div className="h-24 animate-pulse rounded bg-gray-200"></div>
+    <Skeleton className="p-0">
+      <BlockSkeleton className="h-32 rounded-xl" />
+    </Skeleton>
   ) : (
     <div>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-      {error && <p className="mt-2 text-sm text-red-500">{error.message}</p>}
+      {error && <p className="mt-2 text-sm text-functional-red">{error.message}</p>}
     </div>
   );
 };

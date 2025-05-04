@@ -1,19 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useParams } from 'next/navigation';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
-import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
 import DisplayFAQs from '@/components/articles/DisplayFAQs';
-import RelevantArticles from '@/components/articles/RelevantArticles';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
+import EmptyState from '@/components/common/EmptyState';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -21,8 +20,6 @@ import { useAuthStore } from '@/stores/authStore';
 const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
-
-  const [isRightHovered, setIsRightHovered] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params?.articleSlug || '',
@@ -58,38 +55,54 @@ const CommunityArticleDisplayPage: React.FC = () => {
     }
   }, [reviewsError]);
 
-  const tabs = [
-    {
-      title: 'Reviews',
-      content: (
-        <div className="flex flex-col gap-2">
-          <ReviewForm
-            articleId={data?.data.id || 0}
-            refetch={reviewsRefetch}
-            communityId={data?.data.community_article?.community.id}
-          />
-          {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
-          {reviewsData &&
-            reviewsData.data.items.map((item) => (
-              <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
-            ))}
-        </div>
-      ),
-    },
-    {
-      title: 'Discussions',
-      content: (
-        <DiscussionForum
-          articleId={data?.data.id || 0}
-          communityId={data?.data.community_article?.community.id}
-        />
-      ),
-    },
-    {
-      title: 'FAQs',
-      content: <DisplayFAQs faqs={data?.data.faqs || []} />,
-    },
-  ];
+  const tabs = data
+    ? [
+        {
+          title: 'Reviews',
+          content: (
+            <div className="flex flex-col gap-2">
+              {/* Todo: Uncomment this after testing */}
+              {/* {!data.data.is_submitter && (
+                <ReviewForm
+                  articleId={data?.data.id || 0}
+                  refetch={reviewsRefetch}
+                  communityId={data?.data.community_article?.community.id}
+                />
+              )} */}
+              <ReviewForm
+                articleId={Number(data.data.id)}
+                refetch={reviewsRefetch}
+                is_submitter={data.data.is_submitter}
+                communityId={data?.data.community_article?.community.id}
+              />
+              {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
+              {reviewsData?.data.items.length === 0 && (
+                <EmptyState
+                  content="No reviews yet"
+                  subcontent="Be the first to review this article"
+                />
+              )}
+              {reviewsData?.data.items.map((item) => (
+                <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
+              ))}
+            </div>
+          ),
+        },
+        {
+          title: 'Discussions',
+          content: (
+            <DiscussionForum
+              articleId={data?.data.id || 0}
+              communityId={data?.data.community_article?.community.id}
+            />
+          ),
+        },
+        {
+          title: 'FAQs',
+          content: <DisplayFAQs faqs={data.data.faqs || []} />,
+        },
+      ]
+    : [];
 
   useEffect(() => {
     if (error) {
@@ -98,51 +111,28 @@ const CommunityArticleDisplayPage: React.FC = () => {
   }, [error]);
 
   return (
-    <div className="container mx-auto">
-      {/* Mobile Layout */}
-      <div className="lg:hidden">
-        <div className="p-4">
-          {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
-        </div>
-        {data && (
-          <div className="p-4">
-            <TabNavigation tabs={tabs} />
-          </div>
-        )}
-        <div className="p-4">
-          <RelevantArticles
-            articleId={data?.data.id || 0}
-            communityId={data?.data.community_article?.community.id || 0}
-          />
-        </div>
-      </div>
-
-      {/* Desktop Layout */}
-      <div className="hidden h-screen lg:flex">
-        {/* Left side */}
-        <div className="scrollbar-hide w-2/3 overflow-y-auto p-4">
-          {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
-          {data && (
-            <div className="mt-4">
-              <TabNavigation tabs={tabs} />
+    <div className="w-full p-4 py-4 md:px-6">
+      {isPending ? (
+        <DisplayArticleSkeleton />
+      ) : (
+        data && (
+          <div className="flex flex-col">
+            <DisplayArticle article={data.data} />
+            <div className="-z-10 rounded-md bg-functional-blue/10 px-3 py-1 sm:-mt-6 sm:rounded-xl sm:px-4 sm:py-2 sm:pt-7">
+              <span className="text-xs text-functional-blueContrast">
+                {data.data.community_article?.is_pseudonymous
+                  ? 'Community admin has enabled pseudonymous reviews & discussions. Your name won’t be shown.'
+                  : 'Community admin has disabled pseudonymous reviews & discussions. Your name will be visible.'}
+              </span>
             </div>
-          )}
-        </div>
-
-        {/* Right side */}
-        <div
-          className={`w-1/3 p-4 transition-all duration-300 ${
-            isRightHovered ? 'custom-scrollbar overflow-y-auto' : 'overflow-y-hidden'
-          }`}
-          onMouseEnter={() => setIsRightHovered(true)}
-          onMouseLeave={() => setIsRightHovered(false)}
-        >
-          <div className="mb-4">
-            {isPending ? <ArticleStatsSkeleton /> : data && <ArticleStats article={data.data} />}
           </div>
-          <RelevantArticles articleId={data?.data.id || 0} />
+        )
+      )}
+      {data && (
+        <div className="mt-4">
+          <TabNavigation tabs={tabs} />
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -11,9 +11,9 @@ import { toast } from 'sonner';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthLoginUser } from '@/api/users-auth/users-auth';
-import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
+import { Button } from '@/components/ui/button';
 import { usePathTracker } from '@/hooks/usePathTracker';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -40,7 +40,16 @@ const LoginForm: React.FC = () => {
     mutation: {
       onSuccess: (data) => {
         toast.success('Logged in successfully');
-        setAccessToken(data.data.token);
+        setAccessToken(
+          data.data.token,
+          data.data.user || {
+            id: 0,
+            username: '',
+            email: '',
+            first_name: '',
+            last_name: '',
+          }
+        );
         const previousPath = getPreviousPath();
 
         // Redirect logic
@@ -99,7 +108,7 @@ const LoginForm: React.FC = () => {
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
           />
           <FormInput<ILoginForm>
             label="Password"
@@ -111,7 +120,8 @@ const LoginForm: React.FC = () => {
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
-            inputClassName="bg-white text-black"
+            inputClassName="bg-neutral-150 text-black ring-neutral-200"
+            eyeBtnClassName="text-black/40 hover:text-black/60"
           />
           {/* Remember me and forgot password */}
           <div className="mb-6 flex items-center justify-between res-text-sm">
@@ -126,25 +136,31 @@ const LoginForm: React.FC = () => {
               </label>
             </div> */}
             <div className="">
-              <Link href="/auth/forgotpassword" className="text-green-500 hover:text-green-400">
+              <Link
+                href="/auth/forgotpassword"
+                className="text-functional-green hover:text-functional-greenContrast hover:underline"
+              >
                 Forgot your password?
               </Link>
             </div>
           </div>
-          <Button type="submit" isPending={isPending}>
+          <Button type="submit" loading={isPending} className="w-full" showLoadingSpinner={true}>
             Login
           </Button>
         </form>
         <div className="mt-4 res-text-sm">
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-text-tertiary">
             Don&apos;t have an account?{' '}
-            <Link href="/auth/register" className="text-green-500">
+            <Link href="/auth/register" className="text-functional-green hover:underline">
               Sign up for free
             </Link>
           </p>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-text-tertiary">
             Didn&apos;t receive signup email?{' '}
-            <Link href="/auth/resendverificationemail" className="text-green-500">
+            <Link
+              href="/auth/resendverificationemail"
+              className="text-functional-green hover:underline"
+            >
               Resend Sign up email
             </Link>
           </p>

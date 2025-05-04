@@ -74,42 +74,48 @@ const Requests = ({ params }: { params: { slug: string } }) => {
   }, [isMutationSuccess, mutationData, refetch]);
 
   return (
-    <div>
-      <div className="rounded-lg bg-white-primary p-4 text-gray-900 shadow-md">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-medium res-heading-xs">Join Requests</h2>
-          <select
-            value={filter}
-            onChange={handleFilterChange}
-            className="block w-40 rounded-md border-gray-300 px-3 py-2 res-text-xs focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-          >
-            <option value="All">All</option>
-            <option value="approved">Accepted</option>
-            <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-        <div className="flex flex-col gap-4">
-          {isPending &&
-            Array.from({ length: 3 }).map((_, index) => <RequestListItemSkeleton key={index} />)}
-          {filteredItems && filteredItems.length === 0 && (
-            <p className="text-gray-500">No Join Requests found</p>
-          )}
-          {filteredItems &&
-            filteredItems.map((item) => (
-              <RequestListItem
-                key={item.id}
-                communityId={item.community_id}
-                name={item.user.username}
-                status={item.status}
-                profilePicture={item.user.profile_pic_url || 'https://picsum.photos/200/200'}
-                requestedAt={item.requested_at}
-                handleAction={handleAction}
-                isPending={isMutating}
-                joinRequestId={item.id}
-              />
-            ))}
-        </div>
+    <div className="">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="font-bold text-text-primary res-heading-xs">Join Requests</h2>
+        <select
+          value={filter}
+          onChange={handleFilterChange}
+          className="block w-40 rounded-md px-3 py-2 text-text-primary ring-1 ring-common-contrast res-text-xs focus:outline-none focus:ring-functional-green"
+        >
+          <option value="All" className="text-sm text-text-primary">
+            All
+          </option>
+          <option value="approved" className="text-sm text-text-primary">
+            Accepted
+          </option>
+          <option value="pending" className="text-sm text-text-primary">
+            Pending
+          </option>
+          <option value="rejected" className="text-sm text-text-primary">
+            Rejected
+          </option>
+        </select>
+      </div>
+      <div className="flex flex-col gap-4">
+        {isPending &&
+          Array.from({ length: 3 }).map((_, index) => <RequestListItemSkeleton key={index} />)}
+        {filteredItems && filteredItems.length === 0 && (
+          <p className="text-text-secondary res-text-xs">No Join Requests found</p>
+        )}
+        {filteredItems &&
+          filteredItems.map((item) => (
+            <RequestListItem
+              key={item.id}
+              communityId={item.community_id}
+              name={item.user.username}
+              status={item.status}
+              profilePicture={item.user.profile_pic_url || 'https://picsum.photos/200/200'}
+              requestedAt={item.requested_at}
+              handleAction={handleAction}
+              isPending={isMutating}
+              joinRequestId={item.id}
+            />
+          ))}
       </div>
     </div>
   );

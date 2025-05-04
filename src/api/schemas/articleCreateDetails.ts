@@ -6,6 +6,7 @@
  */
 import type { ArticleCreateDetailsArticleLink } from './articleCreateDetailsArticleLink';
 import type { ArticleCreateDetailsCommunityName } from './articleCreateDetailsCommunityName';
+import type { ArticleCreateDetailsPdfLink } from './articleCreateDetailsPdfLink';
 import type { ArticleCreateDetailsSubmissionType } from './articleCreateDetailsSubmissionType';
 import type { Tag } from './tag';
 
@@ -14,7 +15,7 @@ export interface ArticleCreateDetails {
   article_link?: ArticleCreateDetailsArticleLink;
   authors: Tag[];
   community_name?: ArticleCreateDetailsCommunityName;
-  keywords: string[];
+  pdf_link?: ArticleCreateDetailsPdfLink;
   submission_type: ArticleCreateDetailsSubmissionType;
   title: string;
 }

@@ -1,15 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { cn } from '@/lib/utils';
+
 const TruncateText = ({
   text,
   maxLines,
   hideButton = false,
   isHTML = false,
+  textClassName,
 }: {
   text: string;
   maxLines: number;
   hideButton?: boolean;
   isHTML?: boolean;
+  textClassName?: string;
 }) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -33,9 +37,11 @@ const TruncateText = ({
 
   return (
     <div>
-      <div
+      <span
         ref={textRef}
-        className={`${!isExpanded && isTruncated ? 'overflow-hidden' : ''} text-gray-700`}
+        className={cn('text-text-primary', textClassName, {
+          'overflow-hidden': !isExpanded && isTruncated,
+        })}
         style={{
           display: '-webkit-box',
           WebkitLineClamp: !isExpanded && isTruncated ? maxLines : 'unset',
@@ -46,7 +52,7 @@ const TruncateText = ({
       {isTruncated && !hideButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="mt-1 text-blue-600 res-text-xs hover:underline"
+          className="mt-1 text-functional-blue res-text-xs hover:underline"
         >
           {isExpanded ? 'Read less' : 'Read more'}
         </button>

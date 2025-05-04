@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useArticlesDiscussionApiListDiscussions } from '@/api/discussions/discussions';
 import EmptyState from '@/components/common/EmptyState';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { ErrorMessage } from '@/constants';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import DiscussionCard, { DiscussionCardSkeleton } from './DiscussionCard';
@@ -26,7 +28,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
   const [showForm, setShowForm] = useState<boolean>(false);
   const [discussionId, setDiscussionId] = useState<number | null>(null);
 
-  const { data, isPending, error } = useArticlesDiscussionApiListDiscussions(
+  const { data, isPending, error, refetch } = useArticlesDiscussionApiListDiscussions(
     articleId,
     { community_id: communityId || 0 },
     { request: { headers: { Authorization: `Bearer ${accessToken}` } } }
@@ -39,7 +41,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
   }, [error]);
 
   const handleNewDiscussion = (): void => {
-    setShowForm(true);
+    setShowForm((prev) => !prev);
   };
 
   const handleDiscussionClick = (discussionId: number): void => {
@@ -52,39 +54,55 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between text-gray-900 res-text-sm">
-        <h1 className="font-bold res-text-xl">Discussions</h1>
-        <Button
-          onClick={handleNewDiscussion}
-          className="bg-green-500 res-text-sm hover:bg-green-600"
-        >
-          + New Discussion
+      <div className="mb-4 flex items-center justify-between res-text-sm">
+        <h1 className="font-bold text-text-primary res-text-xl">Discussions</h1>
+        <Button onClick={handleNewDiscussion}>
+          <ButtonIcon>
+            <Plus
+              size={16}
+              className={cn('transition-transform duration-200', {
+                'rotate-45 scale-125': showForm,
+              })}
+            />
+          </ButtonIcon>
+          <ButtonTitle>New Discussion</ButtonTitle>
         </Button>
       </div>
 
       {showForm ? (
-        <DiscussionForm setShowForm={setShowForm} articleId={articleId} communityId={communityId} />
+        <DiscussionForm
+          setShowForm={setShowForm}
+          articleId={articleId}
+          communityId={communityId}
+          refetchDiscussions={refetch}
+        />
       ) : (
         <>
-          {isPending &&
-            Array.from({ length: 5 }).map((_, index) => <DiscussionCardSkeleton key={index} />)}
+          {isPending && (
+            <div className="flex w-full flex-col gap-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <DiscussionCardSkeleton key={index} />
+              ))}
+            </div>
+          )}
           {data && data.data.items.length === 0 && (
             <EmptyState
               content="No discussions yet"
               subcontent="Be the first to start a discussion"
             />
           )}
-
-          {data &&
-            data.data.items.map((discussion) => (
-              <DiscussionCard
-                key={discussion.id}
-                discussion={discussion}
-                handleDiscussionClick={handleDiscussionClick}
-              />
-            ))}
         </>
       )}
+      <div className="flex w-full flex-col gap-4">
+        {data &&
+          data.data.items.map((discussion) => (
+            <DiscussionCard
+              key={discussion.id}
+              discussion={discussion}
+              handleDiscussionClick={handleDiscussionClick}
+            />
+          ))}
+      </div>
     </div>
   );
 };

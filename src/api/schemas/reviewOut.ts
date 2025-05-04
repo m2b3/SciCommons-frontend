@@ -11,9 +11,9 @@ import type { ReviewVersionSchema } from './reviewVersionSchema';
 import type { UserStats } from './userStats';
 
 export interface ReviewOut {
-  anonymous_name?: string;
   article_id: number;
   comments_count?: number;
+  comments_ratings?: number;
   community_article?: ReviewOutCommunityArticle;
   content: string;
   created_at: string;
@@ -21,6 +21,7 @@ export interface ReviewOut {
   id?: ReviewOutId;
   is_approved?: boolean;
   is_author?: boolean;
+  is_pseudonymous?: boolean;
   rating: number;
   /** @maxLength 10 */
   review_type?: string;

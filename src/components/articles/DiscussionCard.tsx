@@ -1,20 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ChevronDown, ChevronUp, MessageSquare, MoreVertical, Share2 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 
 import { DiscussionOut } from '@/api/schemas';
-import {
-  useUsersCommonApiGetReactionCount,
-  useUsersCommonApiPostReaction,
-} from '@/api/users-common-api/users-common-api';
-import useIdenticon from '@/hooks/useIdenticons';
-import { showErrorToast } from '@/lib/toastHelpers';
-import { useAuthStore } from '@/stores/authStore';
-import { Reaction } from '@/types';
+
+import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
+import DiscussionComments from './DiscussionComments';
 
 interface DiscussionCardProps {
   discussion: DiscussionOut;
@@ -24,95 +19,117 @@ interface DiscussionCardProps {
 const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscussionClick }) => {
   dayjs.extend(relativeTime);
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const imageData = useIdenticon(40);
+  // const accessToken = useAuthStore((state) => state.accessToken);
+  const [displayComments, setDisplayComments] = useState<boolean>(false);
 
-  const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
-    'articles.discussion',
-    Number(discussion.id),
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  // const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
+  //   'articles.discussion',
+  //   Number(discussion.id),
+  //   {
+  //     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  //   }
+  // );
 
-  const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    mutation: {
-      onSuccess: () => {
-        refetchReactions();
-      },
-      onError: (error) => {
-        showErrorToast(error);
-      },
-    },
-  });
+  // const { mutate } = useUsersCommonApiPostReaction({
+  //   request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  //   mutation: {
+  //     onSuccess: () => {
+  //       refetchReactions();
+  //     },
+  //     onError: (error) => {
+  //       showErrorToast(error);
+  //     },
+  //   },
+  // });
 
-  const handleReaction = (reaction: Reaction) => {
-    if (reaction === 'upvote')
-      mutate({
-        data: { content_type: 'articles.discussion', object_id: Number(discussion.id), vote: 1 },
-      });
-    else if (reaction === 'downvote')
-      mutate({
-        data: { content_type: 'articles.discussion', object_id: Number(discussion.id), vote: -1 },
-      });
-  };
+  // const handleReaction = (reaction: Reaction) => {
+  //   if (reaction === 'upvote')
+  //     mutate({
+  //       data: { content_type: 'articles.discussion', object_id: Number(discussion.id), vote: 1 },
+  //     });
+  //   else if (reaction === 'downvote')
+  //     mutate({
+  //       data: { content_type: 'articles.discussion', object_id: Number(discussion.id), vote: -1 },
+  //     });
+  // };
 
   return (
-    <div key={discussion.id} className="mb-4 rounded bg-white-secondary p-4 shadow res-text-sm">
-      <div className="mb-2 flex items-start justify-between">
-        <div>
+    <div
+      key={discussion.id}
+      className="rounded-xl border-common-contrast res-text-sm sm:border sm:bg-common-cardBackground sm:p-4"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center">
             <Image
-              src={discussion.user.profile_pic_url || `data:image/png;base64,${imageData}`}
-              alt={discussion.anonymous_name || discussion.user.username}
+              src={
+                discussion.user.profile_pic_url
+                  ? discussion.user.profile_pic_url?.startsWith('http')
+                    ? discussion.user.profile_pic_url
+                    : `data:image/png;base64,${discussion.user.profile_pic_url}`
+                  : `/images/assets/user-icon.png`
+              }
+              alt={discussion.user.username}
               width={32}
               height={32}
-              className="mr-2 rounded-full"
+              className="mr-2 aspect-square h-7 w-7 rounded-full md:h-8 md:w-8"
             />
             <div>
-              <span className="text-gray-800">{discussion.anonymous_name}</span>
-              <span className="ml-2 text-gray-500 res-text-xs">
+              <span className="text-sm font-semibold text-text-secondary">
+                {discussion.user.username}
+              </span>
+              <span className="ml-2 text-xs text-text-tertiary">
                 • {dayjs(discussion.created_at).fromNow()}
               </span>
             </div>
           </div>
-          <p
-            className="mr-4 line-clamp-2 flex-grow cursor-pointer font-bold text-gray-900 res-text-base hover:text-blue-500 hover:underline"
-            onClick={() => handleDiscussionClick(Number(discussion.id))}
-          >
-            {discussion.topic}
-          </p>
-          <div className="mt-4 flex items-center text-gray-500 res-text-xs">
-            <button className="mr-4 flex items-center space-x-1">
-              <MessageSquare size={16} />
+          <div className="flex flex-col gap-2">
+            <span
+              className="line-clamp-2 flex-grow cursor-pointer font-semibold text-text-primary res-text-sm hover:text-functional-blue hover:underline"
+              onClick={() => setDisplayComments((prev) => !prev)}
+            >
+              {discussion.topic}
+            </span>
+            <span className="text-text-secondary res-text-xs">{discussion.content}</span>
+          </div>
+          <div className="mt-2 flex items-center text-xs text-text-tertiary">
+            <button
+              className="mr-4 flex cursor-pointer items-center space-x-1 hover:underline"
+              onClick={() => setDisplayComments((prev) => !prev)}
+            >
+              <MessageSquare size={14} />
               <span>{discussion.comments_count} comments</span>
             </button>
-            <button className="flex items-center space-x-1">
-              <Share2 size={16} />
+            {/* <button className="flex items-center space-x-1">
+              <Share2 size={14} />
               <span>Share</span>
-            </button>
+            </button> */}
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <MoreVertical className="text-gray-500" />
           <div className="flex flex-col items-center">
             <button
-              className="text-gray-400 hover:text-gray-600"
+              className="text-text-tertiary hover:text-text-primary"
               onClick={() => handleReaction('upvote')}
             >
               <ChevronUp size={20} />
             </button>
-            <span className="font-bold text-gray-700">{data?.data.likes}</span>
+            <span className="font-bold text-text-secondary">{data?.data.likes}</span>
             <button
-              className="text-gray-400 hover:text-gray-600"
+              className="text-text-tertiary hover:text-text-primary"
               onClick={() => handleReaction('downvote')}
             >
               <ChevronDown size={20} />
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
+      {displayComments && (
+        <div className="mt-4 border-t border-common-contrast pt-4">
+          <DiscussionComments discussionId={Number(discussion.id)} />
+        </div>
+      )}
     </div>
   );
 };
@@ -121,29 +138,17 @@ export default DiscussionCard;
 
 export const DiscussionCardSkeleton: React.FC = () => {
   return (
-    <div className="mb-4 animate-pulse rounded bg-white-secondary p-4 shadow">
-      <div className="mb-2 flex items-start justify-between">
-        <div>
-          <div className="flex items-center">
-            <div className="mr-2 h-8 w-8 rounded-full bg-gray-300" />
-            <div>
-              <div className="h-4 w-20 rounded bg-gray-300" />
-              <div className="mt-1 h-2 w-10 rounded bg-gray-300" />
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm text-gray-500">
-            <div className="h-4 w-20 rounded bg-gray-300" />
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="h-6 w-6 rounded-full bg-gray-300" />
-          <div className="flex flex-col items-center">
-            <div className="h-6 w-6 rounded-full bg-gray-300" />
-            <div className="h-6 w-6 rounded-full bg-gray-300" />
-            <div className="h-6 w-6 rounded-full bg-gray-300" />
-          </div>
-        </div>
+    <Skeleton className="rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+      <div className="flex items-center gap-2">
+        <BlockSkeleton className="aspect-square h-7 w-8 shrink-0 rounded-full md:h-8 md:w-8" />
+        <TextSkeleton className="w-40" />
       </div>
-    </div>
+      <TextSkeleton className="w-full" />
+      <TextSkeleton className="w-3/4" />
+      <div className="flex items-center gap-6">
+        <TextSkeleton className="w-20" />
+        <TextSkeleton className="w-20" />
+      </div>
+    </Skeleton>
   );
 };

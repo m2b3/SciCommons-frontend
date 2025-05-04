@@ -6,15 +6,12 @@ import { useEffect } from 'react';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
-import ArticleStats, { ArticleStatsSkeleton } from '@/components/articles/ArticleStats';
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
 import DisplayFAQs from '@/components/articles/DisplayFAQs';
-import RelevantArticles from '@/components/articles/RelevantArticles';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
-import SplitScreenLayout from '@/components/common/SplitScreenLayout';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -59,7 +56,15 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
           title: 'Reviews',
           content: (
             <div className="flex flex-col gap-2">
-              <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
+              {/* Todo: Uncomment this after testing */}
+              {/* {!data.data.is_submitter && (
+                <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
+              )} */}
+              <ReviewForm
+                articleId={Number(data.data.id)}
+                refetch={reviewsRefetch}
+                is_submitter={data.data.is_submitter}
+              />
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
               {reviewsData?.data.items.length === 0 && (
                 <EmptyState
@@ -84,26 +89,36 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
       ]
     : [];
 
-  const LeftSide = (
-    <>
+  // const LeftSide = (
+  //   <>
+  //     {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
+  //     {data && (
+  //       <div className="mt-4">
+  //         <TabNavigation tabs={tabs} />
+  //       </div>
+  //     )}
+  //   </>
+  // );
+
+  // const RightSide = (
+  //   <>
+  //     <div className="mb-4">
+  //       {isPending ? <ArticleStatsSkeleton /> : data && <ArticleStats article={data.data} />}
+  //     </div>
+  //     <RelevantArticles articleId={data?.data.id || 0} />
+  //   </>
+  // );
+  // return <SplitScreenLayout leftSide={LeftSide} rightSide={RightSide} />;
+  return (
+    <div className="w-full p-4 py-4 md:px-6">
       {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
       {data && (
         <div className="mt-4">
           <TabNavigation tabs={tabs} />
         </div>
       )}
-    </>
+    </div>
   );
-
-  const RightSide = (
-    <>
-      <div className="mb-4">
-        {isPending ? <ArticleStatsSkeleton /> : data && <ArticleStats article={data.data} />}
-      </div>
-      <RelevantArticles articleId={data?.data.id || 0} />
-    </>
-  );
-  return <SplitScreenLayout leftSide={LeftSide} rightSide={RightSide} />;
 };
 
 export default withAuthRedirect(ArticleDisplayPage, { requireAuth: true });

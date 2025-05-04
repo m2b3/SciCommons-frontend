@@ -144,9 +144,9 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
               </div>
             </div>
             <h1 className="mb-2 text-xl font-bold text-primary">{data.data.title}</h1>
-            <p className="mb-4 text-sm text-gray-600">
+            <div className="mb-4 text-sm text-gray-600">
               <TruncateText text={data.data.content} maxLines={3} />
-            </p>
+            </div>
             {data?.data?.hashtags && data?.data?.hashtags?.length > 0 && (
               <div className="mb-4 flex w-full flex-wrap gap-1">
                 {data?.data?.hashtags?.map((hashtag) => (

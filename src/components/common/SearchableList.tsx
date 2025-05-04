@@ -13,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { cn } from '@/lib/utils';
 
 export enum LoadingType {
   PAGINATION = 'pagination',
@@ -37,6 +38,8 @@ interface SearchableListProps<T> {
   emptyStateContent: string;
   emptyStateSubcontent: string;
   emptyStateLogo: React.ReactNode;
+  title?: string;
+  listContainerClassName?: string;
 }
 
 function SearchableList<T>({
@@ -56,6 +59,8 @@ function SearchableList<T>({
   emptyStateContent,
   emptyStateSubcontent,
   emptyStateLogo,
+  title,
+  listContainerClassName = 'flex flex-col gap-4',
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -100,21 +105,34 @@ function SearchableList<T>({
 
   return (
     <div className="space-y-4">
-      <Input
-        type="text"
-        placeholder={searchPlaceholder}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-4 text-gray-900 focus-visible:ring-foreground"
-      />
-      <div className="flex min-h-screen flex-col space-y-4">
-        {items.map((item, index) => (
-          <div key={index}>{renderItem(item)}</div>
-        ))}
-        {isLoading &&
-          Array.from({ length: itemsPerPage }, (_, index) => (
-            <div key={`skeleton-${index}`}>{renderSkeleton()}</div>
+      <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 md:flex-row">
+        {title && (
+          <h1 className="whitespace-nowrap text-3xl font-bold text-text-primary">{title}</h1>
+        )}
+        <Input
+          type="text"
+          placeholder={searchPlaceholder}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-[720px] text-text-primary focus-visible:ring-foreground"
+        />
+      </div>
+
+      <div className={cn('flex h-fit flex-col space-y-4')}>
+        {!isLoading && totalItems > 0 && (
+          <span className="text-sm text-text-tertiary">
+            Results: {totalItems} {title}
+          </span>
+        )}
+        <div className={cn(listContainerClassName)}>
+          {items.map((item, index) => (
+            <div key={index}>{renderItem(item)}</div>
           ))}
+          {isLoading &&
+            Array.from({ length: 4 }, (_, index) => (
+              <div key={`skeleton-${index}`}>{renderSkeleton()}</div>
+            ))}
+        </div>
         {!isLoading && items.length === 0 && (
           <EmptyState
             content={emptyStateContent}
@@ -126,8 +144,8 @@ function SearchableList<T>({
           <div ref={observerTarget} className="h-10" />
         )}
       </div>
-      {loadingType === LoadingType.PAGINATION && items.length > 0 && (
-        <Pagination className="mt-4 text-gray-900">
+      {loadingType === LoadingType.PAGINATION && totalPages > 1 && items.length > 0 && (
+        <Pagination className="mt-4 text-text-secondary">
           <PaginationContent>
             {currentPage > 1 && (
               <PaginationItem>

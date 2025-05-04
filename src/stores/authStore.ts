@@ -2,18 +2,28 @@ import Cookies from 'js-cookie';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+export interface AuthenticatedUserType {
+  email: string;
+  first_name: string;
+  id: number;
+  last_name: string;
+  username: string;
+}
+
 interface AuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
   expiresAt: number | null;
-  setAccessToken: (token: string) => void;
+  user: AuthenticatedUserType | null;
+  setAccessToken: (token: string, user: AuthenticatedUserType) => void;
   logout: () => void;
   initializeAuth: () => Promise<void>;
   isTokenExpired: () => boolean;
+  getUser: () => AuthenticatedUserType | null;
 }
 
 const AUTH_COOKIE_NAME = 'auth_token';
-const TOKEN_EXPIRATION_TIME = 3 * 60 * 60 * 1000; // 3 hours
+const TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 1 day
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -21,7 +31,8 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       accessToken: null,
       expiresAt: null,
-      setAccessToken: (token: string) => {
+      user: null,
+      setAccessToken: (token: string, user: AuthenticatedUserType) => {
         const expiresAt = Date.now() + TOKEN_EXPIRATION_TIME;
         Cookies.set(AUTH_COOKIE_NAME, token, { secure: true, sameSite: 'strict' });
         Cookies.set('expiresAt', expiresAt.toString(), { secure: true, sameSite: 'strict' });
@@ -29,6 +40,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
           accessToken: token,
           expiresAt,
+          user,
         }));
       },
       logout: () => {
@@ -38,6 +50,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           accessToken: null,
           expiresAt: null,
+          user: null,
         }));
       },
       initializeAuth: async () => {
@@ -64,6 +77,7 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: true,
               accessToken: state.accessToken,
               expiresAt: state.expiresAt,
+              user: state.user,
             });
           } else {
             // No valid token found
@@ -71,6 +85,7 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: false,
               accessToken: null,
               expiresAt: null,
+              user: null,
             });
           }
         }
@@ -79,6 +94,7 @@ export const useAuthStore = create<AuthState>()(
         const { expiresAt } = get();
         return expiresAt ? Date.now() >= expiresAt : true;
       },
+      getUser: () => get().user,
     }),
     {
       name: 'auth-storage',

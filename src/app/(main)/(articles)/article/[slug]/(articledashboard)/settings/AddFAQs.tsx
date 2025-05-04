@@ -53,7 +53,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
           value: author.value,
           label: author.label,
         })),
-        keywords: keywords.map((keyword) => keyword.value),
+        // keywords: keywords.map((keyword) => keyword.value),
         submission_type: submissionType,
         faqs: data,
       },

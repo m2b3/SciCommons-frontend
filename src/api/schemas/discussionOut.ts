@@ -9,7 +9,6 @@ import type { DiscussionOutId } from './discussionOutId';
 import type { UserStats } from './userStats';
 
 export interface DiscussionOut {
-  anonymous_name?: string;
   article_id: number;
   comments_count?: number;
   content: string;
@@ -17,6 +16,7 @@ export interface DiscussionOut {
   deleted_at?: DiscussionOutDeletedAt;
   id?: DiscussionOutId;
   is_author?: boolean;
+  is_pseudonymous?: boolean;
   /** @maxLength 200 */
   topic: string;
   updated_at: string;

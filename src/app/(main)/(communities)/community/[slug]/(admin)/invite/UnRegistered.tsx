@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 
-import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers } from '@/api/community-invitations/community-invitations';
 import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -21,6 +21,7 @@ const UnRegistered = () => {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { errors },
   } = useForm<IUnRegisteredProps>({
@@ -42,6 +43,7 @@ const UnRegistered = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      reset();
       toast.success('Invitation sent successfully!');
     }
   }, [isSuccess]);
@@ -54,12 +56,12 @@ const UnRegistered = () => {
       body: data.content,
     };
 
-    mutate({ communityId: 1, data: dataToSend });
+    mutate({ communityId: 8, data: dataToSend });
   };
 
   return (
-    <div className="my-4 rounded-lg bg-white-primary p-4 shadow-md">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
+    <div className="my-4 rounded-xl border-common-contrast sm:border sm:bg-common-cardBackground sm:p-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <Controller
           name="emails"
           control={control}
@@ -86,30 +88,29 @@ const UnRegistered = () => {
           info="Provide a subject for the invitation email."
           errors={errors}
         />
-        <FormInput<IUnRegisteredProps>
-          label="Content"
-          name="content"
-          type="text"
-          placeholder="Enter the content"
-          register={register}
-          requiredMessage="Content is required"
-          info="Provide the content for the invitation email."
-          errors={errors}
-          textArea={true}
-        />
+        <div className="flex flex-col gap-2">
+          <FormInput<IUnRegisteredProps>
+            label="Content"
+            name="content"
+            type="text"
+            placeholder="Enter the content"
+            register={register}
+            requiredMessage="Content is required"
+            info="Provide the content for the invitation email."
+            errors={errors}
+            textArea={true}
+          />
+          <span className="text-xs italic text-functional-yellow">
+            (A referral link will be automatically attached with the email body.)
+          </span>
+        </div>
         <div className="flex justify-end space-x-4 res-text-sm">
-          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
-            Cancel
-          </button>
-          <button
-            className={clsx(
-              'rounded-md px-4 py-2 text-white',
-              isPending ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
-            )}
-            disabled={isPending}
-          >
-            {isPending ? 'Sending...' : 'Send Invitation'}
-          </button>
+          <Button variant={'gray'}>
+            <ButtonTitle>Cancel</ButtonTitle>
+          </Button>
+          <Button loading={isPending} type="submit" showLoadingSpinner={false}>
+            <ButtonTitle>{isPending ? 'Sending...' : 'Send Invitation'}</ButtonTitle>
+          </Button>
         </div>
       </form>
     </div>

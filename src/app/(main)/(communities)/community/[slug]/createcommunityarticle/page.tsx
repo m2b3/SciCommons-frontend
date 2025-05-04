@@ -24,7 +24,7 @@ const defaultFormValues: SubmitArticleFormValues = {
   title: '',
   abstract: '',
   authors: [],
-  keywords: [],
+  // keywords: [],
   article_link: '',
   pdfFiles: [],
 };
@@ -45,10 +45,10 @@ const CommunityArticleForm: NextPage = () => {
     },
     mutation: {
       onSuccess: (data) => {
-        toast.success(
-          "Article has been successfully submitted. You'll notified once it's approved.",
-          { duration: Infinity, action: { label: 'Ok', onClick: () => {} } }
-        );
+        toast.success('Article has been successfully submitted', {
+          duration: Infinity,
+          action: { label: 'Ok', onClick: () => {} },
+        });
         router.push(`/article/${data.data.slug}`);
         localStorage.removeItem(STORAGE_KEY);
       },
@@ -146,7 +146,7 @@ const CommunityArticleForm: NextPage = () => {
           label: author.label,
         })),
         article_link: formData.article_link || undefined,
-        keywords: formData.keywords.map((keyword) => keyword.value),
+        // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
         community_name: params?.slug,
       },
@@ -168,38 +168,42 @@ const CommunityArticleForm: NextPage = () => {
   };
 
   return (
-    <div className="container py-4 text-gray-900">
-      <div className="mb-4">
-        <button
-          onClick={() => router.push(`/community/${params?.slug}`)}
-          className="flex items-center gap-2 text-sm text-green-500 hover:underline"
-        >
-          <MoveLeft size={16} /> Back to Community
-        </button>
+    <div className="container p-0 res-text-sm md:px-8 md:py-4">
+      <div className="mx-auto w-full max-w-5xl border-common-contrast p-4 py-8 md:rounded-xl md:border md:bg-common-cardBackground md:p-8">
+        <div className="mb-4">
+          <button
+            onClick={() => router.push(`/community/${params?.slug}`)}
+            className="flex items-center gap-2 text-sm text-text-secondary hover:underline"
+          >
+            <MoveLeft size={16} /> Back to Community
+          </button>
+        </div>
+        <div className="mb-4 flex flex-col items-center justify-center">
+          <h1 className="text-3xl font-bold text-text-primary">
+            Create a<span className="text-functional-green"> Community </span>
+            Article
+          </h1>
+          <p className="mt-2 text-center text-text-tertiary">
+            Share your insights and knowledge with our community. Fill in the details below to
+            create an article specifically for this community.
+          </p>
+        </div>
+        <SubmitArticleForm
+          {...{
+            handleSubmit,
+            onSubmit,
+            control,
+            register,
+            errors,
+            isPending,
+            activeTab,
+            setActiveTab,
+            onSearch: handleSearch,
+            showPrivateCheckOption: true,
+            articleData,
+          }}
+        />
       </div>
-      <div className="mb-4 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold">
-          Create a<span className="text-green-500"> Community </span>
-          Article
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Share your insights and knowledge with our community. Fill in the details below to create
-          an article specifically for this community.
-        </p>
-      </div>
-      <SubmitArticleForm
-        {...{
-          handleSubmit,
-          onSubmit,
-          control,
-          register,
-          errors,
-          isPending,
-          activeTab,
-          setActiveTab,
-          onSearch: handleSearch,
-        }}
-      />
     </div>
   );
 };

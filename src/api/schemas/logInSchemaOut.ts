@@ -4,6 +4,7 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { LogInUserSchemaOut } from './logInUserSchemaOut';
 
 /**
  * Output schema for user log in responses. Indicates the status of the
@@ -13,4 +14,5 @@ export interface LogInSchemaOut {
   message: string;
   status: string;
   token: string;
+  user: LogInUserSchemaOut;
 }

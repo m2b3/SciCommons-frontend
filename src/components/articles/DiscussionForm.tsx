@@ -18,9 +18,15 @@ interface DiscussionFormProps {
   setShowForm: (showForm: boolean) => void;
   articleId: number;
   communityId?: number | null;
+  refetchDiscussions: () => void;
 }
 
-const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId, communityId }) => {
+const DiscussionForm: React.FC<DiscussionFormProps> = ({
+  setShowForm,
+  articleId,
+  communityId,
+  refetchDiscussions,
+}) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const {
     register,
@@ -34,13 +40,14 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
     },
   });
 
-  const { mutate } = useArticlesDiscussionApiCreateDiscussion({
+  const { mutate, isPending } = useArticlesDiscussionApiCreateDiscussion({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         toast.success('Discussion created successfully');
         setShowForm(false);
         reset();
+        refetchDiscussions();
       },
       onError: (error) => {
         showErrorToast(error);
@@ -53,7 +60,10 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mb-4 rounded bg-white-secondary p-4 shadow">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mb-4 flex flex-col gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4"
+    >
       <FormInput<FormValues>
         label="Topic"
         name="topic"
@@ -73,7 +83,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({ setShowForm, articleId,
         errors={errors}
         textArea={true}
       />
-      <Button type="submit" className="mt-4 bg-blue-500 text-white hover:bg-blue-600">
+      <Button type="submit" variant={'blue'} loading={isPending} showLoadingSpinner>
         Submit
       </Button>
     </form>

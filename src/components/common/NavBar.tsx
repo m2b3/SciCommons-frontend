@@ -1,13 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { Bell, DownloadIcon, LogOut, MoveLeft, NotebookTabs, Plus, User } from 'lucide-react';
+import {
+  Bell,
+  DownloadIcon,
+  LogOut,
+  MoonIcon,
+  MoveLeft,
+  NotebookTabs,
+  Plus,
+  SunMediumIcon,
+  User,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -16,29 +26,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Switch } from '@/components/ui/switch';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
 import useStore from '@/hooks/useStore';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
+import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
   const pathname = usePathname();
   const router = useRouter();
-  const { theme } = useTheme();
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/articles', label: 'Articles' },
     { href: '/communities', label: 'Communities' },
-    { href: '/posts', label: 'Posts' },
-    { href: '/about', label: 'About' },
+    // { href: '/posts', label: 'Posts' },
+    // { href: '/about', label: 'About' },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-slate-100/20 text-gray-900 backdrop-blur-[50px] dark:bg-slate-300/10 sm:px-9">
-      <nav className="flex items-center justify-between px-4 py-2">
+    <header className="sticky top-0 z-[1000] w-full border-b border-common-minimal bg-common-background/50 text-text-primary backdrop-blur-md sm:px-2 lg:px-9">
+      <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2">
         <div className="flex items-center">
           <MoveLeft
             className="mr-4 size-5 cursor-pointer text-primary"
@@ -55,9 +66,12 @@ const NavBar: React.FC = () => {
           {navLinks?.map((link) => (
             <li
               key={link.href}
-              className={cn('rounded-full px-3 py-1 text-sm hover:bg-functional-green/10', {
-                'bg-functional-green/10 font-bold text-green-400': link.href === pathname,
-              })}
+              className={cn(
+                'rounded-full px-3 py-1 text-sm text-text-primary hover:bg-functional-green/10',
+                {
+                  'bg-functional-green/10 font-bold text-functional-green': link.href === pathname,
+                }
+              )}
             >
               <Link href={link.href}>{link.label}</Link>
             </li>
@@ -69,18 +83,24 @@ const NavBar: React.FC = () => {
               <CreateDropdown />
             </div>
             <Link href="/notifications">
-              <Bell className="h-9 w-9 cursor-pointer rounded-full p-2 text-gray-800 hover:bg-gray-200 hover:text-gray-600" />
+              <Bell className="hover:animate-wiggle h-9 w-9 cursor-pointer rounded-full p-2 text-text-secondary hover:text-functional-yellow" />
             </Link>
             <ProfileDropdown />
+            <ThemeSwitch iconSize={20} />
           </div>
         ) : (
           <div className="flex items-center space-x-4">
-            <Link href="/auth/login" className="text-gray-800 hover:text-gray-600">
-              <button>Login</button>
+            <Link href="/auth/login">
+              <Button variant={'transparent'} className="px-1">
+                Login
+              </Button>
             </Link>
-            <Link href="/auth/register" className="text-gray-800 hover:text-gray-600">
-              <button className="rounded-full bg-green-500 px-4 py-2 text-white">Register</button>
+            <Link href="/auth/register">
+              <Button variant={'default'} className="rounded-full">
+                Register
+              </Button>
             </Link>
+            <ThemeSwitch iconSize={20} />
           </div>
         )}
       </nav>
@@ -91,34 +111,64 @@ const NavBar: React.FC = () => {
 export default NavBar;
 
 const CreateDropdown: React.FC = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-1 rounded-full border-2 border-green-500 px-4 py-2 text-green-500 transition-colors duration-300 hover:bg-green-500 hover:text-white">
-          <Plus size={18} />
-          Create
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>
-          <Link href="/submitarticle">Submit Article</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/createcommunity">Create Community</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/posts/createpost">Create Post</Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <TooltipProvider delayDuration={10}>
+      <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={'default'}
+            className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
+          >
+            <Plus size={16} />
+            <span className="hidden lg:block">Create</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent sideOffset={12}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+                <Link href="/submitarticle">Submit Article</Link>
+              </DropdownMenuItem>
+            </TooltipTrigger>
+            <TooltipContent side="left" sideOffset={8}>
+              Write and submit an article
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+                <Link href="/createcommunity">Create Community</Link>
+              </DropdownMenuItem>
+            </TooltipTrigger>
+            <TooltipContent side="left" sideOffset={8}>
+              Start a new community journal
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+                <Link href="/posts/createpost">Create Post</Link>
+              </DropdownMenuItem>
+            </TooltipTrigger>
+            <TooltipContent side="left" sideOffset={8}>
+              Share your thoughts with a post
+            </TooltipContent>
+          </Tooltip>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </TooltipProvider>
   );
 };
 
 const ProfileDropdown: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
-  const { theme, setTheme } = useTheme();
   const imageData = useIdenticon(40);
   const { handleAppInstall } = usePWAInstallPrompt('install');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -126,7 +176,7 @@ const ProfileDropdown: React.FC = () => {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Image
           src={`data:image/png;base64,${imageData}`}
@@ -136,28 +186,18 @@ const ProfileDropdown: React.FC = () => {
           className="cursor-pointer rounded-full"
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>
-          <Link href="/myprofile" className="flex items-center ">
+      <DropdownMenuContent sideOffset={12}>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+          <Link href="/myprofile" className="flex items-center">
             <User size={16} className="mr-2" /> Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/mycontributions" className="flex items-center ">
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+          <Link href="/mycontributions" className="flex items-center">
             <NotebookTabs size={16} className="mr-2" /> Contributions
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <div className="flex items-center space-x-2">
-            Dark Mode{' '}
-            <Switch
-              className="ml-2"
-              checked={theme === 'dark'}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            />
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <button
             onClick={handleAppInstall}
             id="install"
@@ -168,7 +208,7 @@ const ProfileDropdown: React.FC = () => {
             Install
           </button>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <button onClick={handleLogout} className="flex items-center text-functional-red">
             <LogOut size={16} className="mr-2" />
             Logout
@@ -176,5 +216,29 @@ const ProfileDropdown: React.FC = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const ThemeSwitch = ({
+  showTitle = false,
+  iconSize = 16,
+}: {
+  showTitle?: boolean;
+  iconSize?: number;
+}) => {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div
+      className="flex cursor-pointer items-center space-x-2"
+      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+    >
+      {theme === 'light' ? (
+        <MoonIcon size={iconSize} className="mr-2" />
+      ) : (
+        <SunMediumIcon size={iconSize} className="mr-2" />
+      )}
+      {showTitle && <>{theme === 'light' ? 'Dark' : 'Light'} Mode</>}
+    </div>
   );
 };

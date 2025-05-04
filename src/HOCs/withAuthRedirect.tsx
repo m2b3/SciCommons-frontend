@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
-import Loader, { LoaderType } from '@/components/common/Loader';
+import Loader from '@/components/common/Loader';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -23,10 +23,6 @@ interface WithAuthRedirectProps {
 
 interface WithAuthRedirectOptions {
   requireAuth?: boolean;
-  loaderType?: LoaderType;
-  loaderColor?: string;
-  loaderSize?: 'small' | 'medium' | 'large';
-  loaderText?: string;
 }
 
 export function withAuthRedirect<P extends WithAuthRedirectProps>(
@@ -41,13 +37,7 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
     const [showExpirationDialog, setShowExpirationDialog] = useState(false);
     const { getPreviousPath } = usePathTracker();
 
-    const {
-      requireAuth = false, // Set to false by default
-      loaderType = 'dots',
-      loaderColor = 'green',
-      loaderSize = 'small',
-      loaderText = 'Loading...',
-    } = options;
+    const { requireAuth = false } = options;
 
     useEffect(() => {
       const initAuth = async () => {
@@ -94,7 +84,7 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
     };
 
     if (isInitializing) {
-      return <Loader type={loaderType} color={loaderColor} size={loaderSize} text={loaderText} />;
+      return <Loader />;
     }
 
     if (requireAuth && !isAuthenticated) {
@@ -117,7 +107,9 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button onClick={handleExpirationDialogClose}>OK</Button>
+              <Button onClick={handleExpirationDialogClose} className="text-white res-text-xs">
+                OK
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

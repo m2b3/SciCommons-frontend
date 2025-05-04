@@ -1,12 +1,15 @@
 import React from 'react';
 
 import clsx from 'clsx';
-import { CheckCircle, Upload, XCircle } from 'lucide-react';
+import { Check, Upload, X } from 'lucide-react';
 import { FileRejection, useDropzone } from 'react-dropzone';
 import { Control, FieldValues, Path, PathValue, useController } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { cn, formatFileSize } from '@/lib/utils';
 import { FileObj } from '@/types';
+
+import { Button, ButtonTitle } from '../ui/button';
 
 interface FileUploadProps<TFieldValues extends FieldValues> {
   control: Control<TFieldValues>;
@@ -17,7 +20,7 @@ const FileUpload = <TFieldValues extends FieldValues>({
   control,
   name,
 }: FileUploadProps<TFieldValues>) => {
-  const MAX_FILES = 2; // Maximum number of files that can be uploaded
+  const MAX_FILES = 1; // Maximum number of files that can be uploaded
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // Maximum file size in bytes
 
   const {
@@ -104,11 +107,17 @@ const FileUpload = <TFieldValues extends FieldValues>({
     uploadSimulation();
   };
 
+  const removeFile = (indexToRemove: number) => {
+    const updatedFiles = fileObjs.filter((_: FileObj, index: number) => index !== indexToRemove);
+    onChange(updatedFiles);
+  };
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { 'application/pdf': [] },
     maxSize: MAX_FILE_SIZE,
     multiple: true,
+    disabled: fileObjs.length >= MAX_FILES,
   });
 
   return (
@@ -116,60 +125,78 @@ const FileUpload = <TFieldValues extends FieldValues>({
       <div
         {...getRootProps()}
         className={clsx(
-          'cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-6 text-center transition-colors duration-200 ease-in-out hover:bg-gray-100',
+          'cursor-pointer rounded-xl border border-dashed border-common-contrast bg-common-cardBackground p-6 text-center transition-colors duration-200 ease-in-out hover:bg-common-background/20 md:bg-common-background',
           {
-            'border-red-500': error,
+            'border-functional-red': error,
             'cursor-not-allowed opacity-50': fileObjs.length >= MAX_FILES,
           }
         )}
       >
         <input {...getInputProps()} disabled={fileObjs.length >= MAX_FILES} />
-        <Upload className="mx-auto mb-2" size={48} />
-        <p>Choose files or drag & drop them here</p>
-        <p className="text-sm text-gray-500">PDF format, up to 10 MB each</p>
-        <p className="text-sm text-gray-500">Maximum {MAX_FILES} files</p>
-        <button
+        <Upload className="mx-auto mb-2 text-text-secondary" size={48} />
+        <p className="text-sm text-text-secondary">Choose files or drag & drop them here</p>
+        <p className="text-xs text-text-tertiary">PDF format, up to 10 MB each</p>
+        <p className="text-xs text-text-tertiary">Maximum {MAX_FILES} files</p>
+        <Button
+          variant={'blue'}
           type="button"
-          className={clsx('mt-2 rounded-md bg-blue-500 px-4 py-2 text-gray-900', {
+          className={cn('mt-2', {
             'cursor-not-allowed opacity-50': fileObjs.length >= MAX_FILES,
           })}
           disabled={fileObjs.length >= MAX_FILES}
         >
-          Browse Files
-        </button>
+          <ButtonTitle>Browse Files</ButtonTitle>
+        </Button>
       </div>
       <div className="mt-4">
         {fileObjs &&
           fileObjs.map((fileObj: FileObj, index: number) => (
-            <div key={index} className="mb-2 flex items-center">
-              <div className="w-12 flex-shrink-0">
-                {fileObj.status === 'error' ? <XCircle size={24} className="text-red-500" /> : null}
-              </div>
-              <div className="ml-2 flex-1">
+            <div key={index} className="mb-2 flex items-center gap-2">
+              <div className="flex-1 rounded-md bg-common-minimal/50 px-4 py-2">
                 <div className="flex justify-between text-sm">
-                  <span>{fileObj.file.name}</span>
-                  <span>
-                    {fileObj.status === 'uploading'
-                      ? `${fileObj.progress}%`
-                      : fileObj.status === 'error'
-                        ? fileObj.errorMessage
-                        : 'Completed'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {fileObj.status === 'completed' ? (
+                      <Check size={18} className="shrink-0 text-functional-green" />
+                    ) : fileObj.status === 'error' ? (
+                      <X size={18} className="shrink-0 text-functional-red" />
+                    ) : null}
+                    <span className="text-sm text-text-secondary">{fileObj.file.name}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span
+                      className={cn('text-xs text-text-tertiary', {
+                        'text-functional-red': fileObj.status === 'error',
+                        'text-functional-blue': fileObj.status == 'uploading',
+                      })}
+                    >
+                      {fileObj.status === 'uploading'
+                        ? `${fileObj.progress}%`
+                        : fileObj.status === 'error'
+                          ? fileObj.errorMessage
+                          : formatFileSize(fileObj.file.size)}
+                    </span>
+                    {(fileObj.status === 'completed' || fileObj.status === 'error') && (
+                      <X
+                        size={18}
+                        className="ml-2 shrink-0 cursor-pointer text-text-tertiary hover:text-text-primary"
+                        onClick={() => removeFile(index)}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="mt-1 h-2 rounded bg-gray-200">
-                  <div
-                    className={`h-2 rounded ${fileObj.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`}
-                    style={{ width: `${fileObj.progress}%` }}
-                  ></div>
-                </div>
+                {fileObj.status === 'completed' ? null : (
+                  <div className="mt-1 h-1 rounded bg-common-minimal">
+                    <div
+                      className={`h-1 rounded bg-functional-blue`}
+                      style={{ width: `${fileObj.progress}%` }}
+                    />
+                  </div>
+                )}
               </div>
-              {fileObj.status === 'completed' && (
-                <CheckCircle size={24} className="ml-2 text-green-500" />
-              )}
             </div>
           ))}
       </div>
-      {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
+      {error && <p className="mt-1 text-sm text-functional-red">{error.message}</p>}
     </div>
   );
 };

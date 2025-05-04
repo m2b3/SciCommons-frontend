@@ -12,7 +12,6 @@ interface RelevantArticlesProps {
 }
 
 const RelevantArticles: FC<RelevantArticlesProps> = ({ articleId }) => {
-  console.log(articleId);
   const accessToken = useAuthStore((state) => state.accessToken);
   const { data, isPending } = useArticlesApiGetRelevantArticles(
     articleId,

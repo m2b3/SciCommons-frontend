@@ -18,6 +18,8 @@ import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
+import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
+
 interface DiscussionCommentsProps {
   discussionId: number;
 }
@@ -35,17 +37,18 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
     }
   );
 
-  const { mutate: createComment } = useArticlesDiscussionApiCreateComment({
-    mutation: {
-      onSuccess: () => {
-        refetch();
+  const { mutate: createComment, isPending: isCreateCommentPending } =
+    useArticlesDiscussionApiCreateComment({
+      mutation: {
+        onSuccess: () => {
+          refetch();
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
       },
-      onError: (error) => {
-        showErrorToast(error);
-      },
-    },
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    });
   const { mutate: UpdateComment } = useArticlesDiscussionApiUpdateComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
@@ -97,30 +100,36 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
   };
 
   return (
-    <div className="rounded-md bg-white-secondary text-gray-900">
+    <div className="">
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
         buttonText="Post Comment"
+        isPending={isCreateCommentPending}
       />
-      {isPending &&
-        Array.from({ length: 5 }).map((_, index) => (
-          <div
-            className="relative mb-4 h-20 w-full animate-pulse rounded bg-gray-300"
-            key={index}
-          ></div>
-        ))}
+      {isPending && (
+        <div className="mt-4 flex w-full animate-pulse items-center justify-center gap-2">
+          <div className="w-5">
+            <InfiniteSpinnerAnimation color="#737373" strokeWidth={16} />
+          </div>
+          <span className="text-xs text-text-secondary">Loading Comments</span>
+        </div>
+      )}
       {data && data.data.length > 0 && (
-        <>
+        <div className="flex flex-col border-common-minimal">
+          <span className="mb-2 text-sm font-bold text-text-tertiary">Comments:</span>
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <label htmlFor="depth-select" className="flex items-center text-sm font-medium">
+              <label
+                htmlFor="depth-select"
+                className="flex items-center text-sm font-medium text-text-secondary"
+              >
                 <Layers size={16} className="mr-1" />
                 <span>Depth:</span>
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-white-primary p-1 text-sm text-gray-900"
+                className="rounded border bg-common-background p-1 text-sm"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >
@@ -134,16 +143,16 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
             </div>
             <button
               onClick={toggleAllComments}
-              className="flex items-center text-blue-500 transition-colors duration-200 hover:text-blue-600"
+              className="flex items-center text-xs text-functional-blue transition-colors duration-200 hover:text-functional-blueContrast"
             >
               {isAllCollapsed ? (
                 <>
-                  <ChevronsDown size={16} className="mr-1" />
+                  <ChevronsDown size={14} className="mr-1" />
                   <span>Expand All</span>
                 </>
               ) : (
                 <>
-                  <ChevronsUp size={16} className="mr-1" />
+                  <ChevronsUp size={14} className="mr-1" />
                   <span>Collapse All</span>
                 </>
               )}
@@ -160,7 +169,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
             onDeleteComment={deleteCommentbyId}
             contentType={ContentTypeEnum.articlesdiscussioncomment}
           />
-        </>
+        </div>
       )}
     </div>
   );

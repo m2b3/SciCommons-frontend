@@ -5,14 +5,14 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
+import { Home, Newspaper, NotebookPen, Plus, Users } from 'lucide-react';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-import { Home, Newspaper, NotebookPen, Plus, Users } from 'lucide-react';
-
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 const BottomBar = () => {
@@ -51,7 +51,7 @@ const BottomBar = () => {
   }
 
   return (
-    <main className="fixed bottom-0 left-0 z-[1000] grid h-16 w-screen select-none grid-cols-5 border-t border-common-minimal bg-common-background md:hidden">
+    <main className="fixed bottom-0 left-0 z-[1000] grid h-16 w-screen select-none grid-cols-5 border-t border-common-minimal bg-common-background/70 text-text-secondary backdrop-blur-md md:hidden">
       {navLinks.map((link, index) => (
         <div
           key={index}
@@ -74,27 +74,26 @@ const BottomBar = () => {
 export default BottomBar;
 
 const CreateDropdown: React.FC = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <div className="rounded-full bg-common-minimal p-2">
           <Plus size={24} />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mb-6 w-48 rounded-common-lg border border-gray-300 bg-gray-100 py-2 dark:border-gray-700 dark:bg-gray-950">
-        <DropdownMenuItem className="py-2 hover:bg-gray-900">
-          <Link href="/submitarticle">
-            <span className="p-4 text-sm text-gray-500">Submit Article</span>
-          </Link>
+      <DropdownMenuContent>
+        <DropdownMenuItem>
+          <Link href="/submitarticle">Submit Article</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="py-2 hover:bg-gray-900">
+        <DropdownMenuItem>
           <Link href="/createcommunity" className="text-gray-500">
-            <span className="p-4 text-sm text-gray-500">Create Community</span>
+            Create Community
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="py-2 hover:bg-gray-900">
+        <DropdownMenuItem>
           <Link href="/posts/createpost" className="text-gray-500">
-            <span className="p-4 text-sm text-gray-500">Create Post</span>
+            Create Post
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

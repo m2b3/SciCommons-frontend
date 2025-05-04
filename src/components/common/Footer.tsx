@@ -23,33 +23,33 @@ const navLinks = [
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-functional-green/10 dark:bg-functional-green/10 md:pb-0">
-      <div className="sm-gap-0 flex w-full flex-col justify-between gap-10 p-16 sm:flex-row md:px-44 md:py-12">
+    <footer className="rounded-t-3xl bg-functional-green/10 pb-16 dark:bg-functional-green/10 md:pb-0">
+      <div className="sm-gap-0 flex w-full flex-col justify-between gap-10 p-8 pt-12 sm:flex-row sm:p-16 md:px-44 md:py-12">
         <div className="flex flex-col items-start gap-12">
           <Link href="/" className="flex items-center gap-4">
             <Image src="/logo.png" alt="Logo" width={120} height={80} />
           </Link>
           <div className="flex gap-8 md:order-2">
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Facebook</span>
               <FacebookIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Youtube</span>
               <YoutubeIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Instagram</span>
               <InstagramIconFilled fontSize={24} strokeWidth={0} />
             </a>
-            <a href="#" className="text-gray-400">
+            <a href="#" className="text-functional-green">
               <span className="sr-only">Twitter</span>
               <TwitterIconFilled fontSize={24} strokeWidth={0} />
             </a>
           </div>
         </div>
 
-        <div className="flex gap-6 text-sm font-medium leading-6 text-green-600 dark:text-green-400 sm:gap-14">
+        <div className="flex gap-6 text-xs font-medium leading-6 text-functional-green sm:gap-14">
           <div className="flex flex-col gap-2">
             {navLinks.map(
               (link, index) =>
@@ -76,16 +76,20 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-functional-green p-4 text-center text-sm font-semibold text-white dark:text-black">
-        © 2024 SciCommons. All rights reserved.
-        <span className="mx-4">|</span>
-        <Link href="/terms-and-conditions" className="hover:underline">
-          Terms and Conditions
-        </Link>
-        <span className="mx-4">|</span>
-        <Link href="/privacy-policy" className="hover:underline">
-          Privacy Policy
-        </Link>
+      <div className="flex w-full flex-wrap items-center bg-functional-green p-4 text-xs font-semibold text-white dark:text-black sm:justify-center">
+        <span className="mr-2 sm:mr-4">© 2024 SciCommons. All rights reserved.</span>
+        <span className="mr-2 sm:mr-4">
+          <span className="mr-2 sm:mr-4">|</span>
+          <Link href="/terms-and-conditions" className="hover:underline">
+            Terms and Conditions
+          </Link>
+        </span>
+        <span className="mr-2 sm:mr-4">
+          <span className="mr-2 sm:mr-4">|</span>
+          <Link href="/privacy-policy" className="hover:underline">
+            Privacy Policy
+          </Link>
+        </span>
       </div>
     </footer>
   );

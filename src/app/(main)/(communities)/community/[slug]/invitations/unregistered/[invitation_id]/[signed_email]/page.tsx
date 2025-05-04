@@ -7,12 +7,15 @@ import { useRouter } from 'next/navigation';
 
 import { Users } from 'lucide-react';
 import { toast } from 'sonner';
+import { useStore } from 'zustand';
 
 import {
   useCommunitiesApiInvitationGetCommunityInvitationDetails,
   useCommunitiesApiInvitationRespondToEmailInvitation,
 } from '@/api/community-invitations/community-invitations';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
+import { Button, ButtonTitle } from '@/components/ui/button';
+import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -23,9 +26,9 @@ export default function UnRegisteredUsersInvitation({
 }) {
   const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
-
+  const imageData = useIdenticon(60);
   const [action, setAction] = useState<'accept' | 'reject'>('accept');
-
+  const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
   const communityId = parseInt(params.slug);
   const invitationId = parseInt(params.invitation_id);
 
@@ -57,7 +60,7 @@ export default function UnRegisteredUsersInvitation({
     if (isRespondSuccess) {
       toast.success(respondData.data.message);
       if (action === 'accept') {
-        router.push(`/community/${communityId}`);
+        router.push(`/community/${data?.data.name}`);
       } else {
         router.push('/communities');
       }
@@ -77,44 +80,72 @@ export default function UnRegisteredUsersInvitation({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="flex max-w-md flex-col items-center space-y-4 rounded-lg bg-white p-6 shadow-lg">
-        {error && <div className="text-red-500">{error.response?.data.message}</div>}
+    <div className="relative flex min-h-screen items-center justify-center bg-common-background p-4">
+      <Image
+        src={'/images/assets/gradient.webp'}
+        fill
+        alt=""
+        className="z-0 opacity-10 invert dark:invert-0"
+        quality={10}
+      />
+      <div className="relative flex w-full flex-col items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-6 res-text-xs hover:shadow-md hover:shadow-common-minimal md:w-[520px]">
+        {error && <div className="text-functional-red">{error.response?.data.message}</div>}
         {isPending && <CommunityInvitationSkeletonLoader />}
         {data && (
           <>
-            <div className="">
+            <div className="relative size-10 flex-shrink-0 sm:mr-4">
               <Image
-                className="rounded-full"
-                src={data.data.profile_pic_url || '/auth/login.png'}
-                alt={data.data.name || 'Community Profile Picture'}
-                width={60}
-                height={60}
+                // src={data.data.profile_pic_url || `data:image/png;base64,${imageData}`}
+                src={`data:image/png;base64,${imageData}`}
+                alt={data.data.name}
+                fill
+                className="rounded-full object-cover"
               />
             </div>
-            <div className="flex flex-col items-center justify-center">
-              <h2 className="text-lg font-semibold">{data?.data.name}</h2>
-              <div className="flex items-center text-sm text-gray-500">
-                <Users className="mr-1 h-4 w-4" />
-                <span>{data.data.num_members} members</span>
+            <div className="w-full flex-1">
+              <h3 className="mb-2 truncate font-bold text-text-primary res-text-base">
+                {data.data.name}
+              </h3>
+              <p className="mb-4 line-clamp-2 text-base text-text-secondary">
+                {data.data.description}
+              </p>
+              <div className="flex flex-wrap items-center gap-4 text-text-secondary">
+                <div className="flex items-center">
+                  <Users className="mr-1 h-4 w-4" />
+                  <span className="text-xs">{data.data.num_members} Members</span>
+                </div>
+                {/* <div className="flex items-center">
+                <FileText className="mr-1 h-4 w-4" />
+                <span className="text-xs">Published {community.num_articles} Articles</span>
+              </div> */}
               </div>
-              <p className="mt-2 text-gray-600">{data.data.description}</p>
             </div>
             <div className="flex space-x-4 self-end">
-              <button
-                onClick={() => handleAccept('accept')}
-                className="rounded-lg bg-green-500 px-3 py-1 text-white hover:bg-green-600"
+              <Button
+                onClick={() =>
+                  isAuthenticated ? handleAccept('accept') : router.push('/auth/login')
+                }
                 disabled={isRespondPending}
+                type="button"
               >
-                {isRespondPending && action === 'accept' ? 'Loading...' : 'Accept'}
-              </button>
-              <button
+                <ButtonTitle>
+                  {isRespondPending && action === 'accept'
+                    ? 'Loading...'
+                    : isAuthenticated
+                      ? 'Accept'
+                      : 'Login to Accept'}
+                </ButtonTitle>
+              </Button>
+              <Button
                 onClick={() => handleAccept('reject')}
-                className="rounded-lg bg-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-400"
                 disabled={isRespondPending}
+                type="button"
+                variant={'danger'}
               >
-                {isRespondPending && action === 'reject' ? 'Loading...' : 'Reject'}
-              </button>
+                <ButtonTitle>
+                  {isRespondPending && action === 'reject' ? 'Loading...' : 'Reject'}
+                </ButtonTitle>
+              </Button>
             </div>
             {respondError && <p className="text-red-500">{respondError.response?.data.message}</p>}
           </>

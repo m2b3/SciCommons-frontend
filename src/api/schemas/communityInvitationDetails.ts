@@ -9,5 +9,4 @@ export interface CommunityInvitationDetails {
   description: string;
   name: string;
   num_members: number;
-  profile_pic_url: string;
 }

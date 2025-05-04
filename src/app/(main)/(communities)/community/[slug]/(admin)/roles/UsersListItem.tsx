@@ -6,6 +6,7 @@ import { CheckCircle, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useCommunitiesMembersApiManageCommunityMember } from '@/api/community-members/community-members';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,31 +68,31 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
   };
 
   return (
-    <div className="mb-2 flex items-center justify-between rounded-md border bg-white-primary p-4 text-gray-900 shadow-md res-text-sm">
-      <div className="flex items-center">
-        <Image
-          src={profilePicture || `data:image/png;base64,${imageData}`}
-          alt={name}
-          width={48}
-          height={48}
-          className="mr-4 rounded-full"
-        />
-        <div>
-          <p className="font-bold">{name}</p>
-          <p className="text-gray-500">Member since {memberSince}</p>
-          <div className="mt-2 flex items-center text-gray-500">
-            <div className="mr-4 flex items-center">
-              {reviewedArticles != 0 && (
-                <>
-                  <CheckCircle size={16} className="mr-1" />
-                  <p>{reviewedArticles} Articles Reviewed</p>
-                </>
-              )}
-            </div>
+    <div className="mb-2 flex items-center justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-4 text-text-primary res-text-sm">
+      <div className="flex flex-col items-start">
+        <div className="flex items-center">
+          <Image
+            src={profilePicture || `data:image/png;base64,${imageData}`}
+            alt={name}
+            width={42}
+            height={42}
+            className="mr-4 aspect-square shrink-0 rounded-full"
+          />
+          <div className="flex flex-col">
+            <p className="font-bold text-text-primary">{name}</p>
+            <p className="text-text-tertiary res-text-xs">Member since {memberSince}</p>
+          </div>
+        </div>
+        <div className="mt-4 flex gap-4 text-text-secondary res-text-xs">
+          {reviewedArticles != 0 && (
             <div className="flex items-center">
-              <FileText size={16} className="mr-1" />
-              <p>{submittedArticles} Articles Submitted</p>
+              <CheckCircle size={16} className="mr-1" />
+              <p>{reviewedArticles} Articles Reviewed</p>
             </div>
+          )}
+          <div className="flex items-center">
+            <FileText size={16} className="mr-1" />
+            <p>{submittedArticles} Articles Submitted</p>
           </div>
         </div>
       </div>
@@ -99,48 +100,47 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
         <div className="flex space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="rounded-md bg-green-500 px-4 py-2 text-white hover:bg-green-600">
-                {isPending ? 'Promoting...' : 'Promote'}
-              </button>
+              <Button disabled={isPending} variant="default">
+                <ButtonTitle>Promote</ButtonTitle>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={() => handleAction(Action.PromoteModerator)}
+                onClick={() => !isPending && handleAction(Action.PromoteModerator)}
                 className="cursor-pointer"
               >
                 Moderator
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleAction(Action.PromoteReviewer)}
+                onClick={() => !isPending && handleAction(Action.PromoteReviewer)}
                 className="cursor-pointer"
               >
                 Reviewer
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <button
-            className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
-            onClick={() => handleAction(Action.Remove)}
-          >
-            {isPending ? 'Removing...' : 'Remove'}
-          </button>
+          <Button disabled={isPending} variant="danger" onClick={() => handleAction(Action.Remove)}>
+            <ButtonTitle>Remove</ButtonTitle>
+          </Button>
         </div>
       )}
       {activeTab === 'Moderators' && (
-        <button
-          className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+        <Button
+          loading={isPending}
+          variant="gray"
           onClick={() => handleAction(Action.DemoteModerator)}
         >
-          {isPending ? 'Demoting...' : 'Demote'}
-        </button>
+          <ButtonTitle>{isPending ? 'Demoting...' : 'Demote'}</ButtonTitle>
+        </Button>
       )}
       {activeTab === 'Reviewers' && (
-        <button
-          className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+        <Button
+          loading={isPending}
+          variant="gray"
           onClick={() => handleAction(Action.DemoteReviewer)}
         >
-          {isPending ? 'Demoting...' : 'Demote'}
-        </button>
+          <ButtonTitle>{isPending ? 'Demoting...' : 'Demote'}</ButtonTitle>
+        </Button>
       )}
       {/* {activeTab === 'Admins' && (
         <button
