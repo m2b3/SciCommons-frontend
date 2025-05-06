@@ -57,37 +57,37 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 6: Transfer docker-compose.prod.yml to the server
-      - name: Transfer docker-compose.prod.yml to SERVER
+      # Step 6: Transfer docker-compose.alphatest.yml to the server
+      - name: Transfer docker-compose.alphatest.yml to SERVER
         run: |
-          scp -i ~/.ssh/id_rsa docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.prod.yml
+          scp -i ~/.ssh/id_rsa docker-compose.alphatest.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.alphatest.yml
 
       # Step 7: Deploy Docker image to the SERVER via SSH
       - name: Deploy to SERVER
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             echo "Pulling the latest image..."
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:alphatest
 
             cd deployment/
 
-            # Create or clear the .env.prod file
-            > .env.prod
+            # Create or clear the .env.alphatest file
+            > .env.alphatest
 
             # Append environment variables one by one
-            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env.prod
-            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env.prod
+            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_ALPHA_TEST }}" >> .env.alphatest
+            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env.alphatest
 
             # Ensure the environment variables are written before proceeding
-            echo ".env.prod file created with environment variables."
+            echo ".env.alphatest file created with environment variables."
 
             # Stop the current containers
             echo "Stopping the current containers..."
-            docker compose -f docker-compose.prod.yml down || true
+            docker compose -f docker-compose.alphatest.yml down || true
 
             # Start the containers using Docker Compose
             echo "Starting containers using Docker Compose..."
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.alphatest.yml up -d --build
 
             echo "Cleaning up old images..."
             docker image prune -f

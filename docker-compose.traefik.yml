@@ -1,0 +1,87 @@
+services:
+  traefik:
+    image: traefik:latest
+    # Specifies the image to use for Traefik, using the latest version from the Docker Hub.
+
+    container_name: traefik
+    # Names the container 'traefik' for easier identification.
+
+    restart: unless-stopped
+    # Ensures the container restarts automatically unless it is explicitly stopped.
+
+    security_opt:
+      - no-new-privileges:true
+      # Enforces no privilege escalation for better security.
+
+    networks:
+      - docker_network
+      # Specifies that Traefik will be connected to the 'docker_network' network.
+
+    ports:
+      - 80:80
+      # Maps the container's port 80 (HTTP) to port 80 on the host machine.
+
+      - 443:443
+      # Maps the container's port 443 (HTTPS) to port 443 on the host machine.
+
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      # Sets the environment variable for the Cloudflare DNS API token, which is required for dynamic DNS and SSL management.
+
+      # If you choose to use an API Key instead of a Token, specify your email as well
+      # - CF_API_EMAIL=user@example.com
+      # Optionally, you can use Cloudflare's API key and provide your email address for authentication.
+
+      # - CF_API_KEY=YOUR_API_KEY
+      # Optionally, you can use the Cloudflare API key instead of a token for authentication.
+
+    env_file:
+      - .env.traefik
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # Mounts the host machine's time configuration into the container, ensuring the container's time is synced with the host's.
+
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mounts the Docker socket file to allow Traefik to interact with Docker and automatically detect running containers.
+
+      - /home/ubuntu/traefik/traefik.yml:/traefik.yml:ro
+      # Mounts the `traefik.yml` file from the host machine into the container, which contains Traefik's configuration.
+
+      - /home/ubuntu/traefik/acme.json:/acme.json
+      # Mounts the `acme.json` file (used for storing SSL certificates) into the container for certificate management.
+
+    labels:
+      - 'traefik.enable=true'
+      # Enables Traefik for this container, allowing it to manage traffic for the container.
+
+      - 'traefik.http.routers.traefik.entrypoints=http'
+      # Defines the HTTP entry point for the Traefik router.
+
+      - 'traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https'
+      # Redirects HTTP traffic to HTTPS using middleware for security.
+
+      - 'traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https'
+      # Adds a custom header to the forwarded request, indicating that the request uses HTTPS.
+
+      - 'traefik.http.routers.traefik.middlewares=traefik-https-redirect'
+      # Applies the HTTPS redirection middleware to the Traefik router.
+
+      - 'traefik.http.routers.traefik-secure.entrypoints=https'
+      # Defines the HTTPS entry point for the Traefik router.
+
+      - 'traefik.http.routers.traefik-secure.tls=true'
+      # Enables TLS (HTTPS) for secure communication.
+
+      - 'traefik.http.routers.traefik-secure.tls.certresolver=cloudflare'
+      # Uses Cloudflare as the certificate resolver to handle SSL certificate generation and management.
+
+      - 'traefik.http.routers.traefik-secure.tls.domains[0].main=scicommons.org'
+      # Specifies the main domain for which the SSL certificate will be generated (scicommons.org).
+
+      - 'traefik.http.routers.traefik-secure.service=api@internal'
+      # Uses the internal Traefik API service to monitor and manage the router.
+
+networks:
+  docker_network:
+    driver: bridge

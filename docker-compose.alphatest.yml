@@ -1,0 +1,30 @@
+services:
+  scicommons-alpha-test:
+    container_name: scicommons-alpha-test
+    image: ghcr.io/m2b3/scicommons-frontend:alphatest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.scicommons-alpha-test.entrypoints=http'
+      - 'traefik.http.routers.scicommons-alpha-test.rule=Host(`alphatest.scicommons.org`)'
+      - 'traefik.http.middlewares.scicommons-alpha-test-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.scicommons-alpha-test.middlewares=scicommons-alpha-test-https-redirect'
+      - 'traefik.http.routers.scicommons-alpha-test-secure.entrypoints=https'
+      - 'traefik.http.routers.scicommons-alpha-test-secure.rule=Host(`alphatest.scicommons.org`)'
+      - 'traefik.http.routers.scicommons-alpha-test-secure.tls=true'
+      - 'traefik.http.routers.scicommons-alpha-test-secure.service=scicommons-alpha-test'
+      - 'traefik.http.services.scicommons-alpha-test.loadbalancer.server.port=3000'
+      - 'traefik.docker.network=proxy'
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - docker_network
+    env_file:
+      - .env.alphatest
+
+networks:
+  docker_network:
+    driver: bridge
