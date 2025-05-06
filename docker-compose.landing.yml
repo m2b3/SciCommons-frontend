@@ -1,0 +1,23 @@
+services:
+  landing:
+    container_name: scicommons-landing
+    image: ghcr.io/m2b3/scicommons-landing:latest
+    restart: unless-stopped
+    networks:
+      - docker_network
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.landing.entrypoints=http'
+      - 'traefik.http.routers.landing.rule=Host(`scicommons.org`)'
+      - 'traefik.http.middlewares.landing-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.landing.middlewares=landing-https-redirect'
+      - 'traefik.http.routers.landing-secure.entrypoints=https'
+      - 'traefik.http.routers.landing-secure.rule=Host(`scicommons.org`)'
+      - 'traefik.http.routers.landing-secure.tls=true'
+      - 'traefik.http.routers.landing-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.landing-secure.service=landing'
+      - 'traefik.http.services.landing.loadbalancer.server.port=80'
+
+networks:
+  docker_network:
+    external: true
