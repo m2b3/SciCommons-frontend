@@ -1,7 +1,7 @@
 services:
   landing:
     container_name: scicommons-landing
-    image: ghcr.io/m2b3/scicommons-landing:latest
+    image: ghcr.io/m2b3/scicommons-frontend:landing-page
     restart: unless-stopped
     networks:
       - docker_network
