@@ -47,7 +47,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+            NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_ALPHA_TEST }}
 
       # Step 5: Setup SSH keys and known_hosts
       - name: Setup SSH
@@ -87,7 +87,7 @@ jobs:
 
             # Start the containers using Docker Compose
             echo "Starting containers using Docker Compose..."
-            docker compose -f docker-compose.alphatest.yml up -d --build
+            docker compose -f docker-compose.alphatest.yml --env-file .env.alphatest up -d --build
 
             echo "Cleaning up old images..."
             docker image prune -f

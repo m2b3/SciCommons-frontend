@@ -87,7 +87,7 @@ jobs:
 
             # Start the containers using Docker Compose
             echo "Starting containers using Docker Compose..."
-            docker compose -f docker-compose.staging.yml up -d --build
+            docker compose -f docker-compose.staging.yml --env-file .env.test up -d --build
 
             echo "Cleaning up old images..."
             docker image prune -f
