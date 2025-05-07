@@ -1,0 +1,62 @@
+name: Deploy Traefik to Production
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main # Runs this workflow on every push to the 'main' branch.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup SSH keys and known_hosts
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # Step 3: Transfer docker-compose.traefik.yml to the server
+      - name: Transfer docker-compose.traefik.yml to SERVER
+        run: |
+          scp -i ~/.ssh/id_rsa docker-compose.traefik.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/ubuntu/deployment/docker-compose.traefik.yml
+
+      # Step 4: Deploy Traefik to the SERVER via SSH
+      - name: Deploy to SERVER
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd deployment/
+
+            # Create or clear the .env.traefik file
+            > .env.traefik
+
+            # Append environment variables one by one
+            echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env.traefik
+
+            # Ensure the environment variables are written before proceeding
+            echo ".env.traefik file created with environment variables."
+
+            # Stop the current containers
+            echo "Stopping the current containers..."
+            docker compose -f docker-compose.traefik.yml down || true
+
+            # Start the containers using Docker Compose
+            echo "Starting containers using Docker Compose..."
+            docker compose -f docker-compose.traefik.yml up -d
+
+            echo "Cleaning up old images..."
+            docker image prune -f
+
+            echo "Deployment complete."
+          EOF

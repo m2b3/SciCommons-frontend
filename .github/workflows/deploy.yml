@@ -83,11 +83,11 @@ jobs:
 
             # Stop the current containers
             echo "Stopping the current containers..."
-            docker compose down || true
+            docker compose -f docker-compose.prod.yml down || true
 
             # Start the containers using Docker Compose
             echo "Starting containers using Docker Compose..."
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
             echo "Cleaning up old images..."
             docker image prune -f
