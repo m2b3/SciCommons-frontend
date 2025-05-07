@@ -1,4 +1,4 @@
-name: Deploy Frontend to Arbutus Cloud Instance
+name: Deploy Alpha Test Frontend to Arbutus Cloud Instance
 
 on:
   workflow_dispatch:
