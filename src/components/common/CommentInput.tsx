@@ -78,7 +78,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
           })}
           placeholder={placeholder}
           className={cn(
-            'block w-full rounded-md px-3 py-2 text-text-primary shadow-sm ring-1 ring-common-contrast res-text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green',
+            'block w-full rounded-md bg-common-background px-3 py-2 text-text-primary shadow-sm ring-1 ring-common-contrast res-text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green',
             {
               'border-functional-red': errors.content,
             }
