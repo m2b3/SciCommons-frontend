@@ -1,19 +1,22 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { Home, Newspaper, NotebookPen, Plus, Users } from 'lucide-react';
+import { BookOpenText, Home, Newspaper, NotebookPen, Plus, Users } from 'lucide-react';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+
+// Dynamically import Drawer components
+const Drawer = lazy(() => import('../ui/drawer').then((mod) => ({ default: mod.Drawer })));
+const DrawerContent = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerContent }))
+);
+const DrawerTrigger = lazy(() =>
+  import('../ui/drawer').then((mod) => ({ default: mod.DrawerTrigger }))
+);
 
 const BottomBar = () => {
   const router = useRouter();
@@ -74,29 +77,34 @@ const BottomBar = () => {
 export default BottomBar;
 
 const CreateDropdown: React.FC = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   return (
-    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
-      <DropdownMenuTrigger asChild>
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger>
         <div className="rounded-full bg-common-minimal p-2">
           <Plus size={24} />
         </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>
-          <Link href="/submitarticle">Submit Article</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/createcommunity" className="text-gray-500">
-            Create Community
+      </DrawerTrigger>
+      <DrawerContent className="flex flex-col items-center p-0 pt-4" showThumb={true}>
+        <div className="flex w-full flex-col px-4 pb-4 text-sm font-semibold text-text-secondary">
+          <Link
+            href="/submitarticle"
+            className="flex items-center gap-2 border-b border-common-minimal p-4 hover:bg-common-minimal/50 hover:text-text-primary"
+            onClick={() => setOpen(false)}
+          >
+            <BookOpenText size={18} />
+            <span>Submit Article</span>
           </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/posts/createpost" className="text-gray-500">
-            Create Post
+          <Link
+            href="/createcommunity"
+            className="flex items-center gap-2 p-4 hover:bg-common-minimal/50 hover:text-text-primary"
+            onClick={() => setOpen(false)}
+          >
+            <Users size={18} />
+            <span>Create Community</span>
           </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
