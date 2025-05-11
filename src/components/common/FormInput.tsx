@@ -86,12 +86,10 @@ const FormInput = <TFieldValues extends FieldValues>({
           : undefined,
     }),
     className: cn(
-      'mt-1 block w-full px-3 py-2 ring-1 ring-common-contrast rounded-md shadow-sm focus:outline-none focus:ring-functional-green res-text-sm focus:ring-1 placeholder:text-text-tertiary text-text-primary',
+      'mt-1 block w-full px-3 py-2 ring-1 ring-common-contrast rounded-md shadow-sm focus:outline-none focus:ring-functional-green res-text-sm focus:ring-1 placeholder:text-text-tertiary text-text-primary bg-common-background',
       inputClassName,
       error && !readOnly && !isSubmitting ? 'border-functional-red' : 'border-common-minimal',
-      readOnly
-        ? 'bg-common-cardBackground md:bg-common-minimal focus:ring-common-contrast'
-        : 'bg-common-background',
+      readOnly ? 'bg-common-cardBackground md:bg-common-minimal focus:ring-common-contrast' : '',
       isPasswordField ? 'pr-10' : '' // Add padding on the right for the eye icon only for password fields
     ),
   };
