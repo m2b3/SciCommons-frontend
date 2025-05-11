@@ -9,6 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import {
   Bell,
+  BookOpenText,
   DownloadIcon,
   LogOut,
   MoonIcon,
@@ -17,6 +18,7 @@ import {
   Plus,
   SunMediumIcon,
   User,
+  Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -129,7 +131,10 @@ const CreateDropdown: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-                <Link href="/submitarticle">Submit Article</Link>
+                <Link href="/submitarticle" className="flex items-center gap-2">
+                  <BookOpenText size={16} />
+                  <span>Submit Article</span>
+                </Link>
               </DropdownMenuItem>
             </TooltipTrigger>
             <TooltipContent side="left" sideOffset={8}>
@@ -140,7 +145,10 @@ const CreateDropdown: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-                <Link href="/createcommunity">Create Community</Link>
+                <Link href="/createcommunity" className="flex items-center gap-2">
+                  <Users size={16} />
+                  <span>Create Community</span>
+                </Link>
               </DropdownMenuItem>
             </TooltipTrigger>
             <TooltipContent side="left" sideOffset={8}>
@@ -148,7 +156,7 @@ const CreateDropdown: React.FC = () => {
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
                 <Link href="/posts/createpost">Create Post</Link>
@@ -157,7 +165,7 @@ const CreateDropdown: React.FC = () => {
             <TooltipContent side="left" sideOffset={8}>
               Share your thoughts with a post
             </TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
         </DropdownMenuContent>
       </DropdownMenu>
     </TooltipProvider>
