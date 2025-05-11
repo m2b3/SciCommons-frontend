@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { LucideIcon } from 'lucide-react';
 import {
   Award,
-  Book,
   Bookmark,
   FileText,
   MessageCircle,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import {
   useUsersApiGetMyArticles,
   useUsersApiGetMyBookmarks,
@@ -24,6 +24,7 @@ import {
   useUsersApiGetUserStats,
 } from '@/api/users/users';
 import { ErrorMessage } from '@/constants';
+import { FIVE_MINUTES_IN_MS } from '@/constants/common.constants';
 import useIdenticon from '@/hooks/useIdenticons';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -61,12 +62,12 @@ interface UserData {
     role: string;
     memberCount: number;
   }>;
-  posts: Array<{
-    icon: LucideIcon;
-    title: string;
-    subtitle: string;
-    iconColor: string;
-  }>;
+  // posts: Array<{
+  //   icon: LucideIcon;
+  //   title: string;
+  //   subtitle: string;
+  //   iconColor: string;
+  // }>;
   favorites: Array<{
     icon: LucideIcon;
     title: string;
@@ -90,32 +91,61 @@ const ContributionsPage: React.FC = () => {
 
   const { data, isPending, error } = useUsersApiGetUserStats({
     request: requestConfig,
+    query: {
+      staleTime: FIVE_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+      queryKey: ['user-stats'],
+    },
   });
 
   const { data: articlesData, error: articlesDataError } = useUsersApiGetMyArticles({
     request: requestConfig,
+    query: {
+      staleTime: FIVE_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+      queryKey: ['my-articles'],
+    },
   });
 
   const { data: communitiesData, error: communitiesDataError } = useUsersApiGetMyCommunities({
     request: requestConfig,
+    query: {
+      staleTime: FIVE_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+      queryKey: ['my-communities'],
+    },
   });
 
   const { data: postsData, error: postsDataError } = useUsersApiGetMyPosts({
     request: requestConfig,
+    query: {
+      staleTime: FIVE_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+      queryKey: ['my-posts'],
+    },
   });
 
   const { data: favoritesData, error: favoritesDataError } = useUsersApiGetMyFavorites({
     request: requestConfig,
+    query: {
+      staleTime: FIVE_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+      queryKey: ['my-favorites'],
+    },
   });
 
   const { data: bookmarksData, error: bookmarksDataError } = useUsersApiGetMyBookmarks({
     request: requestConfig,
+    query: {
+      staleTime: FIVE_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+      queryKey: ['my-bookmarks'],
+    },
   });
 
   const [activeTab, setActiveTab] = useState<
     'articles' | 'communities' | 'favorites' | 'bookmarks'
   >('articles');
-  const [isTabsOpen, setIsTabsOpen] = useState(false);
 
   const userData: UserData | undefined = data && {
     name: data.data.username,
@@ -138,12 +168,12 @@ const ContributionsPage: React.FC = () => {
         count: data.data.communities_joined,
         description: 'Member or creator',
       },
-      {
-        icon: Book,
-        title: 'Posts',
-        count: data.data.contributed_posts,
-        description: 'Created or commented',
-      },
+      // {
+      //   icon: Book,
+      //   title: 'Posts',
+      //   count: data.data.contributed_posts,
+      //   description: 'Created or commented',
+      // },
       {
         icon: Award,
         title: 'Awards',
@@ -176,15 +206,15 @@ const ContributionsPage: React.FC = () => {
         slug: community.name,
         memberCount: community.members_count,
       })) || [],
-    posts:
-      postsData?.data.map((post) => ({
-        type: 'Post',
-        icon: post.action === 'Created' ? Book : MessageCircle,
-        title: post.title,
-        slug: post.id,
-        subtitle: `${post.action} on ${post.created_at} · ${post.likes_count} likes`,
-        iconColor: 'bg-indigo-100 text-indigo-600',
-      })) || [],
+    // posts:
+    //   postsData?.data.map((post) => ({
+    //     type: 'Post',
+    //     icon: post.action === 'Created' ? Book : MessageCircle,
+    //     title: post.title,
+    //     slug: post.id,
+    //     subtitle: `${post.action} on ${post.created_at} · ${post.likes_count} likes`,
+    //     iconColor: 'bg-indigo-100 text-indigo-600',
+    //   })) || [],
     favorites:
       favoritesData?.data.map((favorite) => ({
         icon: Star,
@@ -252,7 +282,7 @@ const ContributionsPage: React.FC = () => {
         <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <ProfileHeaderSkeleton />
           <ReputationBadgeSkeleton />
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <ContributionCardSkeleton key={index} />
             ))}
@@ -343,4 +373,4 @@ const ContributionsPage: React.FC = () => {
   );
 };
 
-export default ContributionsPage;
+export default withAuthRedirect(ContributionsPage, { requireAuth: true });

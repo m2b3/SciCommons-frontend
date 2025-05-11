@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { BlockSkeleton } from '@/components/common/Skeleton';
+import { Skeleton } from '@/components/common/Skeleton';
+
 interface ContributionCardProps {
   icon: React.FC;
   title: string;
@@ -30,14 +33,12 @@ const ContributionCard: React.FC<ContributionCardProps> = ({
 export default ContributionCard;
 
 export const ContributionCardSkeleton: React.FC = () => (
-  <div className="flex animate-pulse items-start space-x-3 rounded-lg bg-common-cardBackground p-4 shadow-md">
-    <div className="rounded-full bg-blue-100 p-2">
-      <div className="h-5 w-5 rounded-full bg-gray-300"></div>
+  <Skeleton className="flex w-full flex-row items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground">
+    <BlockSkeleton className="h-5 w-5 shrink-0 overflow-x-hidden rounded-full" />
+    <div className="flex flex-col gap-2">
+      <BlockSkeleton className="h-4 w-28" />
+      <BlockSkeleton className="h-6 w-20" />
+      <BlockSkeleton className="h-4 w-32" />
     </div>
-    <div>
-      <div className="h-4 w-32 rounded bg-gray-300"></div>
-      <div className="mt-1 h-6 w-20 rounded bg-gray-300"></div>
-      <div className="mt-1 h-4 w-40 rounded bg-gray-300"></div>
-    </div>
-  </div>
+  </Skeleton>
 );
