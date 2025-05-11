@@ -12,7 +12,7 @@ import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
-import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
+import { Skeleton, TextSkeleton } from '../common/Skeleton';
 
 interface CommunityCardProps {
   community: CommunityOut;
@@ -133,12 +133,12 @@ export default CommunityCard;
 export const CommunityCardSkeleton: FC = () => {
   return (
     <Skeleton className="flex rounded-xl border border-common-contrast bg-common-cardBackground">
-      <BlockSkeleton className="aspect-square size-10 rounded-full" />
-      <div className="ml-4 flex-1">
-        <TextSkeleton className="w-20" />
-        <TextSkeleton className="mt-2 w-32" />
-        <BlockSkeleton className="mt-2" />
-        <div className="mt-2 flex gap-8">
+      <div className="flex-1">
+        <TextSkeleton className="h-6 w-4/5" />
+        <TextSkeleton className="mt-4 w-full" />
+        <TextSkeleton className="mt-2 w-full" />
+        <TextSkeleton className="mt-2 w-3/5" />
+        <div className="mt-4 flex gap-8">
           <TextSkeleton className="w-24" />
           <TextSkeleton className="w-32" />
         </div>

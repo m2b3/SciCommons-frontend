@@ -5,7 +5,14 @@ import React, { lazy, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { BookOpenText, Home, Newspaper, NotebookPen, Plus, Users } from 'lucide-react';
+import {
+  BookOpenText,
+  Home,
+  Newspaper,
+  NotebookTabs,
+  Plus,
+  Users,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -24,11 +31,12 @@ const BottomBar = () => {
   const [activeTab, setActiveTab] = useState('');
 
   const navLinks = [
-    { name: 'Home', route: '/', icon: <Home size={18} /> },
-    { name: 'Communities', route: '/communities', icon: <Users size={18} /> },
+    { name: 'Home', route: '/', icon: <Home size={20} /> },
+    { name: 'Communities', route: '/communities', icon: <Users size={20} /> },
     { name: '', route: '', icon: <CreateDropdown /> },
-    { name: 'Articles', route: '/articles', icon: <Newspaper size={18} /> },
-    { name: 'Posts', route: '/posts', icon: <NotebookPen size={18} /> },
+    { name: 'Articles', route: '/articles', icon: <Newspaper size={20} /> },
+    { name: 'Contributions', route: '/mycontributions', icon: <NotebookTabs size={20} /> },
+    // { name: 'Posts', route: '/posts', icon: <NotebookPen size={18} /> },
   ];
 
   const hideBottomBarPaths = ['login', 'register', 'forgotpassword', 'resetpassword'];
@@ -43,6 +51,9 @@ const BottomBar = () => {
         break;
       case pathname?.includes('communities') || pathname?.includes('community'):
         setActiveTab('Communities');
+        break;
+      case pathname?.includes('mycontributions') || pathname?.includes('mycontribution'):
+        setActiveTab('Contributions');
         break;
       default:
         setActiveTab('Home');
@@ -67,7 +78,7 @@ const BottomBar = () => {
           onClick={() => link.name && router.push(link.route)}
         >
           {link.icon}
-          <p className="mt-1 text-xs">{link.name}</p>
+          <span className="mt-1 select-none text-[10px]">{link.name}</span>
         </div>
       ))}
     </main>
@@ -89,7 +100,7 @@ const CreateDropdown: React.FC = () => {
         <div className="flex w-full flex-col px-4 pb-4 text-sm font-semibold text-text-secondary">
           <Link
             href="/submitarticle"
-            className="flex items-center gap-2 border-b border-common-minimal p-4 hover:bg-common-minimal/50 hover:text-text-primary"
+            className="flex select-none items-center gap-2 border-b border-common-minimal p-4 hover:bg-common-minimal/50 hover:text-text-primary"
             onClick={() => setOpen(false)}
           >
             <BookOpenText size={18} />
@@ -97,7 +108,7 @@ const CreateDropdown: React.FC = () => {
           </Link>
           <Link
             href="/createcommunity"
-            className="flex items-center gap-2 p-4 hover:bg-common-minimal/50 hover:text-text-primary"
+            className="flex select-none items-center gap-2 p-4 hover:bg-common-minimal/50 hover:text-text-primary"
             onClick={() => setOpen(false)}
           >
             <Users size={18} />

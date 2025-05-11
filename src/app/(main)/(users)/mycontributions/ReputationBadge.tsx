@@ -2,6 +2,9 @@ import React from 'react';
 
 import Image from 'next/image';
 
+import { BlockSkeleton } from '@/components/common/Skeleton';
+import { Skeleton } from '@/components/common/Skeleton';
+
 interface ReputationBadgeProps {
   level: string;
   score: number;
@@ -30,14 +33,14 @@ const ReputationBadge: React.FC<ReputationBadgeProps> = ({ level, score }) => (
 export default ReputationBadge;
 
 export const ReputationBadgeSkeleton: React.FC = () => (
-  <div className="flex animate-pulse items-center justify-between rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 p-4 text-white">
+  <Skeleton className="mt-6 flex w-full flex-row items-center justify-between overflow-x-hidden rounded-xl border border-common-contrast bg-gradient-to-r from-purple-400/25 to-pink-500/25">
     <div>
-      <div className="h-4 w-32 rounded bg-gray-300"></div>
-      <div className="mt-1 h-6 w-24 rounded bg-gray-300"></div>
+      <BlockSkeleton className="h-4 w-32 bg-white/30" />
+      <BlockSkeleton className="mt-1 h-6 w-24 bg-white/30" />
     </div>
-    <div className="text-right">
-      <div className="h-4 w-20 rounded bg-gray-300"></div>
-      <div className="mt-1 h-8 w-16 rounded bg-gray-300"></div>
+    <div>
+      <BlockSkeleton className="h-4 w-20 bg-white/30" />
+      <BlockSkeleton className="mt-1 h-8 w-16 bg-white/30" />
     </div>
-  </div>
+  </Skeleton>
 );

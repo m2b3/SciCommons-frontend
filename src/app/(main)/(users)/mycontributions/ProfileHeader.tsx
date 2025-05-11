@@ -4,6 +4,8 @@ import Image from 'next/image';
 
 import { Link as LinkIcon, MapPin } from 'lucide-react';
 
+import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
+
 interface ProfileHeaderProps {
   name: string;
   image: string;
@@ -49,18 +51,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, image, bio, locatio
 export default ProfileHeader;
 
 export const ProfileHeaderSkeleton: React.FC = () => (
-  <div className="mb-8 flex animate-pulse flex-col items-center space-y-4 rounded-lg bg-white p-6 shadow-md sm:flex-row sm:items-start sm:space-x-6 sm:space-y-0">
-    <div className="flex-shrink-0">
-      <div className="h-32 w-32 rounded-full bg-gray-300"></div>
+  <Skeleton className="flex w-full flex-row items-center gap-4 overflow-x-hidden rounded-xl border border-common-contrast bg-common-cardBackground">
+    <BlockSkeleton className="h-10 w-10 shrink-0 rounded-full" />
+    <div className="flex flex-col gap-2">
+      <BlockSkeleton className="h-6 w-32" />
+      <BlockSkeleton className="h-4 w-64" />
+      <BlockSkeleton className="h-4 w-56" />
     </div>
-    <div className="text-center sm:text-left">
-      <div className="h-6 w-32 rounded bg-gray-300"></div>
-      <div className="mt-2 h-4 w-64 rounded bg-gray-300"></div>
-      <div className="mt-2 h-4 w-56 rounded bg-gray-300"></div>
-      <div className="mt-4 flex flex-wrap justify-center gap-4 sm:justify-start">
-        <div className="h-4 w-24 rounded bg-gray-300"></div>
-        <div className="h-4 w-24 rounded bg-gray-300"></div>
-      </div>
-    </div>
-  </div>
+  </Skeleton>
 );
