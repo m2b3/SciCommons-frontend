@@ -197,7 +197,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   id="version-select"
                   value={selectedVersion}
                   onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
-                  className="rounded border border-common-minimal p-1"
+                  className="rounded border border-common-minimal bg-common-background p-1"
                 >
                   <option value={review.versions.length}>Latest</option>
                   {review.versions
