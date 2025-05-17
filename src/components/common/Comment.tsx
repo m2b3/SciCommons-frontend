@@ -25,8 +25,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
+import ParsedMarkdownHTML from './ParsedMarkdownHTML';
 import RenderComments from './RenderComments';
-import TruncateText from './TruncateText';
 
 export interface UserData {
   id: number;
@@ -216,7 +216,8 @@ const Comment: React.FC<CommentProps> = ({
           </div>
         ) : (
           <div className="mt-2 pl-2">
-            <TruncateText text={content} maxLines={4} />
+            {/* <TruncateText text={content} maxLines={4} /> */}
+            <ParsedMarkdownHTML markdown={content} isShrinked={true} />
           </div>
         )}
         {!is_deleted && (

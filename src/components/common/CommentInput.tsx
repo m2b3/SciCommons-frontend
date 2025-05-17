@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Send } from 'lucide-react';
+import { Eye, EyeOff, Send } from 'lucide-react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Ratings } from '@/components/ui/ratings';
@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
 import CustomTooltip from './CustomTooltip';
+import ParsedMarkdownHTML from './ParsedMarkdownHTML';
 import { BlockSkeleton, Skeleton } from './Skeleton';
 
 interface CommentInputProps {
@@ -25,6 +26,7 @@ interface CommentInputProps {
   isReply?: boolean;
   isAuthor?: boolean;
   isPending?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 interface FormInputs {
@@ -44,6 +46,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
   isReply = false,
   isAuthor = false,
   isPending = false,
+  onChange,
 }) => {
   const {
     register,
@@ -55,6 +58,9 @@ const CommentInput: React.FC<CommentInputProps> = ({
   } = useForm<FormInputs>({
     defaultValues: { content: initialContent, rating: initialRating },
   });
+
+  const [markdown, setMarkdown] = useState<string>(initialContent);
+  const [isMarkdownPreview, setIsMarkdownPreview] = useState<boolean>(false);
 
   const onSubmitForm: SubmitHandler<FormInputs> = (data) => {
     onSubmit(data.content, data.rating);
@@ -69,22 +75,46 @@ const CommentInput: React.FC<CommentInputProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-2">
-      <div>
-        <textarea
-          {...register('content', {
-            required: 'Content is required',
-            minLength: { value: 3, message: 'Content must be at least 3 characters long' },
-            maxLength: { value: 500, message: 'Content must not exceed 500 characters' },
+      <div className="relative">
+        <button
+          onClick={() => {
+            setIsMarkdownPreview(!isMarkdownPreview);
+          }}
+          className="absolute -top-7 right-2 rounded-md p-1 text-text-tertiary hover:bg-common-background hover:text-text-secondary"
+          type="button"
+        >
+          {isMarkdownPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+        {isMarkdownPreview && (
+          <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>
+            <ParsedMarkdownHTML markdown={markdown} />
+          </div>
+        )}
+        <div
+          className={cn({
+            'h-0 overflow-hidden opacity-0': isMarkdownPreview,
           })}
-          placeholder={placeholder}
-          className={cn(
-            'block w-full rounded-md bg-common-background px-3 py-2 text-text-primary shadow-sm ring-1 ring-common-contrast res-text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green',
-            {
-              'border-functional-red': errors.content,
-            }
-          )}
-          rows={3}
-        />
+        >
+          <textarea
+            {...register('content', {
+              required: 'Content is required',
+              minLength: { value: 3, message: 'Content must be at least 3 characters long' },
+              maxLength: { value: 500, message: 'Content must not exceed 500 characters' },
+            })}
+            placeholder={placeholder}
+            className={cn(
+              'block w-full rounded-md bg-common-background px-3 py-2 text-text-primary shadow-sm ring-1 ring-common-contrast res-text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-functional-green',
+              {
+                'border-functional-red': errors.content,
+              }
+            )}
+            rows={3}
+            onChange={(e) => {
+              // onChange?.(e);
+              setMarkdown(e.target.value);
+            }}
+          />
+        </div>
         {errors.content && (
           <p className="mt-1 text-sm text-functional-red">{errors.content.message}</p>
         )}
