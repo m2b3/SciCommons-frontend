@@ -60,11 +60,17 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
               {/* {!data.data.is_submitter && (
                 <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
               )} */}
+              <span className="mb-2 border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
+                Add your review
+              </span>
               <ReviewForm
                 articleId={Number(data.data.id)}
                 refetch={reviewsRefetch}
                 is_submitter={data.data.is_submitter}
               />
+              <span className="border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
+                Reviews
+              </span>
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
               {reviewsData?.data.items.length === 0 && (
                 <EmptyState

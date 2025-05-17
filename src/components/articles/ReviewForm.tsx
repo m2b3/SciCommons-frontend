@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { MDXEditorMethods } from '@mdxeditor/editor';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -10,7 +11,7 @@ import {
 } from '@/api/reviews/reviews';
 import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
-import CommentEditor from '@/components/richtexteditor/CommentEditor';
+import { ForwardRefEditor } from '@/components/common/MarkdownEditor/ForwardRefEditor';
 import { Ratings } from '@/components/ui/ratings';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -55,6 +56,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const [action, setAction] = React.useState<ActionType>('create');
+  const reviewEditorRef = React.useRef<MDXEditorMethods>(null);
+  const markdownRef = React.useRef<string>(content || '');
+  const [markdown, setMarkdown] = React.useState<string>(content || '');
 
   const {
     control,
@@ -88,6 +92,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     const reviewData = {
       ...data,
       article_id: articleId,
+      content: markdownRef.current,
     };
 
     if (action === 'edit' && reviewId) {
@@ -124,6 +129,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         {
           onSuccess: () => {
             reset();
+            markdownRef.current = '';
+            setMarkdown('');
             refetch && refetch();
             toast.success('Review submitted successfully');
           },
@@ -141,89 +148,123 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       {editPending ? (
         <ReviewCardSkeleton />
       ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mb-4 flex flex-col gap-4 rounded-xl res-text-sm sm:bg-common-cardBackground sm:p-4"
-        >
-          <div className="">
-            <LabeledTooltip label="Rate this article" info="Rate this article" />
-            <Controller
-              name="rating"
+        <>
+          <form onSubmit={handleSubmit(onSubmit)} className="mb-4 flex flex-col gap-4 res-text-sm">
+            <div className="">
+              <LabeledTooltip label="Rate this article" info="Rate this article" />
+              <Controller
+                name="rating"
+                control={control}
+                // rules={{ validate: (value) => (value > 0 ? true : 'A valid rating must be given') }}
+                rules={{
+                  validate: (value) => {
+                    if (!is_submitter) {
+                      return value > 0 ? true : 'A valid rating must be given';
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <>
+                    <Ratings
+                      rating={field.value}
+                      onRatingChange={(newRating) => setValue('rating', newRating)}
+                      readonly={false}
+                    />
+                    {errors.rating && (
+                      <p className="mt-1 text-functional-red res-text-xs">
+                        {errors.rating.message}
+                      </p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+            <FormInput<FormValues>
+              name="subject"
+              label="Subject"
+              type="text"
+              placeholder="Enter the title of your review"
+              register={register}
+              requiredMessage="Subject is required"
+              minLengthValue={10}
+              minLengthMessage="Title must be at least 10 characters"
+              maxLengthValue={100}
+              maxLengthMessage="Title must not exceed 100 characters"
+              info="Please provide a clear and concise title for your article."
+              errors={errors}
+              labelClassName="text-text-secondary"
+              inputClassName="bg-common-invert text-text-primary ring-common-contrast"
+            />
+            {/* <Controller
+              name="content"
               control={control}
-              // rules={{ validate: (value) => (value > 0 ? true : 'A valid rating must be given') }}
               rules={{
-                validate: (value) => {
-                  if (!is_submitter) {
-                    return value > 0 ? true : 'A valid rating must be given';
-                  }
-                  return true;
-                },
+                required: 'Content is required',
+                minLength: { value: 1, message: 'Add a valid review content' },
               }}
               render={({ field }) => (
-                <>
-                  <Ratings
-                    rating={field.value}
-                    onRatingChange={(newRating) => setValue('rating', newRating)}
-                    readonly={false}
+                <div>
+                  <ForwardRefEditor
+                    markdown={field.value}
+                    ref={reviewEditorRef}
+                    onChange={(markdown) => {
+                      // field.onChange(markdown);
+                      // setMarkdown(markdown);
+                    }}
                   />
-                  {errors.rating && (
-                    <p className="mt-1 text-functional-red res-text-xs">{errors.rating.message}</p>
+                  {errors.content && (
+                    <p className="mt-2 text-sm text-functional-red">{errors.content.message}</p>
                   )}
-                </>
+                </div>
               )}
-            />
-          </div>
-          <FormInput<FormValues>
-            name="subject"
-            label="Subject"
-            type="text"
-            placeholder="Enter the title of your review"
-            register={register}
-            requiredMessage="Subject is required"
-            minLengthValue={10}
-            minLengthMessage="Title must be at least 10 characters"
-            maxLengthValue={100}
-            maxLengthMessage="Title must not exceed 100 characters"
-            info="Please provide a clear and concise title for your article."
-            errors={errors}
-            labelClassName="text-text-secondary"
-            inputClassName="bg-common-invert text-text-primary ring-common-contrast"
-          />
-          <CommentEditor control={control} name="content" />
-          {edit ? (
-            <div className="ml-auto flex gap-2">
-              <Button
-                variant={'blue'}
-                onClick={() => setAction('edit')}
-                loading={editPending}
-                type="submit"
-              >
-                <ButtonTitle>{editPending ? 'Updating...' : 'Update'}</ButtonTitle>
-              </Button>
-              <Button
-                variant={'danger'}
-                onClick={() => setAction('delete')}
-                loading={deletePending}
-                type="submit"
-              >
-                <ButtonTitle>{deletePending ? 'Deleting...' : 'Delete'}</ButtonTitle>
-              </Button>
-              <Button variant={'gray'} onClick={() => setEdit && setEdit(false)} type="button">
-                <ButtonTitle>Cancel</ButtonTitle>
-              </Button>
+            /> */}
+            <div>
+              <ForwardRefEditor
+                markdown={markdown}
+                ref={reviewEditorRef}
+                onChange={(newMarkdown) => {
+                  markdownRef.current = newMarkdown;
+                }}
+              />
+              {errors.content && (
+                <p className="mt-2 text-sm text-functional-red">{errors.content.message}</p>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <Button
-                variant={'blue'}
-                className="res-text-xs"
-                loading={isPending}
-                type="submit"
-                onClick={() => setAction('create')}
-              >
-                {isPending ? 'Submitting...' : 'Submit Review'}
-              </Button>
-              {/* <span className="text-text-tertiary res-text-xs">
+            {edit ? (
+              <div className="ml-auto flex gap-2">
+                <Button
+                  variant={'blue'}
+                  onClick={() => setAction('edit')}
+                  loading={editPending}
+                  type="submit"
+                >
+                  <ButtonTitle>{editPending ? 'Updating...' : 'Update'}</ButtonTitle>
+                </Button>
+                <Button
+                  variant={'danger'}
+                  onClick={() => setAction('delete')}
+                  loading={deletePending}
+                  type="submit"
+                >
+                  <ButtonTitle>{deletePending ? 'Deleting...' : 'Delete'}</ButtonTitle>
+                </Button>
+                <Button variant={'gray'} onClick={() => setEdit && setEdit(false)} type="button">
+                  <ButtonTitle>Cancel</ButtonTitle>
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant={'blue'}
+                  className="res-text-xs"
+                  loading={isPending}
+                  type="submit"
+                  onClick={() => setAction('create')}
+                >
+                  {isPending ? 'Submitting...' : 'Submit Review'}
+                </Button>
+                {/* <span className="text-text-tertiary res-text-xs">
                 By clicking Submit Review, you agree to our{' '}
                 <a href="#" className="text-functional-blue hover:underline">
                   terms of service
@@ -234,9 +275,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 </a>
                 .
               </span> */}
-            </div>
-          )}
-        </form>
+              </div>
+            )}
+          </form>
+        </>
       )}
     </>
   );
