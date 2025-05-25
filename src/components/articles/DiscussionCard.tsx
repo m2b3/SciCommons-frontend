@@ -8,6 +8,7 @@ import { MessageSquare } from 'lucide-react';
 
 import { DiscussionOut } from '@/api/schemas';
 
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import DiscussionComments from './DiscussionComments';
 
@@ -58,8 +59,8 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
       key={discussion.id}
       className="rounded-xl border-common-contrast res-text-sm sm:border sm:bg-common-cardBackground sm:p-4"
     >
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
+      <div className="flex w-full items-start justify-between">
+        <div className="flex w-full flex-col gap-2">
           <div className="flex items-center">
             <Image
               src={
@@ -83,14 +84,23 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex w-full flex-col gap-2">
             <span
               className="line-clamp-2 flex-grow cursor-pointer font-semibold text-text-primary res-text-sm hover:text-functional-blue hover:underline"
               onClick={() => setDisplayComments((prev) => !prev)}
             >
               {discussion.topic}
             </span>
-            <span className="text-text-secondary res-text-xs">{discussion.content}</span>
+            {/* <span className="text-text-secondary res-text-xs">{discussion.content}</span> */}
+            <div className="">
+              <RenderParsedHTML
+                rawContent={discussion.content}
+                isShrinked={true}
+                containerClassName="mb-2"
+                supportMarkdown={true}
+                supportLatex={true}
+              />
+            </div>
           </div>
           <div className="mt-2 flex items-center text-xs text-text-tertiary">
             <button
@@ -125,11 +135,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
           </div>
         </div> */}
       </div>
-      {displayComments && (
-        <div className="mt-4 border-t border-common-contrast pt-4">
-          <DiscussionComments discussionId={Number(discussion.id)} />
-        </div>
-      )}
+      {displayComments && <DiscussionComments discussionId={Number(discussion.id)} />}
     </div>
   );
 };
