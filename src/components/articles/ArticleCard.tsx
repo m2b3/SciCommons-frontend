@@ -7,6 +7,7 @@ import { MessageSquare, Star, User } from 'lucide-react';
 
 import { ArticleOut } from '@/api/schemas';
 
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 
 interface ArticleCardProps {
@@ -26,13 +27,27 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
                 : `/article/${article.slug}`
             }
           >
-            <h2 className="line-clamp-2 text-wrap font-semibold text-text-primary res-text-lg hover:underline">
+            {/* <h2 className="line-clamp-2 text-wrap font-semibold text-text-primary res-text-lg hover:underline">
               {article.title}
-            </h2>
+            </h2> */}
+            <RenderParsedHTML
+              rawContent={article.title}
+              supportLatex={true}
+              supportMarkdown={false}
+              contentClassName="line-clamp-2 text-wrap font-semibold text-text-primary res-text-lg hover:underline"
+              containerClassName="mb-0"
+            />
           </Link>
-          <p className="mt-2 line-clamp-2 overflow-hidden text-ellipsis text-wrap text-text-primary">
+          {/* <p className="mt-2 line-clamp-2 overflow-hidden text-ellipsis text-wrap text-text-primary">
             {article.abstract}
-          </p>
+          </p> */}
+          <RenderParsedHTML
+            rawContent={article.abstract}
+            supportLatex={true}
+            supportMarkdown={false}
+            contentClassName="mt-2 line-clamp-2 text-wrap text-xs text-text-primary"
+            containerClassName="mb-0"
+          />
           <p className="mt-2 line-clamp-2 text-wrap text-xs text-text-secondary">
             Authors: {article.authors.map((author) => author.label).join(', ')}
           </p>

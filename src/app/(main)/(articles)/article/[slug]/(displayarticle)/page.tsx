@@ -8,7 +8,6 @@ import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
-import DisplayFAQs from '@/components/articles/DisplayFAQs';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
@@ -88,10 +87,10 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
           title: 'Discussions',
           content: <DiscussionForum articleId={Number(data.data.id)} />,
         },
-        {
-          title: 'FAQs',
-          content: <DisplayFAQs faqs={data.data.faqs || []} />,
-        },
+        // {
+        //   title: 'FAQs',
+        //   content: <DisplayFAQs faqs={data.data.faqs || []} />,
+        // },
       ]
     : [];
 

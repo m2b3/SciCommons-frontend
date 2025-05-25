@@ -299,36 +299,6 @@ body {
     --scrollbar-track-color: var(--Common-Background);
     --scrollbar-thumb-color: var(--neutral-800);
     --scrollbar-thumb-hover-color: var(--neutral-700);
-
-    /* MDXEditor */
-    /* --accentBase: var(--Functional-Green-Green);
-  --accentBgSubtle: var(--Functional-Green-Greencontrast);
-  --accentBg: var(--Common-Background);
-  --accentBgHover: var(--Common-Minimal);
-  --accentBgActive: var(--Common-Contrast);
-  --accentLine: var(--Functional-Green-Green);
-  --accentBorder: var(--Functional-Green-Green);
-  --accentBorderHover: var(--Text-Tertiary);
-  --accentSolid: var(--Common-Contrast);
-  --accentSolidHover: var(--Common-Minimal);
-  --accentText: var(--Functional-Green-Green);
-  --accentTextContrast: var(--Functional-Green-Greencontrast);
-    
-
-  --baseBase: var(--Functional-Green-Green);
-  --baseBgSubtle: var(--Functional-Green-Greencontrast);
-  --baseBg: var(--Common-Background);
-  --baseBgHover: var(--Common-Minimal);
-  --baseBgActive: var(--Common-Contrast);
-  --baseLine: var(--Functional-Green-Green);
-  --baseBorder: var(--Functional-Green-Green);
-    --baseBorderHover: var(--Text-Tertiary);
-    --baseSolid: var(--Common-Contrast);
-    --baseSolidHover: var(--Common-Minimal);
-    --baseText: var(--Functional-Green-Green);
-    --baseTextContrast: var(--Functional-Green-Greencontrast);
-
-    color: var(--Text-Primary); */
   }
 }
 
@@ -524,52 +494,6 @@ body {
   border-top-right-radius: var(--r);
 }
 
-/* MDXEditor Toolbar Theming */
-/* .mdxeditor-toolbar,
-.mdxeditor-toolbar-content,
-.mdxeditor-toolbar-group,
-.mdxeditor-toolbar-button,
-.mdxeditor-toolbar-select {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border-color: rgb(var(--Common-Contrast)) !important; */
-/* Optional: add border radius for consistency */
-/* border-radius: 0.50rem !important;
-} */
-
-/* Toolbar icons and buttons */
-/* .mdxeditor-toolbar-button svg {
-  color: rgb(var(--Text-Primary)) !important;
-  fill: rgb(var(--Text-Primary)) !important;
-} */
-
-/* Toolbar button hover/focus */
-/* .mdxeditor-toolbar-button:hover,
-.mdxeditor-toolbar-button:focus {
-  background: rgb(var(--Common-Contrast)) !important;
-} */
-
-/* For dark mode */
-/* .dark .mdxeditor-toolbar,
-.dark .mdxeditor-toolbar-content,
-.dark .mdxeditor-toolbar-group,
-.dark .mdxeditor-toolbar-button,
-.dark .mdxeditor-toolbar-select {
-  background: rgb(var(--Common-Background)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border-color: rgb(var(--Common-Contrast)) !important;
-}
-
-.dark .mdxeditor-toolbar-button svg {
-  color: rgb(var(--Text-Primary)) !important;
-  fill: rgb(var(--Text-Primary)) !important;
-}
-
-.dark .mdxeditor-toolbar-button:hover,
-.dark .mdxeditor-toolbar-button:focus {
-  background: rgb(var(--Common-Contrast)) !important;
-} */
-
 .cm-sourceView,
 .cm-editor,
 .cm-gutters {
@@ -585,161 +509,14 @@ body {
   background: rgb(var(--Common-Minimal)) !important;
 } */
 
-/* MDXEditor Radix Popover Theming */
-[data-radix-popper-content-wrapper] {
-  background: rgb(var(--Common-CardBackground)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-  border-radius: 0.5rem !important;
-  color: rgb(var(--Text-Primary)) !important;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-[data-radix-popper-content-wrapper] button,
-[data-radix-popper-content-wrapper] input,
-[data-radix-popper-content-wrapper] select {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border-color: rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] button:hover {
-  background: rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] input:focus,
-[data-radix-popper-content-wrapper] select:focus {
-  border-color: rgb(var(--Functional-Green-Green)) !important;
-  outline: none !important;
-}
-
-/* Link Dialog specific */
-[data-radix-popper-content-wrapper] .link-dialog {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-}
-
-[data-radix-popper-content-wrapper] .link-dialog input {
-  background: rgb(var(--Common-Minimal)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .link-dialog button {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .link-dialog button:hover {
-  background: rgb(var(--Common-Contrast)) !important;
-}
-
-/* Image Dialog specific */
-[data-radix-popper-content-wrapper] .image-dialog {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-}
-
-[data-radix-popper-content-wrapper] .image-dialog input {
-  background: rgb(var(--Common-Minimal)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .image-dialog button {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .image-dialog button:hover {
-  background: rgb(var(--Common-Contrast)) !important;
-}
-
-/* Table Dialog specific */
-[data-radix-popper-content-wrapper] .table-dialog {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-}
-
-[data-radix-popper-content-wrapper] .table-dialog input {
-  background: rgb(var(--Common-Minimal)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .table-dialog button {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .table-dialog button:hover {
-  background: rgb(var(--Common-Contrast)) !important;
-}
-
-/* Code Block Dialog specific */
-[data-radix-popper-content-wrapper] .code-block-dialog {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-}
-
-[data-radix-popper-content-wrapper] .code-block-dialog select {
-  background: rgb(var(--Common-Minimal)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .code-block-dialog button {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border: 1px solid rgb(var(--Common-Contrast)) !important;
-}
-
-[data-radix-popper-content-wrapper] .code-block-dialog button:hover {
-  background: rgb(var(--Common-Contrast)) !important;
-}
-
-.dark [data-radix-popper-content-wrapper],
-.dark [data-radix-popper-content-wrapper] * {
-  background: rgb(var(--Common-CardBackground)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border-color: rgb(var(--Common-Contrast)) !important;
-}
-
-.dark [data-radix-popper-content-wrapper] input,
-.dark [data-radix-popper-content-wrapper] select {
-  background: rgb(var(--Common-Minimal)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-  border-color: rgb(var(--Common-Contrast)) !important;
-}
-
-.dark [data-radix-popper-content-wrapper] select:hover {
-  background: red !important;
-}
-
-/* Radix Select/DropdownMenu item hover/focus for dark mode */
-.dark [data-radix-popper-content-wrapper] [role='option']:hover,
-.dark [data-radix-popper-content-wrapper] [role='option'][data-highlighted],
-.dark [data-radix-popper-content-wrapper] [role='menuitem']:hover,
-.dark [data-radix-popper-content-wrapper] [role='menuitem'][data-highlighted] {
-  background: rgb(var(--Common-Contrast)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-}
-
-[data-radix-popper-content-wrapper] [role='option']:hover,
-[data-radix-popper-content-wrapper] [role='option'][data-highlighted],
-[data-radix-popper-content-wrapper] [role='menuitem']:hover,
-[data-radix-popper-content-wrapper] [role='menuitem'][data-highlighted] {
-  background: rgb(var(--Common-Contrast)) !important;
-  color: rgb(var(--Text-Primary)) !important;
-}
-
 ._selectTrigger_sects_308,
 ._toolbarButtonSelectTrigger_sects_307 {
   background: rgb(var(--Common-Background)) !important;
+  color: rgb(var(--Text-Primary)) !important;
+}
+
+._linkDialogPopoverContent_sects_601 {
+  background: rgb(var(--Common-CardBackground)) !important;
   color: rgb(var(--Text-Primary)) !important;
 }
 
@@ -764,4 +541,14 @@ body {
 .mdx-editor-toolbar::-webkit-scrollbar-thumb:hover {
   background: rgb(var(--Common-HeavyContrast));
   border-radius: 10px;
+}
+
+.mdxeditor-select-content {
+  background: rgb(var(--Common-Background)) !important;
+  color: rgb(var(--Text-Tertiary)) !important;
+  border-color: rgb(var(--Common-Contrast)) !important;
+}
+
+.mdxeditor-select-content:focus {
+  border-color: rgb(var(--Functional-Green-Green)) !important;
 }

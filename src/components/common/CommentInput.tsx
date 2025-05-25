@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
 import CustomTooltip from './CustomTooltip';
-import ParsedMarkdownHTML from './ParsedMarkdownHTML';
+import RenderParsedHTML from './RenderParsedHTML';
 import { BlockSkeleton, Skeleton } from './Skeleton';
 
 interface CommentInputProps {
@@ -65,6 +65,8 @@ const CommentInput: React.FC<CommentInputProps> = ({
   const onSubmitForm: SubmitHandler<FormInputs> = (data) => {
     onSubmit(data.content, data.rating);
     reset({ content: '', rating: 0 });
+    setMarkdown('');
+    setIsMarkdownPreview(false);
   };
 
   useEffect(() => {
@@ -87,7 +89,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
         </button>
         {isMarkdownPreview && (
           <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>
-            <ParsedMarkdownHTML markdown={markdown} />
+            <RenderParsedHTML rawContent={markdown} supportMarkdown={true} supportLatex={true} />
           </div>
         )}
         <div

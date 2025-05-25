@@ -2,6 +2,7 @@
 
 // InitializedMDXEditor.tsx
 import type { ForwardedRef } from 'react';
+import React from 'react';
 
 import { useTheme } from 'next-themes';
 
@@ -14,14 +15,12 @@ import {
   DiffSourceToggleWrapper,
   DirectiveDescriptor,
   InsertCodeBlock,
-  InsertImage,
   InsertTable,
   InsertThematicBreak,
   ListsToggle,
   MDXEditor,
   type MDXEditorMethods,
   type MDXEditorProps,
-  SandpackConfig,
   StrikeThroughSupSubToggles,
   UndoRedo,
   codeBlockPlugin,
@@ -62,48 +61,6 @@ export default function App() {
   );
 }
 `.trim();
-
-  const virtuosoSampleSandpackConfig: SandpackConfig = {
-    defaultPreset: 'react',
-    presets: [
-      {
-        label: 'React',
-        name: 'react',
-        meta: 'live react',
-        sandpackTemplate: 'react',
-        sandpackTheme: 'light',
-        snippetFileName: '/App.js',
-        snippetLanguage: 'jsx',
-        initialSnippetContent: defaultSnippetContent,
-      },
-      {
-        label: 'React',
-        name: 'react',
-        meta: 'live',
-        sandpackTemplate: 'react',
-        sandpackTheme: 'light',
-        snippetFileName: '/App.js',
-        snippetLanguage: 'jsx',
-        initialSnippetContent: defaultSnippetContent,
-      },
-      {
-        label: 'Virtuoso',
-        name: 'virtuoso',
-        meta: 'live virtuoso',
-        sandpackTemplate: 'react-ts',
-        sandpackTheme: 'light',
-        snippetFileName: '/App.tsx',
-        initialSnippetContent: defaultSnippetContent,
-        dependencies: {
-          'react-virtuoso': 'latest',
-          '@ngneat/falso': 'latest',
-        },
-        // files: {
-        //   '/data.ts': dataCode
-        // }
-      },
-    ],
-  };
 
   const YoutubeDirectiveDescriptor: DirectiveDescriptor<any> = {
     name: 'youtube',
@@ -151,7 +108,7 @@ export default function App() {
           <InsertCodeBlock />
           <ListsToggle />
           <CreateLink />
-          <InsertImage />
+          {/* <InsertImage /> */}
           <InsertTable />
           <InsertThematicBreak />
         </div>
@@ -167,7 +124,7 @@ export default function App() {
     linkPlugin(),
     linkDialogPlugin(),
     imagePlugin({
-      imageUploadHandler: async () => Promise.resolve('https://picsum.photos/200/300'),
+      imageUploadHandler: async () => Promise.resolve(''),
       disableImageSettingsButton: true,
       EditImageToolbar: () => {
         return null;

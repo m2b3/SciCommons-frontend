@@ -27,7 +27,7 @@ import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
-import ParsedMarkdownHTML from '../common/ParsedMarkdownHTML';
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import TruncateText from '../common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
@@ -228,7 +228,12 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               isHTML
               textClassName="text-text-primary"
             /> */}
-            <ParsedMarkdownHTML markdown={currentVersion.content} isShrinked={true} />
+            <RenderParsedHTML
+              rawContent={currentVersion.content}
+              isShrinked={true}
+              supportMarkdown={true}
+              supportLatex={true}
+            />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             {/* <div className="flex space-x-4 text-text-secondary">

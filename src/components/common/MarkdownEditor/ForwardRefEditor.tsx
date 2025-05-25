@@ -7,10 +7,17 @@ import dynamic from 'next/dynamic';
 
 import { type MDXEditorMethods, type MDXEditorProps } from '@mdxeditor/editor';
 
+import { BlockSkeleton, Skeleton } from '../Skeleton';
+
 // This is the only place InitializedMDXEditor is imported directly.
 const Editor = dynamic(() => import('./InitializedMDXEditor'), {
   // Make sure we turn SSR off
   ssr: false,
+  loading: () => (
+    <Skeleton className="w-full p-0">
+      <BlockSkeleton className="h-28 rounded-lg" />
+    </Skeleton>
+  ),
 });
 
 // This is what is imported by other components. Pre-initialized with plugins, and ready
