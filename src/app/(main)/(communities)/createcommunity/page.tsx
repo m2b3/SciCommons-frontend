@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -43,6 +44,7 @@ const CreateCommunity: React.FC = () => {
   const [selectedType, setSelectedType] = useState<OptionType>('public');
   const [selectedPublicCommunitiesSettings, setSelectedPublicCommunitiesSettings] =
     useState('anyone_can_join');
+  const queryClient = useQueryClient(); // <-- Added
 
   const { mutate: createCommunity, isPending } = useCommunitiesApiCreateCommunity({
     request: {
@@ -51,8 +53,11 @@ const CreateCommunity: React.FC = () => {
       },
     },
     mutation: {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         toast.success('Community created successfully! Redirecting to community page...');
+        // Invalidate queries so the communities page is always fresh
+        await queryClient.invalidateQueries({ queryKey: ['communities'] });
+        await queryClient.invalidateQueries({ queryKey: ['my_communities'] });
         // router.push(`/community/${data.data.slug}`);
         router.push(`/communities`);
       },
