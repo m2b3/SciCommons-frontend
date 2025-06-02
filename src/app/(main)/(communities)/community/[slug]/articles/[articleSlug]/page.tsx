@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
@@ -19,6 +19,9 @@ import { useAuthStore } from '@/stores/authStore';
 const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
+
+  // Use "reviewOrder" instead of "sortOption"
+  const [reviewOrder, setReviewOrder] = useState<'latest' | 'oldest'>('latest');
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params?.articleSlug || '',
@@ -43,16 +46,38 @@ const CommunityArticleDisplayPage: React.FC = () => {
   );
 
   useEffect(() => {
-    if (error) {
-      showErrorToast(error);
-    }
+    if (error) showErrorToast(error);
   }, [error]);
 
   useEffect(() => {
-    if (reviewsError) {
-      showErrorToast(reviewsError);
-    }
+    if (reviewsError) showErrorToast(reviewsError);
   }, [reviewsError]);
+
+  // UseMemo to order reviews based on reviewOrder -- always compare using updated_at if present!
+  const orderedReviews = useMemo(() => {
+    if (!reviewsData?.data.items) return [];
+    const arr = [...reviewsData.data.items];
+    if (reviewOrder === 'latest') {
+      // Sort by updated_at, fallback to created_at
+      return arr.sort(
+        (a, b) =>
+          new Date(b.updated_at ?? b.created_at).getTime() -
+          new Date(a.updated_at ?? a.created_at).getTime()
+      );
+    }
+    // "Oldest" - sort by updated_at, fallback to created_at
+    return arr.sort(
+      (a, b) =>
+        new Date(a.updated_at ?? a.created_at).getTime() -
+        new Date(b.updated_at ?? b.created_at).getTime()
+    );
+  }, [reviewsData, reviewOrder]);
+
+  // When a review is created or updated, force order to "latest" and refetch
+  const handleReviewsRefresh = () => {
+    setReviewOrder('latest');
+    reviewsRefetch && reviewsRefetch();
+  };
 
   const tabs = data
     ? [
@@ -60,29 +85,32 @@ const CommunityArticleDisplayPage: React.FC = () => {
           title: 'Reviews',
           content: (
             <div className="flex flex-col gap-2">
-              {/* Todo: Uncomment this after testing */}
-              {/* {!data.data.is_submitter && (
-                <ReviewForm
-                  articleId={data?.data.id || 0}
-                  refetch={reviewsRefetch}
-                  communityId={data?.data.community_article?.community.id}
-                />
-              )} */}
               <ReviewForm
                 articleId={Number(data.data.id)}
-                refetch={reviewsRefetch}
+                refetch={handleReviewsRefresh}
                 is_submitter={data.data.is_submitter}
                 communityId={data?.data.community_article?.community.id}
               />
+              <div className="mb-2 flex justify-end">
+                <select
+                  value={reviewOrder}
+                  onChange={(e) => setReviewOrder(e.target.value as 'latest' | 'oldest')}
+                  className="rounded border bg-common-background p-1 text-sm"
+                  style={{ minWidth: 100 }}
+                >
+                  <option value="latest">Latest</option>
+                  <option value="oldest">Oldest</option>
+                </select>
+              </div>
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
-              {reviewsData?.data.items.length === 0 && (
+              {orderedReviews.length === 0 && (
                 <EmptyState
                   content="No reviews yet"
                   subcontent="Be the first to review this article"
                 />
               )}
-              {reviewsData?.data.items.map((item) => (
-                <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
+              {orderedReviews.map((item) => (
+                <ReviewCard key={item.id} review={item} refetch={handleReviewsRefresh} />
               ))}
             </div>
           ),
@@ -102,12 +130,6 @@ const CommunityArticleDisplayPage: React.FC = () => {
         // },
       ]
     : [];
-
-  useEffect(() => {
-    if (error) {
-      showErrorToast(error);
-    }
-  }, [error]);
 
   return (
     <div className="w-full p-4 py-4 md:px-6">
