@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 import {
   Control,
   Controller,
@@ -144,6 +143,8 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
           errors={errors}
           textArea={true}
           readOnly={activeTab === 'search'}
+          supportMarkdown={false}
+          supportLatex={false}
         />
         {activeTab === 'search' && (
           <p className="mt-2 text-xs italic text-text-tertiary">

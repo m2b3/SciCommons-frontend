@@ -8,7 +8,6 @@ import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { useArticlesReviewApiListReviews } from '@/api/reviews/reviews';
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
-import DisplayFAQs from '@/components/articles/DisplayFAQs';
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
@@ -60,11 +59,17 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
               {/* {!data.data.is_submitter && (
                 <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
               )} */}
+              <span className="mb-2 border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
+                Add your review
+              </span>
               <ReviewForm
                 articleId={Number(data.data.id)}
                 refetch={reviewsRefetch}
                 is_submitter={data.data.is_submitter}
               />
+              <span className="border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
+                Reviews
+              </span>
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
               {reviewsData?.data.items.length === 0 && (
                 <EmptyState
@@ -82,10 +87,10 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
           title: 'Discussions',
           content: <DiscussionForum articleId={Number(data.data.id)} />,
         },
-        {
-          title: 'FAQs',
-          content: <DisplayFAQs faqs={data.data.faqs || []} />,
-        },
+        // {
+        //   title: 'FAQs',
+        //   content: <DisplayFAQs faqs={data.data.faqs || []} />,
+        // },
       ]
     : [];
 

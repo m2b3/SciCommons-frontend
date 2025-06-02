@@ -27,6 +27,7 @@ import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
 
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import TruncateText from '../common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
@@ -221,11 +222,17 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           </h3>
 
           <div className="mb-4">
-            <TruncateText
+            {/* <TruncateText
               text={currentVersion.content}
               maxLines={4}
               isHTML
               textClassName="text-text-primary"
+            /> */}
+            <RenderParsedHTML
+              rawContent={currentVersion.content}
+              isShrinked={true}
+              supportMarkdown={true}
+              supportLatex={true}
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
