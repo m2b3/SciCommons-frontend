@@ -21,8 +21,8 @@ const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
 
-  // Add sort option state for reviews
-  const [sortOption, setSortOption] = useState<'latest' | 'oldest'>('latest');
+  // State to manage review order, defaulting to 'latest'
+  const [reviewOrder, setReviewOrder] = useState<'latest' | 'oldest'>('latest');
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params?.articleSlug || '',
@@ -54,29 +54,29 @@ const CommunityArticleDisplayPage: React.FC = () => {
     if (reviewsError) showErrorToast(reviewsError);
   }, [reviewsError]);
 
-  // UseMemo to sort reviews based on sortOption -- FIX: always compare using updated_at if present!
-  const sortedReviews = useMemo(() => {
+  // UseMemo to sort reviews based on reviewOrder
+  const orderedReviews = useMemo(() => {
     if (!reviewsData?.data.items) return [];
-    const arr = [...reviewsData.data.items];
-    if (sortOption === 'latest') {
-      // FIX: Sort by updated_at, fallback to created_at
-      return arr.sort(
+    const reviewsArray = [...reviewsData.data.items];
+    if (reviewOrder === 'latest') {
+      // Sort by updated_at, fallback to created_at (descending)
+      return reviewsArray.sort(
         (a, b) =>
           new Date(b.updated_at ?? b.created_at).getTime() -
           new Date(a.updated_at ?? a.created_at).getTime()
       );
     }
-    // "Oldest" - sort by updated_at, fallback to created_at
-    return arr.sort(
+    // 'oldest' - ascending
+    return reviewsArray.sort(
       (a, b) =>
         new Date(a.updated_at ?? a.created_at).getTime() -
         new Date(b.updated_at ?? b.created_at).getTime()
     );
-  }, [reviewsData, sortOption]);
+  }, [reviewsData, reviewOrder]);
 
   // When a review is created or updated, force filter to "latest" and refetch
-  const handleReviewRefetch = () => {
-    setSortOption('latest');
+  const handleReviewsRefresh = () => {
+    setReviewOrder('latest');
     reviewsRefetch && reviewsRefetch();
   };
 
@@ -88,14 +88,14 @@ const CommunityArticleDisplayPage: React.FC = () => {
             <div className="flex flex-col gap-2">
               <ReviewForm
                 articleId={Number(data.data.id)}
-                refetch={handleReviewRefetch}
+                refetch={handleReviewsRefresh}
                 is_submitter={data.data.is_submitter}
                 communityId={data?.data.community_article?.community.id}
               />
               <div className="mb-2 flex justify-end">
                 <select
-                  value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value as 'latest' | 'oldest')}
+                  value={reviewOrder}
+                  onChange={(e) => setReviewOrder(e.target.value as 'latest' | 'oldest')}
                   className="rounded border bg-common-background p-1 text-sm"
                   style={{ minWidth: 100 }}
                 >
@@ -104,14 +104,14 @@ const CommunityArticleDisplayPage: React.FC = () => {
                 </select>
               </div>
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
-              {sortedReviews.length === 0 && (
+              {orderedReviews.length === 0 && (
                 <EmptyState
                   content="No reviews yet"
                   subcontent="Be the first to review this article"
                 />
               )}
-              {sortedReviews.map((item) => (
-                <ReviewCard key={item.id} review={item} refetch={handleReviewRefetch} />
+              {orderedReviews.map((item) => (
+                <ReviewCard key={item.id} review={item} refetch={handleReviewsRefresh} />
               ))}
             </div>
           ),
