@@ -21,7 +21,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
 
-  // State to manage review order, defaulting to 'latest'
+  // Use "reviewOrder" instead of "sortOption"
   const [reviewOrder, setReviewOrder] = useState<'latest' | 'oldest'>('latest');
 
   const { data, error, isPending } = useArticlesApiGetArticle(
@@ -54,27 +54,27 @@ const CommunityArticleDisplayPage: React.FC = () => {
     if (reviewsError) showErrorToast(reviewsError);
   }, [reviewsError]);
 
-  // UseMemo to sort reviews based on reviewOrder
+  // UseMemo to order reviews based on reviewOrder -- always compare using updated_at if present!
   const orderedReviews = useMemo(() => {
     if (!reviewsData?.data.items) return [];
-    const reviewsArray = [...reviewsData.data.items];
+    const arr = [...reviewsData.data.items];
     if (reviewOrder === 'latest') {
-      // Sort by updated_at, fallback to created_at (descending)
-      return reviewsArray.sort(
+      // Sort by updated_at, fallback to created_at
+      return arr.sort(
         (a, b) =>
           new Date(b.updated_at ?? b.created_at).getTime() -
           new Date(a.updated_at ?? a.created_at).getTime()
       );
     }
-    // 'oldest' - ascending
-    return reviewsArray.sort(
+    // "Oldest" - sort by updated_at, fallback to created_at
+    return arr.sort(
       (a, b) =>
         new Date(a.updated_at ?? a.created_at).getTime() -
         new Date(b.updated_at ?? b.created_at).getTime()
     );
   }, [reviewsData, reviewOrder]);
 
-  // When a review is created or updated, force filter to "latest" and refetch
+  // When a review is created or updated, force order to "latest" and refetch
   const handleReviewsRefresh = () => {
     setReviewOrder('latest');
     reviewsRefetch && reviewsRefetch();

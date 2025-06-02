@@ -34,11 +34,11 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const [maxDisplayDepth, setMaxDisplayDepth] = useState<number>(Infinity);
-  const [allCollapsed, setAllCollapsed] = useState<boolean>(true);
+  const [maxDepth, setMaxDepth] = useState<number>(Infinity);
+  const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(true);
 
-  // Use 'latest' as the default order for comments
-  const [commentsOrder, setCommentsOrder] = useState<'latest' | 'oldest'>('latest');
+  // --- NEW: Review order state (was sortOption)
+  const [reviewOrder, setReviewOrder] = useState<'latest' | 'oldest'>('latest');
 
   const { data, refetch, isPending } = useArticlesReviewApiListReviewComments(reviewId, {
     query: { enabled: displayComments },
@@ -58,7 +58,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
       mutation: {
         onSuccess: () => {
           refetch();
-          setCommentsOrder('latest'); // Force show latest after add
+          setReviewOrder('latest'); // Force show latest after add
         },
         onError: (error) => {
           console.error(error);
@@ -70,12 +70,12 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
       },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     });
-  const { mutate: updateCommentMutation } = useArticlesReviewApiUpdateComment({
+  const { mutate: UpdateComment } = useArticlesReviewApiUpdateComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
         refetch();
-        setCommentsOrder('latest'); // Force "Latest" after edit
+        setReviewOrder('latest'); // Force "Latest" after edit
         toast.success('Comment updated successfully.');
       },
       onError: (error) => {
@@ -86,7 +86,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
       },
     },
   });
-  const { mutate: deleteCommentMutation } = useArticlesReviewApiDeleteComment({
+  const { mutate: deleteComment } = useArticlesReviewApiDeleteComment({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
@@ -104,11 +104,11 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
 
   const handleDepthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const depth = parseInt(e.target.value);
-    setMaxDisplayDepth(depth === 0 ? Infinity : depth);
+    setMaxDepth(depth === 0 ? Infinity : depth);
   };
 
   const toggleAllComments = () => {
-    setAllCollapsed(!allCollapsed);
+    setIsAllCollapsed(!isAllCollapsed);
   };
 
   const addNewComment = (content: string, rating?: number) => {
@@ -120,19 +120,19 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
   };
 
   const updateComment = (commentId: number, updatedContent: string, rating?: number) => {
-    updateCommentMutation({ commentId, data: { content: updatedContent, rating: rating || 0 } });
-    // No need to setCommentsOrder here; mutation.onSuccess will handle it
+    UpdateComment({ commentId, data: { content: updatedContent, rating: rating || 0 } });
+    // No need to setReviewOrder here; mutation.onSuccess will handle it
   };
 
   const deleteCommentbyId = (commentId: number) => {
-    deleteCommentMutation({ commentId });
+    deleteComment({ commentId });
   };
 
-  // UseMemo to order comments according to the selected commentsOrder
-  const orderedComments = useMemo<CommentData[]>(() => {
+  // --- NEW: Sort comments according to the selected review order ---
+  const sortedComments = useMemo<CommentData[]>(() => {
     if (!data?.data) return [];
     const arr = data.data.map((comment: ReviewCommentOut) => convertToCommentData(comment));
-    if (commentsOrder === 'latest') {
+    if (reviewOrder === 'latest') {
       return [...arr].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
@@ -141,7 +141,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     }
-  }, [data, commentsOrder]);
+  }, [data, reviewOrder]);
 
   return (
     <div className="flex flex-col border-t border-common-contrast pt-4">
@@ -165,7 +165,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
           <span className="text-xs text-text-secondary">Loading Comments</span>
         </div>
       )}
-      {orderedComments && orderedComments.length > 0 && (
+      {sortedComments && sortedComments.length > 0 && (
         <div className="flex flex-col border-common-minimal pt-4">
           <span className="mb-2 text-sm font-bold text-text-tertiary">Comments:</span>
           <div className="mb-6 flex items-center justify-between">
@@ -181,7 +181,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
                 id="depth-select"
                 className="rounded border bg-common-background p-1 text-sm"
                 onChange={handleDepthChange}
-                value={maxDisplayDepth === Infinity ? 0 : maxDisplayDepth}
+                value={maxDepth === Infinity ? 0 : maxDepth}
               >
                 <option value="0">All</option>
                 <option value="1">1</option>
@@ -192,10 +192,10 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
               </select>
             </div>
             <div className="flex items-center space-x-2">
-              {/* Order option select */}
+              {/* --- Review order select --- */}
               <select
-                value={commentsOrder}
-                onChange={(e) => setCommentsOrder(e.target.value as 'latest' | 'oldest')}
+                value={reviewOrder}
+                onChange={(e) => setReviewOrder(e.target.value as 'latest' | 'oldest')}
                 className="rounded border bg-common-background p-1 text-sm"
               >
                 <option value="latest">Latest</option>
@@ -205,7 +205,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
                 onClick={toggleAllComments}
                 className="flex items-center text-xs text-functional-blue transition-colors duration-200 hover:text-functional-blueContrast"
               >
-                {allCollapsed ? (
+                {isAllCollapsed ? (
                   <>
                     <ChevronsDown size={14} className="mr-1" />
                     <span>Expand All</span>
@@ -220,9 +220,9 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
             </div>
           </div>
           <RenderComments
-            comments={orderedComments}
-            maxDepth={maxDisplayDepth}
-            isAllCollapsed={allCollapsed}
+            comments={sortedComments}
+            maxDepth={maxDepth}
+            isAllCollapsed={isAllCollapsed}
             onAddReply={addReply}
             onUpdateComment={updateComment}
             onDeleteComment={deleteCommentbyId}
