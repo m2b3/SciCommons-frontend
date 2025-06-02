@@ -278,6 +278,21 @@ body {
     --Functional-Gray-GrayLight: var(--color-gray-600);
     --Functional-Gray-Graycontrast: var(--color-gray-800);
 
+    /* Functional Blue */
+    --Functional-Blue-Blue: var(--color-blue-700);
+    --Functional-Blue-BlueLight: var(--color-blue-600);
+    --Functional-Blue-Bluecontrast: var(--color-blue-800);
+
+    /* Functional Yellow */
+    --Functional-Yellow-Yellow: var(--color-yellow-700);
+    --Functional-Yellow-YellowLight: var(--color-yellow-600);
+    --Functional-Yellow-Yellowcontrast: var(--color-yellow-800);
+
+    /* Functional Red */
+    --Functional-Red-Red: var(--color-red-700);
+    --Functional-Red-RedLight: var(--color-red-600);
+    --Functional-Red-Redcontrast: var(--color-red-800);
+
     /* Loading */
     --loading: #3d3d3d;
 
@@ -477,4 +492,63 @@ body {
 .rounded-tab.right {
   border-right-width: 0;
   border-top-right-radius: var(--r);
+}
+
+.cm-sourceView,
+.cm-editor,
+.cm-gutters {
+  background: rgb(var(--Common-CardBackground)) !important;
+  color: rgb(var(--Text-Primary)) !important;
+}
+
+.cm-activeLineGutter {
+  background: rgb(var(--Common-Contrast)) !important;
+}
+
+/* .sp-preview-iframe {
+  background: rgb(var(--Common-Minimal)) !important;
+} */
+
+._selectTrigger_sects_308,
+._toolbarButtonSelectTrigger_sects_307 {
+  background: rgb(var(--Common-Background)) !important;
+  color: rgb(var(--Text-Primary)) !important;
+}
+
+._linkDialogPopoverContent_sects_601 {
+  background: rgb(var(--Common-CardBackground)) !important;
+  color: rgb(var(--Text-Primary)) !important;
+}
+
+/* width */
+.mdx-editor-toolbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+/* Track */
+.mdx-editor-toolbar::-webkit-scrollbar-track {
+  background: rgb(var(--Common-Contrast));
+  border-radius: 10px;
+}
+
+/* Handle */
+.mdx-editor-toolbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--Common-HeavyContrast));
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.mdx-editor-toolbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--Common-HeavyContrast));
+  border-radius: 10px;
+}
+
+.mdxeditor-select-content {
+  background: rgb(var(--Common-Background)) !important;
+  color: rgb(var(--Text-Tertiary)) !important;
+  border-color: rgb(var(--Common-Contrast)) !important;
+}
+
+.mdxeditor-select-content:focus {
+  border-color: rgb(var(--Functional-Green-Green)) !important;
 }

@@ -40,7 +40,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
     },
   });
 
-  const { mutate, isPending } = useArticlesDiscussionApiCreateDiscussion({
+  const { mutate, isPending, isSuccess } = useArticlesDiscussionApiCreateDiscussion({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
@@ -82,6 +82,8 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
         requiredMessage="Content is required"
         errors={errors}
         textArea={true}
+        isSuccess={isSuccess}
+        supportMarkdown={true}
       />
       <Button type="submit" variant={'blue'} loading={isPending} showLoadingSpinner>
         Submit

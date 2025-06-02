@@ -14,6 +14,7 @@ import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useDebounceFunction } from '@/hooks/useDebounceThrottle';
 import { useAuthStore } from '@/stores/authStore';
 
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import PdfIcon from '../ui/Icons/PdfIcon';
 import { Button } from '../ui/button';
@@ -108,14 +109,27 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </div>
       )}
       <div className={`relative flex-1 ${hasImage ? '' : 'w-full'}`}>
-        <h2 className="mb-4 font-bold text-text-primary res-text-xl">
+        {/* <h2 className="mb-4 font-bold text-text-primary res-text-xl">
           <TruncateText text={article.title} maxLines={2} />
-        </h2>
+        </h2> */}
+        <RenderParsedHTML
+          rawContent={article.title}
+          isShrinked={false}
+          supportMarkdown={false}
+          supportLatex={true}
+          contentClassName="res-text-xl font-bold"
+        />
         <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Abstract</h3>
-          <div className="text-base text-text-primary">
+          {/* <div className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
-          </div>
+          </div> */}
+          <RenderParsedHTML
+            rawContent={article.abstract}
+            isShrinked={true}
+            supportMarkdown={false}
+            supportLatex={true}
+          />
         </div>
         <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Authors</h3>

@@ -100,7 +100,8 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
   };
 
   return (
-    <div className="">
+    <div className="mt-2 flex flex-col border-t border-common-contrast pt-4">
+      <span className="mb-2 text-sm font-bold text-text-tertiary">Add Comment:</span>
       <CommentInput
         onSubmit={addNewComment}
         placeholder="Write a new comment..."
