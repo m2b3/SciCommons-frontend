@@ -16,7 +16,7 @@ interface IRegisteredProps {
   note: string;
 }
 
-const Registered = () => {
+const Registered = ({ communityId }: { communityId: number }) => {
   const {
     register,
     handleSubmit,
@@ -51,7 +51,7 @@ const Registered = () => {
       note: data.note,
     };
 
-    mutate({ communityId: 1, data: dataToSend });
+    mutate({ communityId, data: dataToSend });
   };
 
   return (
