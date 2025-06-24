@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -33,6 +35,7 @@ interface EditArticleDetailsProps {
   defaultImageURL: string | null;
   isEditEnabled: boolean;
   setIsEditEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  articleSlug: string;
 }
 
 const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
@@ -45,6 +48,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     articleId,
     isEditEnabled,
     setIsEditEnabled,
+    articleSlug,
   } = props;
   const {
     control,
@@ -70,6 +74,8 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     isPending: isUpdatePending,
     isSuccess,
   } = useArticlesApiUpdateArticle({ request: axiosConfig });
+
+  const router = useRouter();
 
   const onSubmit = (formData: FormValues) => {
     const dataToSend: ArticleUpdateSchema = {
@@ -105,11 +111,12 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
   useEffect(() => {
     if (isSuccess) {
       toast.success('Article details updated successfully');
+      router.push(`/article/${articleSlug}`);
     }
     if (updateError) {
       toast.error(`${updateError.response?.data.message}`);
     }
-  }, [updateError, isSuccess]);
+  }, [updateError, isSuccess, router, articleSlug]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
