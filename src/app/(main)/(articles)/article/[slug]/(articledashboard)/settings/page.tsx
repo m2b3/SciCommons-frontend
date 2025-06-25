@@ -87,6 +87,7 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
             articleId={Number(data.data.id)}
             isEditEnabled={isEditEnabled}
             setIsEditEnabled={setIsEditEnabled}
+            articleSlug={params.slug}
           />
         )}
       </div>
