@@ -52,7 +52,7 @@ export default function RootLayout({
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
           <SessionExpirationDialog />
           <PathTracker />
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <main className="flex-grow">{children}</main>
           </ThemeProvider>
           <BottomBar />
