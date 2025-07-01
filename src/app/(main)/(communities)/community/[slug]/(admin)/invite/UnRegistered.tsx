@@ -17,7 +17,7 @@ interface IUnRegisteredProps {
   content: string;
 }
 
-const UnRegistered = () => {
+const UnRegistered = ({ communityId }: { communityId: number }) => {
   const {
     register,
     handleSubmit,
@@ -56,7 +56,7 @@ const UnRegistered = () => {
       body: data.content,
     };
 
-    mutate({ communityId: 8, data: dataToSend });
+    mutate({ communityId, data: dataToSend });
   };
 
   return (

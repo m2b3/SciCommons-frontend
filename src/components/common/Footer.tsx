@@ -9,6 +9,8 @@ import {
   TwitterIconFilled,
   YoutubeIconFilled,
 } from '@/components/ui/Icons/common';
+import useStore from '@/hooks/useStore';
+import { useAuthStore } from '@/stores/authStore';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -22,6 +24,18 @@ const navLinks = [
 ];
 
 const Footer: React.FC = () => {
+  const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
+
+  // Filter navLinks to remove Login/Register if authenticated
+  const filteredNavLinks = isAuthenticated
+    ? navLinks.filter((link) => link.name !== 'Login' && link.name !== 'Register')
+    : navLinks;
+
+  // Split links for two columns as before
+  const mid = Math.ceil(filteredNavLinks.length / 2);
+  const firstColLinks = filteredNavLinks.slice(0, mid);
+  const secondColLinks = filteredNavLinks.slice(mid);
+
   return (
     <footer className="rounded-t-3xl bg-functional-green/10 pb-16 dark:bg-functional-green/10 md:pb-0">
       <div className="sm-gap-0 flex w-full flex-col justify-between gap-10 p-8 pt-12 sm:flex-row sm:p-16 md:px-44 md:py-12">
@@ -49,30 +63,20 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex gap-6 text-xs font-medium leading-6 text-functional-green sm:gap-14">
+        <div className="flex gap-6 text-xs font-semibold leading-6 text-functional-green sm:gap-14">
           <div className="flex flex-col gap-2">
-            {navLinks.map(
-              (link, index) =>
-                index <= navLinks.length / 2 && (
-                  <React.Fragment key={`${index}-${link.name}`}>
-                    <Link href={link.path} className="hover:underline">
-                      {link.name}
-                    </Link>
-                  </React.Fragment>
-                )
-            )}
+            {firstColLinks.map((link) => (
+              <Link key={link.name} href={link.path} className="hover:underline">
+                {link.name}
+              </Link>
+            ))}
           </div>
           <div className="flex flex-col gap-2">
-            {navLinks.map(
-              (link, index) =>
-                index > navLinks.length / 2 && (
-                  <React.Fragment key={`${index}-${link.name}`}>
-                    <Link href={link.path} className="hover:underline">
-                      {link.name}
-                    </Link>
-                  </React.Fragment>
-                )
-            )}
+            {secondColLinks.map((link) => (
+              <Link key={link.name} href={link.path} className="hover:underline">
+                {link.name}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

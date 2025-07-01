@@ -24,6 +24,12 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
     {},
     {
       request: axiosConfig,
+      query: {
+        enabled: !!accessToken,
+        staleTime: 0,
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
+      },
     }
   );
 

@@ -36,6 +36,7 @@ interface InputProps<TFieldValues extends FieldValues> {
   supportMarkdown?: boolean;
   supportLatex?: boolean;
   isSuccess?: boolean;
+  validateFn?: (value: string) => true | string;
 }
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -64,6 +65,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   supportMarkdown = false,
   supportLatex = false,
   isSuccess = false,
+  validateFn,
 }: InputProps<TFieldValues>): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const error = errors[name];
@@ -84,6 +86,7 @@ const FormInput = <TFieldValues extends FieldValues>({
       maxLengthValue && maxLengthMessage
         ? { value: maxLengthValue, message: maxLengthMessage }
         : undefined,
+    validate: validateFn,
   });
 
   // Create a wrapper for onChange that updates both form and markdown state

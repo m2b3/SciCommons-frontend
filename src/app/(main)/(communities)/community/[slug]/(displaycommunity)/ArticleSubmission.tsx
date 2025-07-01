@@ -75,11 +75,22 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     }
   }, [error]);
 
+  React.useEffect(() => {
+    return () => {
+      // Always remove pointer-events: none from body when dialog unmounts
+      if (typeof document !== 'undefined') {
+        if (!open) {
+          document.body.style.pointerEvents = 'auto';
+        }
+      }
+    };
+  }, [open]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="py-1.5">
+          <Button className="py-1.5" withTooltip tooltipData="Create or Submit Article">
             <ButtonIcon>
               <Plus className="size-4 text-white" />
             </ButtonIcon>
