@@ -9,6 +9,8 @@ import { Oval } from 'react-loader-spinner';
 
 import { cn } from '@/lib/utils';
 
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
+
 const buttonVariants = cva(
   'inline-flex items-center justify-center whitespace-nowrap gap-2 select-none text-white transition-all duration-100 ease-in-out rounded-md w-fit px-3 py-2 h-fit',
   {
@@ -62,16 +64,47 @@ const buttonVariants = cva(
  * @returns {JSX.Element} - Rendered Button component.
  **/
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
-  loading?: boolean;
-  showLoadingSpinner?: boolean;
-  children?: React.ReactNode;
-  disabled?: boolean;
-  loaderColor?: string;
-}
+export type ButtonProps =
+  | ({
+      withTooltip: true;
+      tooltipData: React.ReactNode;
+      asChild?: boolean;
+      loading?: boolean;
+      showLoadingSpinner?: boolean;
+      children?: React.ReactNode;
+      disabled?: boolean;
+      loaderColor?: string;
+    } & Omit<
+      React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonVariants>,
+      | 'withTooltip'
+      | 'tooltipData'
+      | 'asChild'
+      | 'loading'
+      | 'showLoadingSpinner'
+      | 'children'
+      | 'disabled'
+      | 'loaderColor'
+    >)
+  | ({
+      withTooltip?: false | undefined;
+      tooltipData?: never;
+      asChild?: boolean;
+      loading?: boolean;
+      showLoadingSpinner?: boolean;
+      children?: React.ReactNode;
+      disabled?: boolean;
+      loaderColor?: string;
+    } & Omit<
+      React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonVariants>,
+      | 'withTooltip'
+      | 'tooltipData'
+      | 'asChild'
+      | 'loading'
+      | 'showLoadingSpinner'
+      | 'children'
+      | 'disabled'
+      | 'loaderColor'
+    >);
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -86,6 +119,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       asChild = false,
       children,
       onClick,
+      withTooltip = false,
+      tooltipData,
       ...props
     },
     ref
@@ -102,7 +137,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     };
 
-    return (
+    const buttonElement = (
       <Comp
         className={cn(buttonVariants({ variant, size, loading, disabled, className }))}
         ref={ref}
@@ -135,6 +170,21 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </div>
       </Comp>
     );
+
+    if (withTooltip && tooltipData && String(tooltipData).trim() !== '') {
+      return (
+        <TooltipProvider delayDuration={10}>
+          <Tooltip>
+            <TooltipTrigger asChild>{buttonElement}</TooltipTrigger>
+            <TooltipContent side="top" sideOffset={4} className="px-2">
+              {tooltipData}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    return buttonElement;
   }
 );
 Button.displayName = 'Button';
