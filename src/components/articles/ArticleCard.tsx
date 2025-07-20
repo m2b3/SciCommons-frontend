@@ -5,13 +5,13 @@ import Link from 'next/link';
 
 import { Star } from 'lucide-react';
 
-import { ArticleOut } from '@/api/schemas';
+import { ArticlesListOut } from '@/api/schemas';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 
 interface ArticleCardProps {
-  article: ArticleOut;
+  article: ArticlesListOut;
   forCommunity?: boolean;
 }
 
