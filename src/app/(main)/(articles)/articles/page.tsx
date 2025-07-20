@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FileX2 } from 'lucide-react';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
-import { ArticleOut } from '@/api/schemas';
+import { ArticlesListOut } from '@/api/schemas';
 import { useUsersApiListMyArticles } from '@/api/users/users';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
@@ -16,7 +16,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 interface ArticlesResponse {
   data: {
-    items: ArticleOut[];
+    items: ArticlesListOut[];
     num_pages: number;
     total: number;
   };
@@ -44,7 +44,7 @@ const TabContent: React.FC<TabContentProps> = ({
   accessToken,
   isActive,
 }) => {
-  const [articles, setArticles] = useState<ArticleOut[]>([]);
+  const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
@@ -96,14 +96,17 @@ const TabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderArticle = useCallback((article: ArticleOut) => <ArticleCard article={article} />, []);
+  const renderArticle = useCallback(
+    (article: ArticlesListOut) => <ArticleCard article={article} />,
+    []
+  );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
     <div
       className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
     >
-      <SearchableList<ArticleOut>
+      <SearchableList<ArticlesListOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderArticle}
@@ -132,7 +135,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   accessToken,
   isActive,
 }) => {
-  const [articles, setArticles] = useState<ArticleOut[]>([]);
+  const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
@@ -185,14 +188,17 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderArticle = useCallback((article: ArticleOut) => <ArticleCard article={article} />, []);
+  const renderArticle = useCallback(
+    (article: ArticlesListOut) => <ArticleCard article={article} />,
+    []
+  );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
     <div
       className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
     >
-      <SearchableList<ArticleOut>
+      <SearchableList<ArticlesListOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderArticle}

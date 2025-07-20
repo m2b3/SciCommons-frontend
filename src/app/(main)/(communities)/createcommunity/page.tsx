@@ -15,6 +15,7 @@ import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
+import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -45,6 +46,7 @@ const CreateCommunity: React.FC = () => {
   const [selectedPublicCommunitiesSettings, setSelectedPublicCommunitiesSettings] =
     useState('anyone_can_join');
   const queryClient = useQueryClient(); // <-- Added
+  const formRef = React.useRef<HTMLFormElement>(null);
 
   const { mutate: createCommunity, isPending } = useCommunitiesApiCreateCommunity({
     request: {
@@ -131,6 +133,8 @@ const CreateCommunity: React.FC = () => {
     });
   };
 
+  useSubmitOnCtrlEnter(formRef, isPending);
+
   return (
     <div className="container p-0 res-text-sm md:px-8 md:py-4">
       <div className="mx-auto w-full max-w-5xl border-common-contrast p-4 py-8 md:rounded-xl md:border md:bg-common-cardBackground md:p-8">
@@ -143,7 +147,7 @@ const CreateCommunity: React.FC = () => {
             Create a community to share your interests and connect with people.
           </p>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
+        <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
           <FormInput<FormValues>
             label="Community Name"
             name="name"

@@ -3,21 +3,21 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { MessageSquare, Star, User } from 'lucide-react';
+import { Star } from 'lucide-react';
 
-import { ArticleOut } from '@/api/schemas';
+import { ArticlesListOut } from '@/api/schemas';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 
 interface ArticleCardProps {
-  article: ArticleOut;
+  article: ArticlesListOut;
   forCommunity?: boolean;
 }
 
 const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal md:p-6">
+    <div className="flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal">
       <div className="flex">
         <div className="min-w-0 flex-grow gap-4 pr-4">
           <Link
@@ -90,14 +90,15 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
         )}
       </div>
       <div className="flex flex-wrap items-center gap-4">
-        <div className="flex items-center">
+        <div className="flex items-center rounded-md border border-common-minimal py-1 pl-0 pr-1.5">
           <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
           <span className="text-xs text-text-secondary">
-            {article.total_reviews > 0 && `Avg. Rating: ${article.total_ratings} |`} Reviews:{' '}
-            {article.total_reviews}
+            {/* {article.total_reviews > 0 && `Avg. Rating: ${article.total_ratings} |`} Reviews:{' '}
+            {article.total_reviews} */}
+            {article.total_ratings}
           </span>
         </div>
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <MessageSquare className="h-3.5 text-text-secondary" />
           <span className="text-xs text-text-secondary">{article.total_comments} comments</span>
         </div>
@@ -106,7 +107,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
           <span className="text-xs text-text-secondary">
             {article.total_discussions} discussions
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );

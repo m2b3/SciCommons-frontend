@@ -12,7 +12,6 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import { useAuthStore } from '@/stores/authStore';
 
-
 interface ArticleStatsProps {
   article: ArticleOut;
 }
@@ -97,11 +96,11 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
         </div>
         <div className="flex items-center p-1 px-2 text-xs">
           <MessageCircle className="mr-1 size-4 text-text-secondary" />
-          <span className="text-text-secondary">{article.total_comments} Comments</span>
+          <span className="text-text-secondary">Comments: {article.total_comments}</span>
         </div>
         <div className="flex items-center p-1 px-2 text-xs">
           <MessageSquare className="mr-1 size-4 text-text-secondary" />
-          <span className="text-text-secondary">{article.total_discussions} Discussions</span>
+          <span className="text-text-secondary">Discussions: {article.total_discussions}</span>
         </div>
       </div>
     </div>

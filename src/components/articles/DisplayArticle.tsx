@@ -118,6 +118,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           supportMarkdown={false}
           supportLatex={true}
           contentClassName="res-text-xl font-bold"
+          containerClassName="mb-4 sm:mb-4"
         />
         <div className="mb-4">
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Abstract</h3>
@@ -144,35 +145,37 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Keywords</h3>
           <TruncateText text={article.keywords.join(', ')} maxLines={2} />
         </div> */}
-        <div>
-          <h3 className="mb-2 font-semibold text-text-secondary res-text-xs">Article Links</h3>
-          {article?.article_link && (
-            <div className="mb-1 flex items-center gap-2">
-              <Link2 size={16} className="text-text-tertiary" />
-              <a
-                href={article.article_link || '#'}
-                className="text-functional-blue res-text-xs hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {article?.article_link?.split('/').pop() || article.article_link}
-              </a>
-            </div>
-          )}
-          {article.article_pdf_urls.map((link, index) => (
-            <div key={index} className="mb-1 flex items-center gap-2">
-              <PdfIcon className="size-4 shrink-0" />
-              <a
-                href={link}
-                className="text-functional-blue res-text-xs hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {link.split('/').pop() || link}
-              </a>
-            </div>
-          ))}
-        </div>
+        {(article?.article_link || article.article_pdf_urls.length > 0) && (
+          <div>
+            <h3 className="mb-2 font-semibold text-text-secondary res-text-xs">Article Links</h3>
+            {article?.article_link && (
+              <div className="mb-1 flex items-center gap-2">
+                <Link2 size={16} className="text-text-tertiary" />
+                <a
+                  href={article.article_link || '#'}
+                  className="text-functional-blue res-text-xs hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {article?.article_link?.split('/').pop() || article.article_link}
+                </a>
+              </div>
+            )}
+            {article.article_pdf_urls.map((link, index) => (
+              <div key={index} className="mb-1 flex items-center gap-2">
+                <PdfIcon className="size-4 shrink-0" />
+                <a
+                  href={link}
+                  className="text-functional-blue res-text-xs hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.split('/').pop() || link}
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="mt-4 w-full">
           <ArticleStats article={article} />

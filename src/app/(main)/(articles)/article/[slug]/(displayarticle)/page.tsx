@@ -1,7 +1,7 @@
 'use client';
 
 // Todo: Render this component on server side
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
@@ -18,6 +18,7 @@ import { useAuthStore } from '@/stores/authStore';
 const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
+  const [submitReview, setSubmitReview] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params.slug,
@@ -65,14 +66,33 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
               {/* {!data.data.is_submitter && (
                 <ReviewForm articleId={Number(data.data.id)} refetch={reviewsRefetch} />
               )} */}
-              <span className="mb-2 border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
+              {/* <span className="mb-2 border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
                 Add your review
-              </span>
-              <ReviewForm
-                articleId={Number(data.data.id)}
-                refetch={reviewsRefetch}
-                is_submitter={data.data.is_submitter}
-              />
+              </span> */}
+              <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
+                <span className="text-sm font-semibold text-text-secondary">
+                  Have your reviews?
+                </span>
+                {/* <Button
+                  variant={'default'}
+                  onClick={() => setSubmitReview(!submitReview)}
+                >
+                  <ButtonTitle className='text-xs md:text-xs'>{submitReview ? 'Cancel' : 'Add review'}</ButtonTitle>
+                </Button> */}
+                <span
+                  className="cursor-pointer text-xs text-functional-green hover:underline"
+                  onClick={() => setSubmitReview(!submitReview)}
+                >
+                  {submitReview ? 'Cancel' : 'Add review'}
+                </span>
+              </div>
+              {submitReview && (
+                <ReviewForm
+                  articleId={Number(data.data.id)}
+                  refetch={reviewsRefetch}
+                  is_submitter={data.data.is_submitter}
+                />
+              )}
               <span className="border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
                 Reviews
               </span>
@@ -121,7 +141,7 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
   // );
   // return <SplitScreenLayout leftSide={LeftSide} rightSide={RightSide} />;
   return (
-    <div className="w-full p-4 py-4 md:px-6">
+    <div className="container w-full p-4 py-4 md:px-6">
       {isPending ? <DisplayArticleSkeleton /> : data && <DisplayArticle article={data.data} />}
       {data && (
         <div className="mt-4">
