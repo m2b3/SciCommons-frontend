@@ -145,12 +145,12 @@ const RegisterForm: React.FC = () => {
             patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
             requiredMessage="Username is required"
             minLengthValue={3}
-            minLengthMessage="Username must be at least 3 characters"
+            minLengthMessage="Username must be at least 3 characters long"
             maxLengthValue={30}
             maxLengthMessage="Username cannot exceed 30 characters"
             errors={errors}
             isSubmitting={isSubmitting}
-            helperText="3-30 characters. No spaces or special symbols."
+            helperText="Username must only contain lowercase letters, numbers, dots, and underscores."
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
             inputClassName="bg-neutral-150 text-black ring-neutral-200"
