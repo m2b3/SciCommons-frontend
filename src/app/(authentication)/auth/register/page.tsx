@@ -14,6 +14,12 @@ import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
 import { Button } from '@/components/ui/button';
+import {
+  getPasswordRequirementsStatus,
+  getPasswordStrength,
+  passwordRegex,
+  passwordRequirements,
+} from '@/lib/formValidation';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 import SignUpSuccess from './SignUpSuccess';
@@ -56,6 +62,10 @@ const RegisterForm: React.FC = () => {
   const onSubmit = (data: IFormInput) => {
     signUp({ data });
   };
+
+  const password = watch('password') || '';
+  const passwordStatus = getPasswordRequirementsStatus(password);
+  const passwordStrength = getPasswordStrength(password);
 
   useEffect(() => {
     const firstErrorField = Object.keys(errors)[0];
@@ -135,12 +145,12 @@ const RegisterForm: React.FC = () => {
             patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
             requiredMessage="Username is required"
             minLengthValue={3}
-            minLengthMessage="Username must be at least 3 characters"
+            minLengthMessage="Username must be at least 3 characters long"
             maxLengthValue={30}
             maxLengthMessage="Username cannot exceed 30 characters"
             errors={errors}
             isSubmitting={isSubmitting}
-            helperText="3-30 characters. No spaces or special symbols."
+            helperText="Username must only contain lowercase letters, numbers, dots, and underscores."
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
             inputClassName="bg-neutral-150 text-black ring-neutral-200"
@@ -191,24 +201,58 @@ const RegisterForm: React.FC = () => {
             placeholder="Create a password"
             register={register}
             requiredMessage="Password is required"
-            minLengthValue={8}
-            minLengthMessage="Password must be at least 8 characters long."
+            patternValue={passwordRegex}
+            patternMessage="Password must be at least 8 characters, include uppercase, lowercase, digit, and special character."
             errors={errors}
             labelClassName="text-black/90"
             inputClassName="bg-neutral-150 text-black ring-neutral-200"
             eyeBtnClassName="text-black/40 hover:text-black/60"
           />
 
+          {/* Password requirements checklist */}
+          <div className="-mt-2 mb-2">
+            <div className="mb-1 flex items-center gap-2">
+              <span className="text-xs text-black/70">Password strength:</span>
+              <div className="h-2 w-32 rounded bg-gray-200">
+                <div
+                  className={`h-2 rounded transition-all duration-300 ${
+                    passwordStrength <= 2
+                      ? 'w-1/5 bg-red-400'
+                      : passwordStrength === 3
+                        ? 'w-3/5 bg-yellow-400'
+                        : passwordStrength === 4
+                          ? 'w-4/5 bg-blue-400'
+                          : 'w-full bg-green-500'
+                  }`}
+                  style={{ width: `${(passwordStrength / passwordRequirements.length) * 100}%` }}
+                />
+              </div>
+            </div>
+            <ul className="space-y-1 text-xs text-black/60">
+              {passwordRequirements.map((req, idx) => (
+                <li key={req.label} className="flex items-center gap-1">
+                  <span
+                    className={`inline-block h-3 w-3 rounded-full border ${
+                      passwordStatus[idx]
+                        ? 'border-green-400 bg-green-400'
+                        : 'border-gray-300 bg-white'
+                    }`}
+                  />
+                  {req.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <FormInput
             label="Confirm Password"
             name="confirm_password"
             type="password"
-            placeholder="Confirm your password"
+            placeholder="Re-enter your password"
             register={register}
-            requiredMessage="Confirm Password is required"
+            requiredMessage="Confirm your password"
+            validateFn={(value) => value === watch('password') || 'Passwords do not match'}
             errors={errors}
-            patternValue={new RegExp(watch('password'))}
-            patternMessage="Passwords must match."
             labelClassName="text-black/90"
             inputClassName="bg-neutral-150 text-black ring-neutral-200"
             eyeBtnClassName="text-black/40 hover:text-black/60"

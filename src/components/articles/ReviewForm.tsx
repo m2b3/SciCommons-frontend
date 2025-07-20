@@ -135,6 +135,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             reset();
             markdownRef.current = '';
             setMarkdown('');
+            reviewEditorRef.current?.setMarkdown?.('');
             refetch && refetch();
             toast.success('Review submitted successfully');
           },
