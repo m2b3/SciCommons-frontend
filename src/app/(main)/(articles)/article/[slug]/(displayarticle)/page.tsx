@@ -12,6 +12,7 @@ import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
 import TabNavigation from '@/components/ui/tab-navigation';
+import { FIVE_MINUTES_IN_MS, TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -27,7 +28,7 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
       request: axiosConfig,
       query: {
         enabled: !!accessToken,
-        staleTime: 0,
+        staleTime: TEN_MINUTES_IN_MS,
         refetchOnMount: true,
         refetchOnWindowFocus: true,
       },
@@ -43,7 +44,12 @@ const ArticleDisplayPage = ({ params }: { params: { slug: string } }) => {
     data?.data.id || 0,
     {},
     {
-      query: { enabled: !!accessToken && !!data },
+      query: {
+        enabled: !!accessToken && !!data,
+        staleTime: FIVE_MINUTES_IN_MS,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+      },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );

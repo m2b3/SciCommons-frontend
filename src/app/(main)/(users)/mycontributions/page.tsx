@@ -87,6 +87,7 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['user-stats'],
+      enabled: !!accessToken,
     },
   });
 
@@ -96,6 +97,7 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-articles'],
+      enabled: !!accessToken,
     },
   });
 
@@ -105,6 +107,7 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-communities'],
+      enabled: !!accessToken,
     },
   });
 
@@ -114,6 +117,7 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-posts'],
+      enabled: !!accessToken,
     },
   });
 
@@ -123,6 +127,7 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-favorites'],
+      enabled: !!accessToken,
     },
   });
 
@@ -132,6 +137,7 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-bookmarks'],
+      enabled: !!accessToken,
     },
   });
 

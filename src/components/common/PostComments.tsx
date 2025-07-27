@@ -33,6 +33,9 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
   const { data, refetch, isPending } = usePostsApiListPostComments(postId, {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    query: {
+      enabled: !!accessToken && !!postId,
+    },
   });
 
   // useEffect(() => {

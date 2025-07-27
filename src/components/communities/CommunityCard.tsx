@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
-import useIdenticon from '@/hooks/useIdenticons';
+// import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -19,7 +19,7 @@ interface CommunityCardProps {
 }
 
 const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
-  const imageData = useIdenticon(60);
+  // const imageData = useIdenticon(60);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };

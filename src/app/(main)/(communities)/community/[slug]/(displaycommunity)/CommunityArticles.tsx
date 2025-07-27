@@ -28,6 +28,9 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
     },
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
     }
   );
 

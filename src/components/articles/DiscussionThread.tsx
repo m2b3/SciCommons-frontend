@@ -35,7 +35,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const { data, error } = useArticlesDiscussionApiGetDiscussion(discussionId, {
-    query: { enabled: discussionId !== null },
+    query: { enabled: discussionId !== null && !!accessToken },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -50,6 +50,9 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
     Number(discussionId),
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
     }
   );
 
