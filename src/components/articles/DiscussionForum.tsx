@@ -31,7 +31,12 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
   const { data, isPending, error, refetch } = useArticlesDiscussionApiListDiscussions(
     articleId,
     { community_id: communityId || 0 },
-    { request: { headers: { Authorization: `Bearer ${accessToken}` } } }
+    {
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
+    }
   );
 
   useEffect(() => {

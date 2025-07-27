@@ -25,6 +25,9 @@ const CommunityArticleDisplayPage: React.FC = () => {
     { community_name: params?.slug || '' },
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
     }
   );
 

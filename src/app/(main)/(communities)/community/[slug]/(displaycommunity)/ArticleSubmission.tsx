@@ -45,7 +45,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     { status_filter: 'unsubmitted' },
     {
       query: {
-        enabled: open,
+        enabled: open && !!accessToken,
       },
       request: axiosConfig,
     }
