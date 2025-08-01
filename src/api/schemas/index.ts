@@ -23,6 +23,8 @@ export * from './articleCreateDetailsSubmissionType';
 export * from './articleCreateSchema';
 export * from './articleFilters';
 export * from './articleFiltersCommunityId';
+export * from './articleMetaOut';
+export * from './articleMetaOutArticleImageUrl';
 export * from './articleOut';
 export * from './articleOutArticleImageUrl';
 export * from './articleOutArticleLink';

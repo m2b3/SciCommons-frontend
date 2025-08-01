@@ -19,6 +19,7 @@ import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   ArticleBasicOut,
+  ArticleMetaOut,
   ArticleOut,
   ArticlesApiCreateArticleBody,
   ArticlesApiGetArticleParams,
@@ -192,6 +193,86 @@ export const useArticlesApiGetArticle = <
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getArticlesApiGetArticleQueryOptions(articleSlug, params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Return basic public metadata for an article.
+
+This endpoint is intended for SEO and crawlers. It only exposes
+articles that are publicly visible. Private articles or articles
+that belong exclusively to hidden/private communities are filtered
+out to avoid unintentionally leaking private content.
+ * @summary Get Article Meta
+ */
+export const articlesApiGetArticleMeta = (
+  articleSlug: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ArticleMetaOut>(
+    { url: `/api/articles/article-meta/${articleSlug}`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getArticlesApiGetArticleMetaQueryKey = (articleSlug: string) => {
+  return [`/api/articles/article-meta/${articleSlug}`] as const;
+};
+
+export const getArticlesApiGetArticleMetaQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesApiGetArticleMeta>>,
+  TError = ErrorType<Message>,
+>(
+  articleSlug: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticleMeta>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getArticlesApiGetArticleMetaQueryKey(articleSlug);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesApiGetArticleMeta>>> = ({
+    signal,
+  }) => articlesApiGetArticleMeta(articleSlug, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!articleSlug, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof articlesApiGetArticleMeta>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ArticlesApiGetArticleMetaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesApiGetArticleMeta>>
+>;
+export type ArticlesApiGetArticleMetaQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get Article Meta
+ */
+export const useArticlesApiGetArticleMeta = <
+  TData = Awaited<ReturnType<typeof articlesApiGetArticleMeta>>,
+  TError = ErrorType<Message>,
+>(
+  articleSlug: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof articlesApiGetArticleMeta>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getArticlesApiGetArticleMetaQueryOptions(articleSlug, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
