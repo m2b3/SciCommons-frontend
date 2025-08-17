@@ -424,7 +424,7 @@ export const getUsersCommonApiGetReactionCountQueryKey = (
 
 export const getUsersCommonApiGetReactionCountQueryOptions = <
   TData = Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   contentType:
     | 'articles.article'
@@ -466,14 +466,14 @@ export const getUsersCommonApiGetReactionCountQueryOptions = <
 export type UsersCommonApiGetReactionCountQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>
 >;
-export type UsersCommonApiGetReactionCountQueryError = ErrorType<unknown>;
+export type UsersCommonApiGetReactionCountQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Reaction Count
  */
 export const useUsersCommonApiGetReactionCount = <
   TData = Awaited<ReturnType<typeof usersCommonApiGetReactionCount>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   contentType:
     | 'articles.article'
@@ -525,7 +525,7 @@ export const getUsersCommonApiGetHashtagsQueryKey = (params?: UsersCommonApiGetH
 
 export const getUsersCommonApiGetHashtagsQueryOptions = <
   TData = Awaited<ReturnType<typeof usersCommonApiGetHashtags>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersCommonApiGetHashtagsParams,
   options?: {
@@ -553,14 +553,14 @@ export const getUsersCommonApiGetHashtagsQueryOptions = <
 export type UsersCommonApiGetHashtagsQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersCommonApiGetHashtags>>
 >;
-export type UsersCommonApiGetHashtagsQueryError = ErrorType<unknown>;
+export type UsersCommonApiGetHashtagsQueryError = ErrorType<Message>;
 
 /**
  * @summary Get Hashtags
  */
 export const useUsersCommonApiGetHashtags = <
   TData = Awaited<ReturnType<typeof usersCommonApiGetHashtags>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersCommonApiGetHashtagsParams,
   options?: {
@@ -599,7 +599,7 @@ export const getUsersCommonApiListMyPostsQueryKey = (params?: UsersCommonApiList
 
 export const getUsersCommonApiListMyPostsQueryOptions = <
   TData = Awaited<ReturnType<typeof usersCommonApiListMyPosts>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersCommonApiListMyPostsParams,
   options?: {
@@ -627,14 +627,14 @@ export const getUsersCommonApiListMyPostsQueryOptions = <
 export type UsersCommonApiListMyPostsQueryResult = NonNullable<
   Awaited<ReturnType<typeof usersCommonApiListMyPosts>>
 >;
-export type UsersCommonApiListMyPostsQueryError = ErrorType<unknown>;
+export type UsersCommonApiListMyPostsQueryError = ErrorType<Message>;
 
 /**
  * @summary List My Posts
  */
 export const useUsersCommonApiListMyPosts = <
   TData = Awaited<ReturnType<typeof usersCommonApiListMyPosts>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<Message>,
 >(
   params?: UsersCommonApiListMyPostsParams,
   options?: {

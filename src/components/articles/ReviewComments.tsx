@@ -41,7 +41,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(true);
   const { data, refetch, isPending } = useArticlesReviewApiListReviewComments(reviewId, {
-    query: { enabled: displayComments },
+    query: { enabled: displayComments && !!accessToken },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
   const {
@@ -49,7 +49,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
     isPending: isRatingsLoading,
     isError: isRatingsError,
   } = useArticlesReviewApiGetRating(reviewId, {
-    query: { enabled: displayComments && !isAuthor, retry: 5 },
+    query: { enabled: displayComments && !isAuthor && !!accessToken, retry: 5 },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 

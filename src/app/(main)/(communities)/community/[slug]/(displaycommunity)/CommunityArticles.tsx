@@ -4,7 +4,7 @@ import { FileX2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
-import { ArticleOut } from '@/api/schemas';
+import { ArticlesListOut } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import { useAuthStore } from '@/stores/authStore';
@@ -17,7 +17,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
   const accessToken = useAuthStore((state) => state.accessToken);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
-  const [articles, setArticles] = useState<ArticleOut[]>([]);
+  const [articles, setArticles] = useState<ArticlesListOut[]>([]);
 
   const { data, isPending, error } = useArticlesApiGetArticles(
     {
@@ -28,6 +28,9 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
     },
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
     }
   );
 
@@ -50,7 +53,11 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
   }, []);
 
   const renderArticle = useCallback(
+main
     (article: ArticleOut) => <ArticleCard article={article} forCommunity isCompact={true} />,
+
+    (article: ArticlesListOut) => <ArticleCard article={article} forCommunity />,
+test
     []
   );
 
@@ -58,7 +65,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
 
   return (
     <div className="space-y-2">
-      <SearchableList<ArticleOut>
+      <SearchableList<ArticlesListOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderArticle}

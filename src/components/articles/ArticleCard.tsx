@@ -3,22 +3,30 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+main
 import { Star, User } from 'lucide-react';
 
-import { ArticleOut } from '@/api/schemas';
+import { Star } from 'lucide-react';
+test
+
+import { ArticlesListOut } from '@/api/schemas';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 
 interface ArticleCardProps {
-  article: ArticleOut;
+  article: ArticlesListOut;
   forCommunity?: boolean;
   isCompact?: boolean;
 }
 
 const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity, isCompact = false }) => {
   return (
+main
     <div className="flex flex-col gap-1 rounded-xl border border-common-contrast bg-common-cardBackground py-2 pl-2 pr-4 res-text-xs hover:shadow-md hover:shadow-common-minimal md:py-3 md:pl-4 md:pr-6">
+
+    <div className="flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal">
+test
       <div className="flex">
         <div className="min-w-0 flex-grow gap-4 pr-4">
           <Link
@@ -90,11 +98,21 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity, isCompact = 
           </div>
         )}
       </div>
+main
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center">
           <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
           <span className="text-xs text-text-secondary">
             {article.total_reviews >= 0 && `${article.total_ratings}`}
+
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center rounded-md border border-common-minimal py-1 pl-0 pr-1.5">
+          <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
+          <span className="text-xs text-text-secondary">
+            {/* {article.total_reviews > 0 && `Avg. Rating: ${article.total_ratings} |`} Reviews:{' '}
+            {article.total_reviews} */}
+            {article.total_ratings}
+test
           </span>
         </div>
         {/* <div className="flex items-center">
@@ -106,7 +124,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity, isCompact = 
           <span className="text-xs text-text-secondary">
             {article.total_discussions} Discussions
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );
