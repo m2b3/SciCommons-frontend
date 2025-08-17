@@ -3,7 +3,7 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { MessageSquare, Star, User } from 'lucide-react';
+import { Star, User } from 'lucide-react';
 
 import { ArticleOut } from '@/api/schemas';
 
@@ -13,11 +13,12 @@ import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 interface ArticleCardProps {
   article: ArticleOut;
   forCommunity?: boolean;
+  isCompact?: boolean;
 }
 
-const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
+const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity, isCompact = false }) => {
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-xs hover:shadow-md hover:shadow-common-minimal md:p-6">
+    <div className="flex flex-col gap-1 rounded-xl border border-common-contrast bg-common-cardBackground py-2 pl-2 pr-4 res-text-xs hover:shadow-md hover:shadow-common-minimal md:py-3 md:pl-4 md:pr-6">
       <div className="flex">
         <div className="min-w-0 flex-grow gap-4 pr-4">
           <Link
@@ -34,20 +35,20 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
               rawContent={article.title}
               supportLatex={true}
               supportMarkdown={false}
-              contentClassName="line-clamp-2 text-wrap font-semibold text-text-primary res-text-lg hover:underline"
+              contentClassName="line-clamp-2 text-wrap font-semibold text-text-primary res-text-sm hover:underline"
               containerClassName="mb-0"
             />
           </Link>
           {/* <p className="mt-2 line-clamp-2 overflow-hidden text-ellipsis text-wrap text-text-primary">
             {article.abstract}
           </p> */}
-          <RenderParsedHTML
+          {/* <RenderParsedHTML
             rawContent={article.abstract}
             supportLatex={true}
             supportMarkdown={false}
             contentClassName="mt-2 line-clamp-2 text-wrap text-xs text-text-primary"
             containerClassName="mb-0"
-          />
+          /> */}
           <p className="mt-2 line-clamp-2 text-wrap text-xs text-text-secondary">
             Authors: {article.authors.map((author) => author.label).join(', ')}
           </p>
@@ -64,7 +65,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
               </Link>
             </p>
           )}
-          <p className="mt-1 text-xs text-text-secondary">Submitted By: {article.user.username}</p>
+          {/* <p className="mt-1 text-xs text-text-secondary">Submitted By: {article.user.username}</p> */}
           {/* <div className="mt-2 flex flex-wrap">
             {article.keywords.map((keyword, index) => (
               <span
@@ -89,22 +90,21 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity }) => {
           </div>
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center">
           <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
           <span className="text-xs text-text-secondary">
-            {article.total_reviews > 0 && `Avg. Rating: ${article.total_ratings} |`} Reviews:{' '}
-            {article.total_reviews}
+            {article.total_reviews >= 0 && `${article.total_ratings}`}
           </span>
         </div>
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <MessageSquare className="h-3.5 text-text-secondary" />
           <span className="text-xs text-text-secondary">{article.total_comments} comments</span>
-        </div>
+        </div> */}
         <div className="flex items-center">
           <User className="h-3.5 text-text-secondary" />
           <span className="text-xs text-text-secondary">
-            {article.total_discussions} discussions
+            {article.total_discussions} Discussions
           </span>
         </div>
       </div>

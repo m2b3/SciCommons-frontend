@@ -23,7 +23,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
     {
       community_id: communityId,
       page: page,
-      per_page: 10,
+      per_page: 12,
       search: search,
     },
     {
@@ -50,7 +50,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
   }, []);
 
   const renderArticle = useCallback(
-    (article: ArticleOut) => <ArticleCard article={article} forCommunity />,
+    (article: ArticleOut) => <ArticleCard article={article} forCommunity isCompact={true} />,
     []
   );
 
@@ -68,12 +68,13 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
         totalItems={data?.data.total || 0}
         totalPages={data?.data.num_pages || 1}
         currentPage={page}
-        itemsPerPage={10}
+        itemsPerPage={12}
         loadingType={LoadingType.PAGINATION}
         searchPlaceholder="Search articles..."
         emptyStateContent="No articles found"
         emptyStateSubcontent="Be the first to create an article in this community"
         emptyStateLogo={<FileX2 size={64} />}
+        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );

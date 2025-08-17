@@ -19,7 +19,7 @@ const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
   });
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {isPending && Array.from({ length: 5 }, (_, index) => <ArticleCardSkeleton key={index} />)}
       {data && data.data.length === 0 && (
         <EmptyState
@@ -29,9 +29,7 @@ const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
       )}
       {data &&
         data.data.map((article) => (
-          <div className="relative flex flex-col gap-2 bg-white p-2" key={article.id}>
-            <ArticleCard article={article} forCommunity />
-          </div>
+          <ArticleCard key={article.id} article={article} forCommunity isCompact={true} />
         ))}
     </div>
   );

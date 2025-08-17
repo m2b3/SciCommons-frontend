@@ -52,7 +52,7 @@ const TabContent: React.FC<TabContentProps> = ({
   const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 12,
       search,
     },
     {
@@ -64,6 +64,11 @@ const TabContent: React.FC<TabContentProps> = ({
       },
     }
   );
+
+  // Clear articles when page changes to show loading immediately
+  useEffect(() => {
+    setArticles([]);
+  }, [page]);
 
   useEffect(() => {
     if (error) {
@@ -96,7 +101,10 @@ const TabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderArticle = useCallback((article: ArticleOut) => <ArticleCard article={article} />, []);
+  const renderArticle = useCallback(
+    (article: ArticleOut) => <ArticleCard article={article} isCompact={true} />,
+    []
+  );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
@@ -119,6 +127,7 @@ const TabContent: React.FC<TabContentProps> = ({
         emptyStateSubcontent="Try searching for something else"
         emptyStateLogo={<FileX2 size={64} />}
         title={Tabs.ARTICLES}
+        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );
@@ -140,7 +149,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   const { data, isPending, error } = useUsersApiListMyArticles<ArticlesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 12,
       search,
     },
     {
@@ -153,6 +162,11 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
+
+  // Clear articles when page changes to show loading immediately
+  useEffect(() => {
+    setArticles([]);
+  }, [page]);
 
   useEffect(() => {
     if (error) {
@@ -185,7 +199,10 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderArticle = useCallback((article: ArticleOut) => <ArticleCard article={article} />, []);
+  const renderArticle = useCallback(
+    (article: ArticleOut) => <ArticleCard article={article} isCompact={true} />,
+    []
+  );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
@@ -208,6 +225,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
         emptyStateSubcontent="Try searching for something else"
         emptyStateLogo={<FileX2 size={64} />}
         title={Tabs.MY_ARTICLES}
+        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );
@@ -224,7 +242,7 @@ const Articles: React.FC = () => {
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className="container mx-auto p-2 py-8 pt-4 md:p-8 md:pt-4">
+    <div className="container mx-auto p-2 py-4 md:p-4">
       <div className="pb-4">
         {user && (
           <TabComponent

@@ -40,6 +40,7 @@ interface SearchableListProps<T> {
   emptyStateLogo: React.ReactNode;
   title?: string;
   listContainerClassName?: string;
+  onPageChange?: (page: number) => void;
 }
 
 function SearchableList<T>({
@@ -61,6 +62,7 @@ function SearchableList<T>({
   emptyStateLogo,
   title,
   listContainerClassName = 'flex flex-col gap-4',
+  onPageChange,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -75,6 +77,14 @@ function SearchableList<T>({
       onLoadMore(currentPage + 1);
     }
   }, [isLoading, currentPage, totalPages, onLoadMore]);
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      // Clear items immediately to show loading state
+      onLoadMore(newPage);
+    },
+    [onLoadMore]
+  );
 
   useEffect(() => {
     if (loadingType !== LoadingType.INFINITE_SCROLL) return;
@@ -104,7 +114,7 @@ function SearchableList<T>({
   const hasMore = items.length < totalItems;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 md:flex-row">
         {title && (
           <h1 className="whitespace-nowrap text-3xl font-bold text-text-primary">{title}</h1>
@@ -118,7 +128,7 @@ function SearchableList<T>({
         />
       </div>
 
-      <div className={cn('flex h-fit flex-col space-y-4')}>
+      <div className={cn('flex h-fit flex-col space-y-2')}>
         {!isLoading && totalItems > 0 && (
           <span className="text-sm text-text-tertiary">
             Results: {totalItems} {title}
@@ -149,14 +159,14 @@ function SearchableList<T>({
           <PaginationContent>
             {currentPage > 1 && (
               <PaginationItem>
-                <PaginationPrevious href="#" onClick={() => onLoadMore(currentPage - 1)} />
+                <PaginationPrevious href="#" onClick={() => handlePageChange(currentPage - 1)} />
               </PaginationItem>
             )}
             {[...Array(totalPages)].map((_, index) => (
               <PaginationItem key={index}>
                 <PaginationLink
                   href="#"
-                  onClick={() => onLoadMore(index + 1)}
+                  onClick={() => handlePageChange(index + 1)}
                   isActive={currentPage === index + 1}
                 >
                   {index + 1}
@@ -165,7 +175,7 @@ function SearchableList<T>({
             ))}
             {currentPage < totalPages && (
               <PaginationItem>
-                <PaginationNext href="#" onClick={() => onLoadMore(currentPage + 1)} />
+                <PaginationNext href="#" onClick={() => handlePageChange(currentPage + 1)} />
               </PaginationItem>
             )}
           </PaginationContent>
