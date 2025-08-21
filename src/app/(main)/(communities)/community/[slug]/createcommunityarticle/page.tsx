@@ -149,7 +149,6 @@ const CommunityArticleForm: NextPage = () => {
         // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
         community_name: params?.slug,
-        pdf_link: articleData?.pdfLink || undefined,
       },
     };
     const pdf_files = formData.pdfFiles

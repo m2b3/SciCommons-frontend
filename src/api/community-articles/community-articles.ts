@@ -18,13 +18,13 @@ import type {
 import { customInstance } from '.././custom-instance';
 import type { ErrorType } from '.././custom-instance';
 import type {
-  ArticlesListOut,
+  ArticleOut,
   CommunitiesArticlesApiGetMyArticlesParams,
   CommunitiesArticlesApiListCommunityArticlesByStatusParams,
   CommunitiesArticlesApiToggleArticlePseudonymousParams,
   CommunityArticlePseudonymousOut,
   Message,
-  PaginatedArticlesListResponse,
+  PaginatedArticlesResponse,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
@@ -115,7 +115,7 @@ export const communitiesArticlesApiGetMyArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedArticlesListResponse>(
+  return customInstance<PaginatedArticlesResponse>(
     { url: `/api/communities/articles/my-articles/`, method: 'GET', params, signal },
     options
   );
@@ -200,7 +200,7 @@ export const communitiesArticlesApiListCommunityArticlesByStatus = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedArticlesListResponse>(
+  return customInstance<PaginatedArticlesResponse>(
     {
       url: `/api/communities/communities/${communityName}/articles/`,
       method: 'GET',
@@ -382,7 +382,7 @@ export const communitiesArticlesApiGetAssignedArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<ArticlesListOut[]>(
+  return customInstance<ArticleOut[]>(
     { url: `/api/communities/${communityId}/assigned-articles/`, method: 'GET', signal },
     options
   );

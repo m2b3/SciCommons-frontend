@@ -21,9 +21,6 @@ const StatusList = ({ slug }: { slug: string }) => {
 
   const { data, error, isPending } = useCommunitiesApiInvitationGetCommunityInvitations(slug, {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    query: {
-      enabled: !!accessToken,
-    },
   });
 
   useEffect(() => {

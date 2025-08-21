@@ -22,7 +22,7 @@ import type {
   FavoriteItemSchema,
   Message,
   NotificationSchema,
-  PaginatedArticlesListResponse,
+  PaginatedArticlesResponse,
   PaginatedCommunities,
   UserArticleSchema,
   UserCommunitySchema,
@@ -309,7 +309,7 @@ export const usersApiListMyArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedArticlesListResponse>(
+  return customInstance<PaginatedArticlesResponse>(
     { url: `/api/users/my-articles`, method: 'GET', params, signal },
     options
   );

@@ -15,9 +15,6 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
 
   const { data, error } = useArticlesApiGetCommunityArticleStats(params?.slug || '', {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    query: {
-      enabled: !!accessToken,
-    },
   });
 
   const dataFormatter = (number: number) => `${Intl.NumberFormat('us').format(number).toString()}`;

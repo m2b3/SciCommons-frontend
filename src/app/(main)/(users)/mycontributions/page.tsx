@@ -3,7 +3,15 @@
 import React, { useEffect, useState } from 'react';
 
 import { LucideIcon } from 'lucide-react';
-import { Award, Bookmark, FileText, MessageCircle, MessageSquare, Star, Users } from 'lucide-react';
+import {
+  Award,
+  Bookmark,
+  FileText,
+  MessageCircle,
+  MessageSquare,
+  Star,
+  Users,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
@@ -87,7 +95,6 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['user-stats'],
-      enabled: !!accessToken,
     },
   });
 
@@ -97,7 +104,6 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-articles'],
-      enabled: !!accessToken,
     },
   });
 
@@ -107,7 +113,6 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-communities'],
-      enabled: !!accessToken,
     },
   });
 
@@ -117,7 +122,6 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-posts'],
-      enabled: !!accessToken,
     },
   });
 
@@ -127,7 +131,6 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-favorites'],
-      enabled: !!accessToken,
     },
   });
 
@@ -137,7 +140,6 @@ const ContributionsPage: React.FC = () => {
       staleTime: FIVE_MINUTES_IN_MS,
       refetchOnWindowFocus: true,
       queryKey: ['my-bookmarks'],
-      enabled: !!accessToken,
     },
   });
 
@@ -151,8 +153,8 @@ const ContributionsPage: React.FC = () => {
     bio: data.data.bio || 'No bio provided',
     location: 'Boston, MA',
     website: data.data.home_page_url || 'https://x.com',
-    reputationLevel: data.data.reputation_level || '',
-    reputationScore: data.data.reputation_score || 0,
+    reputationLevel: data.data.reputation_level,
+    reputationScore: data.data.reputation_score,
     contributions: [
       {
         icon: FileText,

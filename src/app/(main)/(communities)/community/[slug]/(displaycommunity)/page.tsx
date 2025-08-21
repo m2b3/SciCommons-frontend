@@ -23,9 +23,6 @@ const Community = ({ params }: { params: { slug: string } }) => {
 
   const communityQuery = useCommunitiesApiGetCommunity(params.slug, {
     request: axiosConfig,
-    query: {
-      enabled: !!accessToken,
-    },
   });
 
   const { data, error, isPending, refetch } = communityQuery;
@@ -75,7 +72,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
     : [];
 
   return (
-    <div className="container h-fit p-4">
+    <div className="container h-fit p-4 md:px-12">
       {isPending ? (
         <DisplayCommunitySkeleton />
       ) : (

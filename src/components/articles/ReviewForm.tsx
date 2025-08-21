@@ -13,7 +13,6 @@ import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { ForwardRefEditor } from '@/components/common/MarkdownEditor/ForwardRefEditor';
 import { Ratings } from '@/components/ui/ratings';
-import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -89,9 +88,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     request: axiosConfig,
   });
 
-  const formRef = React.useRef<HTMLFormElement>(null);
-  useSubmitOnCtrlEnter(formRef, isPending || editPending || deletePending);
-
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const reviewData = {
       ...data,
@@ -154,12 +150,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         <ReviewCardSkeleton />
       ) : (
         <>
-          <form
-            id="review-form"
-            ref={formRef}
-            onSubmit={handleSubmit(onSubmit)}
-            className="mb-4 flex flex-col gap-4 res-text-sm"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="mb-4 flex flex-col gap-4 res-text-sm">
             <div className="">
               <LabeledTooltip label="Rate this article" info="Rate this article" />
               <Controller

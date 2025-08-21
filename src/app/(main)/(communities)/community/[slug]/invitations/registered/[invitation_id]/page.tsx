@@ -34,9 +34,6 @@ export default function RegisteredUsersInvitation({
     invitationId,
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
-      query: {
-        enabled: !!accessToken,
-      },
     }
   );
 

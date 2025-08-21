@@ -87,9 +87,6 @@ const Comment: React.FC<CommentProps> = ({
   // Todo: Too many requests
   const { data, refetch } = useUsersCommonApiGetReactionCount(contentType, Number(id), {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    query: {
-      enabled: !!accessToken && !!id,
-    },
   });
 
   const { mutate } = useUsersCommonApiPostReaction({

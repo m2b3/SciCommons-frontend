@@ -37,9 +37,6 @@ export default function UnRegisteredUsersInvitation({
     invitationId,
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
-      query: {
-        enabled: !!accessToken,
-      },
     }
   );
 

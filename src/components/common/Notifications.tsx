@@ -16,9 +16,6 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
 
   const { data, isPending, refetch } = useUsersApiGetNotifications(query_params, {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    query: {
-      enabled: !!accessToken,
-    },
   });
 
   const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
@@ -32,14 +29,7 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
   }, [isSuccess, refetch]);
 
   const markAsRead = (id: number) => {
-    mutate(
-      { notificationId: id },
-      {
-        onSuccess: () => {
-          refetch();
-        },
-      }
-    );
+    mutate({ notificationId: id });
   };
 
   return (

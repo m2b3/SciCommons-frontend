@@ -45,7 +45,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     { status_filter: 'unsubmitted' },
     {
       query: {
-        enabled: open && !!accessToken,
+        enabled: open,
       },
       request: axiosConfig,
     }
@@ -99,12 +99,10 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
-            <DialogTrigger>Submit Existing Article</DialogTrigger>
+            <DialogTrigger>Submit Article</DialogTrigger>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href={`/community/${communityName}/createcommunityarticle`}>
-              Create New Article
-            </Link>
+            <Link href={`/community/${communityName}/createcommunityarticle`}>Create Article</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

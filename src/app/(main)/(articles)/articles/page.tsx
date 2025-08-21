@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FileX2 } from 'lucide-react';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
-import { ArticlesListOut } from '@/api/schemas';
+import { ArticleOut } from '@/api/schemas';
 import { useUsersApiListMyArticles } from '@/api/users/users';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
@@ -16,7 +16,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 interface ArticlesResponse {
   data: {
-    items: ArticlesListOut[];
+    items: ArticleOut[];
     num_pages: number;
     total: number;
   };
@@ -44,7 +44,7 @@ const TabContent: React.FC<TabContentProps> = ({
   accessToken,
   isActive,
 }) => {
-  const [articles, setArticles] = useState<ArticlesListOut[]>([]);
+  const [articles, setArticles] = useState<ArticleOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
@@ -52,7 +52,7 @@ const TabContent: React.FC<TabContentProps> = ({
   const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 12,
       search,
     },
     {
@@ -64,6 +64,11 @@ const TabContent: React.FC<TabContentProps> = ({
       },
     }
   );
+
+  // Clear articles when page changes to show loading immediately
+  useEffect(() => {
+    setArticles([]);
+  }, [page]);
 
   useEffect(() => {
     if (error) {
@@ -97,7 +102,7 @@ const TabContent: React.FC<TabContentProps> = ({
   );
 
   const renderArticle = useCallback(
-    (article: ArticlesListOut) => <ArticleCard article={article} />,
+    (article: ArticleOut) => <ArticleCard article={article} isCompact={true} />,
     []
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
@@ -106,7 +111,7 @@ const TabContent: React.FC<TabContentProps> = ({
     <div
       className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
     >
-      <SearchableList<ArticlesListOut>
+      <SearchableList<ArticleOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderArticle}
@@ -122,6 +127,7 @@ const TabContent: React.FC<TabContentProps> = ({
         emptyStateSubcontent="Try searching for something else"
         emptyStateLogo={<FileX2 size={64} />}
         title={Tabs.ARTICLES}
+        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );
@@ -135,7 +141,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   accessToken,
   isActive,
 }) => {
-  const [articles, setArticles] = useState<ArticlesListOut[]>([]);
+  const [articles, setArticles] = useState<ArticleOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
@@ -143,7 +149,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   const { data, isPending, error } = useUsersApiListMyArticles<ArticlesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 12,
       search,
     },
     {
@@ -156,6 +162,11 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
+
+  // Clear articles when page changes to show loading immediately
+  useEffect(() => {
+    setArticles([]);
+  }, [page]);
 
   useEffect(() => {
     if (error) {
@@ -189,7 +200,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   );
 
   const renderArticle = useCallback(
-    (article: ArticlesListOut) => <ArticleCard article={article} />,
+    (article: ArticleOut) => <ArticleCard article={article} isCompact={true} />,
     []
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
@@ -198,7 +209,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
     <div
       className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
     >
-      <SearchableList<ArticlesListOut>
+      <SearchableList<ArticleOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderArticle}
@@ -214,6 +225,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
         emptyStateSubcontent="Try searching for something else"
         emptyStateLogo={<FileX2 size={64} />}
         title={Tabs.MY_ARTICLES}
+        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );
@@ -230,7 +242,7 @@ const Articles: React.FC = () => {
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className="container mx-auto p-2 py-8 pt-4 md:p-8 md:pt-4">
+    <div className="container mx-auto p-2 py-4 md:p-4">
       <div className="pb-4">
         {user && (
           <TabComponent

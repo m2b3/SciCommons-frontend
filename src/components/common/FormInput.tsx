@@ -37,7 +37,6 @@ interface InputProps<TFieldValues extends FieldValues> {
   supportLatex?: boolean;
   isSuccess?: boolean;
   validateFn?: (value: string) => true | string;
-  autoFocus?: boolean;
 }
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -67,7 +66,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   supportLatex = false,
   isSuccess = false,
   validateFn,
-  autoFocus = false,
 }: InputProps<TFieldValues>): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const error = errors[name];
@@ -124,7 +122,6 @@ const FormInput = <TFieldValues extends FieldValues>({
     id: String(name),
     placeholder,
     readOnly,
-    autoFocus,
     ...registeredField,
     onChange: handleChange,
     className: cn(

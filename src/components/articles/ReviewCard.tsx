@@ -19,10 +19,13 @@ import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
 import { ReviewOut } from '@/api/schemas';
-
-
+import {
+  useUsersCommonApiGetReactionCount,
+  useUsersCommonApiPostReaction,
+} from '@/api/users-common-api/users-common-api';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
+import { Reaction } from '@/types';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
@@ -45,26 +48,25 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  // COMMENTED OUT BCOZ WE ARE NOT SHOWING REACTIONS IN REVIEW CARD
-  // const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
-  //   'articles.review',
-  //   Number(review.id),
-  //   {
-  //     request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  //   }
-  // );
+  const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
+    'articles.review',
+    Number(review.id),
+    {
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    }
+  );
 
-  // const { mutate } = useUsersCommonApiPostReaction({
-  //   request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  //   mutation: {
-  //     onSuccess: () => {
-  //       refetchReactions();
-  //     },
-  //     onError: (error) => {
-  //       showErrorToast(error);
-  //     },
-  //   },
-  // });
+  const { mutate } = useUsersCommonApiPostReaction({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onSuccess: () => {
+        refetchReactions();
+      },
+      onError: (error) => {
+        showErrorToast(error);
+      },
+    },
+  });
 
   const { mutate: approveArticle, isPending: approveArticlePending } =
     useCommunitiesArticlesApiApproveArticle({
@@ -80,12 +82,12 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
       },
     });
 
-  // const handleReaction = (reaction: Reaction) => {
-  //   if (reaction === 'upvote')
-  //     mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: 1 } });
-  //   else if (reaction === 'downvote')
-  //     mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: -1 } });
-  // };
+  const handleReaction = (reaction: Reaction) => {
+    if (reaction === 'upvote')
+      mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: 1 } });
+    else if (reaction === 'downvote')
+      mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: -1 } });
+  };
 
   const handleApprove = () => {
     approveArticle({ communityArticleId: review.community_article?.id || 0 });
@@ -145,20 +147,22 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
       ) : (
         <div className="mb-4 rounded-xl border-common-contrast res-text-sm sm:border sm:bg-common-cardBackground sm:p-4">
           <div className="mb-2 flex justify-between">
-            <div className="flex items-start gap-2">
-              <Image
-                src={
-                  review.user.profile_pic_url
-                    ? review.user.profile_pic_url?.startsWith('http')
-                      ? review.user.profile_pic_url
-                      : `data:image/png;base64,${review.user.profile_pic_url}`
-                    : `/images/assets/user-icon.png`
-                }
-                alt={review.user.username}
-                width={32}
-                height={32}
-                className="shrink-0 rounded-full"
-              />
+            <div className="flex items-center gap-2">
+              <div>
+                <Image
+                  src={
+                    review.user.profile_pic_url
+                      ? review.user.profile_pic_url?.startsWith('http')
+                        ? review.user.profile_pic_url
+                        : `data:image/png;base64,${review.user.profile_pic_url}`
+                      : `/images/assets/user-icon.png`
+                  }
+                  alt={review.user.username}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              </div>
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 font-bold text-text-secondary">
                   {review.user.username}

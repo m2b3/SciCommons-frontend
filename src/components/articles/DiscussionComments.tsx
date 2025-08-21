@@ -34,9 +34,6 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
     {},
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
-      query: {
-        enabled: !!accessToken,
-      },
     }
   );
 
