@@ -1,14 +1,18 @@
-import { FC } from 'react';
+'use client';
+
+import { FC, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Star, User } from 'lucide-react';
+import { Play, Star, User } from 'lucide-react';
 
 import { ArticleOut } from '@/api/schemas';
+import ArticlePreview from '@/components/articles/ArticlePreview';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
+import { Drawer, DrawerContent } from '../ui/drawer';
 
 interface ArticleCardProps {
   article: ArticleOut;
@@ -17,6 +21,7 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity, isCompact = false }) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-common-contrast bg-common-cardBackground py-2 pl-2 pr-4 res-text-xs hover:shadow-md hover:shadow-common-minimal md:py-3 md:pl-4 md:pr-6">
       <div className="flex">
@@ -107,7 +112,25 @@ const ArticleCard: FC<ArticleCardProps> = ({ article, forCommunity, isCompact = 
             {article.total_discussions} Discussions
           </span>
         </div>
+        <button
+          type="button"
+          onClick={() => setIsPreviewOpen(true)}
+          className="group ml-auto flex items-center gap-1 rounded-md px-2 py-1 transition-colors hover:bg-common-minimal"
+        >
+          <Play
+            className="h-3.5 text-functional-yellow transition-transform duration-150 group-hover:scale-110"
+            fill="currentColor"
+          />
+          <span className="text-xs text-text-secondary">Preview</span>
+        </button>
       </div>
+      <Drawer open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DrawerContent className="h-[50vh] p-0">
+          <div className="h-full w-full overflow-y-auto px-3 pt-2 sm:px-4 sm:pt-3">
+            <ArticlePreview article={article} />
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
