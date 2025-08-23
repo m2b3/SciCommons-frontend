@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { LayoutGrid, List, PanelLeft } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 
 import EmptyState from '@/components/common/EmptyState';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonIcon } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Pagination,
@@ -40,6 +41,9 @@ interface SearchableListProps<T> {
   emptyStateLogo: React.ReactNode;
   title?: string;
   listContainerClassName?: string;
+  viewType?: 'grid' | 'list' | 'preview';
+  showViewTypeIcons?: boolean;
+  setViewType?: (viewType: 'grid' | 'list' | 'preview') => void;
 }
 
 function SearchableList<T>({
@@ -61,6 +65,9 @@ function SearchableList<T>({
   emptyStateLogo,
   title,
   listContainerClassName = 'flex flex-col gap-4',
+  showViewTypeIcons = false,
+  viewType = 'grid',
+  setViewType,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -120,9 +127,42 @@ function SearchableList<T>({
 
       <div className={cn('flex h-fit flex-col space-y-4')}>
         {!isLoading && totalItems > 0 && (
-          <span className="text-sm text-text-tertiary">
-            Results: {totalItems} {title}
-          </span>
+          <div className="flex w-full items-center justify-between">
+            <span className="text-sm text-text-tertiary">
+              Results: {totalItems} {title}
+            </span>
+            {showViewTypeIcons && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={viewType === 'grid' ? 'gray' : 'transparent'}
+                  className="aspect-square p-1"
+                  onClick={() => setViewType?.('grid')}
+                >
+                  <ButtonIcon>
+                    <LayoutGrid size={18} className="text-text-secondary" />
+                  </ButtonIcon>
+                </Button>
+                <Button
+                  variant={viewType === 'list' ? 'gray' : 'transparent'}
+                  className="aspect-square p-1"
+                  onClick={() => setViewType?.('list')}
+                >
+                  <ButtonIcon>
+                    <List size={18} className="text-text-secondary" />
+                  </ButtonIcon>
+                </Button>
+                <Button
+                  variant={viewType === 'preview' ? 'gray' : 'transparent'}
+                  className="hidden aspect-square p-1 md:block"
+                  onClick={() => setViewType?.('preview')}
+                >
+                  <ButtonIcon>
+                    <PanelLeft size={18} className="text-text-secondary" />
+                  </ButtonIcon>
+                </Button>
+              </div>
+            )}
+          </div>
         )}
         <div className={cn(listContainerClassName)}>
           {items.map((item, index) => (

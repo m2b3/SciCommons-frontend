@@ -3,15 +3,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { FileX2 } from 'lucide-react';
+import { useMediaQuery } from 'usehooks-ts';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import { ArticlesListOut } from '@/api/schemas';
 import { useUsersApiListMyArticles } from '@/api/users/users';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
+import { ArticlePreviewSection } from '@/components/articles/ArticlePreviewDrawer';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import TabComponent from '@/components/communities/TabComponent';
-import { FIVE_MINUTES_IN_MS } from '@/constants/common.constants';
+import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ArticlesResponse {
@@ -34,6 +37,8 @@ interface TabContentProps {
   setPage: (page: number) => void;
   accessToken?: string;
   isActive: boolean;
+  viewType: 'grid' | 'list' | 'preview';
+  setViewType: (viewType: 'grid' | 'list' | 'preview') => void;
 }
 
 const TabContent: React.FC<TabContentProps> = ({
@@ -43,16 +48,22 @@ const TabContent: React.FC<TabContentProps> = ({
   setPage,
   accessToken,
   isActive,
+  viewType,
+  setViewType,
 }) => {
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
+  const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
+    null
+  );
+  const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 50,
       search,
     },
     {
@@ -64,6 +75,12 @@ const TabContent: React.FC<TabContentProps> = ({
       },
     }
   );
+
+  useEffect(() => {
+    if (!isDesktop && viewType === 'preview') {
+      setViewType('grid');
+    }
+  }, [isDesktop, viewType]);
 
   useEffect(() => {
     if (error) {
@@ -97,32 +114,60 @@ const TabContent: React.FC<TabContentProps> = ({
   );
 
   const renderArticle = useCallback(
-    (article: ArticlesListOut) => <ArticleCard article={article} />,
-    []
+    (article: ArticlesListOut) => (
+      <ArticleCard
+        article={article}
+        className="h-full"
+        compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
+        handleArticlePreview={() => {
+          setSelectedPreviewArticle(article);
+        }}
+      />
+    ),
+    [viewType]
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
     <div
-      className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
+      className={cn(
+        'h-full transition-opacity duration-200',
+        isActive ? 'opacity-100' : 'hidden opacity-0',
+        isActive && viewType === 'preview' && 'flex flex-row'
+      )}
     >
-      <SearchableList<ArticlesListOut>
-        onSearch={handleSearch}
-        onLoadMore={handleLoadMore}
-        renderItem={renderArticle}
-        renderSkeleton={renderSkeleton}
-        isLoading={isPending}
-        items={articles}
-        totalItems={totalItems}
-        totalPages={totalPages}
-        currentPage={page}
-        loadingType={loadingType}
-        searchPlaceholder="Search articles..."
-        emptyStateContent="No Articles Found"
-        emptyStateSubcontent="Try searching for something else"
-        emptyStateLogo={<FileX2 size={64} />}
-        title={Tabs.ARTICLES}
-      />
+      <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
+        <SearchableList<ArticlesListOut>
+          onSearch={handleSearch}
+          onLoadMore={handleLoadMore}
+          renderItem={renderArticle}
+          renderSkeleton={renderSkeleton}
+          isLoading={isPending}
+          items={articles}
+          totalItems={totalItems}
+          totalPages={totalPages}
+          currentPage={page}
+          loadingType={loadingType}
+          searchPlaceholder="Search articles..."
+          emptyStateContent="No Articles Found"
+          emptyStateSubcontent="Try searching for something else"
+          emptyStateLogo={<FileX2 size={64} />}
+          title={Tabs.ARTICLES}
+          listContainerClassName={cn(
+            'grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3',
+            viewType === 'preview' && 'grid-cols-1 h-full md:grid-cols-1 lg:grid-cols-1'
+          )}
+          showViewTypeIcons={true}
+          setViewType={setViewType}
+          viewType={viewType}
+        />
+      </div>
+      {viewType === 'preview' && (
+        <ArticlePreviewSection
+          article={selectedPreviewArticle}
+          className="hidden h-[calc(100vh-130px)] max-w-[720px] lg:block"
+        />
+      )}
     </div>
   );
 };
@@ -134,16 +179,22 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   setPage,
   accessToken,
   isActive,
+  viewType,
+  setViewType,
 }) => {
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
+  const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
+    null
+  );
+  const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   const { data, isPending, error } = useUsersApiListMyArticles<ArticlesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 50,
       search,
     },
     {
@@ -158,6 +209,12 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   );
 
   useEffect(() => {
+    if (!isDesktop && viewType === 'preview') {
+      setViewType('grid');
+    }
+  }, [isDesktop, viewType]);
+
+  useEffect(() => {
     if (error) {
       showErrorToast(error);
     }
@@ -189,32 +246,60 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   );
 
   const renderArticle = useCallback(
-    (article: ArticlesListOut) => <ArticleCard article={article} />,
-    []
+    (article: ArticlesListOut) => (
+      <ArticleCard
+        article={article}
+        className="h-full"
+        compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
+        handleArticlePreview={() => {
+          setSelectedPreviewArticle(article);
+        }}
+      />
+    ),
+    [viewType]
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
   return (
     <div
-      className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
+      className={cn(
+        'h-full transition-opacity duration-200',
+        isActive ? 'opacity-100' : 'hidden opacity-0',
+        isActive && viewType === 'preview' && 'flex flex-row'
+      )}
     >
-      <SearchableList<ArticlesListOut>
-        onSearch={handleSearch}
-        onLoadMore={handleLoadMore}
-        renderItem={renderArticle}
-        renderSkeleton={renderSkeleton}
-        isLoading={isPending}
-        items={articles}
-        totalItems={totalItems}
-        totalPages={totalPages}
-        currentPage={page}
-        loadingType={loadingType}
-        searchPlaceholder="Search your articles..."
-        emptyStateContent="No Articles Found"
-        emptyStateSubcontent="Try searching for something else"
-        emptyStateLogo={<FileX2 size={64} />}
-        title={Tabs.MY_ARTICLES}
-      />
+      <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
+        <SearchableList<ArticlesListOut>
+          onSearch={handleSearch}
+          onLoadMore={handleLoadMore}
+          renderItem={renderArticle}
+          renderSkeleton={renderSkeleton}
+          isLoading={isPending}
+          items={articles}
+          totalItems={totalItems}
+          totalPages={totalPages}
+          currentPage={page}
+          loadingType={loadingType}
+          searchPlaceholder="Search your articles..."
+          emptyStateContent="No Articles Found"
+          emptyStateSubcontent="Try searching for something else"
+          emptyStateLogo={<FileX2 size={64} />}
+          title={Tabs.MY_ARTICLES}
+          listContainerClassName={cn(
+            'grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3',
+            viewType === 'preview' && 'grid-cols-1 h-full md:grid-cols-1 lg:grid-cols-1'
+          )}
+          showViewTypeIcons={true}
+          setViewType={setViewType}
+          viewType={viewType}
+        />
+      </div>
+      {viewType === 'preview' && (
+        <ArticlePreviewSection
+          article={selectedPreviewArticle}
+          className="hidden h-[calc(100vh-130px)] max-w-[720px] lg:block"
+        />
+      )}
     </div>
   );
 };
@@ -225,12 +310,22 @@ const Articles: React.FC = () => {
   const [myArticlesPage, setMyArticlesPage] = useState<number>(1);
   const [articlesSearch, setArticlesSearch] = useState<string>('');
   const [myArticlesSearch, setMyArticlesSearch] = useState<string>('');
+  const [viewType, setViewType] = useState<'grid' | 'list' | 'preview'>(() => {
+    if (typeof window === 'undefined') return 'grid';
+    const saved = window.localStorage.getItem('ArticlesLayoutType');
+    return saved === 'grid' || saved === 'list' || saved === 'preview' ? saved : 'grid';
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('ArticlesLayoutType', viewType);
+  }, [viewType]);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className="container mx-auto p-2 py-8 pt-4 md:p-8 md:pt-4">
+    <div className="p-2 py-8 pt-4 md:pb-0 md:pt-4">
       <div className="pb-4">
         {user && (
           <TabComponent
@@ -247,6 +342,8 @@ const Articles: React.FC = () => {
           page={articlesPage}
           setPage={setArticlesPage}
           isActive={activeTab === Tabs.ARTICLES}
+          viewType={viewType}
+          setViewType={setViewType}
         />
         {user && accessToken && (
           <MyArticlesTabContent
@@ -256,6 +353,8 @@ const Articles: React.FC = () => {
             setPage={setMyArticlesPage}
             accessToken={accessToken}
             isActive={activeTab === Tabs.MY_ARTICLES}
+            viewType={viewType}
+            setViewType={setViewType}
           />
         )}
       </div>
