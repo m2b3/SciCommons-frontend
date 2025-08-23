@@ -18,6 +18,7 @@ const RenderParsedHTML = ({
   isShrinked = false,
   containerClassName,
   contentClassName,
+  gradientClassName,
   supportMarkdown = true,
   supportLatex = true,
 }: {
@@ -25,6 +26,7 @@ const RenderParsedHTML = ({
   isShrinked?: boolean;
   containerClassName?: string;
   contentClassName?: string;
+  gradientClassName?: string;
 } & SupportConfig) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -139,9 +141,11 @@ const RenderParsedHTML = ({
       {isShrinked && isOverflowing && (
         <>
           <div
-            className={`pointer-events-none absolute bottom-0 left-0 right-0 h-[100px] bg-gradient-to-t from-common-background to-transparent sm:from-common-cardBackground ${
-              isExpanded ? 'opacity-0' : 'opacity-100'
-            }`}
+            className={cn(
+              'absolute bottom-0 left-0 right-0 h-[100px] bg-gradient-to-t from-common-background to-transparent sm:from-common-cardBackground',
+              isExpanded ? 'opacity-0' : 'opacity-100',
+              gradientClassName
+            )}
           />
 
           <button
