@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Star } from 'lucide-react';
+import Link from 'next/link';
+
+import { ArrowRightIcon, Star } from 'lucide-react';
 
 import { ArticlesListOut } from '@/api/schemas';
 import { cn } from '@/lib/utils';
@@ -8,7 +10,7 @@ import { cn } from '@/lib/utils';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import TruncateText from '../common/TruncateText';
 
-export const ArticlePreviewSection = ({
+const ArticlePreviewSection = ({
   article,
   className,
 }: {
@@ -67,6 +69,15 @@ export const ArticlePreviewSection = ({
         <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
         <span className="text-xs text-text-secondary">{article.total_ratings}</span>
       </div>
+      <Link
+        href={`/article/${article.slug}`}
+        className="mt-6 flex flex-row items-center gap-1 text-functional-blue hover:underline"
+      >
+        <span className="text-sm">Go to the Article Page</span>
+        <ArrowRightIcon className="h-4 w-4 -rotate-45" />
+      </Link>
     </div>
   );
 };
+
+export default ArticlePreviewSection;

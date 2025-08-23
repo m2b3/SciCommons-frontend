@@ -168,7 +168,7 @@ export default ArticleCard;
 
 export const ArticleCardSkeleton: React.FC = () => {
   return (
-    <Skeleton className="flex flex-row items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4">
+    <Skeleton className="flex flex-row items-start gap-4 overflow-hidden rounded-xl border border-common-contrast bg-common-cardBackground p-4">
       <div className="w-full space-y-2">
         <TextSkeleton className="h-6 w-3/4" />
         <TextSkeleton />
@@ -181,7 +181,7 @@ export const ArticleCardSkeleton: React.FC = () => {
           ))}
         </div>
       </div>
-      <BlockSkeleton className="aspect-square size-20 sm:size-24 md:size-32 lg:size-40" />
+      <BlockSkeleton className="hidden aspect-square size-20 sm:size-24 md:size-32 lg:block lg:size-40" />
     </Skeleton>
   );
 };
