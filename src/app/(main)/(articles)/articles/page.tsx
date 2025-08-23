@@ -9,7 +9,7 @@ import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import { ArticlesListOut } from '@/api/schemas';
 import { useUsersApiListMyArticles } from '@/api/users/users';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
-import { ArticlePreviewSection } from '@/components/articles/ArticlePreviewDrawer';
+import ArticlePreviewSection from '@/components/articles/ArticlePreviewSection';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import TabComponent from '@/components/communities/TabComponent';
 import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constants';
@@ -310,11 +310,15 @@ const Articles: React.FC = () => {
   const [myArticlesPage, setMyArticlesPage] = useState<number>(1);
   const [articlesSearch, setArticlesSearch] = useState<string>('');
   const [myArticlesSearch, setMyArticlesSearch] = useState<string>('');
-  const [viewType, setViewType] = useState<'grid' | 'list' | 'preview'>(() => {
-    if (typeof window === 'undefined') return 'grid';
+  const [viewType, setViewType] = useState<'grid' | 'list' | 'preview'>('grid');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const saved = window.localStorage.getItem('ArticlesLayoutType');
-    return saved === 'grid' || saved === 'list' || saved === 'preview' ? saved : 'grid';
-  });
+    if (saved === 'grid' || saved === 'list' || saved === 'preview') {
+      setViewType(saved);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
