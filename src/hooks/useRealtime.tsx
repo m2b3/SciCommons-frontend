@@ -176,7 +176,6 @@ export function useRealtime() {
   }, []);
 
   const fetchPoll = useCallback(async (): Promise<PollResponse> => {
-    console.log('fetchPoll', REALTIME_URL);
     if (!REALTIME_URL) throw new Error('Missing NEXT_PUBLIC_REALTIME_URL');
     const queueId = queueIdRef.current;
     const lastEventId = lastEventIdRef.current ?? 0;
@@ -273,7 +272,6 @@ export function useRealtime() {
     if (isPollingRef.current) return;
     isPollingRef.current = true;
     try {
-      console.log('pollLoop', REALTIME_URL);
       if (!REALTIME_URL) {
         setStatus('disabled');
         await new Promise((r) => setTimeout(r, 10_000));

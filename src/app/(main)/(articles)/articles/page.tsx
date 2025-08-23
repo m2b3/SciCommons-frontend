@@ -117,14 +117,19 @@ const TabContent: React.FC<TabContentProps> = ({
     (article: ArticlesListOut) => (
       <ArticleCard
         article={article}
-        className="h-full"
+        className={cn(
+          'h-full',
+          viewType === 'preview' &&
+            selectedPreviewArticle?.id === article.id &&
+            'border-functional-green/50 bg-functional-green/10'
+        )}
         compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
         handleArticlePreview={() => {
           setSelectedPreviewArticle(article);
         }}
       />
     ),
-    [viewType]
+    [viewType, selectedPreviewArticle]
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
@@ -249,14 +254,19 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
     (article: ArticlesListOut) => (
       <ArticleCard
         article={article}
-        className="h-full"
+        className={cn(
+          'h-full',
+          viewType === 'preview' &&
+            selectedPreviewArticle?.id === article.id &&
+            'border-functional-green bg-functional-green/15'
+        )}
         compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
         handleArticlePreview={() => {
           setSelectedPreviewArticle(article);
         }}
       />
     ),
-    [viewType]
+    [viewType, selectedPreviewArticle]
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
@@ -312,18 +322,18 @@ const Articles: React.FC = () => {
   const [myArticlesSearch, setMyArticlesSearch] = useState<string>('');
   const [viewType, setViewType] = useState<'grid' | 'list' | 'preview'>('grid');
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const saved = window.localStorage.getItem('ArticlesLayoutType');
-    if (saved === 'grid' || saved === 'list' || saved === 'preview') {
-      setViewType(saved);
-    }
+  const handleViewTypeChange = useCallback((newViewType: 'grid' | 'list' | 'preview') => {
+    setViewType(newViewType);
+    window.localStorage.setItem('articles-layout-type', newViewType);
   }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem('ArticlesLayoutType', viewType);
-  }, [viewType]);
+    const saved = window.localStorage.getItem('articles-layout-type');
+    if (saved === 'grid' || saved === 'list' || saved === 'preview') {
+      setViewType(saved);
+    }
+  }, []);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const user = useAuthStore((state) => state.user);
@@ -347,7 +357,7 @@ const Articles: React.FC = () => {
           setPage={setArticlesPage}
           isActive={activeTab === Tabs.ARTICLES}
           viewType={viewType}
-          setViewType={setViewType}
+          setViewType={handleViewTypeChange}
         />
         {user && accessToken && (
           <MyArticlesTabContent
@@ -358,7 +368,7 @@ const Articles: React.FC = () => {
             accessToken={accessToken}
             isActive={activeTab === Tabs.MY_ARTICLES}
             viewType={viewType}
-            setViewType={setViewType}
+            setViewType={handleViewTypeChange}
           />
         )}
       </div>
