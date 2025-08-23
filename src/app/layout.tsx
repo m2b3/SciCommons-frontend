@@ -55,6 +55,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <main className="flex-grow">{children}</main>
           </ThemeProvider>
+          {/* <RealtimeStatus /> */}
           <BottomBar />
           <SonnerToaster
             richColors

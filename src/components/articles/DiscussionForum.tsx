@@ -9,6 +9,7 @@ import { useArticlesDiscussionApiListDiscussions } from '@/api/discussions/discu
 import EmptyState from '@/components/common/EmptyState';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { ErrorMessage } from '@/constants';
+import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -35,6 +36,9 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       query: {
         enabled: !!accessToken,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: true,
+        queryKey: ['discussions', articleId, communityId],
       },
     }
   );
