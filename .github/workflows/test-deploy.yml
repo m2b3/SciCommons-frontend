@@ -48,6 +48,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
             NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_TEST }}
+            NEXT_PUBLIC_REALTIME_URL=${{ secrets.NEXT_PUBLIC_REALTIME_URL_TEST }}
 
       # Step 5: Setup SSH keys and known_hosts
       - name: Setup SSH
