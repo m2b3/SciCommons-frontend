@@ -36,6 +36,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import RealtimeStatus from './RealtimeStatus';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
@@ -64,7 +65,7 @@ const NavBar: React.FC = () => {
             <Image src="/logo.png" alt="Logo" width={60} height={40} />
           </Link>
         </div>
-        <ul className="mx-auto hidden space-x-1 md:absolute md:left-1/2 md:flex md:-translate-x-1/2">
+        <ul className="mx-auto hidden items-center space-x-1 md:absolute md:left-1/2 md:flex md:-translate-x-1/2">
           {navLinks?.map((link) => (
             <li
               key={link.href}
@@ -78,6 +79,7 @@ const NavBar: React.FC = () => {
               <Link href={link.href}>{link.label}</Link>
             </li>
           ))}
+          <RealtimeStatus />
         </ul>
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">

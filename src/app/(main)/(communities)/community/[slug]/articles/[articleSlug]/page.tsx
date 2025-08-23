@@ -13,6 +13,7 @@ import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
 import TabNavigation from '@/components/ui/tab-navigation';
+import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -40,7 +41,12 @@ const CommunityArticleDisplayPage: React.FC = () => {
     data?.data.id || 0,
     { community_id: data?.data.community_article?.community.id || 0 },
     {
-      query: { enabled: !!accessToken && !!data },
+      query: {
+        enabled: !!accessToken && !!data,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
+      },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
