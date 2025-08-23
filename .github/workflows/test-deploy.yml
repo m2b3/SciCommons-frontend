@@ -77,6 +77,7 @@ jobs:
             # Append environment variables one by one
             echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_TEST }}" >> .env.test
             echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env.test
+            echo "NEXT_PUBLIC_REALTIME_URL=${{ secrets.NEXT_PUBLIC_REALTIME_URL }}" >> .env.test
 
             # Ensure the environment variables are written before proceeding
             echo ".env.test file created with environment variables."
