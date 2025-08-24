@@ -36,7 +36,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import RealtimeStatus from './RealtimeStatus';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
@@ -79,7 +78,6 @@ const NavBar: React.FC = () => {
               <Link href={link.href}>{link.label}</Link>
             </li>
           ))}
-          <RealtimeStatus />
         </ul>
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">

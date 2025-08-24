@@ -92,7 +92,7 @@ function SearchableList<T>({
           handleLoadMore();
         }
       },
-      { threshold: 1.0 }
+      { root: null, rootMargin: '200px', threshold: 0.0 }
     );
 
     const currentObserverTarget = observerTarget.current;
