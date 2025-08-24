@@ -8,6 +8,7 @@ import { SessionExpirationDialog } from '@/HOCs/CheckSessionExpiration';
 import PathTracker from '@/HOCs/withPathTracker';
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
 import BottomBar from '@/components/common/BottomBar';
+import RealtimeStatus from '@/components/common/RealtimeStatus';
 import { ThemeProvider } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
 
@@ -55,7 +56,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <main className="flex-grow">{children}</main>
           </ThemeProvider>
-          {/* <RealtimeStatus /> */}
+          <RealtimeStatus className="fixed left-1/2 top-4 z-[1000] -translate-x-1/2 bg-common-cardBackground md:left-auto md:right-2 md:top-16 md:translate-x-0" />
           <BottomBar />
           <SonnerToaster
             richColors

@@ -13,6 +13,7 @@ import ArticlePreviewSection from '@/components/articles/ArticlePreviewSection';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import TabComponent from '@/components/communities/TabComponent';
 import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constants';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -54,11 +55,26 @@ const TabContent: React.FC<TabContentProps> = ({
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const loadingType = LoadingType.PAGINATION;
+  const loadingType = LoadingType.INFINITE_SCROLL;
   const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
     null
   );
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
+
+  useKeyboardNavigation({
+    items: articles,
+    selectedItem: selectedPreviewArticle,
+    setSelectedItem: setSelectedPreviewArticle,
+    isEnabled: viewType === 'preview' && isActive,
+    getItemId: (article) => article.id,
+    autoSelectFirst: true,
+    getItemElement: (item) =>
+      document.querySelector(`[data-article-id="${String(item.id)}"]`) as HTMLElement | null,
+    hasMore: articles.length < totalItems,
+    requestMore: () => {
+      if (page < totalPages) setPage(page + 1);
+    },
+  });
 
   const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>(
     {
@@ -87,7 +103,7 @@ const TabContent: React.FC<TabContentProps> = ({
       showErrorToast(error);
     }
     if (data) {
-      if (page === 1 || loadingType === LoadingType.PAGINATION) {
+      if (page === 1) {
         setArticles(data.data.items);
       } else {
         setArticles((prevArticles) => [...prevArticles, ...data.data.items]);
@@ -115,19 +131,21 @@ const TabContent: React.FC<TabContentProps> = ({
 
   const renderArticle = useCallback(
     (article: ArticlesListOut) => (
-      <ArticleCard
-        article={article}
-        className={cn(
-          'h-full',
-          viewType === 'preview' &&
-            selectedPreviewArticle?.id === article.id &&
-            'border-functional-green/50 bg-functional-green/10'
-        )}
-        compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
-        handleArticlePreview={() => {
-          setSelectedPreviewArticle(article);
-        }}
-      />
+      <div data-article-id={String(article.id)}>
+        <ArticleCard
+          article={article}
+          className={cn(
+            'h-full',
+            viewType === 'preview' &&
+              selectedPreviewArticle?.id === article.id &&
+              'border-functional-green/50 bg-functional-green/10'
+          )}
+          compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
+          handleArticlePreview={() => {
+            setSelectedPreviewArticle(article);
+          }}
+        />
+      </div>
     ),
     [viewType, selectedPreviewArticle]
   );
@@ -190,11 +208,26 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const loadingType = LoadingType.PAGINATION;
+  const loadingType = LoadingType.INFINITE_SCROLL;
   const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
     null
   );
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
+
+  useKeyboardNavigation({
+    items: articles,
+    selectedItem: selectedPreviewArticle,
+    setSelectedItem: setSelectedPreviewArticle,
+    isEnabled: viewType === 'preview' && isActive,
+    getItemId: (article) => article.id,
+    autoSelectFirst: true,
+    getItemElement: (item) =>
+      document.querySelector(`[data-article-id="${String(item.id)}"]`) as HTMLElement | null,
+    hasMore: articles.length < totalItems,
+    requestMore: () => {
+      if (page < totalPages) setPage(page + 1);
+    },
+  });
 
   const { data, isPending, error } = useUsersApiListMyArticles<ArticlesResponse>(
     {
@@ -224,7 +257,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
       showErrorToast(error);
     }
     if (data) {
-      if (page === 1 || loadingType === LoadingType.PAGINATION) {
+      if (page === 1) {
         setArticles(data.data.items);
       } else {
         setArticles((prevArticles) => [...prevArticles, ...data.data.items]);
@@ -252,19 +285,21 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
 
   const renderArticle = useCallback(
     (article: ArticlesListOut) => (
-      <ArticleCard
-        article={article}
-        className={cn(
-          'h-full',
-          viewType === 'preview' &&
-            selectedPreviewArticle?.id === article.id &&
-            'border-functional-green bg-functional-green/15'
-        )}
-        compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
-        handleArticlePreview={() => {
-          setSelectedPreviewArticle(article);
-        }}
-      />
+      <div data-article-id={String(article.id)}>
+        <ArticleCard
+          article={article}
+          className={cn(
+            'h-full',
+            viewType === 'preview' &&
+              selectedPreviewArticle?.id === article.id &&
+              'border-functional-green bg-functional-green/15'
+          )}
+          compactType={viewType === 'grid' || viewType === 'preview' ? 'default' : 'minimal'}
+          handleArticlePreview={() => {
+            setSelectedPreviewArticle(article);
+          }}
+        />
+      </div>
     ),
     [viewType, selectedPreviewArticle]
   );
