@@ -12,6 +12,7 @@ import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleC
 import ArticlePreviewSection from '@/components/articles/ArticlePreviewSection';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import TabComponent from '@/components/communities/TabComponent';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -68,12 +69,34 @@ const TabContent: React.FC<TabContentProps> = ({
     isEnabled: viewType === 'preview' && isActive,
     getItemId: (article) => article.id,
     autoSelectFirst: true,
-    getItemElement: (item) =>
-      document.querySelector(`[data-article-id="${String(item.id)}"]`) as HTMLElement | null,
+    getItemElement: (item) => {
+      const root = document.querySelector('[data-slot="articles-tab"]');
+      return root
+        ? (root.querySelector(`[data-article-id="${String(item.id)}"]`) as HTMLElement | null)
+        : null;
+    },
     hasMore: articles.length < totalItems,
     requestMore: () => {
       if (page < totalPages) setPage(page + 1);
     },
+    scrollContainer:
+      viewType === 'preview'
+        ? () => {
+            // Scope to Articles tab container using its data-slot
+            const root = document.querySelector('[data-slot="articles-tab"]');
+            if (!root) return null;
+            const panels = root.querySelectorAll('[data-slot="resizable-panel"]');
+            for (const panel of panels) {
+              if (
+                panel.querySelector('[data-article-id]') &&
+                (panel as HTMLElement).classList.contains('overflow-y-auto')
+              ) {
+                return panel as HTMLElement;
+              }
+            }
+            return null;
+          }
+        : undefined,
   });
 
   const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>(
@@ -153,43 +176,82 @@ const TabContent: React.FC<TabContentProps> = ({
 
   return (
     <div
+      data-slot="articles-tab"
       className={cn(
         'h-full transition-opacity duration-200',
         isActive ? 'opacity-100' : 'hidden opacity-0',
         isActive && viewType === 'preview' && 'flex flex-row'
       )}
     >
-      <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
-        <SearchableList<ArticlesListOut>
-          onSearch={handleSearch}
-          onLoadMore={handleLoadMore}
-          renderItem={renderArticle}
-          renderSkeleton={renderSkeleton}
-          isLoading={isPending}
-          items={articles}
-          totalItems={totalItems}
-          totalPages={totalPages}
-          currentPage={page}
-          loadingType={loadingType}
-          searchPlaceholder="Search articles..."
-          emptyStateContent="No Articles Found"
-          emptyStateSubcontent="Try searching for something else"
-          emptyStateLogo={<FileX2 size={64} />}
-          title={Tabs.ARTICLES}
-          listContainerClassName={cn(
-            'grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3',
-            viewType === 'preview' && 'grid-cols-1 h-full md:grid-cols-1 lg:grid-cols-1'
-          )}
-          showViewTypeIcons={true}
-          setViewType={setViewType}
-          viewType={viewType}
-        />
-      </div>
+      {viewType !== 'preview' && (
+        <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
+          <SearchableList<ArticlesListOut>
+            onSearch={handleSearch}
+            onLoadMore={handleLoadMore}
+            renderItem={renderArticle}
+            renderSkeleton={renderSkeleton}
+            isLoading={isPending}
+            items={articles}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={page}
+            loadingType={loadingType}
+            searchPlaceholder="Search articles..."
+            emptyStateContent="No Articles Found"
+            emptyStateSubcontent="Try searching for something else"
+            emptyStateLogo={<FileX2 size={64} />}
+            title={Tabs.ARTICLES}
+            listContainerClassName={cn('grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3')}
+            showViewTypeIcons={true}
+            setViewType={setViewType}
+            viewType={viewType}
+          />
+        </div>
+      )}
       {viewType === 'preview' && (
-        <ArticlePreviewSection
-          article={selectedPreviewArticle}
-          className="hidden h-[calc(100vh-130px)] max-w-[720px] lg:block"
-        />
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="h-full w-full pl-2"
+          autoSaveId="articles-list-panel"
+        >
+          <ResizablePanel
+            className="h-[calc(100vh-130px)] overflow-y-auto pr-2"
+            style={{ overflow: 'auto' }}
+            minSize={30}
+            maxSize={70}
+          >
+            <SearchableList<ArticlesListOut>
+              onSearch={handleSearch}
+              onLoadMore={handleLoadMore}
+              renderItem={renderArticle}
+              renderSkeleton={renderSkeleton}
+              isLoading={isPending}
+              items={articles}
+              totalItems={totalItems}
+              totalPages={totalPages}
+              currentPage={page}
+              loadingType={loadingType}
+              searchPlaceholder="Search articles..."
+              emptyStateContent="No Articles Found"
+              emptyStateSubcontent="Try searching for something else"
+              emptyStateLogo={<FileX2 size={64} />}
+              title={Tabs.ARTICLES}
+              listContainerClassName={cn(
+                'grid grid-cols-1 gap-3 h-full md:grid-cols-1 lg:grid-cols-1'
+              )}
+              showViewTypeIcons={true}
+              setViewType={setViewType}
+              viewType={viewType}
+            />
+          </ResizablePanel>
+          <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
+          <ResizablePanel className="ml-2 hidden lg:block">
+            <ArticlePreviewSection
+              article={selectedPreviewArticle}
+              className="h-[calc(100vh-130px)]"
+            />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       )}
     </div>
   );
@@ -221,12 +283,34 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
     isEnabled: viewType === 'preview' && isActive,
     getItemId: (article) => article.id,
     autoSelectFirst: true,
-    getItemElement: (item) =>
-      document.querySelector(`[data-article-id="${String(item.id)}"]`) as HTMLElement | null,
+    getItemElement: (item) => {
+      const root = document.querySelector('[data-slot="my-articles-tab"]');
+      return root
+        ? (root.querySelector(`[data-article-id="${String(item.id)}"]`) as HTMLElement | null)
+        : null;
+    },
     hasMore: articles.length < totalItems,
     requestMore: () => {
       if (page < totalPages) setPage(page + 1);
     },
+    scrollContainer:
+      viewType === 'preview'
+        ? () => {
+            // Scope to My Articles tab container using its data-slot
+            const root = document.querySelector('[data-slot="my-articles-tab"]');
+            if (!root) return null;
+            const panels = root.querySelectorAll('[data-slot="resizable-panel"]');
+            for (const panel of panels) {
+              if (
+                panel.querySelector('[data-article-id]') &&
+                (panel as HTMLElement).classList.contains('overflow-y-auto')
+              ) {
+                return panel as HTMLElement;
+              }
+            }
+            return null;
+          }
+        : undefined,
   });
 
   const { data, isPending, error } = useUsersApiListMyArticles<ArticlesResponse>(
@@ -307,43 +391,82 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
 
   return (
     <div
+      data-slot="my-articles-tab"
       className={cn(
         'h-full transition-opacity duration-200',
         isActive ? 'opacity-100' : 'hidden opacity-0',
         isActive && viewType === 'preview' && 'flex flex-row'
       )}
     >
-      <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
-        <SearchableList<ArticlesListOut>
-          onSearch={handleSearch}
-          onLoadMore={handleLoadMore}
-          renderItem={renderArticle}
-          renderSkeleton={renderSkeleton}
-          isLoading={isPending}
-          items={articles}
-          totalItems={totalItems}
-          totalPages={totalPages}
-          currentPage={page}
-          loadingType={loadingType}
-          searchPlaceholder="Search your articles..."
-          emptyStateContent="No Articles Found"
-          emptyStateSubcontent="Try searching for something else"
-          emptyStateLogo={<FileX2 size={64} />}
-          title={Tabs.MY_ARTICLES}
-          listContainerClassName={cn(
-            'grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3',
-            viewType === 'preview' && 'grid-cols-1 h-full md:grid-cols-1 lg:grid-cols-1'
-          )}
-          showViewTypeIcons={true}
-          setViewType={setViewType}
-          viewType={viewType}
-        />
-      </div>
+      {viewType !== 'preview' && (
+        <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
+          <SearchableList<ArticlesListOut>
+            onSearch={handleSearch}
+            onLoadMore={handleLoadMore}
+            renderItem={renderArticle}
+            renderSkeleton={renderSkeleton}
+            isLoading={isPending}
+            items={articles}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={page}
+            loadingType={loadingType}
+            searchPlaceholder="Search your articles..."
+            emptyStateContent="No Articles Found"
+            emptyStateSubcontent="Try searching for something else"
+            emptyStateLogo={<FileX2 size={64} />}
+            title={Tabs.MY_ARTICLES}
+            listContainerClassName={cn('grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3')}
+            showViewTypeIcons={true}
+            setViewType={setViewType}
+            viewType={viewType}
+          />
+        </div>
+      )}
       {viewType === 'preview' && (
-        <ArticlePreviewSection
-          article={selectedPreviewArticle}
-          className="hidden h-[calc(100vh-130px)] max-w-[720px] lg:block"
-        />
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="h-full w-full pl-2"
+          autoSaveId="my-articles-list-panel"
+        >
+          <ResizablePanel
+            className="h-[calc(100vh-130px)] overflow-y-auto pr-2"
+            style={{ overflow: 'auto' }}
+            minSize={30}
+            maxSize={70}
+          >
+            <SearchableList<ArticlesListOut>
+              onSearch={handleSearch}
+              onLoadMore={handleLoadMore}
+              renderItem={renderArticle}
+              renderSkeleton={renderSkeleton}
+              isLoading={isPending}
+              items={articles}
+              totalItems={totalItems}
+              totalPages={totalPages}
+              currentPage={page}
+              loadingType={loadingType}
+              searchPlaceholder="Search your articles..."
+              emptyStateContent="No Articles Found"
+              emptyStateSubcontent="Try searching for something else"
+              emptyStateLogo={<FileX2 size={64} />}
+              title={Tabs.MY_ARTICLES}
+              listContainerClassName={cn(
+                'grid grid-cols-1 gap-3 h-full md:grid-cols-1 lg:grid-cols-1'
+              )}
+              showViewTypeIcons={true}
+              setViewType={setViewType}
+              viewType={viewType}
+            />
+          </ResizablePanel>
+          <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
+          <ResizablePanel className="ml-2 hidden lg:block">
+            <ArticlePreviewSection
+              article={selectedPreviewArticle}
+              className="h-[calc(100vh-130px)]"
+            />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       )}
     </div>
   );

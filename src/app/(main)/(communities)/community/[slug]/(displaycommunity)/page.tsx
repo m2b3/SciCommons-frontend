@@ -82,7 +82,7 @@ const Community = ({ params }: { params: { slug: string } }) => {
         data && <DisplayCommunity community={data.data} refetch={refetch} />
       )}
       {data && (
-        <div className="mt-4">
+        <div className="mt-2 md:mt-0">
           <TabNavigation tabs={tabs} />
         </div>
       )}

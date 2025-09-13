@@ -44,6 +44,7 @@ interface SearchableListProps<T> {
   viewType?: 'grid' | 'list' | 'preview';
   showViewTypeIcons?: boolean;
   setViewType?: (viewType: 'grid' | 'list' | 'preview') => void;
+  allowedViewTypes?: Array<'grid' | 'list' | 'preview'>;
 }
 
 function SearchableList<T>({
@@ -68,6 +69,7 @@ function SearchableList<T>({
   showViewTypeIcons = false,
   viewType = 'grid',
   setViewType,
+  allowedViewTypes,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -133,33 +135,39 @@ function SearchableList<T>({
             </span>
             {showViewTypeIcons && (
               <div className="flex items-center gap-2">
-                <Button
-                  variant={viewType === 'grid' ? 'gray' : 'transparent'}
-                  className="aspect-square p-1"
-                  onClick={() => setViewType?.('grid')}
-                >
-                  <ButtonIcon>
-                    <LayoutGrid size={18} className="text-text-secondary" />
-                  </ButtonIcon>
-                </Button>
-                <Button
-                  variant={viewType === 'list' ? 'gray' : 'transparent'}
-                  className="aspect-square p-1"
-                  onClick={() => setViewType?.('list')}
-                >
-                  <ButtonIcon>
-                    <List size={18} className="text-text-secondary" />
-                  </ButtonIcon>
-                </Button>
-                <Button
-                  variant={viewType === 'preview' ? 'gray' : 'transparent'}
-                  className="hidden aspect-square p-1 md:block"
-                  onClick={() => setViewType?.('preview')}
-                >
-                  <ButtonIcon>
-                    <PanelLeft size={18} className="text-text-secondary" />
-                  </ButtonIcon>
-                </Button>
+                {(!allowedViewTypes || allowedViewTypes.includes('grid')) && (
+                  <Button
+                    variant={viewType === 'grid' ? 'gray' : 'transparent'}
+                    className="aspect-square p-1"
+                    onClick={() => setViewType?.('grid')}
+                  >
+                    <ButtonIcon>
+                      <LayoutGrid size={18} className="text-text-secondary" />
+                    </ButtonIcon>
+                  </Button>
+                )}
+                {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
+                  <Button
+                    variant={viewType === 'list' ? 'gray' : 'transparent'}
+                    className="aspect-square p-1"
+                    onClick={() => setViewType?.('list')}
+                  >
+                    <ButtonIcon>
+                      <List size={18} className="text-text-secondary" />
+                    </ButtonIcon>
+                  </Button>
+                )}
+                {(!allowedViewTypes || allowedViewTypes.includes('preview')) && (
+                  <Button
+                    variant={viewType === 'preview' ? 'gray' : 'transparent'}
+                    className="hidden aspect-square p-1 md:block"
+                    onClick={() => setViewType?.('preview')}
+                  >
+                    <ButtonIcon>
+                      <PanelLeft size={18} className="text-text-secondary" />
+                    </ButtonIcon>
+                  </Button>
+                )}
               </div>
             )}
           </div>
