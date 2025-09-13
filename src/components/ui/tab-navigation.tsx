@@ -25,7 +25,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ tabs }) => {
   }, [activeTab, tabs]);
 
   return (
-    <div className="mt-6 text-text-secondary">
+    <div className="mt-0 text-text-secondary">
       <div className="relative">
         <div className="flex space-x-4 border-b border-common-contrast">
           {tabs.map((tab, index) => (

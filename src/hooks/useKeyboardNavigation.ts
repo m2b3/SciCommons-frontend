@@ -11,6 +11,7 @@ interface UseKeyboardNavigationProps<T> {
   scrollBehavior?: ScrollBehavior;
   hasMore?: boolean;
   requestMore?: () => void;
+  scrollContainer?: () => HTMLElement | null;
 }
 
 /**
@@ -35,6 +36,7 @@ export const useKeyboardNavigation = <T>({
   scrollBehavior = 'smooth',
   hasMore = false,
   requestMore,
+  scrollContainer,
 }: UseKeyboardNavigationProps<T>) => {
   const previousLengthRef = React.useRef<number>(items.length);
   const pendingAdvanceRef = React.useRef<boolean>(false);
@@ -91,11 +93,53 @@ export const useKeyboardNavigation = <T>({
   useEffect(() => {
     if (!isEnabled || !selectedItem || !getItemElement) return;
     const element = getItemElement(selectedItem);
-    if (shouldAutoScrollRef.current && element && typeof element.scrollIntoView === 'function') {
-      element.scrollIntoView({ block: 'nearest', behavior: scrollBehavior });
+    if (shouldAutoScrollRef.current && element) {
+      const findNearestScrollableAncestor = (start: HTMLElement | null): HTMLElement | null => {
+        let node: HTMLElement | null = start ? start.parentElement : null;
+        while (node) {
+          const style = window.getComputedStyle(node);
+          const overflowY = style.overflowY;
+          if (overflowY === 'auto' || overflowY === 'scroll') {
+            return node;
+          }
+          node = node.parentElement;
+        }
+        return null;
+      };
+
+      const container = scrollContainer
+        ? scrollContainer()
+        : findNearestScrollableAncestor(element);
+      if (container) {
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        const isVisible =
+          elementRect.top >= containerRect.top && elementRect.bottom <= containerRect.bottom;
+
+        if (!isVisible) {
+          const elementTop = element.offsetTop;
+          const containerHeight = container.clientHeight;
+          const elementHeight = element.offsetHeight;
+
+          let newScrollTop;
+          if (elementRect.top < containerRect.top) {
+            newScrollTop = elementTop - 20;
+          } else {
+            newScrollTop = elementTop - containerHeight + elementHeight + 20;
+          }
+
+          container.scrollTo({
+            top: Math.max(0, newScrollTop),
+            behavior: scrollBehavior,
+          });
+        }
+      } else if (typeof element.scrollIntoView === 'function') {
+        element.scrollIntoView({ block: 'nearest', behavior: scrollBehavior });
+      }
       shouldAutoScrollRef.current = false;
     }
-  }, [isEnabled, selectedItem, getItemElement, scrollBehavior]);
+  }, [isEnabled, selectedItem, getItemElement, scrollBehavior, scrollContainer]);
 
   useEffect(() => {
     if (!isEnabled) return;
