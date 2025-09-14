@@ -81,15 +81,6 @@ const CommentInput: React.FC<CommentInputProps> = ({
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-2">
       <div className="relative">
-        <button
-          onClick={() => {
-            setIsMarkdownPreview(!isMarkdownPreview);
-          }}
-          className="absolute -top-7 right-2 rounded-md p-1 text-text-tertiary hover:bg-common-background hover:text-text-secondary"
-          type="button"
-        >
-          {isMarkdownPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
         {isMarkdownPreview && (
           <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>
             <RenderParsedHTML
@@ -170,18 +161,32 @@ const CommentInput: React.FC<CommentInputProps> = ({
             )}
           </>
         )}
-        <Button
-          type="submit"
-          variant={'blue'}
-          className={'ml-auto'}
-          loading={isPending}
-          showLoadingSpinner
-        >
-          <ButtonIcon>
-            <Send size={16} />
-          </ButtonIcon>
-          <ButtonTitle>{buttonText}</ButtonTitle>
-        </Button>
+        <div className="ml-auto flex items-center gap-2">
+          <Button
+            onClick={() => {
+              setIsMarkdownPreview(!isMarkdownPreview);
+            }}
+            className="p-2 text-text-tertiary hover:bg-common-background hover:text-text-secondary"
+            variant={'outline'}
+            type="button"
+            tooltipData="Toggle markdown preview"
+            withTooltip
+          >
+            {isMarkdownPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </Button>
+          <Button
+            type="submit"
+            variant={'blue'}
+            className={'p-2'}
+            loading={isPending}
+            showLoadingSpinner
+          >
+            <ButtonIcon>
+              <Send size={14} />
+            </ButtonIcon>
+            <ButtonTitle className="text-xxs sm:text-xs">{buttonText}</ButtonTitle>
+          </Button>
+        </div>
       </div>
     </form>
   );

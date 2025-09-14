@@ -65,16 +65,16 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
     <div>
       <div className="mb-4 flex items-center justify-between res-text-sm">
         <h1 className="font-bold text-text-primary res-text-xl">Discussions</h1>
-        <Button onClick={handleNewDiscussion}>
+        <Button onClick={handleNewDiscussion} className="p-2">
           <ButtonIcon>
             <Plus
-              size={16}
+              size={14}
               className={cn('transition-transform duration-200', {
-                'rotate-45 scale-125': showForm,
+                'rotate-45': showForm,
               })}
             />
           </ButtonIcon>
-          <ButtonTitle>New Discussion</ButtonTitle>
+          <ButtonTitle className="text-xxs sm:text-xs">New Discussion</ButtonTitle>
         </Button>
       </div>
 

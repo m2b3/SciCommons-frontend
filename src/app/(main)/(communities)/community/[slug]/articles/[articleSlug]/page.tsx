@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
@@ -20,6 +20,7 @@ import { useAuthStore } from '@/stores/authStore';
 const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
+  const [submitReview, setSubmitReview] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params?.articleSlug || '',
@@ -77,12 +78,25 @@ const CommunityArticleDisplayPage: React.FC = () => {
                   communityId={data?.data.community_article?.community.id}
                 />
               )} */}
-              <ReviewForm
-                articleId={Number(data.data.id)}
-                refetch={reviewsRefetch}
-                is_submitter={data.data.is_submitter}
-                communityId={data?.data.community_article?.community.id}
-              />
+              <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
+                <span className="text-sm font-semibold text-text-secondary">
+                  Have your reviews?
+                </span>
+                <span
+                  className="cursor-pointer text-xs text-functional-green hover:underline"
+                  onClick={() => setSubmitReview(!submitReview)}
+                >
+                  {submitReview ? 'Cancel' : 'Add review'}
+                </span>
+              </div>
+              {submitReview && (
+                <ReviewForm
+                  articleId={Number(data.data.id)}
+                  refetch={reviewsRefetch}
+                  is_submitter={data.data.is_submitter}
+                  communityId={data?.data.community_article?.community.id}
+                />
+              )}
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
               {reviewsData?.data.items.length === 0 && (
                 <EmptyState

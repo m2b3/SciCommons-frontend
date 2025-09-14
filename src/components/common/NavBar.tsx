@@ -35,7 +35,7 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import { Button } from '../ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
@@ -87,8 +87,8 @@ const NavBar: React.FC = () => {
             <Link href="/notifications">
               <Bell className="hover:animate-wiggle h-9 w-9 cursor-pointer rounded-full p-2 text-text-secondary hover:text-functional-yellow" />
             </Link>
-            <ProfileDropdown />
             <ThemeSwitch iconSize={20} />
+            <ProfileDropdown />
           </div>
         ) : (
           <div className="flex items-center space-x-4">
@@ -116,47 +116,46 @@ const CreateDropdown: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <TooltipProvider delayDuration={10}>
-      <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant={'default'}
-            className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
-          >
-            <Plus size={16} />
-            <span className="hidden lg:block">Create</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent sideOffset={12}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-                <Link href="/submitarticle" className="flex items-center gap-2">
-                  <BookOpenText size={16} />
-                  <span>Submit Article</span>
-                </Link>
-              </DropdownMenuItem>
-            </TooltipTrigger>
-            <TooltipContent side="left" sideOffset={8}>
-              Write and submit an article
-            </TooltipContent>
-          </Tooltip>
+    <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant={'default'}
+          className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
+        >
+          <Plus size={16} />
+          <span className="hidden lg:block">Create</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent sideOffset={12}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+              <Link href="/submitarticle" className="flex items-center gap-2">
+                <BookOpenText size={16} />
+                <span>Submit Article</span>
+              </Link>
+            </DropdownMenuItem>
+          </TooltipTrigger>
+          <TooltipContent side="left" sideOffset={8}>
+            Write and submit an article
+          </TooltipContent>
+        </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-                <Link href="/createcommunity" className="flex items-center gap-2">
-                  <Users size={16} />
-                  <span>Create Community</span>
-                </Link>
-              </DropdownMenuItem>
-            </TooltipTrigger>
-            <TooltipContent side="left" sideOffset={8}>
-              Start a new community journal
-            </TooltipContent>
-          </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+              <Link href="/createcommunity" className="flex items-center gap-2">
+                <Users size={16} />
+                <span>Create Community</span>
+              </Link>
+            </DropdownMenuItem>
+          </TooltipTrigger>
+          <TooltipContent side="left" sideOffset={8}>
+            Start a new community journal
+          </TooltipContent>
+        </Tooltip>
 
-          {/* <Tooltip>
+        {/* <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
                 <Link href="/posts/createpost">Create Post</Link>
@@ -166,9 +165,8 @@ const CreateDropdown: React.FC = () => {
               Share your thoughts with a post
             </TooltipContent>
           </Tooltip> */}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </TooltipProvider>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -189,9 +187,9 @@ const ProfileDropdown: React.FC = () => {
         <Image
           src={`data:image/png;base64,${imageData}`}
           alt="Profile"
-          width={40}
-          height={40}
-          className="cursor-pointer rounded-full"
+          width={32}
+          height={32}
+          className="aspect-square cursor-pointer rounded-full"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={12}>
