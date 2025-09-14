@@ -20,6 +20,7 @@ import {
 } from '@/api/users-common-api/users-common-api';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
+import { useRealtimeContextStore } from '@/stores/realtimeStore';
 import { Reaction } from '@/types';
 
 import TruncateText from '../common/TruncateText';
@@ -33,6 +34,13 @@ interface DiscussionThreadProps {
 const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDiscussionId }) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
+
+  useEffect(() => {
+    useRealtimeContextStore.getState().setActiveDiscussion(discussionId);
+    return () => {
+      useRealtimeContextStore.getState().setActiveDiscussion(null);
+    };
+  }, [discussionId]);
 
   const { data, error } = useArticlesDiscussionApiGetDiscussion(discussionId, {
     query: { enabled: discussionId !== null && !!accessToken },

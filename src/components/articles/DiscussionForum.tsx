@@ -12,6 +12,7 @@ import { ErrorMessage } from '@/constants';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { useRealtimeContextStore } from '@/stores/realtimeStore';
 
 import DiscussionCard, { DiscussionCardSkeleton } from './DiscussionCard';
 import DiscussionForm from './DiscussionForm';
@@ -42,6 +43,14 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
       },
     }
   );
+
+  // Mark realtime active context for in-place updates
+  useEffect(() => {
+    useRealtimeContextStore.getState().setActiveContext(articleId, communityId || null);
+    return () => {
+      useRealtimeContextStore.getState().clearActiveContext();
+    };
+  }, [articleId, communityId]);
 
   useEffect(() => {
     if (error) {

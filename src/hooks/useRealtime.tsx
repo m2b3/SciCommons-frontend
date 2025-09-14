@@ -11,6 +11,7 @@ import {
   myappRealtimeApiRegisterQueue,
 } from '../api/real-time/real-time';
 import { useAuthStore } from '../stores/authStore';
+import { useRealtimeContextStore } from '../stores/realtimeStore';
 
 type RealtimeEventType =
   | 'new_discussion'
@@ -26,6 +27,9 @@ type RealtimeEvent = {
     article_id: number;
     community_id: number;
     discussion_id?: number;
+    parent_id?: number | null;
+    is_reply?: boolean;
+    reply_depth?: number;
     discussion?: {
       user?: {
         username: string;
@@ -75,11 +79,15 @@ export function useRealtime() {
   const accessToken = useAuthStore((s) => s.accessToken);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const queryClient = useQueryClient();
+  const activeArticleId = useRealtimeContextStore((s) => s.activeArticleId);
+  const activeCommunityId = useRealtimeContextStore((s) => s.activeCommunityId);
+  const activeDiscussionId = useRealtimeContextStore((s) => s.activeDiscussionId);
 
   const [status, setStatus] = useState<ConnectionStatus>('idle');
   const [isLeader, setIsLeader] = useState<boolean>(false);
   const leaderHeartbeatRef = useRef<number | null>(null);
   const isLeaderRef = useRef<boolean>(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const queueIdRef = useRef<string | null>(null);
   const lastEventIdRef = useRef<number | null>(null);
@@ -89,6 +97,7 @@ export function useRealtime() {
   const stoppedRef = useRef<boolean>(false);
   const isPollingRef = useRef<boolean>(false);
   const loopStartedRef = useRef<boolean>(false);
+  const pendingEventsRef = useRef<Array<{ ev: RealtimeEvent; ts: number }>>([]);
 
   const writeLeaderHeartbeat = useCallback((tabId: string) => {
     const payload = { tabId, ts: Date.now() };
@@ -168,6 +177,30 @@ export function useRealtime() {
     }
   }, []);
 
+  // Prepare notification sound
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const audio = new Audio('/notification.mp3');
+      audio.preload = 'auto';
+      audio.volume = 0.75;
+      audioRef.current = audio;
+    } catch {
+      audioRef.current = null;
+    }
+  }, []);
+
+  const playNotification = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    try {
+      audio.currentTime = 0;
+      void audio.play();
+    } catch {
+      // ignore autoplay restrictions
+    }
+  }, []);
+
   const loadQueueState = useCallback(() => {
     const q = localStorage.getItem(STORAGE_KEYS.QUEUE_ID);
     const l = localStorage.getItem(STORAGE_KEYS.LAST_EVENT_ID);
@@ -221,19 +254,111 @@ export function useRealtime() {
           case 'new_discussion':
           case 'updated_discussion':
           case 'deleted_discussion': {
-            if (articleId) {
-              queryClient.invalidateQueries({
-                queryKey: [`/api/articles/${articleId}/discussions/`],
-                exact: false,
-              });
+            const matchesCommunity =
+              typeof ev.data?.community_id === 'number'
+                ? ev.data.community_id === activeCommunityId
+                : Array.isArray(ev.community_ids)
+                  ? ev.community_ids.includes(activeCommunityId as number)
+                  : false;
+            const shouldUpdateInPlace =
+              !!activeArticleId && !!activeCommunityId
+                ? activeArticleId === ev.data.article_id && matchesCommunity
+                : false;
+
+            if (shouldUpdateInPlace && articleId) {
+              // Optimistic in-place update for list cache
+              queryClient.setQueriesData(
+                { queryKey: [`/api/articles/${articleId}/discussions/`], exact: false },
+                (old: any) => {
+                  if (!old?.data?.items) return old;
+                  if (ev.type === 'new_discussion' && ev.data.discussion) {
+                    const d = ev.data.discussion as any;
+                    // Prepend if not present
+                    const exists = old.data.items.some((x: any) => x.id === d.id);
+                    if (exists) return old;
+                    return { ...old, data: { ...old.data, items: [d, ...old.data.items] } };
+                  }
+                  if (ev.type === 'updated_discussion' && ev.data.discussion) {
+                    const d = ev.data.discussion as any;
+                    return {
+                      ...old,
+                      data: {
+                        ...old.data,
+                        items: old.data.items.map((x: any) => (x.id === d.id ? { ...x, ...d } : x)),
+                      },
+                    };
+                  }
+                  if (ev.type === 'deleted_discussion' && ev.data.discussion) {
+                    const d = ev.data.discussion as any;
+                    return {
+                      ...old,
+                      data: {
+                        ...old.data,
+                        items: old.data.items.filter((x: any) => x.id !== d.id),
+                      },
+                    };
+                  }
+                  return old;
+                }
+              );
+              // Also update the component's custom key used in DiscussionForum
+              queryClient.setQueriesData(
+                { queryKey: ['discussions', articleId, activeCommunityId], exact: false },
+                (old: any) => {
+                  if (!old?.data?.items) return old;
+                  if (ev.type === 'new_discussion' && ev.data.discussion) {
+                    const d = ev.data.discussion as any;
+                    const exists = old.data.items.some((x: any) => x.id === d.id);
+                    if (exists) return old;
+                    return { ...old, data: { ...old.data, items: [d, ...old.data.items] } };
+                  }
+                  if (ev.type === 'updated_discussion' && ev.data.discussion) {
+                    const d = ev.data.discussion as any;
+                    return {
+                      ...old,
+                      data: {
+                        ...old.data,
+                        items: old.data.items.map((x: any) => (x.id === d.id ? { ...x, ...d } : x)),
+                      },
+                    };
+                  }
+                  if (ev.type === 'deleted_discussion' && ev.data.discussion) {
+                    const d = ev.data.discussion as any;
+                    return {
+                      ...old,
+                      data: {
+                        ...old.data,
+                        items: old.data.items.filter((x: any) => x.id !== d.id),
+                      },
+                    };
+                  }
+                  return old;
+                }
+              );
             } else {
-              queryClient.invalidateQueries({
-                predicate: (q) =>
-                  Array.isArray(q.queryKey) &&
-                  typeof q.queryKey[0] === 'string' &&
-                  (q.queryKey[0] as string).includes('/api/articles/') &&
-                  (q.queryKey[0] as string).includes('/discussions'),
-              });
+              // If context not ready yet after refresh, buffer for a short window
+              if (!activeArticleId || !activeCommunityId) {
+                pendingEventsRef.current.push({ ev, ts: Date.now() });
+              }
+              // Fallback: invalidate
+              if (articleId) {
+                queryClient.invalidateQueries({
+                  queryKey: [`/api/articles/${articleId}/discussions/`],
+                  exact: false,
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ['discussions', articleId, activeCommunityId],
+                  exact: false,
+                });
+              } else {
+                queryClient.invalidateQueries({
+                  predicate: (q) =>
+                    Array.isArray(q.queryKey) &&
+                    typeof q.queryKey[0] === 'string' &&
+                    (q.queryKey[0] as string).includes('/api/articles/') &&
+                    (q.queryKey[0] as string).includes('/discussions'),
+                });
+              }
             }
             break;
           }
@@ -242,27 +367,209 @@ export function useRealtime() {
           case 'deleted_comment': {
             // Invalidate comment lists for the affected discussion
             const discussionId = ev.data.discussion_id;
-            if (discussionId) {
-              queryClient.invalidateQueries({
-                queryKey: [`/api/articles/discussions/${discussionId}/comments/`],
-                exact: false,
-              });
+            const matchesCommunity2 =
+              typeof ev.data?.community_id === 'number'
+                ? ev.data.community_id === activeCommunityId
+                : Array.isArray(ev.community_ids)
+                  ? ev.community_ids.includes(activeCommunityId as number)
+                  : false;
+            const shouldUpdateInPlace =
+              !!activeArticleId && !!activeCommunityId
+                ? activeArticleId === ev.data.article_id && matchesCommunity2
+                : false;
+
+            if (shouldUpdateInPlace && discussionId) {
+              queryClient.setQueriesData(
+                { queryKey: [`/api/articles/discussions/${discussionId}/comments/`], exact: false },
+                (old: any) => {
+                  if (!Array.isArray(old?.data)) return old;
+                  const c = (ev.data.comment || {}) as any;
+                  const parentId = ev.data.parent_id ?? null;
+
+                  const addOrUpdate = (arr: any[]): any[] => {
+                    if (!Array.isArray(arr)) return arr;
+                    if (!c || c.id == null) return arr;
+                    if (!parentId) {
+                      if (ev.type === 'new_comment') {
+                        const exists = arr.some((x: any) => x.id === c.id);
+                        return exists ? arr : [...arr, { replies: [], ...c }];
+                      }
+                      if (ev.type === 'updated_comment') {
+                        return arr.map((x: any) => (x.id === c.id ? { ...x, ...c } : x));
+                      }
+                      if (ev.type === 'deleted_comment') {
+                        return arr.filter((x: any) => x.id !== c.id);
+                      }
+                      return arr;
+                    }
+                    // With parent; recurse to attach under parent.replies
+                    return arr.map((x: any) => {
+                      if (x.id === parentId) {
+                        const replies = Array.isArray(x.replies) ? x.replies : [];
+                        if (ev.type === 'new_comment') {
+                          const exists = replies.some((r: any) => r.id === c.id);
+                          return exists
+                            ? x
+                            : { ...x, replies: [...replies, { replies: [], ...c }] };
+                        }
+                        if (ev.type === 'updated_comment') {
+                          return {
+                            ...x,
+                            replies: replies.map((r: any) => (r.id === c.id ? { ...r, ...c } : r)),
+                          };
+                        }
+                        if (ev.type === 'deleted_comment') {
+                          return { ...x, replies: replies.filter((r: any) => r.id !== c.id) };
+                        }
+                        return x;
+                      }
+                      // Recurse deeper for nested replies
+                      if (Array.isArray(x.replies) && x.replies.length > 0) {
+                        return { ...x, replies: addOrUpdate(x.replies) };
+                      }
+                      return x;
+                    });
+                  };
+
+                  return { ...old, data: addOrUpdate(old.data) };
+                }
+              );
+              // Also update potential custom keys used by components for comments
+              queryClient.setQueriesData(
+                { queryKey: ['discussion-comments', discussionId], exact: false },
+                (old: any) => {
+                  if (!Array.isArray(old?.data)) return old;
+                  const c = (ev.data.comment || {}) as any;
+                  const parentId = ev.data.parent_id ?? null;
+
+                  const addOrUpdate = (arr: any[]): any[] => {
+                    if (!Array.isArray(arr)) return arr;
+                    if (!c || c.id == null) return arr;
+                    if (!parentId) {
+                      if (ev.type === 'new_comment') {
+                        const exists = arr.some((x: any) => x.id === c.id);
+                        return exists ? arr : [...arr, { replies: [], ...c }];
+                      }
+                      if (ev.type === 'updated_comment') {
+                        return arr.map((x: any) => (x.id === c.id ? { ...x, ...c } : x));
+                      }
+                      if (ev.type === 'deleted_comment') {
+                        return arr.filter((x: any) => x.id !== c.id);
+                      }
+                      return arr;
+                    }
+                    return arr.map((x: any) => {
+                      if (x.id === parentId) {
+                        const replies = Array.isArray(x.replies) ? x.replies : [];
+                        if (ev.type === 'new_comment') {
+                          const exists = replies.some((r: any) => r.id === c.id);
+                          return exists
+                            ? x
+                            : { ...x, replies: [...replies, { replies: [], ...c }] };
+                        }
+                        if (ev.type === 'updated_comment') {
+                          return {
+                            ...x,
+                            replies: replies.map((r: any) => (r.id === c.id ? { ...r, ...c } : r)),
+                          };
+                        }
+                        if (ev.type === 'deleted_comment') {
+                          return { ...x, replies: replies.filter((r: any) => r.id !== c.id) };
+                        }
+                        return x;
+                      }
+                      if (Array.isArray(x.replies) && x.replies.length > 0) {
+                        return { ...x, replies: addOrUpdate(x.replies) };
+                      }
+                      return x;
+                    });
+                  };
+
+                  return { ...old, data: addOrUpdate(old.data) };
+                }
+              );
+              // If a new top-level comment arrives while user views discussion, bump comments_count in the discussions list cache
+              if (ev.type === 'new_comment') {
+                const isTopLevel = !ev.data.parent_id;
+                if (isTopLevel) {
+                  queryClient.setQueriesData(
+                    { queryKey: [`/api/articles/${articleId}/discussions/`], exact: false },
+                    (old: any) => {
+                      if (!old?.data?.items) return old;
+                      return {
+                        ...old,
+                        data: {
+                          ...old.data,
+                          items: old.data.items.map((x: any) =>
+                            x.id === discussionId
+                              ? { ...x, comments_count: (x.comments_count || 0) + 1 }
+                              : x
+                          ),
+                        },
+                      };
+                    }
+                  );
+                  queryClient.setQueriesData(
+                    { queryKey: ['discussions', articleId, activeCommunityId], exact: false },
+                    (old: any) => {
+                      if (!old?.data?.items) return old;
+                      return {
+                        ...old,
+                        data: {
+                          ...old.data,
+                          items: old.data.items.map((x: any) =>
+                            x.id === discussionId
+                              ? { ...x, comments_count: (x.comments_count || 0) + 1 }
+                              : x
+                          ),
+                        },
+                      };
+                    }
+                  );
+                }
+              }
             } else {
-              queryClient.invalidateQueries({
-                predicate: (q) =>
-                  Array.isArray(q.queryKey) &&
-                  q.queryKey.some(
-                    (k) => typeof k === 'string' && (k as string).includes('/api/discussions')
-                  ),
-              });
+              if (!activeArticleId || !activeCommunityId) {
+                pendingEventsRef.current.push({ ev, ts: Date.now() });
+              }
+              if (discussionId) {
+                queryClient.invalidateQueries({
+                  queryKey: [`/api/articles/discussions/${discussionId}/comments/`],
+                  exact: false,
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ['discussion-comments', discussionId],
+                  exact: false,
+                });
+              } else {
+                queryClient.invalidateQueries({
+                  predicate: (q) =>
+                    Array.isArray(q.queryKey) &&
+                    q.queryKey.some(
+                      (k) => typeof k === 'string' && (k as string).includes('/api/discussions')
+                    ),
+                });
+              }
             }
             break;
           }
         }
       }
     },
-    [queryClient]
+    [queryClient, activeArticleId, activeCommunityId, activeDiscussionId]
   );
+
+  // When context becomes available (e.g., after refresh), reprocess recent buffered events
+  useEffect(() => {
+    if (!activeArticleId || !activeCommunityId) return;
+    if (!pendingEventsRef.current.length) return;
+    const cutoff = Date.now() - 15_000; // only last 15s
+    const recent = pendingEventsRef.current.filter((x) => x.ts >= cutoff).map((x) => x.ev);
+    pendingEventsRef.current = [];
+    if (recent.length) {
+      handleEvents(recent);
+    }
+  }, [activeArticleId, activeCommunityId, handleEvents]);
 
   const pollLoop = useCallback(async () => {
     if (!isLeader || stoppedRef.current) {
@@ -284,6 +591,7 @@ export function useRealtime() {
         if (events.length) {
           handleEvents(events);
           // Toast each event with a single-line preview
+          let shouldPlay = false;
           for (const ev of events) {
             const preview =
               (ev.data?.discussion && (ev.data.discussion as any)?.title) ||
@@ -292,6 +600,7 @@ export function useRealtime() {
             const trimmed =
               typeof preview === 'string' ? preview.replace(/\s+/g, ' ').slice(0, 80) : '';
             if (ev.type === 'new_discussion') {
+              shouldPlay = true;
               const username = ev.data.discussion?.user?.username || 'Unknown user';
               const topic = ev.data.discussion?.topic || 'Untitled discussion';
               toast.warning(
@@ -312,6 +621,7 @@ export function useRealtime() {
                 }
               );
             } else if (ev.type === 'new_comment') {
+              shouldPlay = true;
               const username = ev.data.comment?.author?.username || 'Unknown user';
               const content = ev.data.comment?.content || 'No content';
               toast.warning(
@@ -366,6 +676,9 @@ export function useRealtime() {
                 }
               );
             }
+          }
+          if (shouldPlay) {
+            playNotification();
           }
         }
         saveQueueState(queueIdRef.current as string, last_event_id);

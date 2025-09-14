@@ -14,6 +14,7 @@ import {
 import { ContentTypeEnum, DiscussionCommentOut } from '@/api/schemas';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
+import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -36,6 +37,8 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       query: {
         enabled: !!accessToken,
+        staleTime: TEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: false,
       },
     }
   );
