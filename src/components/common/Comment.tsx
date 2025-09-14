@@ -186,7 +186,7 @@ const Comment: React.FC<CommentProps> = ({
                   <span className="ml-1 text-xs font-normal text-text-tertiary">(You)</span>
                 )}
               </span>
-              <span className="text-xs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
+              <span className="text-xxs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
             </div>
             {!is_deleted && depth == 0 && (rating != undefined || rating != null) && !isEditing && (
               <div className="mt-1">
@@ -218,8 +218,7 @@ const Comment: React.FC<CommentProps> = ({
             />
           </div>
         ) : (
-          <div className="mt-2 pl-2">
-            {/* <TruncateText text={content} maxLines={4} /> */}
+          <div className="pl-2">
             <RenderParsedHTML
               rawContent={content}
               isShrinked={true}
@@ -229,7 +228,7 @@ const Comment: React.FC<CommentProps> = ({
           </div>
         )}
         {!is_deleted && (
-          <div className="mt-4 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
+          <div className="mt-2 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
             <button className="flex items-center space-x-1">
               {data?.data.user_reaction === 1 ? (
                 <ThumbsUp

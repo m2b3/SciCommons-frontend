@@ -267,12 +267,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <div className="flex flex-col gap-2">
                 <Button
                   variant={'blue'}
-                  className="res-text-xs"
+                  className="p-2"
                   loading={isPending}
                   type="submit"
                   onClick={() => setAction('create')}
                 >
-                  {isPending ? 'Submitting...' : 'Submit Review'}
+                  <ButtonTitle className="text-xxs sm:text-xs">
+                    {isPending ? 'Submitting...' : 'Submit Review'}
+                  </ButtonTitle>
                 </Button>
                 {/* <span className="text-text-tertiary res-text-xs">
                 By clicking Submit Review, you agree to our{' '}
