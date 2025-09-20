@@ -29,6 +29,10 @@ const CommunityArticleDisplayPage: React.FC = () => {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       query: {
         enabled: !!accessToken,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        refetchOnReconnect: true,
       },
     }
   );

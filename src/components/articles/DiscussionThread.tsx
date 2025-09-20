@@ -18,6 +18,7 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
+import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { useRealtimeContextStore } from '@/stores/realtimeStore';
@@ -36,9 +37,15 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
   const accessToken = useAuthStore((state) => state.accessToken);
 
   useEffect(() => {
-    useRealtimeContextStore.getState().setActiveDiscussion(discussionId);
+    const store = useRealtimeContextStore.getState();
+    store.setActiveDiscussion(discussionId);
+    // Mark that we're viewing a discussion thread (not the discussion list)
+    store.setViewingDiscussions(false);
+
     return () => {
-      useRealtimeContextStore.getState().setActiveDiscussion(null);
+      store.setActiveDiscussion(null);
+      // When leaving, we might go back to viewing discussions
+      store.setViewingDiscussions(true);
     };
   }, [discussionId]);
 
@@ -60,6 +67,10 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       query: {
         enabled: !!accessToken,
+        staleTime: TEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        refetchOnReconnect: true,
       },
     }
   );

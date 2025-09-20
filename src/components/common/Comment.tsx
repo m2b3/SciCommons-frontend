@@ -20,6 +20,7 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
+import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -89,6 +90,10 @@ const Comment: React.FC<CommentProps> = ({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     query: {
       enabled: !!accessToken && !!id,
+      staleTime: TEN_MINUTES_IN_MS,
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
     },
   });
 

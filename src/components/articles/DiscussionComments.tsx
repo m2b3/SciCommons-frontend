@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
 import { toast } from 'sonner';
@@ -18,6 +18,7 @@ import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
+import { useRealtimeContextStore } from '@/stores/realtimeStore';
 
 import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
 
@@ -30,6 +31,16 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
 
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
+
+  // Mark realtime context for comment viewing
+  useEffect(() => {
+    const store = useRealtimeContextStore.getState();
+    store.setViewingComments(true, discussionId);
+
+    return () => {
+      store.setViewingComments(false);
+    };
+  }, [discussionId]);
   const { data, refetch, isPending } = useArticlesDiscussionApiListDiscussionComments(
     discussionId,
     {},
