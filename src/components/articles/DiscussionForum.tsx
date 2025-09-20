@@ -46,9 +46,12 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
 
   // Mark realtime active context for in-place updates
   useEffect(() => {
-    useRealtimeContextStore.getState().setActiveContext(articleId, communityId || null);
+    const store = useRealtimeContextStore.getState();
+    store.setActiveContext(articleId, communityId || null);
+    store.setViewingDiscussions(true);
+
     return () => {
-      useRealtimeContextStore.getState().clearActiveContext();
+      store.clearActiveContext();
     };
   }, [articleId, communityId]);
 
