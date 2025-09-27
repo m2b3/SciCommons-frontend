@@ -141,8 +141,9 @@ const TabContent: React.FC<TabContentProps> = ({
       setSearch(term);
       setPage(1);
       setArticles([]);
+      setSelectedPreviewArticle(null);
     },
-    [setSearch, setPage]
+    [setSearch, setPage, setSelectedPreviewArticle]
   );
 
   const handleLoadMore = useCallback(
@@ -183,8 +184,21 @@ const TabContent: React.FC<TabContentProps> = ({
         isActive && viewType === 'preview' && 'flex flex-row'
       )}
     >
-      {viewType !== 'preview' && (
-        <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className={cn('h-full w-full', viewType === 'preview' ? 'pl-2' : '')}
+        autoSaveId="articles-list-panel"
+      >
+        <ResizablePanel
+          className={cn(
+            'h-[calc(100vh-130px)] overflow-y-auto',
+            viewType === 'preview' ? 'pr-2' : 'p-4 md:p-4'
+          )}
+          style={{ overflow: 'auto' }}
+          defaultSize={60}
+          minSize={30}
+          maxSize={70}
+        >
           <SearchableList<ArticlesListOut>
             onSearch={handleSearch}
             onLoadMore={handleLoadMore}
@@ -201,58 +215,34 @@ const TabContent: React.FC<TabContentProps> = ({
             emptyStateSubcontent="Try searching for something else"
             emptyStateLogo={<FileX2 size={64} />}
             title={Tabs.ARTICLES}
-            listContainerClassName={cn('grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3')}
+            listContainerClassName={cn(
+              'grid grid-cols-1 gap-3',
+              viewType === 'preview'
+                ? 'h-full md:grid-cols-1 lg:grid-cols-1'
+                : 'md:grid-cols-2 lg:grid-cols-3'
+            )}
             showViewTypeIcons={true}
             setViewType={setViewType}
             viewType={viewType}
           />
-        </div>
-      )}
-      {viewType === 'preview' && (
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="h-full w-full pl-2"
-          autoSaveId="articles-list-panel"
-        >
-          <ResizablePanel
-            className="h-[calc(100vh-130px)] overflow-y-auto pr-2"
-            style={{ overflow: 'auto' }}
-            minSize={30}
-            maxSize={70}
-          >
-            <SearchableList<ArticlesListOut>
-              onSearch={handleSearch}
-              onLoadMore={handleLoadMore}
-              renderItem={renderArticle}
-              renderSkeleton={renderSkeleton}
-              isLoading={isPending}
-              items={articles}
-              totalItems={totalItems}
-              totalPages={totalPages}
-              currentPage={page}
-              loadingType={loadingType}
-              searchPlaceholder="Search articles..."
-              emptyStateContent="No Articles Found"
-              emptyStateSubcontent="Try searching for something else"
-              emptyStateLogo={<FileX2 size={64} />}
-              title={Tabs.ARTICLES}
-              listContainerClassName={cn(
-                'grid grid-cols-1 gap-3 h-full md:grid-cols-1 lg:grid-cols-1'
-              )}
-              showViewTypeIcons={true}
-              setViewType={setViewType}
-              viewType={viewType}
-            />
-          </ResizablePanel>
-          <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
-          <ResizablePanel className="ml-2 hidden lg:block">
-            <ArticlePreviewSection
-              article={selectedPreviewArticle}
-              className="h-[calc(100vh-130px)]"
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      )}
+        </ResizablePanel>
+        {viewType === 'preview' && (
+          <>
+            <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
+            <ResizablePanel
+              className="ml-2 hidden lg:block"
+              defaultSize={40}
+              minSize={30}
+              maxSize={70}
+            >
+              <ArticlePreviewSection
+                article={selectedPreviewArticle}
+                className="h-[calc(100vh-130px)]"
+              />
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 };
@@ -356,8 +346,9 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
       setSearch(term);
       setPage(1);
       setArticles([]);
+      setSelectedPreviewArticle(null);
     },
-    [setSearch, setPage]
+    [setSearch, setPage, setSelectedPreviewArticle]
   );
 
   const handleLoadMore = useCallback(
@@ -398,8 +389,21 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
         isActive && viewType === 'preview' && 'flex flex-row'
       )}
     >
-      {viewType !== 'preview' && (
-        <div className="h-full max-h-[calc(100vh-130px)] w-full overflow-y-auto p-4 md:p-4">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className={cn('h-full w-full', viewType === 'preview' ? 'pl-2' : '')}
+        autoSaveId="my-articles-list-panel"
+      >
+        <ResizablePanel
+          className={cn(
+            'h-[calc(100vh-130px)] overflow-y-auto',
+            viewType === 'preview' ? 'pr-2' : 'p-4 md:p-4'
+          )}
+          style={{ overflow: 'auto' }}
+          defaultSize={60}
+          minSize={30}
+          maxSize={70}
+        >
           <SearchableList<ArticlesListOut>
             onSearch={handleSearch}
             onLoadMore={handleLoadMore}
@@ -416,58 +420,34 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
             emptyStateSubcontent="Try searching for something else"
             emptyStateLogo={<FileX2 size={64} />}
             title={Tabs.MY_ARTICLES}
-            listContainerClassName={cn('grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3')}
+            listContainerClassName={cn(
+              'grid grid-cols-1 gap-3',
+              viewType === 'preview'
+                ? 'h-full md:grid-cols-1 lg:grid-cols-1'
+                : 'md:grid-cols-2 lg:grid-cols-3'
+            )}
             showViewTypeIcons={true}
             setViewType={setViewType}
             viewType={viewType}
           />
-        </div>
-      )}
-      {viewType === 'preview' && (
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="h-full w-full pl-2"
-          autoSaveId="my-articles-list-panel"
-        >
-          <ResizablePanel
-            className="h-[calc(100vh-130px)] overflow-y-auto pr-2"
-            style={{ overflow: 'auto' }}
-            minSize={30}
-            maxSize={70}
-          >
-            <SearchableList<ArticlesListOut>
-              onSearch={handleSearch}
-              onLoadMore={handleLoadMore}
-              renderItem={renderArticle}
-              renderSkeleton={renderSkeleton}
-              isLoading={isPending}
-              items={articles}
-              totalItems={totalItems}
-              totalPages={totalPages}
-              currentPage={page}
-              loadingType={loadingType}
-              searchPlaceholder="Search your articles..."
-              emptyStateContent="No Articles Found"
-              emptyStateSubcontent="Try searching for something else"
-              emptyStateLogo={<FileX2 size={64} />}
-              title={Tabs.MY_ARTICLES}
-              listContainerClassName={cn(
-                'grid grid-cols-1 gap-3 h-full md:grid-cols-1 lg:grid-cols-1'
-              )}
-              showViewTypeIcons={true}
-              setViewType={setViewType}
-              viewType={viewType}
-            />
-          </ResizablePanel>
-          <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
-          <ResizablePanel className="ml-2 hidden lg:block">
-            <ArticlePreviewSection
-              article={selectedPreviewArticle}
-              className="h-[calc(100vh-130px)]"
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      )}
+        </ResizablePanel>
+        {viewType === 'preview' && (
+          <>
+            <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
+            <ResizablePanel
+              className="ml-2 hidden lg:block"
+              defaultSize={40}
+              minSize={30}
+              maxSize={70}
+            >
+              <ArticlePreviewSection
+                article={selectedPreviewArticle}
+                className="h-[calc(100vh-130px)]"
+              />
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 };

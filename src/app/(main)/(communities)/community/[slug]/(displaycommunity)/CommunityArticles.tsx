@@ -66,10 +66,15 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
     }
   }, [data, error]);
 
-  const handleSearch = useCallback((term: string) => {
-    setSearch(term);
-    setPage(1);
-  }, []);
+  const handleSearch = useCallback(
+    (term: string) => {
+      setSearch(term);
+      setPage(1);
+      setArticles([]);
+      setSelectedPreviewArticle(null);
+    },
+    [setSearch, setPage, setArticles, setSelectedPreviewArticle]
+  );
 
   const handleLoadMore = useCallback((newPage: number) => {
     setPage(newPage);
@@ -111,72 +116,60 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
 
   return (
     <div className="space-y-2">
-      {viewType !== 'preview' && (
-        <SearchableList<ArticlesListOut>
-          onSearch={handleSearch}
-          onLoadMore={handleLoadMore}
-          renderItem={renderArticle}
-          renderSkeleton={renderSkeleton}
-          isLoading={isPending}
-          items={articles}
-          totalItems={data?.data.total || 0}
-          totalPages={data?.data.num_pages || 1}
-          currentPage={page}
-          itemsPerPage={10}
-          loadingType={LoadingType.PAGINATION}
-          searchPlaceholder="Search articles..."
-          emptyStateContent="No articles found"
-          emptyStateSubcontent="Be the first to create an article in this community"
-          emptyStateLogo={<FileX2 size={64} />}
-          showViewTypeIcons={true}
-          viewType={viewType}
-          setViewType={(v) => handleViewTypeChange(v as 'grid' | 'preview')}
-          allowedViewTypes={['grid', 'preview']}
-        />
-      )}
-      {viewType === 'preview' && (
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="h-full w-full"
-          autoSaveId="community-articles-list-panel"
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="h-full w-full"
+        autoSaveId="community-articles-list-panel"
+      >
+        <ResizablePanel
+          className={cn(
+            'h-[calc(100vh-130px)] overflow-y-auto',
+            viewType === 'preview' ? 'pr-2' : ''
+          )}
+          defaultSize={60}
+          minSize={30}
+          maxSize={70}
         >
-          <ResizablePanel
-            className="h-[calc(100vh-130px)] overflow-y-auto pr-2"
-            minSize={30}
-            maxSize={70}
-          >
-            <SearchableList<ArticlesListOut>
-              onSearch={handleSearch}
-              onLoadMore={handleLoadMore}
-              renderItem={renderArticle}
-              renderSkeleton={renderSkeleton}
-              isLoading={isPending}
-              items={articles}
-              totalItems={data?.data.total || 0}
-              totalPages={data?.data.num_pages || 1}
-              currentPage={page}
-              itemsPerPage={10}
-              loadingType={LoadingType.PAGINATION}
-              searchPlaceholder="Search articles..."
-              emptyStateContent="No articles found"
-              emptyStateSubcontent="Be the first to create an article in this community"
-              emptyStateLogo={<FileX2 size={64} />}
-              showViewTypeIcons={true}
-              viewType={viewType}
-              setViewType={(v) => handleViewTypeChange(v as 'grid' | 'preview')}
-              allowedViewTypes={['grid', 'preview']}
-              listContainerClassName={cn('flex flex-col gap-3 h-full')}
-            />
-          </ResizablePanel>
-          <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
-          <ResizablePanel className="ml-2 hidden lg:block">
-            <ArticlePreviewSection
-              article={selectedPreviewArticle}
-              className="h-[calc(100vh-130px)]"
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      )}
+          <SearchableList<ArticlesListOut>
+            onSearch={handleSearch}
+            onLoadMore={handleLoadMore}
+            renderItem={renderArticle}
+            renderSkeleton={renderSkeleton}
+            isLoading={isPending}
+            items={articles}
+            totalItems={data?.data.total || 0}
+            totalPages={data?.data.num_pages || 1}
+            currentPage={page}
+            itemsPerPage={10}
+            loadingType={LoadingType.PAGINATION}
+            searchPlaceholder="Search articles..."
+            emptyStateContent="No articles found"
+            emptyStateSubcontent="Be the first to create an article in this community"
+            emptyStateLogo={<FileX2 size={64} />}
+            showViewTypeIcons={true}
+            viewType={viewType}
+            setViewType={(v) => handleViewTypeChange(v as 'grid' | 'preview')}
+            allowedViewTypes={['grid', 'preview']}
+            listContainerClassName={cn('flex flex-col gap-3 h-full')}
+          />
+        </ResizablePanel>
+        {viewType === 'preview' && (
+          <>
+            <ResizableHandle withHandle={true} className="bg-common-cardBackground" />
+            <ResizablePanel
+              className="ml-2 hidden lg:block"
+              defaultSize={40}
+              minSize={30}
+              maxSize={70}
+            >
+              <ArticlePreviewSection
+                article={selectedPreviewArticle}
+                className="h-[calc(100vh-130px)]"
+              />
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 };
