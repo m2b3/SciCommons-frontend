@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
+import { ChevronDown, ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -17,6 +17,7 @@ import RenderComments from '@/components/common/RenderComments';
 import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
 import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useRealtimeContextStore } from '@/stores/realtimeStore';
 
@@ -31,6 +32,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
 
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(false);
+  const [isCommentFormCollapsed, setIsCommentFormCollapsed] = useState<boolean>(true);
 
   // Mark realtime context for comment viewing
   useEffect(() => {
@@ -118,13 +120,25 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
 
   return (
     <div className="mt-2 flex flex-col border-t border-common-contrast pt-4">
-      <span className="mb-2 text-sm font-bold text-text-tertiary">Add Comment:</span>
-      <CommentInput
-        onSubmit={addNewComment}
-        placeholder="Write a new comment..."
-        buttonText="Post Comment"
-        isPending={isCreateCommentPending}
-      />
+      <div className="mb-2 flex items-center gap-2">
+        <span className="text-xs font-bold text-text-tertiary">Add Comment:</span>
+        <ChevronDown
+          size={14}
+          className={cn(
+            'cursor-pointer text-text-secondary',
+            isCommentFormCollapsed && 'rotate-180'
+          )}
+          onClick={() => setIsCommentFormCollapsed(!isCommentFormCollapsed)}
+        />
+      </div>
+      {!isCommentFormCollapsed && (
+        <CommentInput
+          onSubmit={addNewComment}
+          placeholder="Write a new comment..."
+          buttonText="Post Comment"
+          isPending={isCreateCommentPending}
+        />
+      )}
       {isPending && (
         <div className="mt-4 flex w-full animate-pulse items-center justify-center gap-2">
           <div className="w-5">
