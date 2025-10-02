@@ -202,7 +202,7 @@ const ButtonTitle = React.forwardRef<HTMLDivElement, ButtonTitleProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-center whitespace-nowrap text-xs font-normal sm:text-sm',
+        'flex items-center justify-center whitespace-nowrap text-xxs font-normal sm:text-xs',
         className
       )}
     >

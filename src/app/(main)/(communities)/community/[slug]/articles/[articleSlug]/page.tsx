@@ -120,6 +120,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
             <DiscussionForum
               articleId={data?.data.id || 0}
               communityId={data?.data.community_article?.community.id}
+              showSubscribeButton={true}
             />
           ),
         },

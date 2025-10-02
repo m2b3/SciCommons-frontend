@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Plus } from 'lucide-react';
+import { BellPlus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useArticlesDiscussionApiListDiscussions } from '@/api/discussions/discussions';
@@ -21,9 +21,14 @@ import DiscussionThread from './DiscussionThread';
 interface DiscussionForumProps {
   articleId: number;
   communityId?: number | null;
+  showSubscribeButton?: boolean;
 }
 
-const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityId }) => {
+const DiscussionForum: React.FC<DiscussionForumProps> = ({
+  articleId,
+  communityId,
+  showSubscribeButton = false,
+}) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
 
@@ -77,17 +82,38 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
     <div>
       <div className="mb-4 flex items-center justify-between res-text-sm">
         <h1 className="font-bold text-text-primary res-text-xl">Discussions</h1>
-        <Button onClick={handleNewDiscussion} className="p-2">
-          <ButtonIcon>
-            <Plus
-              size={14}
-              className={cn('transition-transform duration-200', {
-                'rotate-45': showForm,
-              })}
-            />
-          </ButtonIcon>
-          <ButtonTitle className="text-xxs sm:text-xs">New Discussion</ButtonTitle>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={handleNewDiscussion} className="p-2">
+            <ButtonIcon>
+              <Plus
+                size={14}
+                className={cn('transition-transform duration-200', {
+                  'rotate-45': showForm,
+                })}
+              />
+            </ButtonIcon>
+            <ButtonTitle>New Discussion</ButtonTitle>
+          </Button>
+          {showSubscribeButton && (
+            <Button
+              className="group p-2"
+              withTooltip
+              tooltipData="Subscribe to community discussions to get updates."
+              variant={'blue'}
+            >
+              <ButtonIcon>
+                <BellPlus
+                  size={14}
+                  className={cn(
+                    'transition-transform duration-200',
+                    'group-hover:-translate-y-0.5 group-hover:-rotate-12'
+                  )}
+                />
+              </ButtonIcon>
+              <ButtonTitle>Subscribe</ButtonTitle>
+            </Button>
+          )}
+        </div>
       </div>
 
       {showForm ? (

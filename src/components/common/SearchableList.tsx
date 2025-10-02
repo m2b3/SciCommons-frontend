@@ -114,7 +114,7 @@ function SearchableList<T>({
 
   return (
     <div className="space-y-4">
-      <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 md:flex-row">
+      <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 pt-1 md:flex-row">
         {title && (
           <h1 className="whitespace-nowrap text-3xl font-bold text-text-primary">{title}</h1>
         )}
