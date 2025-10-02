@@ -8,6 +8,7 @@
 export interface RealtimeStatusOut {
   communities: number[];
   realtime_enabled: boolean;
+  subscribed_articles?: number[];
   tornado_url: string;
   user_id: number;
 }
