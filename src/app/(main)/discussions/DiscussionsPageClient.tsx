@@ -78,18 +78,36 @@ const DiscussionsPageClient: React.FC = () => {
         <div className="flex-1 overflow-auto">
           {selectedArticle ? (
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="mb-2 text-base font-semibold text-text-secondary">Abstract</h2>
-                <RenderParsedHTML
-                  rawContent={selectedArticle.abstract}
-                  isShrinked={true}
-                  supportMarkdown={true}
-                  supportLatex={true}
-                  containerClassName="prose prose-sm max-w-none text-sm"
-                />
+              <div
+                className={cn(
+                  'mb-6 max-h-10 overflow-hidden border-b border-common-minimal pb-10 transition-all duration-300 ease-in-out',
+                  {
+                    'max-h-96 overflow-auto': isExpanded,
+                  }
+                )}
+              >
+                {selectedArticle.abstract.trim().length > 0 && (
+                  <div className="mb-4">
+                    <h2 className="mb-2 text-base font-semibold text-text-secondary">Abstract</h2>
+                    <RenderParsedHTML
+                      rawContent={selectedArticle.abstract}
+                      isShrinked={true}
+                      supportMarkdown={true}
+                      supportLatex={true}
+                      containerClassName="prose prose-sm max-w-none text-sm"
+                      gradientClassName="sm:from-common-background to-transparent"
+                    />
+                  </div>
+                )}
               </div>
-              <div className="border-t border-common-contrast pt-4">
-                <h2 className="mb-3 text-base font-semibold text-text-secondary">Discussions</h2>
+              <div className="relative">
+                <div
+                  className="absolute -top-9 left-1/2 flex -translate-x-1/2 cursor-pointer items-center gap-1 rounded-full border border-common-contrast bg-common-cardBackground px-2 py-1 text-xxs text-text-tertiary hover:text-text-secondary"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? 'Collapse' : 'Expand'}
+                  <ChevronsDown className={cn('h-3 w-3', isExpanded && 'rotate-180')} />
+                </div>
                 <DiscussionForum
                   articleId={selectedArticle.id}
                   communityId={selectedArticle.communityId}
@@ -114,7 +132,7 @@ const DiscussionsPageClient: React.FC = () => {
     <div className="h-[calc(100vh-4rem)] w-full">
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Resizable Sidebar */}
-        <ResizablePanel defaultSize={25} minSize={30} maxSize={50}>
+        <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
           <div className="h-full border-r border-common-contrast bg-common-cardBackground">
             <DiscussionsSidebar
               onArticleSelect={handleArticleSelect}
@@ -126,7 +144,7 @@ const DiscussionsPageClient: React.FC = () => {
         <ResizableHandle withHandle />
 
         {/* Main Content Area */}
-        <ResizablePanel defaultSize={75} minSize={50}>
+        <ResizablePanel defaultSize={75} minSize={60}>
           <div className="h-full overflow-auto">
             {selectedArticle ? (
               <div className="p-6">
@@ -146,17 +164,19 @@ const DiscussionsPageClient: React.FC = () => {
                   >
                     {selectedArticle.title}
                   </h1>
-                  <div className="mt-4 pb-4">
-                    <h2 className="mb-2 text-sm font-semibold text-text-secondary">Abstract</h2>
-                    <RenderParsedHTML
-                      rawContent={selectedArticle.abstract}
-                      isShrinked={true}
-                      supportMarkdown={true}
-                      supportLatex={true}
-                      gradientClassName="sm:from-common-background to-transparent"
-                      contentClassName="text-sm"
-                    />
-                  </div>
+                  {selectedArticle.abstract.trim().length > 0 && (
+                    <div className="mt-4 pb-4">
+                      <h2 className="mb-2 text-sm font-semibold text-text-secondary">Abstract</h2>
+                      <RenderParsedHTML
+                        rawContent={selectedArticle.abstract}
+                        isShrinked={true}
+                        supportMarkdown={true}
+                        supportLatex={true}
+                        gradientClassName="sm:from-common-background to-transparent"
+                        contentClassName="text-sm"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="relative">
                   <div
