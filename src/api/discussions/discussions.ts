@@ -19,6 +19,7 @@ import { customInstance } from '.././custom-instance';
 import type { BodyType, ErrorType } from '.././custom-instance';
 import type {
   ArticlesDiscussionApiCreateDiscussionParams,
+  ArticlesDiscussionApiGetSubscriptionStatusParams,
   ArticlesDiscussionApiListDiscussionCommentsParams,
   ArticlesDiscussionApiListDiscussionsParams,
   CreateDiscussionSchema,
@@ -26,8 +27,13 @@ import type {
   DiscussionCommentOut,
   DiscussionCommentUpdateSchema,
   DiscussionOut,
+  DiscussionSubscriptionOut,
+  DiscussionSubscriptionSchema,
+  DiscussionSubscriptionUpdateSchema,
   Message,
   PaginatedDiscussionSchema,
+  SubscriptionStatusSchema,
+  UserSubscriptionsOut,
 } from '.././schemas';
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
@@ -228,6 +234,269 @@ export const useArticlesDiscussionApiListDiscussions = <
   return query;
 };
 
+/**
+ * Get all active subscriptions for the current user grouped by community
+Returns:
+{
+    "communities": [
+        {
+            "community_id": 1,
+            "community_name": "AI Research",
+            "articles": [
+                {
+                    "article_id": 123,
+                    "article_title": "Deep Learning Paper",
+                    "article_slug": "deep-learning-paper"
+                }
+            ]
+        }
+    ]
+}
+ * @summary Get User Subscriptions
+ */
+export const articlesDiscussionApiGetUserSubscriptions = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<UserSubscriptionsOut>(
+    { url: `/api/articles/discussions/my-subscriptions/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiGetUserSubscriptionsQueryKey = () => {
+  return [`/api/articles/discussions/my-subscriptions/`] as const;
+};
+
+export const getArticlesDiscussionApiGetUserSubscriptionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
+  TError = ErrorType<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getArticlesDiscussionApiGetUserSubscriptionsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>
+  > = ({ signal }) => articlesDiscussionApiGetUserSubscriptions(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ArticlesDiscussionApiGetUserSubscriptionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>
+>;
+export type ArticlesDiscussionApiGetUserSubscriptionsQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get User Subscriptions
+ */
+export const useArticlesDiscussionApiGetUserSubscriptions = <
+  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
+  TError = ErrorType<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getArticlesDiscussionApiGetUserSubscriptionsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Check if user is subscribed to discussions for a specific community article
+ * @summary Get Subscription Status
+ */
+export const articlesDiscussionApiGetSubscriptionStatus = (
+  params: ArticlesDiscussionApiGetSubscriptionStatusParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SubscriptionStatusSchema>(
+    { url: `/api/articles/discussions/subscription-status/`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiGetSubscriptionStatusQueryKey = (
+  params: ArticlesDiscussionApiGetSubscriptionStatusParams
+) => {
+  return [`/api/articles/discussions/subscription-status/`, ...(params ? [params] : [])] as const;
+};
+
+export const getArticlesDiscussionApiGetSubscriptionStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
+  TError = ErrorType<Message>,
+>(
+  params: ArticlesDiscussionApiGetSubscriptionStatusParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getArticlesDiscussionApiGetSubscriptionStatusQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>
+  > = ({ signal }) => articlesDiscussionApiGetSubscriptionStatus(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ArticlesDiscussionApiGetSubscriptionStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>
+>;
+export type ArticlesDiscussionApiGetSubscriptionStatusQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get Subscription Status
+ */
+export const useArticlesDiscussionApiGetSubscriptionStatus = <
+  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
+  TError = ErrorType<Message>,
+>(
+  params: ArticlesDiscussionApiGetSubscriptionStatusParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getArticlesDiscussionApiGetSubscriptionStatusQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Subscribe to discussions in a specific community article for real-time updates
+Only works for articles in private/hidden communities
+
+Args:
+    subscription_data: Contains community_article_id and community_id
+ * @summary Subscribe To Discussion
+ */
+export const articlesDiscussionApiSubscribeToDiscussion = (
+  discussionSubscriptionSchema: BodyType<DiscussionSubscriptionSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<DiscussionSubscriptionOut>(
+    {
+      url: `/api/articles/discussions/subscribe/`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: discussionSubscriptionSchema,
+    },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiSubscribeToDiscussionMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
+    TError,
+    { data: BodyType<DiscussionSubscriptionSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
+  TError,
+  { data: BodyType<DiscussionSubscriptionSchema> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
+    { data: BodyType<DiscussionSubscriptionSchema> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return articlesDiscussionApiSubscribeToDiscussion(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiSubscribeToDiscussionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>
+>;
+export type ArticlesDiscussionApiSubscribeToDiscussionMutationBody =
+  BodyType<DiscussionSubscriptionSchema>;
+export type ArticlesDiscussionApiSubscribeToDiscussionMutationError = ErrorType<Message>;
+
+/**
+ * @summary Subscribe To Discussion
+ */
+export const useArticlesDiscussionApiSubscribeToDiscussion = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
+    TError,
+    { data: BodyType<DiscussionSubscriptionSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
+  TError,
+  { data: BodyType<DiscussionSubscriptionSchema> },
+  TContext
+> => {
+  const mutationOptions = getArticlesDiscussionApiSubscribeToDiscussionMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
 /**
  * @summary Get Discussion
  */
@@ -862,6 +1131,164 @@ export const useArticlesDiscussionApiDeleteComment = <
   TContext
 > => {
   const mutationOptions = getArticlesDiscussionApiDeleteCommentMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Update discussion subscription (mainly to activate/deactivate)
+ * @summary Update Discussion Subscription
+ */
+export const articlesDiscussionApiUpdateDiscussionSubscription = (
+  subscriptionId: number,
+  discussionSubscriptionUpdateSchema: BodyType<DiscussionSubscriptionUpdateSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<DiscussionSubscriptionOut>(
+    {
+      url: `/api/articles/discussions/subscriptions/${subscriptionId}/`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: discussionSubscriptionUpdateSchema,
+    },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiUpdateDiscussionSubscriptionMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
+    TError,
+    { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
+  TError,
+  { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
+    { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> }
+  > = (props) => {
+    const { subscriptionId, data } = props ?? {};
+
+    return articlesDiscussionApiUpdateDiscussionSubscription(subscriptionId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>
+>;
+export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationBody =
+  BodyType<DiscussionSubscriptionUpdateSchema>;
+export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationError = ErrorType<Message>;
+
+/**
+ * @summary Update Discussion Subscription
+ */
+export const useArticlesDiscussionApiUpdateDiscussionSubscription = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
+    TError,
+    { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
+  TError,
+  { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
+  TContext
+> => {
+  const mutationOptions =
+    getArticlesDiscussionApiUpdateDiscussionSubscriptionMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Unsubscribe from discussion updates (soft delete by setting is_active to False)
+ * @summary Unsubscribe From Discussion
+ */
+export const articlesDiscussionApiUnsubscribeFromDiscussion = (
+  subscriptionId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<void>(
+    { url: `/api/articles/discussions/subscriptions/${subscriptionId}/`, method: 'DELETE' },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
+    TError,
+    { subscriptionId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
+  TError,
+  { subscriptionId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
+    { subscriptionId: number }
+  > = (props) => {
+    const { subscriptionId } = props ?? {};
+
+    return articlesDiscussionApiUnsubscribeFromDiscussion(subscriptionId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiUnsubscribeFromDiscussionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>
+>;
+
+export type ArticlesDiscussionApiUnsubscribeFromDiscussionMutationError = ErrorType<Message>;
+
+/**
+ * @summary Unsubscribe From Discussion
+ */
+export const useArticlesDiscussionApiUnsubscribeFromDiscussion = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
+    TError,
+    { subscriptionId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
+  TError,
+  { subscriptionId: number },
+  TContext
+> => {
+  const mutationOptions = getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

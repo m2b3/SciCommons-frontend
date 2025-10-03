@@ -184,7 +184,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
             <ButtonIcon>
               <Send size={14} />
             </ButtonIcon>
-            <ButtonTitle className="text-xxs sm:text-xs">{buttonText}</ButtonTitle>
+            <ButtonTitle>{buttonText}</ButtonTitle>
           </Button>
         </div>
       </div>

@@ -182,7 +182,7 @@ export const useMyappRealtimeApiHeartbeat = <
 /**
  * Get real-time system status for the current user
 
-Returns status information about the real-time system
+Returns status information about the real-time system including subscriptions
  * @summary Get Realtime Status
  */
 export const myappRealtimeApiGetRealtimeStatus = (

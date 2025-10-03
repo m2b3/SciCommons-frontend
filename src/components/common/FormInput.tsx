@@ -7,6 +7,7 @@ import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form
 
 import { cn } from '@/lib/utils';
 
+import { Switch } from '../ui/switch';
 import CustomTooltip from './CustomTooltip';
 import RenderParsedHTML from './RenderParsedHTML';
 
@@ -148,15 +149,17 @@ const FormInput = <TFieldValues extends FieldValues>({
       )}
       <div className="relative">
         {(supportMarkdown || supportLatex) && (
-          <button
-            onClick={() => {
-              setIsMarkdownPreview(!isMarkdownPreview);
-            }}
-            className="absolute -top-7 right-2 rounded-md p-1 text-text-tertiary hover:bg-common-background hover:text-text-secondary"
-            type="button"
-          >
-            {isMarkdownPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
+          <div className="absolute -top-6 right-2 flex items-center">
+            <Switch
+              checked={isMarkdownPreview}
+              onCheckedChange={setIsMarkdownPreview}
+              className="h-4 w-7"
+              thumbClassName="h-3 w-3 data-[state=checked]:translate-x-3"
+            />
+            <span className="ml-2 hidden text-xxs text-text-tertiary/70 sm:block">
+              Markdown Preview
+            </span>
+          </div>
         )}
         {(supportMarkdown || supportLatex) && isMarkdownPreview && (
           <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>

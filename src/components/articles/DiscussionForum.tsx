@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Plus } from 'lucide-react';
+import { BellOff, BellPlus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useArticlesDiscussionApiListDiscussions } from '@/api/discussions/discussions';
+import {
+  getArticlesDiscussionApiGetSubscriptionStatusQueryKey,
+  useArticlesDiscussionApiGetSubscriptionStatus,
+  useArticlesDiscussionApiListDiscussions,
+  useArticlesDiscussionApiSubscribeToDiscussion,
+  useArticlesDiscussionApiUnsubscribeFromDiscussion,
+} from '@/api/discussions/discussions';
 import EmptyState from '@/components/common/EmptyState';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { ErrorMessage } from '@/constants';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useRealtimeContextStore } from '@/stores/realtimeStore';
@@ -21,11 +29,19 @@ import DiscussionThread from './DiscussionThread';
 interface DiscussionForumProps {
   articleId: number;
   communityId?: number | null;
+  communityArticleId?: number | null;
+  showSubscribeButton?: boolean;
 }
 
-const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityId }) => {
+const DiscussionForum: React.FC<DiscussionForumProps> = ({
+  articleId,
+  communityId,
+  communityArticleId,
+  showSubscribeButton = false,
+}) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const queryClient = useQueryClient();
 
   const [showForm, setShowForm] = useState<boolean>(false);
   const [discussionId, setDiscussionId] = useState<number | null>(null);
@@ -43,6 +59,81 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
       },
     }
   );
+
+  // Fetch subscription status - cache for 5 minutes
+  const { data: subscriptionData, isLoading: isSubscriptionLoading } =
+    useArticlesDiscussionApiGetSubscriptionStatus(
+      {
+        community_article_id: communityArticleId || 0,
+        community_id: communityId || 0,
+      },
+      {
+        request: { headers: { Authorization: `Bearer ${accessToken}` } },
+        query: {
+          enabled: !!accessToken && !!communityArticleId && !!communityId && showSubscribeButton,
+          staleTime: FIFTEEN_MINUTES_IN_MS,
+          refetchOnWindowFocus: true,
+          refetchOnReconnect: true,
+        },
+      }
+    );
+
+  const isSubscribed = subscriptionData?.data?.is_subscribed || false;
+  const subscriptionId = subscriptionData?.data?.subscription?.id;
+
+  // Subscribe mutation
+  const { mutate: subscribe, isPending: isSubscribing } =
+    useArticlesDiscussionApiSubscribeToDiscussion({
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      mutation: {
+        onSuccess: (response) => {
+          toast.success('Successfully subscribed to discussions');
+
+          // Update cached subscription status immediately for better UX (no refetch)
+          const params = {
+            community_article_id: communityArticleId || 0,
+            community_id: communityId || 0,
+          };
+          const queryKey = getArticlesDiscussionApiGetSubscriptionStatusQueryKey(params);
+          queryClient.setQueryData(queryKey, {
+            data: {
+              is_subscribed: true,
+              subscription: response.data,
+            },
+          });
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      },
+    });
+
+  // Unsubscribe mutation
+  const { mutate: unsubscribe, isPending: isUnsubscribing } =
+    useArticlesDiscussionApiUnsubscribeFromDiscussion({
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      mutation: {
+        onSuccess: () => {
+          toast.success('Successfully unsubscribed from discussions');
+
+          // Update cached subscription status immediately for better UX (no refetch)
+          const params = {
+            community_article_id: communityArticleId || 0,
+            community_id: communityId || 0,
+          };
+          const queryKey = getArticlesDiscussionApiGetSubscriptionStatusQueryKey(params);
+          queryClient.setQueryData(queryKey, {
+            data: {
+              is_subscribed: false,
+              subscription: null,
+            },
+          });
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      },
+    });
 
   // Mark realtime active context for in-place updates
   useEffect(() => {
@@ -69,6 +160,24 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
     setDiscussionId(discussionId);
   };
 
+  const handleSubscriptionToggle = (): void => {
+    if (!communityArticleId || !communityId) {
+      toast.error('Missing required information to subscribe');
+      return;
+    }
+
+    if (isSubscribed && subscriptionId) {
+      unsubscribe({ subscriptionId });
+    } else {
+      subscribe({
+        data: {
+          community_article_id: communityArticleId,
+          community_id: communityId,
+        },
+      });
+    }
+  };
+
   if (discussionId) {
     return <DiscussionThread discussionId={discussionId} setDiscussionId={setDiscussionId} />;
   }
@@ -77,17 +186,66 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({ articleId, communityI
     <div>
       <div className="mb-4 flex items-center justify-between res-text-sm">
         <h1 className="font-bold text-text-primary res-text-xl">Discussions</h1>
-        <Button onClick={handleNewDiscussion} className="p-2">
-          <ButtonIcon>
-            <Plus
-              size={14}
-              className={cn('transition-transform duration-200', {
-                'rotate-45': showForm,
+        <div className="flex items-center gap-2">
+          <Button onClick={handleNewDiscussion} className="p-2">
+            <ButtonIcon>
+              <Plus
+                size={14}
+                className={cn('transition-transform duration-200', {
+                  'rotate-45': showForm,
+                })}
+              />
+            </ButtonIcon>
+            <ButtonTitle>New Discussion</ButtonTitle>
+          </Button>
+          {showSubscribeButton && (
+            <Button
+              onClick={handleSubscriptionToggle}
+              loading={isSubscribing || isUnsubscribing || isSubscriptionLoading}
+              showLoadingSpinner
+              className={cn('group p-2', {
+                'border-functional-redContrast/30 bg-functional-redContrast/10': isSubscribed,
               })}
-            />
-          </ButtonIcon>
-          <ButtonTitle className="text-xxs sm:text-xs">New Discussion</ButtonTitle>
-        </Button>
+              withTooltip
+              tooltipData={
+                isSubscribed
+                  ? 'Unsubscribe from real-time discussion updates'
+                  : 'Subscribe to get real-time discussion updates'
+              }
+              variant={isSubscribed ? 'outline' : 'blue'}
+            >
+              <ButtonIcon>
+                {isSubscribed ? (
+                  <BellOff
+                    size={14}
+                    className={cn(
+                      'transition-transform duration-200',
+                      'group-hover:-translate-y-0.5 group-hover:rotate-12',
+                      {
+                        'text-functional-red': isSubscribed,
+                      }
+                    )}
+                  />
+                ) : (
+                  <BellPlus
+                    size={14}
+                    className={cn(
+                      'transition-transform duration-200',
+                      'group-hover:-translate-y-0.5 group-hover:-rotate-12'
+                    )}
+                  />
+                )}
+              </ButtonIcon>
+              <ButtonTitle
+                className={cn({
+                  'text-functional-red': isSubscribed,
+                })}
+              >
+                {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+              </ButtonTitle>
+            </Button>
+          )}
+        </div>
       </div>
 
       {showForm ? (

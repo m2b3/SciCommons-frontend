@@ -54,7 +54,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   }, [isJoinSuccess, error, data, refetch]);
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden pb-1">
       <div className="relative p-4">
         <div className="flex gap-4">
           {/* <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">

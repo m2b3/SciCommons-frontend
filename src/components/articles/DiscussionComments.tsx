@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { ChevronDown, ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
+import { ChevronUp, ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -122,7 +122,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
     <div className="mt-2 flex flex-col border-t border-common-contrast pt-4">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-xs font-bold text-text-tertiary">Add Comment:</span>
-        <ChevronDown
+        <ChevronUp
           size={14}
           className={cn(
             'cursor-pointer text-text-secondary',
