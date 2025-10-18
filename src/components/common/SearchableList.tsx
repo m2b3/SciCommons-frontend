@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { LayoutGrid, List, PanelLeft } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 
 import EmptyState from '@/components/common/EmptyState';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonIcon } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Pagination,
@@ -40,6 +41,10 @@ interface SearchableListProps<T> {
   emptyStateLogo: React.ReactNode;
   title?: string;
   listContainerClassName?: string;
+  viewType?: 'grid' | 'list' | 'preview';
+  showViewTypeIcons?: boolean;
+  setViewType?: (viewType: 'grid' | 'list' | 'preview') => void;
+  allowedViewTypes?: Array<'grid' | 'list' | 'preview'>;
 }
 
 function SearchableList<T>({
@@ -61,6 +66,10 @@ function SearchableList<T>({
   emptyStateLogo,
   title,
   listContainerClassName = 'flex flex-col gap-4',
+  showViewTypeIcons = false,
+  viewType = 'grid',
+  setViewType,
+  allowedViewTypes,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -85,7 +94,7 @@ function SearchableList<T>({
           handleLoadMore();
         }
       },
-      { threshold: 1.0 }
+      { root: null, rootMargin: '200px', threshold: 0.0 }
     );
 
     const currentObserverTarget = observerTarget.current;
@@ -105,7 +114,7 @@ function SearchableList<T>({
 
   return (
     <div className="space-y-4">
-      <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 md:flex-row">
+      <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 pt-1 md:flex-row">
         {title && (
           <h1 className="whitespace-nowrap text-3xl font-bold text-text-primary">{title}</h1>
         )}
@@ -120,9 +129,48 @@ function SearchableList<T>({
 
       <div className={cn('flex h-fit flex-col space-y-4')}>
         {!isLoading && totalItems > 0 && (
-          <span className="text-sm text-text-tertiary">
-            Results: {totalItems} {title}
-          </span>
+          <div className="flex w-full items-center justify-between">
+            <span className="text-sm text-text-tertiary">
+              Results: {totalItems} {title}
+            </span>
+            {showViewTypeIcons && (
+              <div className="flex items-center gap-2">
+                {(!allowedViewTypes || allowedViewTypes.includes('grid')) && (
+                  <Button
+                    variant={viewType === 'grid' ? 'gray' : 'transparent'}
+                    className="aspect-square p-1"
+                    onClick={() => setViewType?.('grid')}
+                  >
+                    <ButtonIcon>
+                      <LayoutGrid size={18} className="text-text-secondary" />
+                    </ButtonIcon>
+                  </Button>
+                )}
+                {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
+                  <Button
+                    variant={viewType === 'list' ? 'gray' : 'transparent'}
+                    className="aspect-square p-1"
+                    onClick={() => setViewType?.('list')}
+                  >
+                    <ButtonIcon>
+                      <List size={18} className="text-text-secondary" />
+                    </ButtonIcon>
+                  </Button>
+                )}
+                {(!allowedViewTypes || allowedViewTypes.includes('preview')) && (
+                  <Button
+                    variant={viewType === 'preview' ? 'gray' : 'transparent'}
+                    className="hidden aspect-square p-1 md:block"
+                    onClick={() => setViewType?.('preview')}
+                  >
+                    <ButtonIcon>
+                      <PanelLeft size={18} className="text-text-secondary" />
+                    </ButtonIcon>
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         )}
         <div className={cn(listContainerClassName)}>
           {items.map((item, index) => (

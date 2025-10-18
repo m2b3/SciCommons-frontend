@@ -25,16 +25,16 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ tabs }) => {
   }, [activeTab, tabs]);
 
   return (
-    <div className="mt-6 text-text-secondary">
+    <div className="mt-0 text-text-secondary">
       <div className="relative">
-        <div className="flex space-x-4 border-b border-common-contrast">
+        <div className="flex space-x-2 border-b border-common-contrast">
           {tabs.map((tab, index) => (
             <button
               key={tab.title}
               ref={(el) => {
                 tabRefs.current[index] = el;
               }}
-              className={`px-4 pb-2 transition-colors duration-200 ${
+              className={`px-4 pb-2 text-xs transition-colors duration-200 sm:text-sm ${
                 activeTab === index
                   ? 'text-functional-green'
                   : 'text-text-tertiary hover:text-functional-green'
@@ -46,7 +46,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ tabs }) => {
           ))}
         </div>
         <div
-          className="absolute bottom-0 h-1 bg-functional-green transition-all duration-500"
+          className="absolute bottom-0 h-0.5 rounded-sm bg-functional-green transition-all duration-500"
           style={underlineStyle}
         />
       </div>
