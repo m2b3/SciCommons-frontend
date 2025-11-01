@@ -19,8 +19,6 @@ import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
 import { ReviewOut } from '@/api/schemas';
-
-
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -157,7 +155,10 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 alt={review.user.username}
                 width={32}
                 height={32}
-                className="shrink-0 rounded-full"
+                className="shrink-0 rounded-full object-cover"
+                quality={75}
+                sizes="32px"
+                loading="lazy"
               />
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 font-bold text-text-secondary">

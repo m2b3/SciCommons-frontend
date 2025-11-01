@@ -28,6 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
 import useStore from '@/hooks/useStore';
@@ -177,6 +178,10 @@ const ProfileDropdown: React.FC = () => {
   const { handleAppInstall } = usePWAInstallPrompt('install');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const { data } = useCurrentUser();
+
+  const profileImage = data?.data?.profile_pic_url || `data:image/png;base64,${imageData}`;
+
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
@@ -186,11 +191,14 @@ const ProfileDropdown: React.FC = () => {
     <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Image
-          src={`data:image/png;base64,${imageData}`}
+          src={profileImage}
           alt="Profile"
           width={32}
           height={32}
-          className="aspect-square cursor-pointer rounded-full"
+          className="aspect-square cursor-pointer rounded-full object-cover"
+          quality={80}
+          sizes="32px"
+          priority
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={12}>
