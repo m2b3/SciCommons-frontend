@@ -59,7 +59,7 @@ export default function RootLayout({
               <main className="flex-grow">{children}</main>
             </TooltipProvider>
           </ThemeProvider>
-          <RealtimeStatus className="fixed left-1/2 top-4 z-[1000] -translate-x-1/2 bg-common-cardBackground md:left-auto md:right-2 md:top-16 md:translate-x-0" />
+          <RealtimeStatus className="fixed left-1/2 top-4 z-[1000] -translate-x-1/2 bg-common-cardBackground md:bottom-4 md:left-auto md:right-2 md:top-auto md:translate-x-0" />
           <BottomBar />
           <SonnerToaster
             richColors
