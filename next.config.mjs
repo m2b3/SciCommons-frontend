@@ -25,6 +25,10 @@ const nextConfig = withPWA({
         protocol: 'https',
         hostname: 'picsum.photos',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.scicommons.org',
+      },
     ],
   },
   output: 'standalone'
