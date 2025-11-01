@@ -32,89 +32,140 @@ const RenderParsedHTML = ({
   const [isOverflowing, setIsOverflowing] = useState(false);
 
   const processLatex = (content: string): string => {
-    let processedContent = content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, '');
+    try {
+      let processedContent = content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, '');
 
-    const katexOptions: KatexOptions = {
-      displayMode: true,
-      output: 'mathml' as const,
-      trust: true,
-      strict: false,
-      throwOnError: false,
-      macros: {
-        '\\idotsint': '\\int\\cdots\\int',
-        '\\iiiint': '\\int\\int\\int\\int',
-        '\\iiint': '\\int\\int\\int',
-        '\\iint': '\\int\\int',
-      },
-      maxSize: 10,
-      maxExpand: 1000,
-      fleqn: false,
-      leqno: false,
-      minRuleThickness: 0.05,
-      colorIsTextColor: false,
-    };
+      const katexOptions: KatexOptions = {
+        displayMode: true,
+        output: 'mathml' as const,
+        trust: true,
+        strict: false,
+        throwOnError: false,
+        macros: {
+          '\\idotsint': '\\int\\cdots\\int',
+          '\\iiiint': '\\int\\int\\int\\int',
+          '\\iiint': '\\int\\int\\int',
+          '\\iint': '\\int\\int',
+        },
+        maxSize: 10,
+        maxExpand: 1000,
+        fleqn: false,
+        leqno: false,
+        minRuleThickness: 0.05,
+        colorIsTextColor: false,
+      };
 
-    // Process block math
-    processedContent = processedContent.replace(/\$\$([\s\S]+?)\$\$/g, (match, expr) => {
-      try {
-        return katex.renderToString(expr, {
-          ...katexOptions,
-          displayMode: true,
-        });
-      } catch (e) {
-        // Return the original LaTeX expression in red
-        return `<span class="text-red-500">${match}</span>`;
-      }
-    });
+      // Process LaTeX environments (equation, equation*, align, align*, gather, gather*, etc.)
+      // This regex matches \begin{envname}...\end{envname} environments
+      processedContent = processedContent.replace(
+        /\\begin\{(equation\*?|align\*?|gather\*?|split|multline\*?|alignat\*?|flalign\*?|eqnarray\*?)\}([\s\S]*?)\\end\{\1\}/g,
+        (match, envName, expr) => {
+          try {
+            return katex.renderToString(match, {
+              ...katexOptions,
+              displayMode: true,
+            });
+          } catch (e) {
+            // Return the original LaTeX expression as-is
+            console.warn('LaTeX environment rendering failed:', e);
+            return match;
+          }
+        }
+      );
 
-    // Process inline math
-    processedContent = processedContent.replace(/(?<!\\)\$(.+?)(?<!\\)\$/g, (match, expr) => {
-      try {
-        return katex.renderToString(expr, {
-          ...katexOptions,
-          displayMode: false,
-        });
-      } catch (e) {
-        // Return the original LaTeX expression in red
-        return `<span class="text-red-500">${match}</span>`;
-      }
-    });
+      // Process block math
+      processedContent = processedContent.replace(/\$\$([\s\S]+?)\$\$/g, (match, expr) => {
+        try {
+          return katex.renderToString(expr, {
+            ...katexOptions,
+            displayMode: true,
+          });
+        } catch (e) {
+          // Return the original LaTeX expression as-is
+          console.warn('Block math rendering failed:', e);
+          return match;
+        }
+      });
 
-    return processedContent;
+      // Process inline math
+      processedContent = processedContent.replace(/(?<!\\)\$(.+?)(?<!\\)\$/g, (match, expr) => {
+        try {
+          return katex.renderToString(expr, {
+            ...katexOptions,
+            displayMode: false,
+          });
+        } catch (e) {
+          // Return the original LaTeX expression as-is
+          console.warn('Inline math rendering failed:', e);
+          return match;
+        }
+      });
+
+      return processedContent;
+    } catch (error) {
+      // If entire latex processing fails, return original content
+      console.error('LaTeX processing failed completely:', error);
+      return content;
+    }
   };
 
   const processContent = (content: string): string => {
-    let processedContent = content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, '');
+    try {
+      let processedContent = content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, '');
 
-    // If only markdown is supported
-    if (supportMarkdown && !supportLatex) {
-      return marked.parse(processedContent) as string;
-    }
+      // If only markdown is supported
+      if (supportMarkdown && !supportLatex) {
+        try {
+          return marked.parse(processedContent) as string;
+        } catch (e) {
+          console.warn('Markdown parsing failed:', e);
+          return processedContent;
+        }
+      }
 
-    // If only latex is supported
-    if (!supportMarkdown && supportLatex) {
-      // Process block math
-      processedContent = processLatex(processedContent);
+      // If only latex is supported
+      if (!supportMarkdown && supportLatex) {
+        // Process block math
+        processedContent = processLatex(processedContent);
+        return processedContent;
+      }
+
+      // If both are supported
+      if (supportMarkdown && supportLatex) {
+        // First process block math
+        processedContent = processLatex(processedContent);
+
+        // Finally process markdown
+        try {
+          return marked.parse(processedContent) as string;
+        } catch (e) {
+          console.warn('Markdown parsing failed:', e);
+          return processedContent;
+        }
+      }
 
       return processedContent;
+    } catch (error) {
+      // If everything fails, return original content
+      console.error('Content processing failed completely:', error);
+      return content;
     }
-
-    // If both are supported
-    if (supportMarkdown && supportLatex) {
-      // First process block math
-      processedContent = processLatex(processedContent);
-
-      // Finally process markdown
-      return marked.parse(processedContent) as string;
-    }
-
-    return processedContent;
   };
 
-  const html = useMemo(
-    () => DOMPurify.sanitize(processContent(rawContent)),
-    [rawContent, supportMarkdown, supportLatex]
-  );
+  const html = useMemo(() => {
+    try {
+      return DOMPurify.sanitize(processContent(rawContent));
+    } catch (error) {
+      // If sanitization fails, return escaped original content to prevent XSS
+      console.error('Content sanitization failed:', error);
+      return rawContent
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  }, [rawContent, supportMarkdown, supportLatex]);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
