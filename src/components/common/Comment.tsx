@@ -178,7 +178,10 @@ const Comment: React.FC<CommentProps> = ({
           alt={author.username}
           width={32}
           height={32}
-          className="aspect-square h-7 w-7 rounded-full md:h-8 md:w-8"
+          className="aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
+          quality={75}
+          sizes="32px"
+          loading="lazy"
         />
       </div>
       <div className="flex-grow res-text-sm">

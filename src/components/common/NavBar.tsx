@@ -196,6 +196,9 @@ const ProfileDropdown: React.FC = () => {
           width={32}
           height={32}
           className="aspect-square cursor-pointer rounded-full object-cover"
+          quality={80}
+          sizes="32px"
+          priority
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={12}>

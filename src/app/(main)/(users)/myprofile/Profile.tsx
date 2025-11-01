@@ -30,6 +30,9 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
             width={160}
             height={160}
             className="h-full w-full object-cover"
+            quality={85}
+            sizes="(max-width: 768px) 160px, 160px"
+            priority
           />
         </div>
         <input
