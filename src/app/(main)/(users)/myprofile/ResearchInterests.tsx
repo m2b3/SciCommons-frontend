@@ -20,7 +20,7 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
       <Controller
         name="researchInterests"
         control={control}
-        rules={{ required: 'Research interests are required' }}
+        // rules={{ required: 'Research interests are required' }}
         render={({ field, fieldState }) => (
           <MultiLabelSelector
             disabled={!editMode}

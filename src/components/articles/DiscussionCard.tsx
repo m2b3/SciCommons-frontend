@@ -73,7 +73,10 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               alt={discussion.user.username}
               width={32}
               height={32}
-              className="mr-2 aspect-square h-7 w-7 rounded-full md:h-8 md:w-8"
+              className="mr-2 aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
+              quality={75}
+              sizes="32px"
+              loading="lazy"
             />
             <div>
               <span className="text-sm font-semibold text-text-secondary">

@@ -124,7 +124,10 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                   alt={discussion.user.username}
                   width={32}
                   height={32}
-                  className="mr-2 rounded-full"
+                  className="mr-2 rounded-full object-cover"
+                  quality={75}
+                  sizes="32px"
+                  loading="lazy"
                 />
                 <div>
                   <span>{discussion.user.username}</span>

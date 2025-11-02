@@ -5,9 +5,10 @@ import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useUsersApiGetMe, useUsersApiUpdateUser } from '@/api/users/users';
+import { useUsersApiUpdateUser } from '@/api/users/users';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
+import { useCurrentUser, useInvalidateCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -44,14 +45,8 @@ const Home: React.FC = () => {
 
   const [editMode, setEditMode] = React.useState(false);
 
-  const { data, error, refetch } = useUsersApiGetMe({
-    query: { enabled: !!accessToken && !editMode },
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  });
+  const { data, error } = useCurrentUser();
+  const { invalidateUser } = useInvalidateCurrentUser();
 
   const { mutate, isPending } = useUsersApiUpdateUser({
     request: {
@@ -62,7 +57,8 @@ const Home: React.FC = () => {
     mutation: {
       onSuccess: () => {
         toast.success('Profile updated successfully');
-        refetch();
+        // Invalidate user cache to refetch and update all components using user data
+        invalidateUser();
         setEditMode(false);
       },
       onError: (error) => {
