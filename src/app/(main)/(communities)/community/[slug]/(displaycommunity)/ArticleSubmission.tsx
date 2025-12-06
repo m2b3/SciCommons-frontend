@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -46,6 +47,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     {
       query: {
         enabled: open && !!accessToken,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
       },
       request: axiosConfig,
     }

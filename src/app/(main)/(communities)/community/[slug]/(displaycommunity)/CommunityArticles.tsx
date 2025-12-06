@@ -164,7 +164,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
             >
               <ArticlePreviewSection
                 article={selectedPreviewArticle}
-                className="h-[calc(100vh-130px)]"
+                className="h-[calc(100vh-90px)]"
               />
             </ResizablePanel>
           </>

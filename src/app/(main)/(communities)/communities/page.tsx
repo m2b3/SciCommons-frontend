@@ -34,6 +34,7 @@ interface TabContentProps {
   setPage: (page: number) => void;
   accessToken?: string;
   isActive: boolean;
+  headerTabs?: React.ReactNode;
 }
 
 const CommunitiesTabContent: React.FC<TabContentProps> = ({
@@ -42,6 +43,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   page,
   setPage,
   isActive,
+  headerTabs,
 }) => {
   const [communities, setCommunities] = useState<CommunityOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -51,7 +53,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   const { data, isPending, error } = useCommunitiesApiListCommunities<CommunitiesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 50,
       search,
     },
     {
@@ -122,7 +124,8 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
         emptyStateSubcontent="Try using different keywords"
         emptyStateLogo={<Users size={64} />}
         title={Tabs.COMMUNITIES}
-        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+        headerTabs={headerTabs}
+        listContainerClassName="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );
@@ -135,6 +138,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   setPage,
   accessToken,
   isActive,
+  headerTabs,
 }) => {
   const [communities, setCommunities] = useState<CommunityOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -144,7 +148,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   const { data, isPending, error } = useUsersApiListMyCommunities<CommunitiesResponse>(
     {
       page,
-      per_page: 10,
+      per_page: 50,
       search,
     },
     {
@@ -218,10 +222,22 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
         emptyStateSubcontent="Try using different keywords"
         emptyStateLogo={<Users size={64} />}
         title={Tabs.MY_COMMUNITIES}
-        listContainerClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+        headerTabs={headerTabs}
+        listContainerClassName="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );
+};
+
+interface CommunitiesTabsProps {
+  activeTab: Tabs;
+  onTabChange: React.Dispatch<React.SetStateAction<Tabs>>;
+}
+
+const CommunitiesTabs: React.FC<CommunitiesTabsProps> = ({ activeTab, onTabChange }) => {
+  const user = useAuthStore((state) => state.user);
+  const tabsList = user ? [Tabs.COMMUNITIES, Tabs.MY_COMMUNITIES] : [Tabs.COMMUNITIES];
+  return <TabComponent tabs={tabsList} activeTab={activeTab} setActiveTab={onTabChange} />;
 };
 
 const Communities: React.FC = () => {
@@ -236,15 +252,6 @@ const Communities: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="pb-4">
-        {user && (
-          <TabComponent
-            tabs={[Tabs.COMMUNITIES, Tabs.MY_COMMUNITIES]}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-        )}
-      </div>
       <div className="relative">
         <CommunitiesTabContent
           search={communitiesSearch}
@@ -252,6 +259,7 @@ const Communities: React.FC = () => {
           page={communitiesPage}
           setPage={setCommunitiesPage}
           isActive={activeTab === Tabs.COMMUNITIES}
+          headerTabs={<CommunitiesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
         />
         {user && accessToken && (
           <MyCommunitiesTabContent
@@ -261,6 +269,7 @@ const Communities: React.FC = () => {
             setPage={setMyCommunitiesPage}
             accessToken={accessToken}
             isActive={activeTab === Tabs.MY_COMMUNITIES}
+            headerTabs={<CommunitiesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
           />
         )}
       </div>
