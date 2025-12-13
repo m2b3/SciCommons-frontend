@@ -116,6 +116,7 @@ export function useRealtime() {
   const stoppedRef = useRef<boolean>(false);
   const isPollingRef = useRef<boolean>(false);
   const loopStartedRef = useRef<boolean>(false);
+  const registerQueueRef = useRef<((force?: boolean) => Promise<void>) | null>(null);
 
   const writeLeaderHeartbeat = useCallback((tabId: string) => {
     const payload = { tabId, ts: Date.now() };
@@ -584,6 +585,13 @@ export function useRealtime() {
   );
 
   const pollLoop = useCallback(async () => {
+    // Check authentication first - don't poll if not logged in
+    if (!isAuthenticated || !accessToken) {
+      loopStartedRef.current = false;
+      setStatus('disabled');
+      return;
+    }
+
     if (!isLeader || stoppedRef.current) {
       loopStartedRef.current = false;
       return;
@@ -594,8 +602,25 @@ export function useRealtime() {
     try {
       if (!REALTIME_URL) {
         setStatus('disabled');
-        await new Promise((r) => setTimeout(r, 10_000));
+        loopStartedRef.current = false;
+        isPollingRef.current = false;
         return;
+      }
+
+      // Check if we have a queue_id before attempting to poll
+      if (!queueIdRef.current) {
+        // Try to register first
+        if (registerQueueRef.current) {
+          await registerQueueRef.current(true);
+        }
+        // If still no queue_id after registration, stop polling
+        if (!queueIdRef.current) {
+          console.log('[Realtime] No queue_id available, stopping poll loop');
+          setStatus('disabled');
+          loopStartedRef.current = false;
+          isPollingRef.current = false;
+          return;
+        }
       }
 
       setStatus((s) => (s === 'idle' ? 'connecting' : s));
@@ -614,10 +639,21 @@ export function useRealtime() {
       } else {
         // catchup required
         setStatus('reconnecting');
-        try {
-          await registerQueue(true);
+        if (registerQueueRef.current) {
+          await registerQueueRef.current(true);
+        }
+        // Check if registration succeeded
+        if (queueIdRef.current) {
           retryCountRef.current = 0;
-        } catch {
+          // Invalidate all discussion and comment caches
+          queryClient.invalidateQueries({
+            predicate: (query) =>
+              matchesQueryKey(query.queryKey, '/api/articles/') &&
+              (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/comments')),
+          });
+          toast.info('Syncing latest discussions…');
+        } else {
           retryCountRef.current += 1;
           if (retryCountRef.current >= MAX_RETRIES) {
             stoppedRef.current = true;
@@ -627,24 +663,42 @@ export function useRealtime() {
           await new Promise((r) => setTimeout(r, backoffRef.current));
           backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
         }
-        // Invalidate all discussion and comment caches
-        queryClient.invalidateQueries({
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, '/api/articles/') &&
-            (matchesQueryKey(query.queryKey, '/discussions') ||
-              matchesQueryKey(query.queryKey, '/comments')),
-        });
-        toast.info('Syncing latest discussions…');
       }
     } catch (err: any) {
       if (err?.name === 'AbortError') {
         // ignore aborts
+      } else if (err?.message === 'No queue_id') {
+        // No queue_id means we're not properly registered, likely not authenticated
+        console.log('[Realtime] No queue_id, checking authentication');
+        if (!isAuthenticated || !accessToken) {
+          setStatus('disabled');
+          stoppedRef.current = true;
+          return;
+        }
+        retryCountRef.current += 1;
+        if (retryCountRef.current >= MAX_RETRIES) {
+          stoppedRef.current = true;
+          setStatus('disabled');
+          return;
+        }
+        await new Promise((r) => setTimeout(r, backoffRef.current));
+        backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
       } else if (err?.message === 'queue_not_found') {
         setStatus('reconnecting');
-        try {
-          await registerQueue(true);
+        if (registerQueueRef.current) {
+          await registerQueueRef.current(true);
+        }
+        // Only show toast and invalidate if registration succeeded
+        if (queueIdRef.current) {
           retryCountRef.current = 0;
-        } catch {
+          queryClient.invalidateQueries({
+            predicate: (query) =>
+              matchesQueryKey(query.queryKey, '/api/articles/') &&
+              (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/comments')),
+          });
+          toast.info('Reconnected. Syncing latest discussions…');
+        } else {
           retryCountRef.current += 1;
           if (retryCountRef.current >= MAX_RETRIES) {
             stoppedRef.current = true;
@@ -654,13 +708,6 @@ export function useRealtime() {
           await new Promise((r) => setTimeout(r, backoffRef.current));
           backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
         }
-        queryClient.invalidateQueries({
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, '/api/articles/') &&
-            (matchesQueryKey(query.queryKey, '/discussions') ||
-              matchesQueryKey(query.queryKey, '/comments')),
-        });
-        toast.info('Reconnected. Syncing latest discussions…');
       } else {
         console.error('[Realtime] Poll error:', err);
         setStatus('error');
@@ -675,7 +722,8 @@ export function useRealtime() {
       }
     } finally {
       isPollingRef.current = false;
-      if (!stoppedRef.current && isLeader) {
+      // Only continue polling if authenticated and not stopped
+      if (!stoppedRef.current && isLeader && isAuthenticated && accessToken) {
         window.setTimeout(() => {
           void pollLoop();
         }, 0);
@@ -683,7 +731,15 @@ export function useRealtime() {
         loopStartedRef.current = false;
       }
     }
-  }, [fetchPoll, handleEvents, isLeader, queryClient]);
+  }, [
+    fetchPoll,
+    handleEvents,
+    isLeader,
+    queryClient,
+    isAuthenticated,
+    accessToken,
+    saveQueueState,
+  ]);
 
   const sendHeartbeat = useCallback(async () => {
     if (!queueIdRef.current || !accessToken) return;
@@ -694,7 +750,9 @@ export function useRealtime() {
       );
     } catch (e) {
       console.warn('[Realtime] Heartbeat failed, re-registering queue');
-      await registerQueue(true);
+      if (registerQueueRef.current) {
+        await registerQueueRef.current(true);
+      }
     }
   }, [accessToken]);
 
@@ -718,16 +776,29 @@ export function useRealtime() {
         return;
       }
       setStatus('connecting');
-      const { data } = await myappRealtimeApiRegisterQueue({
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      saveQueueState(data.queue_id, data.last_event_id);
-      bc?.postMessage({ type: 'realtime:status', payload: 'connected' satisfies ConnectionStatus });
-      setStatus('connected');
-      console.log('[Realtime] Queue registered:', data.queue_id);
+      try {
+        const { data } = await myappRealtimeApiRegisterQueue({
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        saveQueueState(data.queue_id, data.last_event_id);
+        bc?.postMessage({
+          type: 'realtime:status',
+          payload: 'connected' satisfies ConnectionStatus,
+        });
+        setStatus('connected');
+        console.log('[Realtime] Queue registered:', data.queue_id);
+      } catch (err) {
+        console.error('[Realtime] Failed to register queue:', err);
+        setStatus('error');
+      }
     },
     [accessToken, isAuthenticated, loadQueueState, saveQueueState]
   );
+
+  // Store registerQueue in ref for use in pollLoop and sendHeartbeat
+  useEffect(() => {
+    registerQueueRef.current = registerQueue;
+  }, [registerQueue]);
 
   // Startup/shutdown
   useEffect(() => {
@@ -759,10 +830,12 @@ export function useRealtime() {
   // If leadership changes, start/stop polling accordingly
   useEffect(() => {
     if (!isLeader || loopStartedRef.current) return;
+    // Don't start polling if not authenticated
+    if (!isAuthenticated || !accessToken) return;
     loopStartedRef.current = true;
     void pollLoop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLeader]);
+  }, [isLeader, isAuthenticated, accessToken]);
 
   // Keep status in other tabs updated
   useEffect(() => {
