@@ -66,28 +66,33 @@ function ArticleDisplayPageClient({ params }: Props) {
     if (reviewsError) showErrorToast(reviewsError);
   }, [reviewsError]);
 
+  const hasUserReviewed = reviewsData?.data.items.some((review) => review.is_author) || false;
+
   const tabs = data
     ? [
         {
           title: 'Reviews',
           content: (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
-                <span className="text-sm font-semibold text-text-secondary">
-                  Have your reviews?
-                </span>
-                <span
-                  className="cursor-pointer text-xs text-functional-green hover:underline"
-                  onClick={() => setSubmitReview(!submitReview)}
-                >
-                  {submitReview ? 'Cancel' : 'Add review'}
-                </span>
-              </div>
-              {submitReview && (
+              {!hasUserReviewed && (
+                <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
+                  <span className="text-sm font-semibold text-text-secondary">
+                    Have your reviews? (You can add a review only once.)
+                  </span>
+                  <span
+                    className="cursor-pointer text-xs text-functional-green hover:underline"
+                    onClick={() => setSubmitReview(!submitReview)}
+                  >
+                    {submitReview ? 'Cancel' : 'Add review'}
+                  </span>
+                </div>
+              )}
+              {submitReview && !hasUserReviewed && (
                 <ReviewForm
                   articleId={Number(data.data.id)}
                   refetch={reviewsRefetch}
                   is_submitter={data.data.is_submitter}
+                  onSubmitSuccess={() => setSubmitReview(false)}
                 />
               )}
               <span className="border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
