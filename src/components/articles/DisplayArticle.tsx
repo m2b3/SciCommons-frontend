@@ -119,7 +119,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           containerClassName="mb-4 sm:mb-4"
         />
         <div className="mb-4">
-          <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Abstract</h3>
+          <h3 className="mb-1 text-xs font-semibold text-text-secondary">Abstract</h3>
           {/* <div className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
           </div> */}
@@ -128,10 +128,11 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
             isShrinked={true}
             supportMarkdown={false}
             supportLatex={true}
+            gradientClassName="sm:from-common-background"
           />
         </div>
         <div className="mb-4">
-          <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Authors</h3>
+          <h3 className="mb-1 text-xs font-semibold text-text-secondary">Authors</h3>
           <div className="text-text-primary">
             <TruncateText
               text={article.authors.map((author) => author.label).join(', ')}
@@ -145,14 +146,14 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </div> */}
         {(article?.article_link || article.article_pdf_urls.length > 0) && (
           <div>
-            <h3 className="mb-2 font-semibold text-text-secondary res-text-xs">Article Links</h3>
+            <h3 className="mb-2 text-xs font-semibold text-text-secondary">Article Links</h3>
             <div className="flex flex-wrap items-center gap-4">
               {article?.article_link && (
                 <div className="flex items-center gap-2">
                   <Link2 size={16} className="text-text-tertiary" />
                   <a
                     href={article.article_link || '#'}
-                    className="text-functional-blue res-text-xs hover:underline"
+                    className="max-w-[300px] truncate text-xs text-functional-blue hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -165,7 +166,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
                   <PdfIcon className="size-4 shrink-0" />
                   <a
                     href={link}
-                    className="text-functional-blue res-text-xs hover:underline"
+                    className="max-w-[300px] truncate text-xs text-functional-blue hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
