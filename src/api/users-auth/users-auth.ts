@@ -171,11 +171,11 @@ export const useUsersApiAuthActivate = <TError = ErrorType<Message>, TContext = 
  * @summary Resend Activation
  */
 export const usersApiAuthResendActivation = (
-  email: string,
+  identifier: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Message>(
-    { url: `/api/users/resend-activation/${email}`, method: 'POST' },
+    { url: `/api/users/resend-activation/${identifier}`, method: 'POST' },
     options
   );
 };
@@ -187,25 +187,25 @@ export const getUsersApiAuthResendActivationMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
     TError,
-    { email: string },
+    { identifier: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
   TError,
-  { email: string },
+  { identifier: string },
   TContext
 > => {
   const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-    { email: string }
+    { identifier: string }
   > = (props) => {
-    const { email } = props ?? {};
+    const { identifier } = props ?? {};
 
-    return usersApiAuthResendActivation(email, requestOptions);
+    return usersApiAuthResendActivation(identifier, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -227,14 +227,14 @@ export const useUsersApiAuthResendActivation = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
     TError,
-    { email: string },
+    { identifier: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
   TError,
-  { email: string },
+  { identifier: string },
   TContext
 > => {
   const mutationOptions = getUsersApiAuthResendActivationMutationOptions(options);

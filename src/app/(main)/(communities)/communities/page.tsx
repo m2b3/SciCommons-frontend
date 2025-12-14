@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
 
 import { useCommunitiesApiListCommunities } from '@/api/communities/communities';
-import { CommunityOut } from '@/api/schemas';
+import { CommunityListOut } from '@/api/schemas';
 import { useUsersApiListMyCommunities } from '@/api/users/users';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import CommunityCard, { CommunityCardSkeleton } from '@/components/communities/CommunityCard';
@@ -16,7 +16,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 interface CommunitiesResponse {
   data: {
-    items: CommunityOut[];
+    items: CommunityListOut[];
     num_pages: number;
     total: number;
   };
@@ -45,7 +45,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   isActive,
   headerTabs,
 }) => {
-  const [communities, setCommunities] = useState<CommunityOut[]>([]);
+  const [communities, setCommunities] = useState<CommunityListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
@@ -98,7 +98,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   );
 
   const renderCommunity = useCallback(
-    (community: CommunityOut) => <CommunityCard community={community} />,
+    (community: CommunityListOut) => <CommunityCard community={community} />,
     []
   );
 
@@ -108,7 +108,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
     <div
       className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
     >
-      <SearchableList<CommunityOut>
+      <SearchableList<CommunityListOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderCommunity}
@@ -140,7 +140,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   isActive,
   headerTabs,
 }) => {
-  const [communities, setCommunities] = useState<CommunityOut[]>([]);
+  const [communities, setCommunities] = useState<CommunityListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
@@ -196,7 +196,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   );
 
   const renderCommunity = useCallback(
-    (community: CommunityOut) => <CommunityCard community={community} />,
+    (community: CommunityListOut) => <CommunityCard community={community} />,
     []
   );
 
@@ -206,7 +206,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     <div
       className={`transition-opacity duration-200 ${isActive ? 'opacity-100' : 'hidden opacity-0'}`}
     >
-      <SearchableList<CommunityOut>
+      <SearchableList<CommunityListOut>
         onSearch={handleSearch}
         onLoadMore={handleLoadMore}
         renderItem={renderCommunity}

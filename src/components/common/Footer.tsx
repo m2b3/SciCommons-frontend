@@ -24,6 +24,9 @@ const navLinks = [
 
 const Footer: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
+  const isAshokaUser = useStore(useAuthStore, (state) =>
+    state.user?.email?.endsWith('ashoka.edu.in')
+  );
 
   // Filter navLinks to remove Login/Register if authenticated
   const filteredNavLinks = isAuthenticated
@@ -39,9 +42,22 @@ const Footer: React.FC = () => {
     <footer className="rounded-t-3xl bg-functional-green/10 pb-16 dark:bg-functional-green/10 md:pb-0">
       <div className="sm-gap-0 flex w-full flex-col justify-between gap-10 p-8 pt-12 sm:flex-row sm:p-16 md:px-44 md:py-12">
         <div className="flex flex-col items-start gap-12">
-          <Link href="/" className="flex items-center gap-4">
-            <Image src="/logo.png" alt="Logo" width={120} height={80} />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={isAshokaUser ? 90 : 120}
+                height={isAshokaUser ? 66 : 80}
+              />
+            </Link>
+            {isAshokaUser && (
+              <>
+                <span className="text-2xl font-light text-text-tertiary">×</span>
+                <Image width={140} height={50} src={'/images/KCDHA-Black.png'} alt="KCDHA" />
+              </>
+            )}
+          </div>
           <div className="flex gap-8 md:order-2">
             <a href="#" className="text-functional-green">
               <span className="sr-only">Facebook</span>
