@@ -73,18 +73,21 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               alt={discussion.user.username}
               width={32}
               height={32}
-              className="mr-2 aspect-square h-7 w-7 rounded-full md:h-8 md:w-8"
+              className="mr-2 aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
+              quality={75}
+              sizes="32px"
+              loading="lazy"
             />
             <div>
               <span className="text-sm font-semibold text-text-secondary">
                 {discussion.user.username}
               </span>
-              <span className="ml-2 text-xs text-text-tertiary">
+              <span className="ml-2 text-xxs text-text-tertiary">
                 • {dayjs(discussion.created_at).fromNow()}
               </span>
             </div>
           </div>
-          <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full flex-col gap-0">
             <span
               className="line-clamp-2 flex-grow cursor-pointer font-semibold text-text-primary res-text-sm hover:text-functional-blue hover:underline"
               onClick={() => setDisplayComments((prev) => !prev)}
@@ -92,17 +95,16 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               {discussion.topic}
             </span>
             {/* <span className="text-text-secondary res-text-xs">{discussion.content}</span> */}
-            <div className="">
-              <RenderParsedHTML
-                rawContent={discussion.content}
-                isShrinked={true}
-                containerClassName="mb-2"
-                supportMarkdown={true}
-                supportLatex={true}
-              />
-            </div>
+            <RenderParsedHTML
+              rawContent={discussion.content}
+              isShrinked={true}
+              containerClassName="mb-2"
+              supportMarkdown={true}
+              supportLatex={true}
+              contentClassName="res-text-xs"
+            />
           </div>
-          <div className="mt-2 flex items-center text-xs text-text-tertiary">
+          <div className="flex items-center text-xs text-text-tertiary">
             <button
               className="mr-4 flex cursor-pointer items-center space-x-1 hover:underline"
               onClick={() => setDisplayComments((prev) => !prev)}

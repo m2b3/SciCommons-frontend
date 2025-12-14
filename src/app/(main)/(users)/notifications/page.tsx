@@ -16,6 +16,9 @@ const NotificationPage: React.FC = () => {
     {},
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
     }
   );
 

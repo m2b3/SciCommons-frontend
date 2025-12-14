@@ -18,8 +18,10 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
+import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
+import { useRealtimeContextStore } from '@/stores/realtimeStore';
 import { Reaction } from '@/types';
 
 import TruncateText from '../common/TruncateText';
@@ -34,8 +36,21 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
 
+  useEffect(() => {
+    const store = useRealtimeContextStore.getState();
+    store.setActiveDiscussion(discussionId);
+    // Mark that we're viewing a discussion thread (not the discussion list)
+    store.setViewingDiscussions(false);
+
+    return () => {
+      store.setActiveDiscussion(null);
+      // When leaving, we might go back to viewing discussions
+      store.setViewingDiscussions(true);
+    };
+  }, [discussionId]);
+
   const { data, error } = useArticlesDiscussionApiGetDiscussion(discussionId, {
-    query: { enabled: discussionId !== null },
+    query: { enabled: discussionId !== null && !!accessToken },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -50,6 +65,13 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
     Number(discussionId),
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+        staleTime: TEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        refetchOnReconnect: true,
+      },
     }
   );
 
@@ -102,7 +124,10 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                   alt={discussion.user.username}
                   width={32}
                   height={32}
-                  className="mr-2 rounded-full"
+                  className="mr-2 rounded-full object-cover"
+                  quality={75}
+                  sizes="32px"
+                  loading="lazy"
                 />
                 <div>
                   <span>{discussion.user.username}</span>

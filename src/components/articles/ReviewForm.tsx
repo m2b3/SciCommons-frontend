@@ -13,6 +13,7 @@ import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { ForwardRefEditor } from '@/components/common/MarkdownEditor/ForwardRefEditor';
 import { Ratings } from '@/components/ui/ratings';
+import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -36,6 +37,7 @@ interface ReviewFormProps {
   refetch?: () => void;
   communityId?: number | null;
   is_submitter?: boolean; // Todo: Remove this after testing
+  onSubmitSuccess?: () => void;
 }
 
 type ActionType = 'create' | 'edit' | 'delete';
@@ -51,6 +53,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   refetch,
   communityId,
   is_submitter = false,
+  onSubmitSuccess,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
@@ -87,6 +90,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const { isPending: deletePending, mutate: deleteReview } = useArticlesReviewApiDeleteReview({
     request: axiosConfig,
   });
+
+  const formRef = React.useRef<HTMLFormElement>(null);
+  useSubmitOnCtrlEnter(formRef, isPending || editPending || deletePending);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const reviewData = {
@@ -134,6 +140,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             reviewEditorRef.current?.setMarkdown?.('');
             refetch && refetch();
             toast.success('Review submitted successfully');
+            onSubmitSuccess && onSubmitSuccess();
           },
           onError: (error) => {
             reset();
@@ -150,7 +157,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         <ReviewCardSkeleton />
       ) : (
         <>
-          <form onSubmit={handleSubmit(onSubmit)} className="mb-4 flex flex-col gap-4 res-text-sm">
+          <form
+            id="review-form"
+            ref={formRef}
+            onSubmit={handleSubmit(onSubmit)}
+            className="mb-4 flex flex-col gap-4 res-text-sm"
+          >
             <div className="">
               <LabeledTooltip label="Rate this article" info="Rate this article" />
               <Controller
@@ -258,12 +270,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <div className="flex flex-col gap-2">
                 <Button
                   variant={'blue'}
-                  className="res-text-xs"
+                  className="p-2"
                   loading={isPending}
                   type="submit"
                   onClick={() => setAction('create')}
                 >
-                  {isPending ? 'Submitting...' : 'Submit Review'}
+                  <ButtonTitle>{isPending ? 'Submitting...' : 'Submit Review'}</ButtonTitle>
                 </Button>
                 {/* <span className="text-text-tertiary res-text-xs">
                 By clicking Submit Review, you agree to our{' '}

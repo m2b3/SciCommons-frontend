@@ -8,7 +8,9 @@ import { SessionExpirationDialog } from '@/HOCs/CheckSessionExpiration';
 import PathTracker from '@/HOCs/withPathTracker';
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
 import BottomBar from '@/components/common/BottomBar';
+import RealtimeStatus from '@/components/common/RealtimeStatus';
 import { ThemeProvider } from '@/components/theme-provider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 import './globals.css';
@@ -53,8 +55,11 @@ export default function RootLayout({
           <SessionExpirationDialog />
           <PathTracker />
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <main className="flex-grow">{children}</main>
+            <TooltipProvider delayDuration={10}>
+              <main className="flex-grow">{children}</main>
+            </TooltipProvider>
           </ThemeProvider>
+          <RealtimeStatus className="fixed left-1/2 top-4 z-[1000] -translate-x-1/2 bg-common-cardBackground md:bottom-4 md:left-auto md:right-2 md:top-auto md:translate-x-0" />
           <BottomBar />
           <SonnerToaster
             richColors

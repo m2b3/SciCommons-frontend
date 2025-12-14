@@ -15,6 +15,7 @@ import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
 import { Button } from '@/components/ui/button';
 import { usePathTracker } from '@/hooks/usePathTracker';
+import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -69,6 +70,10 @@ const LoginForm: React.FC = () => {
     logInUser({ data });
   };
 
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  useSubmitOnCtrlEnter(formRef, isPending);
+
   return (
     <div className="relative flex h-dvh flex-col items-center justify-center bg-black p-4 sm:p-0">
       <Image
@@ -91,11 +96,15 @@ const LoginForm: React.FC = () => {
           width={60}
           height={20}
           src={'/logo.png'}
-          className="mx-auto mb-2 md:mb-4"
+          className="mx-auto mb-2 cursor-pointer md:mb-4"
           onClick={() => router.push('/')}
         />
         <h4 className="text-xl font-bold text-black md:text-2xl">Sign in to your account</h4>
-        <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full flex-col space-y-4">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit(onSubmit)}
+          className="mx-auto flex w-full flex-col space-y-4"
+        >
           <FormInput<ILoginForm>
             label="Username or Email"
             name="login"
@@ -103,12 +112,13 @@ const LoginForm: React.FC = () => {
             placeholder="Username or Email"
             register={register}
             requiredMessage="Username or Email is required"
-            patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/}
+            patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[\w.]+$/}
             patternMessage="Enter a valid email or username"
             errors={errors}
             labelClassName="text-black/90"
             helperTextClassName="text-black/60"
             inputClassName="bg-neutral-150 text-black ring-neutral-200"
+            autoFocus
           />
           <FormInput<ILoginForm>
             label="Password"
@@ -138,7 +148,7 @@ const LoginForm: React.FC = () => {
             <div className="">
               <Link
                 href="/auth/forgotpassword"
-                className="text-functional-green hover:text-functional-greenContrast hover:underline"
+                className="text-sm text-functional-green hover:text-functional-greenContrast hover:underline"
               >
                 Forgot your password?
               </Link>
@@ -148,7 +158,7 @@ const LoginForm: React.FC = () => {
             Login
           </Button>
         </form>
-        <div className="mt-4 res-text-sm">
+        <div className="mt-4 text-xs">
           <p className="text-text-tertiary">
             Don&apos;t have an account?{' '}
             <Link href="/auth/register" className="text-functional-green hover:underline">
@@ -156,12 +166,12 @@ const LoginForm: React.FC = () => {
             </Link>
           </p>
           <p className="text-text-tertiary">
-            Didn&apos;t receive signup email?{' '}
+            Didn&apos;t receive verification email?{' '}
             <Link
               href="/auth/resendverificationemail"
               className="text-functional-green hover:underline"
             >
-              Resend Sign up email
+              Resend verification email
             </Link>
           </p>
         </div>

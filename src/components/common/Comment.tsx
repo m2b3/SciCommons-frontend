@@ -20,6 +20,7 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
+import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -87,6 +88,13 @@ const Comment: React.FC<CommentProps> = ({
   // Todo: Too many requests
   const { data, refetch } = useUsersCommonApiGetReactionCount(contentType, Number(id), {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    query: {
+      enabled: !!accessToken && !!id,
+      staleTime: TEN_MINUTES_IN_MS,
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+    },
   });
 
   const { mutate } = useUsersCommonApiPostReaction({
@@ -170,7 +178,10 @@ const Comment: React.FC<CommentProps> = ({
           alt={author.username}
           width={32}
           height={32}
-          className="aspect-square h-7 w-7 rounded-full md:h-8 md:w-8"
+          className="aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
+          quality={75}
+          sizes="32px"
+          loading="lazy"
         />
       </div>
       <div className="flex-grow res-text-sm">
@@ -183,7 +194,7 @@ const Comment: React.FC<CommentProps> = ({
                   <span className="ml-1 text-xs font-normal text-text-tertiary">(You)</span>
                 )}
               </span>
-              <span className="text-xs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
+              <span className="text-xxs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
             </div>
             {!is_deleted && depth == 0 && (rating != undefined || rating != null) && !isEditing && (
               <div className="mt-1">
@@ -215,8 +226,7 @@ const Comment: React.FC<CommentProps> = ({
             />
           </div>
         ) : (
-          <div className="mt-2 pl-2">
-            {/* <TruncateText text={content} maxLines={4} /> */}
+          <div className="pl-2">
             <RenderParsedHTML
               rawContent={content}
               isShrinked={true}
@@ -226,7 +236,7 @@ const Comment: React.FC<CommentProps> = ({
           </div>
         )}
         {!is_deleted && (
-          <div className="mt-4 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
+          <div className="mt-2 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
             <button className="flex items-center space-x-1">
               {data?.data.user_reaction === 1 ? (
                 <ThumbsUp

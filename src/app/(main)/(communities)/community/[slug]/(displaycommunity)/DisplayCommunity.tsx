@@ -14,7 +14,6 @@ import { CommunityOut } from '@/api/schemas';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import TruncateText from '@/components/common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
-import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -27,7 +26,6 @@ interface DisplayCommunityProps {
 
 const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch }) => {
   const params = useParams<{ slug: string }>();
-  const imageData = useIdenticon(60);
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
@@ -56,8 +54,8 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   }, [isJoinSuccess, error, data, refetch]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-common-contrast bg-common-cardBackground">
-      <div className="relative p-4 md:p-6">
+    <div className="pb-1">
+      <div className="relative p-4">
         <div className="flex gap-4">
           {/* <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">
             <Image
@@ -68,16 +66,18 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
             />
           </div> */}
           <div className="flex w-full flex-col gap-2">
-            <h2
-              className="w-[95%] text-wrap font-bold text-text-primary res-heading-sm"
-              style={{
-                wordBreak: 'break-word',
-              }}
-            >
-              {community.name}
-            </h2>
+            <div className="flex items-center justify-between gap-4">
+              <h2
+                className="text-wrap font-bold text-text-primary res-heading-xs"
+                style={{
+                  wordBreak: 'break-word',
+                }}
+              >
+                {community.name}
+              </h2>
+            </div>
             <div
-              className="w-[95%] res-text-sm"
+              className="w-[95%] text-xs md:text-sm"
               style={{
                 wordBreak: 'break-word',
               }}
@@ -97,6 +97,54 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 <FileText className="mr-1 h-4 w-4" />
                 <span className="text-xs">{community.num_published_articles} Articles</span>
               </div>
+              <div className="ml-auto flex items-center space-x-2">
+                {community.is_admin && (
+                  <>
+                    <ArticleSubmission communityName={community.name} />
+                    <Link href={`/community/${params?.slug}/settings`}>
+                      <Button className="bg-black hover:bg-black">
+                        <ButtonTitle className="text-white">Settings</ButtonTitle>
+                      </Button>
+                    </Link>
+                  </>
+                )}
+                {!community.is_admin && community.is_member && (
+                  <>
+                    <ArticleSubmission communityName={community.name} />
+                    <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
+                      <ButtonIcon>
+                        <UserCheck className="size-4 text-text-secondary" />
+                      </ButtonIcon>
+                      <ButtonTitle className="text-text-secondary">Joined</ButtonTitle>
+                    </Button>
+                  </>
+                )}
+                {!community.is_admin &&
+                  !community.is_member &&
+                  community.join_request_status === 'pending' && (
+                    <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
+                      <ButtonIcon>
+                        <Check className="size-4 text-text-secondary" />
+                      </ButtonIcon>
+                      <ButtonTitle className="text-text-secondary">Requested</ButtonTitle>
+                    </Button>
+                  )}
+                {!community.is_admin &&
+                  !community.is_member &&
+                  community.join_request_status !== 'pending' && (
+                    <Button
+                      className="bg-transparent ring-1 ring-common-contrast hover:bg-common-minimal"
+                      onClick={() => handleJoin()}
+                      loading={isPending}
+                      showLoadingSpinner={true}
+                    >
+                      <ButtonIcon>
+                        <UserPlus className="size-4 text-text-secondary" />
+                      </ButtonIcon>
+                      <ButtonTitle className="text-text-secondary">Join</ButtonTitle>
+                    </Button>
+                  )}
+              </div>
             </div>
           </div>
         </div>
@@ -108,56 +156,6 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
             <ButtonTitle className="text-functional-yellow">Notifications</ButtonTitle>
           </Button>
         </div> */}
-      </div>
-      <div className="flex items-center justify-between px-2">
-        <div className="ml-auto flex items-center justify-end space-x-4 p-4">
-          {community.is_admin && (
-            <>
-              <ArticleSubmission communityName={community.name} />
-              <Link href={`/community/${params?.slug}/settings`}>
-                <Button className="bg-black hover:bg-black">
-                  <ButtonTitle className="text-white">Settings</ButtonTitle>
-                </Button>
-              </Link>
-            </>
-          )}
-          {!community.is_admin && community.is_member && (
-            <>
-              <ArticleSubmission communityName={community.name} />
-              <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
-                <ButtonIcon>
-                  <UserCheck className="size-4 text-text-secondary" />
-                </ButtonIcon>
-                <ButtonTitle className="text-text-secondary">Joined</ButtonTitle>
-              </Button>
-            </>
-          )}
-          {!community.is_admin &&
-            !community.is_member &&
-            community.join_request_status === 'pending' && (
-              <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
-                <ButtonIcon>
-                  <Check className="size-4 text-text-secondary" />
-                </ButtonIcon>
-                <ButtonTitle className="text-text-secondary">Requested</ButtonTitle>
-              </Button>
-            )}
-          {!community.is_admin &&
-            !community.is_member &&
-            community.join_request_status !== 'pending' && (
-              <Button
-                className="bg-transparent ring-1 ring-common-contrast hover:bg-common-minimal"
-                onClick={() => handleJoin()}
-                loading={isPending}
-                showLoadingSpinner={true}
-              >
-                <ButtonIcon>
-                  <UserPlus className="size-4 text-text-secondary" />
-                </ButtonIcon>
-                <ButtonTitle className="text-text-secondary">Join</ButtonTitle>
-              </Button>
-            )}
-        </div>
       </div>
     </div>
   );

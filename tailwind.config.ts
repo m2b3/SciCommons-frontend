@@ -16,9 +16,9 @@ const config: Config = {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      // padding: '2rem',
       screens: {
-        '2xl': '1400px',
+        '2xl': '1600px',
       },
     },
     extend: {
@@ -325,6 +325,7 @@ const config: Config = {
         'tremor-default': ['0.875rem', { lineHeight: '1.25rem' }],
         'tremor-title': ['1.125rem', { lineHeight: '1.75rem' }],
         'tremor-metric': ['1.875rem', { lineHeight: '2.25rem' }],
+        xxs: ['0.625rem', { lineHeight: '0.75rem' }],
       },
     },
   },

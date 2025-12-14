@@ -57,9 +57,12 @@ const PostCard = (post: PostOut) => {
             <Image
               src={post.author.profile_pic_url || `data:image/png;base64,${imageData}`}
               alt={`Profile picture of ${post.author.username}`}
-              className="mr-3 h-10 w-10 rounded-full"
-              width={36}
-              height={36}
+              className="mr-3 h-10 w-10 rounded-full object-cover"
+              width={40}
+              height={40}
+              quality={75}
+              sizes="40px"
+              loading="lazy"
             />
             <div className="flex items-center">
               <h3 className="font-semibold text-gray-900 res-text-sm">{post.author.username}</h3>

@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -45,7 +46,8 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
     { status_filter: 'unsubmitted' },
     {
       query: {
-        enabled: open,
+        enabled: open && !!accessToken,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
       },
       request: axiosConfig,
     }
@@ -99,10 +101,12 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
-            <DialogTrigger>Submit Article</DialogTrigger>
+            <DialogTrigger>Submit Existing Article</DialogTrigger>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href={`/community/${communityName}/createcommunityarticle`}>Create Article</Link>
+            <Link href={`/community/${communityName}/createcommunityarticle`}>
+              Create New Article
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

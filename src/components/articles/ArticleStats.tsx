@@ -6,12 +6,9 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { Calendar, Clock, Eye, MessageCircle, MessageSquare, Star, ThumbsUp } from 'lucide-react';
 
 import { ArticleOut } from '@/api/schemas';
-import {
-  useUsersCommonApiGetReactionCount,
-  useUsersCommonApiPostReaction,
-} from '@/api/users-common-api/users-common-api';
-import { useAuthStore } from '@/stores/authStore';
 
+
+import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleStatsProps {
   article: ArticleOut;
@@ -23,32 +20,32 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
 
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const { data, refetch } = useUsersCommonApiGetReactionCount(
-    'articles.article',
-    Number(article.id),
-    {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  // const { data, refetch } = useUsersCommonApiGetReactionCount(
+  //   'articles.article',
+  //   Number(article.id),
+  //   {
+  //     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  //   }
+  // );
 
-  const { mutate } = useUsersCommonApiPostReaction({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    mutation: {
-      onSuccess: () => {
-        refetch();
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    },
-  });
+  // const { mutate } = useUsersCommonApiPostReaction({
+  //   request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  //   mutation: {
+  //     onSuccess: () => {
+  //       refetch();
+  //     },
+  //     onError: (error) => {
+  //       console.error(error);
+  //     },
+  //   },
+  // });
 
-  const handleReaction = (reaction: 'upvote') => {
-    if (reaction === 'upvote')
-      mutate({
-        data: { content_type: 'articles.article', object_id: Number(article.id), vote: 1 },
-      });
-  };
+  // const handleReaction = (reaction: 'upvote') => {
+  //   if (reaction === 'upvote')
+  //     mutate({
+  //       data: { content_type: 'articles.article', object_id: Number(article.id), vote: 1 },
+  //     });
+  // };
 
   const formatDate = (date: string) => {
     return `${dayjs(date).format('Do MMM, YYYY')} (${dayjs(date).fromNow()})`;
@@ -97,11 +94,11 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
         </div>
         <div className="flex items-center p-1 px-2 text-xs">
           <MessageCircle className="mr-1 size-4 text-text-secondary" />
-          <span className="text-text-secondary">{article.total_comments} Comments</span>
+          <span className="text-text-secondary">Comments: {article.total_comments}</span>
         </div>
         <div className="flex items-center p-1 px-2 text-xs">
           <MessageSquare className="mr-1 size-4 text-text-secondary" />
-          <span className="text-text-secondary">{article.total_discussions} Discussions</span>
+          <span className="text-text-secondary">Discussions: {article.total_discussions}</span>
         </div>
       </div>
     </div>

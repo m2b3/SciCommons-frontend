@@ -9,7 +9,7 @@ import {
   useCommunitiesArticlesApiListCommunityArticlesByStatus,
   useCommunitiesArticlesApiManageArticle,
 } from '@/api/community-articles/community-articles';
-import { ArticleOut, ArticleStatus } from '@/api/schemas';
+import { ArticleStatus, ArticlesListOut } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import TabComponent from '@/components/communities/TabComponent';
 import { Button, ButtonTitle } from '@/components/ui/button';
@@ -66,7 +66,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
     refetch();
   }, [activeTab, refetch]);
 
-  const renderActionButtons = (article: ArticleOut) => {
+  const renderActionButtons = (article: ArticlesListOut) => {
     if (activeTab === 'submitted') {
       return (
         <div className="flex gap-2">
@@ -77,7 +77,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
             onClick={() => handleAction('approve', Number(article.community_article?.id))}
             type="button"
           >
-            <ButtonTitle>
+            <ButtonTitle className="md:text-xs">
               {actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
                 ? 'Approving...'
                 : 'Approve'}
@@ -91,7 +91,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
             onClick={() => handleAction('reject', Number(article.community_article?.id))}
             type="button"
           >
-            <ButtonTitle>
+            <ButtonTitle className="md:text-xs">
               {actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
                 ? 'Rejecting...'
                 : 'Reject'}

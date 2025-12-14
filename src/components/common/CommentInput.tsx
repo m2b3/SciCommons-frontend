@@ -4,6 +4,7 @@ import { Eye, EyeOff, Send } from 'lucide-react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Ratings } from '@/components/ui/ratings';
+import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { cn } from '@/lib/utils';
 
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
@@ -55,17 +56,19 @@ const CommentInput: React.FC<CommentInputProps> = ({
     reset,
     setValue,
     formState: { errors },
+    watch,
   } = useForm<FormInputs>({
     defaultValues: { content: initialContent, rating: initialRating },
   });
 
-  const [markdown, setMarkdown] = useState<string>(initialContent);
   const [isMarkdownPreview, setIsMarkdownPreview] = useState<boolean>(false);
+  const contentValue = watch('content', initialContent);
+  const formRef = React.useRef<HTMLFormElement>(null);
+  useSubmitOnCtrlEnter(formRef, isPending);
 
   const onSubmitForm: SubmitHandler<FormInputs> = (data) => {
     onSubmit(data.content, data.rating);
     reset({ content: '', rating: 0 });
-    setMarkdown('');
     setIsMarkdownPreview(false);
   };
 
@@ -76,20 +79,15 @@ const CommentInput: React.FC<CommentInputProps> = ({
   }, [initialRating, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-2">
+    <form ref={formRef} onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-2">
       <div className="relative">
-        <button
-          onClick={() => {
-            setIsMarkdownPreview(!isMarkdownPreview);
-          }}
-          className="absolute -top-7 right-2 rounded-md p-1 text-text-tertiary hover:bg-common-background hover:text-text-secondary"
-          type="button"
-        >
-          {isMarkdownPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
         {isMarkdownPreview && (
           <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>
-            <RenderParsedHTML rawContent={markdown} supportMarkdown={true} supportLatex={true} />
+            <RenderParsedHTML
+              rawContent={contentValue}
+              supportMarkdown={true}
+              supportLatex={true}
+            />
           </div>
         )}
         <div
@@ -111,9 +109,10 @@ const CommentInput: React.FC<CommentInputProps> = ({
               }
             )}
             rows={3}
+            value={contentValue}
             onChange={(e) => {
+              setValue('content', e.target.value);
               // onChange?.(e);
-              setMarkdown(e.target.value);
             }}
           />
         </div>
@@ -162,18 +161,32 @@ const CommentInput: React.FC<CommentInputProps> = ({
             )}
           </>
         )}
-        <Button
-          type="submit"
-          variant={'blue'}
-          className={'ml-auto'}
-          loading={isPending}
-          showLoadingSpinner
-        >
-          <ButtonIcon>
-            <Send size={16} />
-          </ButtonIcon>
-          <ButtonTitle>{buttonText}</ButtonTitle>
-        </Button>
+        <div className="ml-auto flex items-center gap-2">
+          <Button
+            onClick={() => {
+              setIsMarkdownPreview(!isMarkdownPreview);
+            }}
+            className="p-2 text-text-tertiary hover:bg-common-background hover:text-text-secondary"
+            variant={'outline'}
+            type="button"
+            tooltipData="Toggle markdown preview"
+            withTooltip
+          >
+            {isMarkdownPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </Button>
+          <Button
+            type="submit"
+            variant={'blue'}
+            className={'p-2'}
+            loading={isPending}
+            showLoadingSpinner
+          >
+            <ButtonIcon>
+              <Send size={14} />
+            </ButtonIcon>
+            <ButtonTitle>{buttonText}</ButtonTitle>
+          </Button>
+        </div>
       </div>
     </form>
   );

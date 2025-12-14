@@ -5,6 +5,7 @@ import React from 'react';
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import TabComponent from '@/components/communities/TabComponent';
+import { useAuthStore } from '@/stores/authStore';
 
 import StatusList from './StatusList';
 import UnRegistered from './UnRegistered';
@@ -14,7 +15,15 @@ type ActiveTab = 'Send Invite' | 'Status';
 
 const Invite = ({ params }: { params: { slug: string } }) => {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>('Send Invite');
-  const { data, isPending, error } = useCommunitiesApiGetCommunity(params.slug);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const { data, isPending, error } = useCommunitiesApiGetCommunity(params.slug, {
+    request: {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+    query: {
+      enabled: !!accessToken,
+    },
+  });
 
   if (isPending) return <div>Loading...</div>;
   if (error || !data) return <div>Failed to load community info</div>;

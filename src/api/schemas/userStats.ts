@@ -11,6 +11,8 @@ import type { UserStatsContributedPosts } from './userStatsContributedPosts';
 import type { UserStatsHomePageUrl } from './userStatsHomePageUrl';
 import type { UserStatsId } from './userStatsId';
 import type { UserStatsProfilePicUrl } from './userStatsProfilePicUrl';
+import type { UserStatsReputationLevel } from './userStatsReputationLevel';
+import type { UserStatsReputationScore } from './userStatsReputationScore';
 
 export interface UserStats {
   bio?: UserStatsBio;
@@ -20,8 +22,8 @@ export interface UserStats {
   home_page_url?: UserStatsHomePageUrl;
   id?: UserStatsId;
   profile_pic_url?: UserStatsProfilePicUrl;
-  reputation_level: string;
-  reputation_score: number;
+  reputation_level?: UserStatsReputationLevel;
+  reputation_score?: UserStatsReputationScore;
   /**
    * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
    * @maxLength 150

@@ -5,14 +5,7 @@ import React, { lazy, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import {
-  BookOpenText,
-  Home,
-  Newspaper,
-  NotebookTabs,
-  Plus,
-  Users,
-} from 'lucide-react';
+import { BookOpenText, Home, Newspaper, Plus, Users } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -32,10 +25,11 @@ const BottomBar = () => {
 
   const navLinks = [
     { name: 'Home', route: '/', icon: <Home size={20} /> },
-    { name: 'Communities', route: '/communities', icon: <Users size={20} /> },
-    { name: '', route: '', icon: <CreateDropdown /> },
     { name: 'Articles', route: '/articles', icon: <Newspaper size={20} /> },
-    { name: 'Contributions', route: '/mycontributions', icon: <NotebookTabs size={20} /> },
+    { name: '', route: '', icon: <CreateDropdown /> },
+    { name: 'Communities', route: '/communities', icon: <Users size={20} /> },
+    { name: 'Discussions', route: '/discussions', icon: <BookOpenText size={20} /> },
+    // { name: 'Contributions', route: '/mycontributions', icon: <NotebookTabs size={20} /> },
     // { name: 'Posts', route: '/posts', icon: <NotebookPen size={18} /> },
   ];
 
@@ -51,6 +45,9 @@ const BottomBar = () => {
         break;
       case pathname?.includes('communities') || pathname?.includes('community'):
         setActiveTab('Communities');
+        break;
+      case pathname?.includes('discussions') || pathname?.includes('discussion'):
+        setActiveTab('Discussions');
         break;
       case pathname?.includes('mycontributions') || pathname?.includes('mycontribution'):
         setActiveTab('Contributions');
