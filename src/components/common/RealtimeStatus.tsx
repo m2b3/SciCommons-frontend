@@ -30,7 +30,7 @@ export const RealtimeStatus: React.FC<Props> = ({ className }) => {
 
   return (
     <div
-      className="relative"
+      className="relative hidden md:block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -55,8 +55,8 @@ const NavBar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-[1000] w-full border-b border-common-minimal bg-common-background/50 text-text-primary backdrop-blur-md sm:px-2 lg:px-9">
-      <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2">
+    <header className="sticky top-0 z-[1000] w-full border-b border-common-minimal bg-common-background/50 text-text-primary backdrop-blur-md">
+      <nav className="container mx-auto flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
           <MoveLeft
             className="mr-4 size-5 cursor-pointer text-primary"
@@ -137,8 +137,9 @@ const CreateDropdown: React.FC = () => {
     <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant={'default'}
-          className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
+          // variant={'default'}
+          size="sm"
+          className="aspect-square rounded-full"
         >
           <Plus size={16} />
           <span className="hidden lg:block">Create</span>
