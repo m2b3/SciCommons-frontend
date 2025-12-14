@@ -102,7 +102,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                   <>
                     <ArticleSubmission communityName={community.name} />
                     <Link href={`/community/${params?.slug}/settings`}>
-                      <Button className="bg-black hover:bg-black">
+                      <Button size="sm" className="bg-black hover:bg-black">
                         <ButtonTitle className="text-white">Settings</ButtonTitle>
                       </Button>
                     </Link>
