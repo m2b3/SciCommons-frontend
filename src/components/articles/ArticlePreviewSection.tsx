@@ -47,25 +47,33 @@ const ArticlePreviewSection = ({
         containerClassName="mb-4 sm:mb-4"
       />
       <div className="mb-8">
-        <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Abstract</h3>
+        <h3 className="mb-1 text-xs font-semibold text-text-secondary">Abstract</h3>
         <RenderParsedHTML
           rawContent={article.abstract}
           isShrinked={true}
           supportMarkdown={false}
           supportLatex={true}
           gradientClassName="sm:from-common-background"
+          contentClassName="text-sm"
         />
       </div>
       <div className="mb-4">
-        <h3 className="mb-1 font-semibold text-text-secondary res-text-xs">Authors</h3>
+        <h3 className="mb-1 text-xs font-semibold text-text-secondary">Authors</h3>
         <div className="text-text-primary">
           <TruncateText
             text={article.authors.map((author) => author.label).join(', ')}
             maxLines={2}
+            textClassName="text-sm"
           />
         </div>
       </div>
-      <div className="flex w-fit items-center rounded-md border border-common-minimal py-1 pl-0 pr-1.5">
+      <div className="mb-4">
+        <h3 className="mb-1 text-xs font-semibold text-text-secondary">Submitted By</h3>
+        <div className="text-text-primary">
+          <TruncateText text={article.user.username} maxLines={2} textClassName="text-sm" />
+        </div>
+      </div>
+      <div className="mb-4 flex w-fit items-center rounded-md border border-common-minimal py-1 pl-0 pr-1.5">
         <Star className="h-3.5 text-functional-yellow" fill="currentColor" />
         <span className="text-xs text-text-secondary">{article.total_ratings}</span>
       </div>
@@ -73,7 +81,7 @@ const ArticlePreviewSection = ({
         href={`/article/${article.slug}`}
         className="mt-6 flex flex-row items-center gap-1 text-functional-blue hover:underline"
       >
-        <span className="text-sm">Go to the Article Page</span>
+        <span className="text-xs">Go to the Article Page</span>
         <ArrowRightIcon className="h-4 w-4 -rotate-45" />
       </Link>
     </div>

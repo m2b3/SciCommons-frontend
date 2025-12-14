@@ -42,6 +42,8 @@ interface TabContentProps {
   isActive: boolean;
   viewType: 'grid' | 'list' | 'preview';
   setViewType: (viewType: 'grid' | 'list' | 'preview') => void;
+  gridCount: number;
+  setGridCount: (gridCount: number) => void;
   headerTabs?: React.ReactNode;
 }
 
@@ -54,6 +56,8 @@ const TabContent: React.FC<TabContentProps> = ({
   isActive,
   viewType,
   setViewType,
+  gridCount,
+  setGridCount,
   headerTabs,
 }) => {
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
@@ -223,10 +227,15 @@ const TabContent: React.FC<TabContentProps> = ({
               'grid grid-cols-1',
               viewType === 'preview'
                 ? 'h-full md:grid-cols-1 lg:grid-cols-1'
-                : 'md:grid-cols-2 lg:grid-cols-3'
+                : {
+                    'md:grid-cols-1 lg:grid-cols-1': gridCount === 1,
+                    'md:grid-cols-2 lg:grid-cols-2': gridCount === 2,
+                    'md:grid-cols-2 lg:grid-cols-3': gridCount === 3,
+                  }
             )}
             showViewTypeIcons={true}
             setViewType={setViewType}
+            setGridCount={setGridCount}
             viewType={viewType}
           />
         </ResizablePanel>
@@ -260,6 +269,8 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   isActive,
   viewType,
   setViewType,
+  gridCount,
+  setGridCount,
   headerTabs,
 }) => {
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
@@ -430,10 +441,15 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
               'grid grid-cols-1',
               viewType === 'preview'
                 ? 'h-full md:grid-cols-1 lg:grid-cols-1'
-                : 'md:grid-cols-2 lg:grid-cols-3'
+                : {
+                    'md:grid-cols-1 lg:grid-cols-1': gridCount === 1,
+                    'md:grid-cols-2 lg:grid-cols-2': gridCount === 2,
+                    'md:grid-cols-2 lg:grid-cols-3': gridCount === 3,
+                  }
             )}
             showViewTypeIcons={true}
             setViewType={setViewType}
+            setGridCount={setGridCount}
             viewType={viewType}
           />
         </ResizablePanel>
@@ -481,6 +497,8 @@ const Articles: React.FC = () => {
   const [myArticlesSearch, setMyArticlesSearch] = useState<string>('');
   const viewType = useArticlesViewStore((state) => state.viewType);
   const setViewType = useArticlesViewStore((state) => state.setViewType);
+  const gridCount = useArticlesViewStore((state) => state.gridCount);
+  const setGridCount = useArticlesViewStore((state) => state.setGridCount);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const user = useAuthStore((state) => state.user);
@@ -496,6 +514,8 @@ const Articles: React.FC = () => {
           isActive={activeTab === Tabs.ARTICLES}
           viewType={viewType}
           setViewType={setViewType}
+          gridCount={gridCount}
+          setGridCount={setGridCount}
           headerTabs={<ArticlesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
         />
         {user && accessToken && (
@@ -508,6 +528,8 @@ const Articles: React.FC = () => {
             isActive={activeTab === Tabs.MY_ARTICLES}
             viewType={viewType}
             setViewType={setViewType}
+            gridCount={gridCount}
+            setGridCount={setGridCount}
             headerTabs={<ArticlesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
           />
         )}
