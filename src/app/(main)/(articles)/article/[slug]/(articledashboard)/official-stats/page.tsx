@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 
 import { Card, LineChart, Title } from '@tremor/react';
+import DOMPurify from 'dompurify';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticleOfficialStats } from '@/api/articles/articles';
@@ -109,7 +110,7 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
             <ul>
               {data.data.recent_reviews.map((review, index) => (
                 <li key={index} className="flex flex-col gap-2">
-                  <div dangerouslySetInnerHTML={{ __html: review.excerpt }} />
+                  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(review.excerpt) }} />
                   <p className="text-gray-500 res-text-xs">
                     {new Date(review.date).toLocaleDateString()}
                   </p>

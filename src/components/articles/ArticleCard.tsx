@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from 'react';
+import { FC, memo } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,32 +13,6 @@ import { useArticlesViewStore } from '@/stores/articlesViewStore';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { Skeleton, TextSkeleton } from '../common/Skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-
-// Helper function to strip HTML tags and decode entities
-const stripHTML = (html: string): string => {
-  if (!html) return '';
-  // Check if we're in a browser environment
-  if (typeof document !== 'undefined') {
-    // Create a temporary div to parse HTML and extract text
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    let text = tmp.textContent || tmp.innerText || '';
-    // Clean up extra whitespace
-    text = text.replace(/\s+/g, ' ').trim();
-    return text;
-  }
-  // Fallback for SSR: use regex to strip HTML tags
-  return html
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
-};
 
 interface ArticleCardProps {
   article: ArticlesListOut;
@@ -56,13 +30,6 @@ interface ArticleCardProps {
 const ArticleCard: FC<ArticleCardProps> = memo(
   ({ article, forCommunity, className, compactType = 'full', handleArticlePreview }) => {
     const viewType = useArticlesViewStore((state) => state.viewType);
-
-    // Memoize stripped HTML to avoid recalculating on every render
-    const strippedTitle = useMemo(() => stripHTML(article.title), [article.title]);
-    const strippedAbstract = useMemo(
-      () => (article.abstract ? stripHTML(article.abstract) : null),
-      [article.abstract]
-    );
 
     return (
       <div
@@ -155,9 +122,21 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                     className="z-[1000] max-h-96 max-w-sm rounded-lg border-common-contrast bg-common-cardBackground p-3 shadow-lg"
                   >
                     <div className="max-h-[calc(24rem-1.5rem)] space-y-2 overflow-y-auto">
-                      <h3 className="text-sm font-semibold text-text-primary">{strippedTitle}</h3>
-                      {strippedAbstract && (
-                        <p className="text-xs text-text-secondary">{strippedAbstract}</p>
+                      <RenderParsedHTML
+                        rawContent={article.title}
+                        supportLatex={true}
+                        supportMarkdown={false}
+                        contentClassName="text-sm font-semibold text-text-primary"
+                        containerClassName="mb-0"
+                      />
+                      {article.abstract && (
+                        <RenderParsedHTML
+                          rawContent={article.abstract}
+                          supportLatex={true}
+                          supportMarkdown={false}
+                          contentClassName="text-xs text-text-secondary line-clamp-4"
+                          containerClassName="mb-0"
+                        />
                       )}
                       <p className="text-xs text-text-secondary">
                         Submitted By:{' '}

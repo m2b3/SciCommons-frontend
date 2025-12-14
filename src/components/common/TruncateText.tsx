@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import DOMPurify from 'dompurify';
+
 import { cn } from '@/lib/utils';
 
 const TruncateText = ({
@@ -33,7 +35,9 @@ const TruncateText = ({
     return () => window.removeEventListener('resize', checkTruncation);
   }, [maxLines, text]);
 
-  const contentProps = isHTML ? { dangerouslySetInnerHTML: { __html: text } } : { children: text };
+  const contentProps = isHTML
+    ? { dangerouslySetInnerHTML: { __html: DOMPurify.sanitize(text) } }
+    : { children: text };
 
   return (
     <div>
