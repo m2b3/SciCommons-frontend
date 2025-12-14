@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { FileX2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useMediaQuery } from 'usehooks-ts';
 
 import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import { ArticlesListOut } from '@/api/schemas';
@@ -9,8 +10,10 @@ import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleC
 import ArticlePreviewSection from '@/components/articles/ArticlePreviewSection';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { cn } from '@/lib/utils';
+import { useArticlesViewStore } from '@/stores/articlesViewStore';
 import { useAuthStore } from '@/stores/authStore';
 
 interface CommunityArticlesProps {
@@ -22,37 +25,31 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
-  const [viewType, setViewType] = useState<'grid' | 'preview'>('grid');
+  const viewType = useArticlesViewStore((s) => s.viewType as 'grid' | 'list' | 'preview');
+  const setViewType = useArticlesViewStore((s) => s.setViewType);
   const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
     null
   );
-
-  const handleViewTypeChange = useCallback((newViewType: 'grid' | 'preview') => {
-    setViewType(newViewType);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('community-articles-layout-type', newViewType);
-    }
-  }, []);
+  const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const saved = window.localStorage.getItem('community-articles-layout-type');
-    if (saved === 'grid' || saved === 'preview') {
-      setViewType(saved);
+    if (!isDesktop && viewType === 'preview') {
+      setViewType('grid');
     }
-  }, []);
+  }, [isDesktop, viewType, setViewType]);
 
   const { data, isPending, error } = useArticlesApiGetArticles(
     {
       community_id: communityId,
       page: page,
-      per_page: 10,
+      per_page: 50,
       search: search,
     },
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       query: {
         enabled: !!accessToken,
+        staleTime: FIVE_MINUTES_IN_MS,
       },
     }
   );
@@ -123,7 +120,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
       >
         <ResizablePanel
           className={cn(
-            'h-[calc(100vh-130px)] overflow-y-auto',
+            'max-h-[calc(100vh-130px)] overflow-y-auto',
             viewType === 'preview' ? 'pr-2' : ''
           )}
           defaultSize={60}
@@ -140,17 +137,22 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
             totalItems={data?.data.total || 0}
             totalPages={data?.data.num_pages || 1}
             currentPage={page}
-            itemsPerPage={10}
-            loadingType={LoadingType.PAGINATION}
+            itemsPerPage={50}
+            loadingType={LoadingType.INFINITE_SCROLL}
             searchPlaceholder="Search articles..."
             emptyStateContent="No articles found"
             emptyStateSubcontent="Be the first to create an article in this community"
             emptyStateLogo={<FileX2 size={64} />}
             showViewTypeIcons={true}
             viewType={viewType}
-            setViewType={(v) => handleViewTypeChange(v as 'grid' | 'preview')}
+            setViewType={setViewType}
             allowedViewTypes={['grid', 'preview']}
-            listContainerClassName={cn('flex flex-col gap-3 h-full')}
+            listContainerClassName={cn(
+              'grid grid-cols-1',
+              viewType === 'preview'
+                ? 'h-full md:grid-cols-1 lg:grid-cols-1'
+                : 'md:grid-cols-2 lg:grid-cols-3'
+            )}
           />
         </ResizablePanel>
         {viewType === 'preview' && (
@@ -164,7 +166,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
             >
               <ArticlePreviewSection
                 article={selectedPreviewArticle}
-                className="h-[calc(100vh-130px)]"
+                className="h-[calc(100vh-90px)]"
               />
             </ResizablePanel>
           </>

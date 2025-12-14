@@ -7,17 +7,18 @@ import Link from 'next/link';
 import Banner from '@/components/common/Banner';
 import Footer from '@/components/common/Footer';
 import NavBar from '@/components/common/NavBar';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordian';
+// import {
+//   Accordion,
+//   AccordionContent,
+//   AccordionItem,
+//   AccordionTrigger,
+// } from '@/components/ui/accordian';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
-import { faqs } from '@/constants/common.constants';
 
-import FeaturesSection from './FeaturesSection';
+// import { faqs } from '@/constants/common.constants';
+
+// import FeaturesSection from './FeaturesSection';
 
 const Home = () => {
   const words = [
@@ -88,6 +89,28 @@ const Home = () => {
           />
         </div>
       </div>
+      <div className="relative z-20 -mt-8 rounded-t-3xl bg-common-background p-12 pb-20">
+        <p className="w-full pb-8 text-center text-xl font-bold text-text-tertiary md:text-2xl">
+          Featured Video
+        </p>
+        <div className="flex w-full flex-col items-center justify-center">
+          <div className="aspect-video w-full max-w-4xl overflow-hidden rounded-lg">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/kzZ4-7w4vhk"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="h-full w-full"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      {/*
+        Features section commented out for now — keep markup for future re-enable
+
       <div className="relative z-30 -mt-8 h-fit w-full rounded-t-3xl bg-[#E3F2E9] pb-20 dark:bg-[#0F1E15]">
         <div className="flex w-full flex-col items-center py-8">
           <span className="text-center text-xl font-bold text-functional-green md:text-2xl">
@@ -97,6 +120,10 @@ const Home = () => {
         </div>
         <FeaturesSection />
       </div>
+      */}
+      {/*
+        FAQ section commented out for now — keep markup for future re-enable
+
       <div className="relative z-40 -mt-8 flex w-full flex-col items-center rounded-t-3xl bg-common-background py-12">
         <span className="px-8 text-center text-xl font-bold text-text-primary md:text-2xl">
           We Have Answered Almost All Your Questions
@@ -122,6 +149,7 @@ const Home = () => {
           </Accordion>
         </div>
       </div>
+      */}
       <Footer />
     </div>
   );

@@ -40,6 +40,7 @@ interface SearchableListProps<T> {
   emptyStateSubcontent: string;
   emptyStateLogo: React.ReactNode;
   title?: string;
+  headerTabs?: React.ReactNode;
   listContainerClassName?: string;
   viewType?: 'grid' | 'list' | 'preview';
   showViewTypeIcons?: boolean;
@@ -65,6 +66,7 @@ function SearchableList<T>({
   emptyStateSubcontent,
   emptyStateLogo,
   title,
+  headerTabs,
   listContainerClassName = 'flex flex-col gap-4',
   showViewTypeIcons = false,
   viewType = 'grid',
@@ -114,10 +116,11 @@ function SearchableList<T>({
 
   return (
     <div className="space-y-4">
-      <div className="mb-6 flex w-full flex-col items-center justify-between gap-8 pt-1 md:flex-row">
-        {title && (
-          <h1 className="whitespace-nowrap text-3xl font-bold text-text-primary">{title}</h1>
-        )}
+      <div className="mb-0 flex w-full flex-col items-start justify-between gap-2 pt-1 md:flex-row md:items-center">
+        {headerTabs ||
+          (title && (
+            <h1 className="whitespace-nowrap text-3xl font-bold text-text-primary">{title}</h1>
+          ))}
         <Input
           type="text"
           placeholder={searchPlaceholder}
@@ -127,10 +130,10 @@ function SearchableList<T>({
         />
       </div>
 
-      <div className={cn('flex h-fit flex-col space-y-4')}>
+      <div className={cn('flex h-fit flex-col space-y-1')}>
         {!isLoading && totalItems > 0 && (
           <div className="flex w-full items-center justify-between">
-            <span className="text-sm text-text-tertiary">
+            <span className="px-3 text-xs text-text-tertiary">
               Results: {totalItems} {title}
             </span>
             {showViewTypeIcons && (
@@ -177,7 +180,7 @@ function SearchableList<T>({
             <div key={index}>{renderItem(item)}</div>
           ))}
           {isLoading &&
-            Array.from({ length: 4 }, (_, index) => (
+            Array.from({ length: 7 }, (_, index) => (
               <div key={`skeleton-${index}`}>{renderSkeleton()}</div>
             ))}
         </div>

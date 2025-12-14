@@ -37,6 +37,7 @@ interface ReviewFormProps {
   refetch?: () => void;
   communityId?: number | null;
   is_submitter?: boolean; // Todo: Remove this after testing
+  onSubmitSuccess?: () => void;
 }
 
 type ActionType = 'create' | 'edit' | 'delete';
@@ -52,6 +53,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   refetch,
   communityId,
   is_submitter = false,
+  onSubmitSuccess,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
@@ -138,6 +140,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             reviewEditorRef.current?.setMarkdown?.('');
             refetch && refetch();
             toast.success('Review submitted successfully');
+            onSubmitSuccess && onSubmitSuccess();
           },
           onError: (error) => {
             reset();

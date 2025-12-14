@@ -17,6 +17,7 @@ import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constant
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
+import { useArticlesViewStore } from '@/stores/articlesViewStore';
 import { useAuthStore } from '@/stores/authStore';
 
 interface ArticlesResponse {
@@ -41,6 +42,7 @@ interface TabContentProps {
   isActive: boolean;
   viewType: 'grid' | 'list' | 'preview';
   setViewType: (viewType: 'grid' | 'list' | 'preview') => void;
+  headerTabs?: React.ReactNode;
 }
 
 const TabContent: React.FC<TabContentProps> = ({
@@ -52,6 +54,7 @@ const TabContent: React.FC<TabContentProps> = ({
   isActive,
   viewType,
   setViewType,
+  headerTabs,
 }) => {
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -191,8 +194,8 @@ const TabContent: React.FC<TabContentProps> = ({
       >
         <ResizablePanel
           className={cn(
-            'h-[calc(100vh-130px)] overflow-y-auto',
-            viewType === 'preview' ? 'pr-2' : 'p-4 md:p-4'
+            'h-[calc(100vh-80px)] overflow-y-auto',
+            viewType === 'preview' ? 'pr-2 pt-4' : 'p-4 md:p-4'
           )}
           style={{ overflow: 'auto' }}
           defaultSize={60}
@@ -215,8 +218,9 @@ const TabContent: React.FC<TabContentProps> = ({
             emptyStateSubcontent="Try searching for something else"
             emptyStateLogo={<FileX2 size={64} />}
             title={Tabs.ARTICLES}
+            headerTabs={headerTabs}
             listContainerClassName={cn(
-              'grid grid-cols-1 gap-3',
+              'grid grid-cols-1',
               viewType === 'preview'
                 ? 'h-full md:grid-cols-1 lg:grid-cols-1'
                 : 'md:grid-cols-2 lg:grid-cols-3'
@@ -237,7 +241,7 @@ const TabContent: React.FC<TabContentProps> = ({
             >
               <ArticlePreviewSection
                 article={selectedPreviewArticle}
-                className="h-[calc(100vh-130px)]"
+                className="mt-2 h-[calc(100vh-80px)]"
               />
             </ResizablePanel>
           </>
@@ -256,6 +260,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   isActive,
   viewType,
   setViewType,
+  headerTabs,
 }) => {
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -396,8 +401,8 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
       >
         <ResizablePanel
           className={cn(
-            'h-[calc(100vh-130px)] overflow-y-auto',
-            viewType === 'preview' ? 'pr-2' : 'p-4 md:p-4'
+            'h-[calc(100vh-80px)] overflow-y-auto',
+            viewType === 'preview' ? 'pr-2 pt-4' : 'p-4 md:p-4'
           )}
           style={{ overflow: 'auto' }}
           defaultSize={60}
@@ -420,8 +425,9 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
             emptyStateSubcontent="Try searching for something else"
             emptyStateLogo={<FileX2 size={64} />}
             title={Tabs.MY_ARTICLES}
+            headerTabs={headerTabs}
             listContainerClassName={cn(
-              'grid grid-cols-1 gap-3',
+              'grid grid-cols-1',
               viewType === 'preview'
                 ? 'h-full md:grid-cols-1 lg:grid-cols-1'
                 : 'md:grid-cols-2 lg:grid-cols-3'
@@ -442,12 +448,27 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
             >
               <ArticlePreviewSection
                 article={selectedPreviewArticle}
-                className="h-[calc(100vh-130px)]"
+                className="mt-2 h-[calc(100vh-80px)]"
               />
             </ResizablePanel>
           </>
         )}
       </ResizablePanelGroup>
+    </div>
+  );
+};
+
+interface ArticlesTabsProps {
+  activeTab: Tabs;
+  onTabChange: React.Dispatch<React.SetStateAction<Tabs>>;
+}
+
+const ArticlesTabs: React.FC<ArticlesTabsProps> = ({ activeTab, onTabChange }) => {
+  const user = useAuthStore((state) => state.user);
+  const tabsList = user ? [Tabs.ARTICLES, Tabs.MY_ARTICLES] : [Tabs.ARTICLES];
+  return (
+    <div className="md:px-2">
+      <TabComponent tabs={tabsList} activeTab={activeTab} setActiveTab={onTabChange} />
     </div>
   );
 };
@@ -458,35 +479,14 @@ const Articles: React.FC = () => {
   const [myArticlesPage, setMyArticlesPage] = useState<number>(1);
   const [articlesSearch, setArticlesSearch] = useState<string>('');
   const [myArticlesSearch, setMyArticlesSearch] = useState<string>('');
-  const [viewType, setViewType] = useState<'grid' | 'list' | 'preview'>('grid');
-
-  const handleViewTypeChange = useCallback((newViewType: 'grid' | 'list' | 'preview') => {
-    setViewType(newViewType);
-    window.localStorage.setItem('articles-layout-type', newViewType);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const saved = window.localStorage.getItem('articles-layout-type');
-    if (saved === 'grid' || saved === 'list' || saved === 'preview') {
-      setViewType(saved);
-    }
-  }, []);
+  const viewType = useArticlesViewStore((state) => state.viewType);
+  const setViewType = useArticlesViewStore((state) => state.setViewType);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className="p-2 py-8 pt-4 md:pb-0 md:pt-4">
-      <div className="pb-4">
-        {user && (
-          <TabComponent
-            tabs={[Tabs.ARTICLES, Tabs.MY_ARTICLES]}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-        )}
-      </div>
+    <div className="container mx-auto">
       <div className="relative">
         <TabContent
           search={articlesSearch}
@@ -495,7 +495,8 @@ const Articles: React.FC = () => {
           setPage={setArticlesPage}
           isActive={activeTab === Tabs.ARTICLES}
           viewType={viewType}
-          setViewType={handleViewTypeChange}
+          setViewType={setViewType}
+          headerTabs={<ArticlesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
         />
         {user && accessToken && (
           <MyArticlesTabContent
@@ -506,7 +507,8 @@ const Articles: React.FC = () => {
             accessToken={accessToken}
             isActive={activeTab === Tabs.MY_ARTICLES}
             viewType={viewType}
-            setViewType={handleViewTypeChange}
+            setViewType={setViewType}
+            headerTabs={<ArticlesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
           />
         )}
       </div>
