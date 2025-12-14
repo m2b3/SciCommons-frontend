@@ -92,9 +92,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
   const debouncedIsPseudonymous = useDebounceFunction(handleMakePseudonymous, 500);
 
   return (
-    <div
-      className={`flex flex-col items-start rounded-xl border-common-contrast res-text-xs sm:border sm:bg-common-cardBackground sm:p-4 ${hasImage ? 'sm:flex-row' : ''}`}
-    >
+    <div className={`flex flex-col items-start res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}>
       {hasImage && (
         <div className="mb-4 w-full sm:mb-0 sm:mr-4 sm:w-1/3">
           <div className="relative h-0 w-full pb-[75%]">
@@ -148,32 +146,34 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         {(article?.article_link || article.article_pdf_urls.length > 0) && (
           <div>
             <h3 className="mb-2 font-semibold text-text-secondary res-text-xs">Article Links</h3>
-            {article?.article_link && (
-              <div className="mb-1 flex items-center gap-2">
-                <Link2 size={16} className="text-text-tertiary" />
-                <a
-                  href={article.article_link || '#'}
-                  className="text-functional-blue res-text-xs hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {article?.article_link?.split('/').pop() || article.article_link}
-                </a>
-              </div>
-            )}
-            {article.article_pdf_urls.map((link, index) => (
-              <div key={index} className="mb-1 flex items-center gap-2">
-                <PdfIcon className="size-4 shrink-0" />
-                <a
-                  href={link}
-                  className="text-functional-blue res-text-xs hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.split('/').pop() || link}
-                </a>
-              </div>
-            ))}
+            <div className="flex flex-wrap items-center gap-4">
+              {article?.article_link && (
+                <div className="flex items-center gap-2">
+                  <Link2 size={16} className="text-text-tertiary" />
+                  <a
+                    href={article.article_link || '#'}
+                    className="text-functional-blue res-text-xs hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {article?.article_link?.split('/').pop() || article.article_link}
+                  </a>
+                </div>
+              )}
+              {article.article_pdf_urls.map((link, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <PdfIcon className="size-4 shrink-0" />
+                  <a
+                    href={link}
+                    className="text-functional-blue res-text-xs hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {link.split('/').pop() || link}
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

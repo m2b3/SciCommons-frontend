@@ -68,6 +68,8 @@ const CommunityArticleDisplayPage: React.FC = () => {
     }
   }, [reviewsError]);
 
+  const hasUserReviewed = reviewsData?.data.items.some((review) => review.is_author) || false;
+
   const tabs = data
     ? [
         {
@@ -82,23 +84,26 @@ const CommunityArticleDisplayPage: React.FC = () => {
                   communityId={data?.data.community_article?.community.id}
                 />
               )} */}
-              <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
-                <span className="text-sm font-semibold text-text-secondary">
-                  Have your reviews?
-                </span>
-                <span
-                  className="cursor-pointer text-xs text-functional-green hover:underline"
-                  onClick={() => setSubmitReview(!submitReview)}
-                >
-                  {submitReview ? 'Cancel' : 'Add review'}
-                </span>
-              </div>
-              {submitReview && (
+              {!hasUserReviewed && (
+                <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
+                  <span className="text-sm font-semibold text-text-secondary">
+                    Have your reviews? (You can add a review only once.)
+                  </span>
+                  <span
+                    className="cursor-pointer text-xs text-functional-green hover:underline"
+                    onClick={() => setSubmitReview(!submitReview)}
+                  >
+                    {submitReview ? 'Cancel' : 'Add review'}
+                  </span>
+                </div>
+              )}
+              {submitReview && !hasUserReviewed && (
                 <ReviewForm
                   articleId={Number(data.data.id)}
                   refetch={reviewsRefetch}
                   is_submitter={data.data.is_submitter}
                   communityId={data?.data.community_article?.community.id}
+                  onSubmitSuccess={() => setSubmitReview(false)}
                 />
               )}
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}

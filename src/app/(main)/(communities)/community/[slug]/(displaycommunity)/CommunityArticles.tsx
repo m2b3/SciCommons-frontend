@@ -123,7 +123,7 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
       >
         <ResizablePanel
           className={cn(
-            'h-[calc(100vh-130px)] overflow-y-auto',
+            'max-h-[calc(100vh-130px)] overflow-y-auto',
             viewType === 'preview' ? 'pr-2' : ''
           )}
           defaultSize={60}
