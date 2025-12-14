@@ -184,8 +184,8 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between res-text-sm">
-        <h1 className="font-bold text-text-primary res-text-xl">Discussions</h1>
+      <div className="mb-4 flex flex-wrap items-center justify-between text-sm">
+        <h1 className="text-xl font-bold text-text-primary">Discussions</h1>
         <div className="flex items-center gap-2">
           <Button onClick={handleNewDiscussion} className="p-2">
             <ButtonIcon>
@@ -213,6 +213,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
                   : 'Subscribe to get real-time discussion updates'
               }
               variant={isSubscribed ? 'outline' : 'blue'}
+              size="sm"
             >
               <ButtonIcon>
                 {isSubscribed ? (

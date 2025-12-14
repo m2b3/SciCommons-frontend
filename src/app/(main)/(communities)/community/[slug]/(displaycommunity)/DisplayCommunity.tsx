@@ -55,7 +55,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
 
   return (
     <div className="pb-1">
-      <div className="relative p-4">
+      <div className="relative p-2">
         <div className="flex gap-4">
           {/* <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">
             <Image
