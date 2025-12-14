@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -10,7 +10,7 @@ interface TabComponentProps<ActiveTabType extends string> {
   setActiveTab: React.Dispatch<React.SetStateAction<ActiveTabType>>;
 }
 
-const TabComponent = <ActiveTabType extends string>({
+const TabComponentInner = <ActiveTabType extends string>({
   tabs,
   activeTab,
   setActiveTab,
@@ -29,7 +29,7 @@ const TabComponent = <ActiveTabType extends string>({
     if (tab && tabs.includes(tab as ActiveTabType)) {
       setActiveTab(tab as ActiveTabType);
     }
-  }, [searchParams]);
+  }, [searchParams, tabs, setActiveTab]);
 
   return (
     <div className="scrollbar-hide flex w-full gap-2 overflow-x-auto rounded-full p-1 text-xs text-text-primary">
@@ -50,6 +50,27 @@ const TabComponent = <ActiveTabType extends string>({
         </button>
       ))}
     </div>
+  );
+};
+
+const TabComponent = <ActiveTabType extends string>(props: TabComponentProps<ActiveTabType>) => {
+  return (
+    <Suspense
+      fallback={
+        <div className="scrollbar-hide flex w-full gap-2 overflow-x-auto rounded-full p-1 text-xs text-text-primary">
+          {props.tabs.map((tab) => (
+            <div
+              key={tab}
+              className="w-fit whitespace-nowrap rounded-full bg-common-minimal/40 px-3 py-1.5 capitalize text-text-secondary"
+            >
+              {tab.replace('_', ' ')}
+            </div>
+          ))}
+        </div>
+      }
+    >
+      <TabComponentInner {...props} />
+    </Suspense>
   );
 };
 
