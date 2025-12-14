@@ -124,7 +124,7 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                 supportLatex={true}
                 supportMarkdown={false}
                 contentClassName={cn(
-                  'line-clamp-2 text-wrap font-semibold text-text-primary text-sm sm:text-sm md:text-sm lg:text-sm hover:underline',
+                  `${forCommunity ? 'line-clamp-1' : 'line-clamp-2'} text-wrap font-semibold text-text-primary text-sm sm:text-sm md:text-sm lg:text-sm hover:underline`,
                   {
                     'line-clamp-1 sm:text-sm text-sm':
                       compactType === 'minimal' || compactType === 'default',
@@ -134,7 +134,7 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                 )}
                 containerClassName="mb-0"
               />
-              {compactType !== 'full' && viewType !== 'preview' && (
+              {(compactType !== 'full' || forCommunity) && viewType !== 'preview' && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
@@ -186,12 +186,20 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                 rawContent={article.abstract}
                 supportLatex={true}
                 supportMarkdown={false}
-                contentClassName="mt-2 line-clamp-2 text-wrap text-xs text-text-primary"
+                contentClassName={cn(
+                  'mt-2 text-wrap text-xs text-text-primary',
+                  forCommunity ? 'line-clamp-1' : 'line-clamp-2'
+                )}
                 containerClassName="mb-0"
               />
             )}
             {compactType === 'full' && (
-              <p className="mt-2 line-clamp-2 text-wrap text-xs text-text-secondary">
+              <p
+                className={cn(
+                  'mt-2 text-wrap text-xs text-text-secondary',
+                  forCommunity ? 'line-clamp-1' : 'line-clamp-2'
+                )}
+              >
                 Authors: {article.authors.map((author) => author.label).join(', ')}
               </p>
             )}

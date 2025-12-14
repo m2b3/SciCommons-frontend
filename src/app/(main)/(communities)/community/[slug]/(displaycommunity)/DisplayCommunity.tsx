@@ -75,7 +75,29 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
               >
                 {community.name}
               </h2>
-              <div className="flex shrink-0 items-center space-x-2">
+            </div>
+            <div
+              className="w-[95%] text-xs md:text-sm"
+              style={{
+                wordBreak: 'break-word',
+              }}
+            >
+              <TruncateText
+                text={community.description}
+                maxLines={2}
+                textClassName="text-text-secondary"
+              />
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">
+              <div className="flex items-center">
+                <Users className="mr-1 h-4 w-4" />
+                <span className="text-xs">{community.num_members} Members</span>
+              </div>
+              <div className="flex items-center">
+                <FileText className="mr-1 h-4 w-4" />
+                <span className="text-xs">{community.num_published_articles} Articles</span>
+              </div>
+              <div className="ml-auto flex items-center space-x-2">
                 {community.is_admin && (
                   <>
                     <ArticleSubmission communityName={community.name} />
@@ -122,28 +144,6 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                       <ButtonTitle className="text-text-secondary">Join</ButtonTitle>
                     </Button>
                   )}
-              </div>
-            </div>
-            <div
-              className="w-[95%] text-xs md:text-sm"
-              style={{
-                wordBreak: 'break-word',
-              }}
-            >
-              <TruncateText
-                text={community.description}
-                maxLines={2}
-                textClassName="text-text-secondary"
-              />
-            </div>
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">
-              <div className="flex items-center">
-                <Users className="mr-1 h-4 w-4" />
-                <span className="text-xs">{community.num_members} Members</span>
-              </div>
-              <div className="flex items-center">
-                <FileText className="mr-1 h-4 w-4" />
-                <span className="text-xs">{community.num_published_articles} Articles</span>
               </div>
             </div>
           </div>
