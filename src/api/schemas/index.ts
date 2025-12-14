@@ -90,6 +90,7 @@ export * from './communityFiltersFilterType';
 export * from './communityInvitationDetails';
 export * from './communityListOut';
 export * from './communityListOutCreatedAt';
+export * from './communityListOutOrg';
 export * from './communityListOutRequestedAt';
 export * from './communityOut';
 export * from './communityOutAbout';

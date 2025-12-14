@@ -182,7 +182,7 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                 Authors: {article.authors.map((author) => author.label).join(', ')}
               </p>
             )}
-            {compactType === 'full' && article.community_article?.community.name && (
+            {/* {compactType === 'full' && article.community_article?.community.name && (
               <p className="mt-1 flex flex-wrap items-center text-xs text-text-secondary">
                 <span className="whitespace-nowrap">Published Community/Journal:</span>
                 <Link
@@ -194,7 +194,7 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                   </span>
                 </Link>
               </p>
-            )}
+            )} */}
             {(compactType === 'full' || compactType === 'default') && (
               <p className="mt-1 text-xxs text-text-secondary">
                 Submitted By: {article.user.username}
