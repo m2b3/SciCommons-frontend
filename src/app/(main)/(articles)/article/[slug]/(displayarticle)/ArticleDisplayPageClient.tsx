@@ -73,7 +73,7 @@ function ArticleDisplayPageClient({ params }: Props) {
         {
           title: 'Reviews',
           content: (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
               {!hasUserReviewed && (
                 <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
                   <span className="text-sm font-semibold text-text-secondary">
@@ -95,7 +95,7 @@ function ArticleDisplayPageClient({ params }: Props) {
                   onSubmitSuccess={() => setSubmitReview(false)}
                 />
               )}
-              <span className="border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
+              <span className="mb-4 border-b border-common-minimal pb-2 text-base font-bold text-text-secondary">
                 Reviews
               </span>
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}

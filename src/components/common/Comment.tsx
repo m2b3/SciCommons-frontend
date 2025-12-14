@@ -232,6 +232,8 @@ const Comment: React.FC<CommentProps> = ({
               isShrinked={true}
               supportMarkdown={true}
               supportLatex={true}
+              contentClassName="text-xs sm:text-sm"
+              containerClassName="mb-0"
             />
           </div>
         )}
