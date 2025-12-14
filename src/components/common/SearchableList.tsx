@@ -257,13 +257,13 @@ const GridSectionMenu: React.FC<{ onSelectGrid: (count: number) => void }> = ({ 
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={12}>
         <DropdownMenuItem onClick={() => onSelectGrid(1)}>
-          <Square size={16} className="mr-2" />1 Grid
+          <Square size={16} className="mr-2" />1 Column
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onSelectGrid(2)}>
-          <Grid2X2 size={16} className="mr-2" />2 Grids
+          <Grid2X2 size={16} className="mr-2" />2 Columns
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onSelectGrid(3)}>
-          <Grid3X3 size={16} className="mr-2" />3 Grids
+          <Grid3X3 size={16} className="mr-2" />3 Columns
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
