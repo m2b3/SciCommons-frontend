@@ -2,13 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { SpecialZoomLevel, Viewer, Worker } from '@react-pdf-viewer/core';
+import { RenderPageProps, SpecialZoomLevel, Viewer, Worker } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import type {
   HighlightArea,
   RenderHighlightContentProps,
   RenderHighlightTargetProps,
-  RenderHighlightsProps,
 } from '@react-pdf-viewer/highlight';
 import { Trigger, highlightPlugin } from '@react-pdf-viewer/highlight';
 import '@react-pdf-viewer/highlight/lib/styles/index.css';
@@ -34,6 +33,65 @@ import {
 
 import TextSelectionPopup from './TextSelectionPopup';
 
+// Separate component for rendering highlights on a single page
+// This component subscribes to the store directly, so it re-renders when annotations change
+interface PageHighlightsProps {
+  pageIndex: number;
+  articleSlug: string;
+  pdfUrl: string;
+  scale: number;
+  rotation: number;
+}
+
+const PageHighlights: React.FC<PageHighlightsProps> = ({
+  pageIndex,
+  articleSlug,
+  pdfUrl,
+  scale,
+  rotation,
+}) => {
+  const { annotations, getAnnotationsForPdf } = usePdfAnnotationsStore();
+
+  // Get annotations for this page
+  const pageAnnotations = useMemo(() => {
+    const allAnnotations = getAnnotationsForPdf(articleSlug, pdfUrl);
+    return allAnnotations.filter((annotation) =>
+      annotation.highlightAreas.some((area) => area.pageIndex === pageIndex)
+    );
+  }, [articleSlug, pdfUrl, pageIndex, annotations, getAnnotationsForPdf]);
+
+  if (pageAnnotations.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-0" style={{ zIndex: 1 }}>
+      {pageAnnotations.map((annotation) => (
+        <React.Fragment key={annotation.id}>
+          {annotation.highlightAreas
+            .filter((area) => area.pageIndex === pageIndex)
+            .map((area, idx) => (
+              <div
+                key={`${annotation.id}-${idx}`}
+                className="pointer-events-auto absolute cursor-pointer transition-opacity hover:opacity-80"
+                style={{
+                  left: `${area.left}%`,
+                  top: `${area.top}%`,
+                  width: `${area.width}%`,
+                  height: `${area.height}%`,
+                  backgroundColor: ANNOTATION_COLORS[annotation.color].hex,
+                  opacity: 0.4,
+                  mixBlendMode: 'multiply',
+                }}
+                title={annotation.note || annotation.selectedText}
+              />
+            ))}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
 interface PDFViewerContainerProps {
   pdfUrl: string;
   articleSlug: string;
@@ -48,14 +106,6 @@ const PDFViewerContainer: React.FC<PDFViewerContainerProps> = ({
   onJumpToAnnotationReady,
 }) => {
   const [isLoading, setIsLoading] = React.useState(true);
-
-  const { annotations, getAnnotationsForPdf } = usePdfAnnotationsStore();
-
-  // Get annotations for current PDF
-  const pdfAnnotations = useMemo(
-    () => getAnnotationsForPdf(articleSlug, pdfUrl),
-    [articleSlug, pdfUrl, annotations, getAnnotationsForPdf]
-  );
 
   // Render the highlight target (the tooltip that appears when selecting text)
   const renderHighlightTarget = useCallback(
@@ -113,52 +163,35 @@ const PDFViewerContainer: React.FC<PDFViewerContainerProps> = ({
     [articleSlug, pdfUrl, onQuoteSelect]
   );
 
-  // Render existing highlights on pages
-  const renderHighlights = useCallback(
-    (props: RenderHighlightsProps) => {
-      const { pageIndex, getCssProperties } = props;
-
-      // Filter annotations for current page
-      const pageAnnotations = pdfAnnotations.filter((annotation) =>
-        annotation.highlightAreas.some((area) => area.pageIndex === pageIndex)
-      );
-
-      return (
-        <div>
-          {pageAnnotations.map((annotation) => (
-            <React.Fragment key={annotation.id}>
-              {annotation.highlightAreas
-                .filter((area) => area.pageIndex === pageIndex)
-                .map((area, idx) => (
-                  <div
-                    key={`${annotation.id}-${idx}`}
-                    className="absolute cursor-pointer transition-opacity hover:opacity-80"
-                    style={{
-                      ...getCssProperties(area as HighlightArea, props.rotation),
-                      backgroundColor: ANNOTATION_COLORS[annotation.color].hex,
-                      opacity: 0.4,
-                      mixBlendMode: 'multiply',
-                    }}
-                    title={annotation.note || annotation.selectedText}
-                  />
-                ))}
-            </React.Fragment>
-          ))}
-        </div>
-      );
-    },
-    [pdfAnnotations]
+  // Custom page renderer that adds highlight overlay to each page
+  // This component subscribes to the store, so highlights update without reloading the PDF
+  const renderPage = useCallback(
+    (props: RenderPageProps) => (
+      <>
+        {props.canvasLayer.children}
+        {props.textLayer.children}
+        {props.annotationLayer.children}
+        <PageHighlights
+          pageIndex={props.pageIndex}
+          articleSlug={articleSlug}
+          pdfUrl={pdfUrl}
+          scale={props.scale}
+          rotation={props.rotation}
+        />
+      </>
+    ),
+    [articleSlug, pdfUrl]
   );
 
   // Store plugin instances in refs to maintain stable references
   const zoomPluginRef = useRef(zoomPlugin());
   const pageNavigationPluginRef = useRef(pageNavigationPlugin());
+  // Highlight plugin only handles text selection - rendering is done via renderPage
   const highlightPluginRef = useRef(
     highlightPlugin({
       trigger: Trigger.TextSelection,
       renderHighlightTarget,
       renderHighlightContent,
-      renderHighlights,
     })
   );
 
@@ -285,6 +318,7 @@ const PDFViewerContainer: React.FC<PDFViewerContainerProps> = ({
               fileUrl={pdfUrl}
               plugins={[zoomPluginInstance, pageNavigationPluginInstance, highlightPluginInstance]}
               defaultScale={SpecialZoomLevel.PageWidth}
+              renderPage={renderPage}
               onDocumentLoad={() => {
                 setIsLoading(false);
               }}

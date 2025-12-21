@@ -62,7 +62,9 @@ const TextSelectionPopup: React.FC<TextSelectionPopupProps> = ({
       color: selectedColor,
     });
 
-    toast.success('Highlight saved');
+    toast.success('Highlight saved', {
+      position: 'top-right',
+    });
     onClose();
   };
 
@@ -71,7 +73,9 @@ const TextSelectionPopup: React.FC<TextSelectionPopupProps> = ({
 
     // Copy to clipboard
     navigator.clipboard.writeText(quoteText).then(() => {
-      toast.success('Quote copied to clipboard');
+      toast.success('Quote copied to clipboard', {
+        position: 'top-right',
+      });
     });
 
     // If onQuoteSelect is provided, call it to insert into review
