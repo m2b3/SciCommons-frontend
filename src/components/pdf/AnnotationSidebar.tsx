@@ -91,7 +91,9 @@ const AnnotationSidebar: React.FC<AnnotationSidebarProps> = ({
     updateAnnotation(id, { note: editNote });
     setEditingId(null);
     setEditNote('');
-    toast.success('Note updated');
+    toast.success('Note updated', {
+      position: 'top-right',
+    });
   };
 
   const handleCancelEdit = () => {
@@ -101,18 +103,24 @@ const AnnotationSidebar: React.FC<AnnotationSidebarProps> = ({
 
   const handleDelete = (id: string) => {
     deleteAnnotation(id);
-    toast.success('Annotation deleted');
+    toast.success('Annotation deleted', {
+      position: 'top-right',
+    });
   };
 
   const handleCopyText = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success('Copied to clipboard', {
+      position: 'top-right',
+    });
   };
 
   const handleQuote = (text: string) => {
     const quoteText = `> ${text.replace(/\n/g, '\n> ')}`;
     navigator.clipboard.writeText(quoteText);
-    toast.success('Quote copied to clipboard');
+    toast.success('Quote copied to clipboard', {
+      position: 'top-right',
+    });
     if (onQuoteSelect) {
       onQuoteSelect(quoteText);
     }
@@ -127,7 +135,9 @@ const AnnotationSidebar: React.FC<AnnotationSidebarProps> = ({
     a.download = `annotations-${articleSlug}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Annotations exported');
+    toast.success('Annotations exported', {
+      position: 'top-right',
+    });
   };
 
   const handleImport = () => {
@@ -142,9 +152,13 @@ const AnnotationSidebar: React.FC<AnnotationSidebarProps> = ({
           try {
             const data = event.target?.result as string;
             importAnnotations(data);
-            toast.success('Annotations imported');
+            toast.success('Annotations imported', {
+              position: 'top-right',
+            });
           } catch (error) {
-            toast.error('Failed to import annotations');
+            toast.error('Failed to import annotations', {
+              position: 'top-right',
+            });
           }
         };
         reader.readAsText(file);
@@ -155,7 +169,9 @@ const AnnotationSidebar: React.FC<AnnotationSidebarProps> = ({
 
   const handleChangeColor = (id: string, color: AnnotationColor) => {
     updateAnnotation(id, { color });
-    toast.success('Color updated');
+    toast.success('Color updated', {
+      position: 'top-right',
+    });
   };
 
   if (filteredAnnotations.length === 0) {
