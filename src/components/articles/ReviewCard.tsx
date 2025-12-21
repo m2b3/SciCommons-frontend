@@ -232,6 +232,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               supportLatex={true}
               containerClassName="mb-0"
               contentClassName="text-xs sm:text-sm"
+              gradientClassName="sm:from-common-background"
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
