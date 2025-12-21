@@ -5,15 +5,19 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { Check, FileText, UserCheck, UserPlus, Users } from 'lucide-react';
+import { Check, FileText, Settings, UserCheck, UserPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 import '@/api/communities/communities';
-import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
+import {
+  useCommunitiesApiJoinGetJoinRequests,
+  useCommunitiesApiJoinJoinCommunity,
+} from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import TruncateText from '@/components/common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
+import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -38,6 +42,18 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   } = useCommunitiesApiJoinJoinCommunity({
     request: axiosConfig,
   });
+
+  // Fetch join requests to show pending count (only for admins)
+  const { data: joinRequestsData } = useCommunitiesApiJoinGetJoinRequests(params?.slug || '', {
+    query: {
+      enabled: !!accessToken && !!community.is_admin,
+      staleTime: FIFTEEN_MINUTES_IN_MS,
+    },
+    request: axiosConfig,
+  });
+
+  const pendingRequestsCount =
+    joinRequestsData?.data.filter((item) => item.status === 'pending').length || 0;
 
   const handleJoin = () => {
     mutate({ communityId: community.id });
@@ -101,9 +117,31 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 {community.is_admin && (
                   <>
                     <ArticleSubmission communityName={community.name} />
+                    {pendingRequestsCount > 0 && (
+                      <Link href={`/community/${params?.slug}/requests`}>
+                        <Button
+                          size="sm"
+                          className="border border-common-minimal/70 bg-white hover:bg-white dark:bg-black dark:hover:bg-black"
+                          withTooltip
+                          tooltipData={`${pendingRequestsCount} pending requests`}
+                        >
+                          <ButtonTitle className="text-text-secondary">
+                            <span className="mr-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-medium text-white">
+                              {pendingRequestsCount > 9 ? '9+' : pendingRequestsCount}
+                            </span>
+                            Requests
+                          </ButtonTitle>
+                        </Button>
+                      </Link>
+                    )}
                     <Link href={`/community/${params?.slug}/settings`}>
-                      <Button size="sm" className="bg-black hover:bg-black">
-                        <ButtonTitle className="text-white">Settings</ButtonTitle>
+                      <Button
+                        size="sm"
+                        className="border border-common-minimal/70 bg-white hover:bg-white dark:bg-black dark:hover:bg-black"
+                      >
+                        <ButtonIcon>
+                          <Settings className="size-4 text-text-secondary" />
+                        </ButtonIcon>
                       </Button>
                     </Link>
                   </>
