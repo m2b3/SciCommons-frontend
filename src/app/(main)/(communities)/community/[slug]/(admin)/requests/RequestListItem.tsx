@@ -11,7 +11,7 @@ import { Button, ButtonTitle } from '@/components/ui/button';
 interface RequestListItemProps {
   name: string;
   status: 'pending' | 'approved' | 'rejected';
-  profilePicture?: string;
+  profilePicture?: string | null;
   handleAction: (id: number, action: 'approve' | 'reject', communityId: number) => void;
   isPending: boolean;
   joinRequestId: number;
@@ -25,31 +25,31 @@ const RequestListItem: React.FC<RequestListItemProps> = ({
   handleAction,
   isPending,
   joinRequestId,
-  profilePicture,
+  profilePicture = null,
   requestedAt,
   communityId,
 }) => {
   return (
-    <div className="mb-2 flex items-start justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:items-center">
-      <div className="flex flex-col items-start gap-4 md:flex-row">
+    <div className="flex items-center justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-3 md:items-center">
+      <div className="flex items-center gap-4 md:flex-row">
         <Image
-          src={profilePicture ? profilePicture : '/images/default-avatar.png'}
+          src={profilePicture ? profilePicture : '/images/assets/user-icon.png'}
           alt={name}
-          width={48}
-          height={48}
+          width={32}
+          height={32}
           className="aspect-square shrink-0 rounded-full"
         />
         <div className="flex flex-col gap-2">
           <div>
-            <p className="font-bold text-text-primary">{name}</p>
-            <p className="text-sm text-text-tertiary">
+            <p className="text-sm font-bold text-text-primary">{name}</p>
+            <p className="text-xs text-text-tertiary">
               Requested on {dayjs(requestedAt).format('DD MMM YYYY')}
             </p>
           </div>
           {/* <p className="cursor-pointer text-green-500">View Profile</p> */}
         </div>
       </div>
-      <div className="flex space-x-4">
+      <div className="flex gap-2">
         {status === 'pending' && (
           <>
             <Button
@@ -58,7 +58,7 @@ const RequestListItem: React.FC<RequestListItemProps> = ({
               disabled={isPending}
               type="button"
             >
-              <ButtonTitle>Accept</ButtonTitle>
+              <ButtonTitle className="text-xxs">Accept</ButtonTitle>
             </Button>
             <Button
               variant={'danger'}
@@ -66,17 +66,17 @@ const RequestListItem: React.FC<RequestListItemProps> = ({
               disabled={isPending}
               type="button"
             >
-              <ButtonTitle>Reject</ButtonTitle>
+              <ButtonTitle className="text-xxs">Reject</ButtonTitle>
             </Button>
           </>
         )}
         {status === 'approved' && (
-          <span className="flex items-center gap-1 text-functional-green res-text-xs">
+          <span className="flex items-center gap-1 text-xxs text-functional-green">
             <Check className="size-3" /> Approved
           </span>
         )}
         {status === 'rejected' && (
-          <span className="flex items-center gap-1 text-functional-red res-text-xs">
+          <span className="flex items-center gap-1 text-xxs text-functional-red">
             <X className="size-3" /> Rejected
           </span>
         )}
