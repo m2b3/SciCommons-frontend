@@ -36,7 +36,8 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
     } else if (lowerQuery.startsWith('arxiv:')) {
       let arxivId = query.split(':')[1];
       arxivId = arxivId.trim();
-      apiUrl = `https://export.arxiv.org/api/query?id_list=${arxivId}`;
+      // Use Next.js API route to proxy the request and avoid CORS issues
+      apiUrl = `/api/proxy-arxiv?id=${arxivId}`;
       source = 'arXiv';
     } else if (lowerQuery.startsWith('pmid:')) {
       let pmid = query.split(':')[1];
@@ -59,7 +60,10 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
     };
 
     try {
-      const response = await axios.get(apiUrl);
+      const response = await axios.get(apiUrl, {
+        // For arXiv, we need to handle XML response
+        responseType: source === 'arXiv' ? 'text' : 'json',
+      });
       const parsedData = parseData(query, response.data, source);
       if (parsedData) {
         set({ articleData: parsedData, loading: false });

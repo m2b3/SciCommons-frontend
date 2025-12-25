@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { ChevronUp, ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
+import { ChevronsDown, ChevronsUp, Layers, SquareMinus, SquarePlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -119,17 +119,22 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
   };
 
   return (
-    <div className="mt-2 flex flex-col border-t border-common-contrast pt-4">
+    <div className="mt-2 flex flex-col">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-xs font-bold text-text-tertiary">Add Comment:</span>
-        <ChevronUp
-          size={14}
-          className={cn(
-            'cursor-pointer text-text-secondary',
-            isCommentFormCollapsed && 'rotate-180'
-          )}
-          onClick={() => setIsCommentFormCollapsed(!isCommentFormCollapsed)}
-        />
+        {isCommentFormCollapsed ? (
+          <SquarePlus
+            size={14}
+            className={cn('cursor-pointer text-text-secondary')}
+            onClick={() => setIsCommentFormCollapsed(!isCommentFormCollapsed)}
+          />
+        ) : (
+          <SquareMinus
+            size={14}
+            className={cn('cursor-pointer text-text-secondary')}
+            onClick={() => setIsCommentFormCollapsed(!isCommentFormCollapsed)}
+          />
+        )}
       </div>
       {!isCommentFormCollapsed && (
         <CommentInput
@@ -154,14 +159,14 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({ discussionId })
             <div className="flex items-center space-x-2">
               <label
                 htmlFor="depth-select"
-                className="flex items-center text-sm font-medium text-text-secondary"
+                className="flex items-center text-xxs font-medium text-text-secondary"
               >
-                <Layers size={16} className="mr-1" />
+                <Layers size={12} className="mr-1" />
                 <span>Depth:</span>
               </label>
               <select
                 id="depth-select"
-                className="rounded border bg-common-background p-1 text-sm"
+                className="rounded border border-common-minimal bg-common-background p-1 text-[10px]"
                 onChange={handleDepthChange}
                 value={maxDepth === Infinity ? 0 : maxDepth}
               >

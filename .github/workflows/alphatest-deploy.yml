@@ -48,6 +48,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
             NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_ALPHA_TEST }}
+            NEXT_PUBLIC_REALTIME_URL=${{ secrets.NEXT_PUBLIC_REALTIME_URL_ALPHA_TEST }}
 
       # Step 5: Setup SSH keys and known_hosts
       - name: Setup SSH
@@ -77,6 +78,7 @@ jobs:
             # Append environment variables one by one
             echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL_ALPHA_TEST }}" >> .env.alphatest
             echo "CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}" >> .env.alphatest
+            echo "NEXT_PUBLIC_REALTIME_URL=${{ secrets.NEXT_PUBLIC_REALTIME_URL_ALPHA_TEST }}" >> .env.alphatest
 
             # Ensure the environment variables are written before proceeding
             echo ".env.alphatest file created with environment variables."

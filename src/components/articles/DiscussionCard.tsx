@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 
 import { DiscussionOut } from '@/api/schemas';
 
@@ -55,10 +55,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
   // };
 
   return (
-    <div
-      key={discussion.id}
-      className="rounded-xl border-common-contrast res-text-sm sm:border sm:bg-common-cardBackground sm:p-4"
-    >
+    <div key={discussion.id} className="mb-4 border-b border-common-minimal pb-4 text-xs">
       <div className="flex w-full items-start justify-between">
         <div className="flex w-full flex-col gap-2">
           <div className="flex items-center">
@@ -89,7 +86,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
           </div>
           <div className="flex w-full flex-col gap-0">
             <span
-              className="line-clamp-2 flex-grow cursor-pointer font-semibold text-text-primary res-text-sm hover:text-functional-blue hover:underline"
+              className="line-clamp-2 flex-grow cursor-pointer text-sm font-semibold text-text-primary hover:text-functional-blue hover:underline"
               onClick={() => setDisplayComments((prev) => !prev)}
             >
               {discussion.topic}
@@ -98,19 +95,26 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
             <RenderParsedHTML
               rawContent={discussion.content}
               isShrinked={true}
-              containerClassName="mb-2"
+              containerClassName="mb-0"
               supportMarkdown={true}
               supportLatex={true}
-              contentClassName="res-text-xs"
+              contentClassName="text-xs sm:text-sm"
             />
           </div>
-          <div className="flex items-center text-xs text-text-tertiary">
+          <div className="ml-auto flex items-center text-xs text-text-tertiary">
             <button
-              className="mr-4 flex cursor-pointer items-center space-x-1 hover:underline"
               onClick={() => setDisplayComments((prev) => !prev)}
+              className="flex items-center gap-2 text-[10px] hover:underline focus:outline-none"
             >
-              <MessageSquare size={14} />
-              <span>{discussion.comments_count} comments</span>
+              <div className="flex items-center gap-1">
+                <MessageCircle className="h-3 w-3 shrink-0" />
+                {discussion.comments_count} comments
+                {displayComments ? (
+                  <ChevronUp className="h-3 w-3 shrink-0 text-text-tertiary" />
+                ) : (
+                  <ChevronDown className="h-3 w-3 shrink-0 text-text-tertiary" />
+                )}
+              </div>
             </button>
             {/* <button className="flex items-center space-x-1">
               <Share2 size={14} />

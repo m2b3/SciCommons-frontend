@@ -60,6 +60,7 @@ const ArticleForm: React.FC = () => {
     formState: { errors },
     reset,
     watch,
+    getValues,
   } = useForm<SubmitArticleFormValues>({
     defaultValues: defaultFormValues,
     mode: 'onChange',
@@ -96,21 +97,28 @@ const ArticleForm: React.FC = () => {
     }
   }, [watch, activeTab, isInitialized]);
 
-  // Handle tab change
+  // Handle tab change - preserve pdfFiles when switching tabs
   useEffect(() => {
     if (isInitialized) {
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
         const parsedData = JSON.parse(savedData);
         const currentTabData = parsedData[activeTab] || defaultFormValues;
-        reset(currentTabData);
+        // Preserve pdfFiles from current form state when switching tabs
+        const currentPdfFiles = getValues('pdfFiles');
+        reset({
+          ...currentTabData,
+          pdfFiles: currentPdfFiles || [],
+        });
       }
     }
-  }, [activeTab, reset, isInitialized]);
+  }, [activeTab, reset, isInitialized, getValues]);
 
-  // Handle article data
+  // Handle article data - preserve pdfFiles when loading article data
   useEffect(() => {
     if (isInitialized && articleData && activeTab === 'search') {
+      // Preserve pdfFiles from current form state
+      const currentPdfFiles = getValues('pdfFiles');
       const newData = {
         ...defaultFormValues,
         title: articleData.title,
@@ -118,6 +126,7 @@ const ArticleForm: React.FC = () => {
         abstract: articleData.abstract,
         article_link: articleData.link,
         pdf_link: articleData.pdfLink,
+        pdfFiles: currentPdfFiles || [],
       };
       reset(newData);
 
@@ -130,7 +139,7 @@ const ArticleForm: React.FC = () => {
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     }
-  }, [articleData, reset, activeTab, isInitialized]);
+  }, [articleData, reset, activeTab, isInitialized, getValues]);
 
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = async (formData) => {
     const dataToSend: ArticleCreateSchema = {

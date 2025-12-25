@@ -40,7 +40,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
+  const user = useStore(useAuthStore, (state) => state.user);
   const pathname = usePathname();
+
+  const isAshokaUser = user?.email?.endsWith('ashoka.edu.in') ?? false;
   const router = useRouter();
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -52,8 +55,8 @@ const NavBar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-[1000] w-full border-b border-common-minimal bg-common-background/50 text-text-primary backdrop-blur-md sm:px-2 lg:px-9">
-      <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2">
+    <header className="sticky top-0 z-[1000] w-full border-b border-common-minimal bg-common-background/50 text-text-primary backdrop-blur-md">
+      <nav className="container mx-auto flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
           <MoveLeft
             className="mr-4 size-5 cursor-pointer text-primary"
@@ -62,9 +65,22 @@ const NavBar: React.FC = () => {
               router.back();
             }}
           />
-          <Link href="/" className="flex items-center gap-4">
-            <Image src="/logo.png" alt="Logo" width={60} height={40} />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={isAshokaUser ? 45 : 60}
+                height={isAshokaUser ? 33 : 40}
+              />
+            </Link>
+            {isAshokaUser && (
+              <>
+                <span className="text-lg font-light text-text-tertiary">×</span>
+                <Image width={90} height={32} src={'/images/KCDHA-Black.png'} alt="KCDHA" />
+              </>
+            )}
+          </div>
         </div>
         <ul className="mx-auto hidden items-center space-x-1 md:absolute md:left-1/2 md:flex md:-translate-x-1/2">
           {navLinks?.map((link) => (
@@ -121,8 +137,9 @@ const CreateDropdown: React.FC = () => {
     <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant={'default'}
-          className="aspect-square rounded-full p-2 lg:aspect-auto lg:px-3"
+          // variant={'default'}
+          size="sm"
+          className="aspect-square rounded-full"
         >
           <Plus size={16} />
           <span className="hidden lg:block">Create</span>

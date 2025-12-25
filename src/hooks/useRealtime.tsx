@@ -62,7 +62,7 @@ const REALTIME_URL = process.env.NEXT_PUBLIC_REALTIME_URL;
 const HEARTBEAT_INTERVAL_MS = 60_000;
 const POLL_ABORT_MS = 65_000;
 const LEADER_TTL_MS = 10_000;
-const MAX_RETRIES = 10;
+const MAX_RETRIES = 3;
 
 const STORAGE_KEYS = {
   QUEUE_ID: 'realtime_queue_id',
@@ -116,6 +116,7 @@ export function useRealtime() {
   const stoppedRef = useRef<boolean>(false);
   const isPollingRef = useRef<boolean>(false);
   const loopStartedRef = useRef<boolean>(false);
+  const registerQueueRef = useRef<((force?: boolean) => Promise<boolean>) | null>(null);
 
   const writeLeaderHeartbeat = useCallback((tabId: string) => {
     const payload = { tabId, ts: Date.now() };
@@ -232,7 +233,7 @@ export function useRealtime() {
     (event: RealtimeEvent) => {
       const { article_id: articleId } = event.data;
 
-      console.log(`[Realtime] Updating discussions cache for article ${articleId}`, event);
+      // Silently update discussions cache
 
       // Update both query key formats that might be used
       queryClient.setQueriesData(
@@ -265,7 +266,6 @@ export function useRealtime() {
               const exists = items.some((item: any) => item.id === discussion.id);
               if (exists) return oldData;
 
-              console.log(`[Realtime] Adding new discussion ${discussion.id} to cache`);
               return {
                 ...oldData,
                 data: {
@@ -276,7 +276,6 @@ export function useRealtime() {
             }
 
             case 'updated_discussion': {
-              console.log(`[Realtime] Updating discussion ${discussion.id} in cache`);
               return {
                 ...oldData,
                 data: {
@@ -289,7 +288,6 @@ export function useRealtime() {
             }
 
             case 'deleted_discussion': {
-              console.log(`[Realtime] Removing discussion ${discussion.id} from cache`);
               return {
                 ...oldData,
                 data: {
@@ -313,7 +311,7 @@ export function useRealtime() {
       const { discussion_id: discussionId } = event.data;
       if (!discussionId) return;
 
-      console.log(`[Realtime] Updating comments cache for discussion ${discussionId}`, event);
+      // Silently update comments cache
 
       // Update comment caches
       queryClient.setQueriesData(
@@ -341,7 +339,6 @@ export function useRealtime() {
                   const exists = comments.some((c: any) => c.id === comment.id);
                   if (exists) return comments;
 
-                  console.log(`[Realtime] Adding new top-level comment ${comment.id} to cache`);
                   return [...comments, { ...comment, replies: [] }];
                 } else {
                   // Reply to existing comment
@@ -351,9 +348,6 @@ export function useRealtime() {
                       const exists = replies.some((r: any) => r.id === comment.id);
                       if (exists) return c;
 
-                      console.log(
-                        `[Realtime] Adding new reply ${comment.id} to comment ${parentId}`
-                      );
                       return { ...c, replies: [...replies, { ...comment, replies: [] }] };
                     } else if (Array.isArray(c.replies)) {
                       // Recursively check nested replies
@@ -367,7 +361,6 @@ export function useRealtime() {
               case 'updated_comment': {
                 return comments.map((c: any) => {
                   if (c.id === comment.id) {
-                    console.log(`[Realtime] Updating comment ${comment.id} in cache`);
                     return { ...c, ...comment };
                   } else if (Array.isArray(c.replies)) {
                     return { ...c, replies: updateCommentsArray(c.replies) };
@@ -449,10 +442,12 @@ export function useRealtime() {
         cache: 'no-store',
       });
       if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error('queue_not_found');
-        }
-        throw new Error(`poll_http_${res.status}`);
+        // Create error with status code for proper handling
+        const error = new Error(
+          res.status === 404 ? 'queue_not_found' : `poll_http_${res.status}`
+        ) as Error & { status: number };
+        error.status = res.status;
+        throw error;
       }
       const data = (await res.json()) as PollResponse;
       return data;
@@ -466,14 +461,7 @@ export function useRealtime() {
     (events: RealtimeEvent[]) => {
       if (!events?.length) return;
 
-      console.log(`[Realtime] Processing ${events.length} events`, {
-        activeArticleId,
-        activeCommunityId,
-        activeDiscussionId,
-        isViewingDiscussions,
-        isViewingComments,
-        isContextFresh: isContextFresh(),
-      });
+      // Process events silently
 
       // Broadcast to other tabs
       bc?.postMessage({ type: 'realtime:events', payload: events });
@@ -487,10 +475,6 @@ export function useRealtime() {
           (activeCommunityId === communityId ||
             (Array.isArray(event.community_ids) &&
               event.community_ids.includes(activeCommunityId as number)));
-
-        console.log(
-          `[Realtime] Event ${event.type} for article ${articleId}, community ${communityId}, relevant: ${isRelevantToCurrentContext}`
-        );
 
         // Process discussion events
         if (['new_discussion', 'updated_discussion', 'deleted_discussion'].includes(event.type)) {
@@ -584,6 +568,13 @@ export function useRealtime() {
   );
 
   const pollLoop = useCallback(async () => {
+    // Check authentication first - don't poll if not logged in
+    if (!isAuthenticated || !accessToken) {
+      loopStartedRef.current = false;
+      setStatus('disabled');
+      return;
+    }
+
     if (!isLeader || stoppedRef.current) {
       loopStartedRef.current = false;
       return;
@@ -594,8 +585,29 @@ export function useRealtime() {
     try {
       if (!REALTIME_URL) {
         setStatus('disabled');
-        await new Promise((r) => setTimeout(r, 10_000));
+        loopStartedRef.current = false;
+        isPollingRef.current = false;
         return;
+      }
+
+      // Check if we have a queue_id before attempting to poll
+      if (!queueIdRef.current) {
+        // Try to register first
+        if (registerQueueRef.current) {
+          const registered = await registerQueueRef.current(true);
+          if (!registered || stoppedRef.current) {
+            loopStartedRef.current = false;
+            isPollingRef.current = false;
+            return;
+          }
+        }
+        // If still no queue_id after registration, stop polling
+        if (!queueIdRef.current) {
+          setStatus('disabled');
+          loopStartedRef.current = false;
+          isPollingRef.current = false;
+          return;
+        }
       }
 
       setStatus((s) => (s === 'idle' ? 'connecting' : s));
@@ -614,10 +626,25 @@ export function useRealtime() {
       } else {
         // catchup required
         setStatus('reconnecting');
-        try {
-          await registerQueue(true);
+        let registered = false;
+        if (registerQueueRef.current) {
+          registered = await registerQueueRef.current(true);
+        }
+        // Check if registration succeeded and we're not stopped (auth failure)
+        if (registered && queueIdRef.current && !stoppedRef.current) {
           retryCountRef.current = 0;
-        } catch {
+          // Invalidate all discussion and comment caches
+          queryClient.invalidateQueries({
+            predicate: (query) =>
+              matchesQueryKey(query.queryKey, '/api/articles/') &&
+              (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/comments')),
+          });
+          toast.info('Syncing latest discussions…');
+        } else if (stoppedRef.current) {
+          // Auth failure - stop completely
+          return;
+        } else {
           retryCountRef.current += 1;
           if (retryCountRef.current >= MAX_RETRIES) {
             stoppedRef.current = true;
@@ -627,55 +654,82 @@ export function useRealtime() {
           await new Promise((r) => setTimeout(r, backoffRef.current));
           backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
         }
-        // Invalidate all discussion and comment caches
-        queryClient.invalidateQueries({
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, '/api/articles/') &&
-            (matchesQueryKey(query.queryKey, '/discussions') ||
-              matchesQueryKey(query.queryKey, '/comments')),
-        });
-        toast.info('Syncing latest discussions…');
       }
     } catch (err: any) {
+      // Check for authentication errors first (401/403)
+      const httpStatus = err?.response?.status || err?.status;
+      if (httpStatus === 401 || httpStatus === 403) {
+        queueIdRef.current = null;
+        lastEventIdRef.current = null;
+        stoppedRef.current = true;
+        setStatus('disabled');
+        return;
+      }
+
       if (err?.name === 'AbortError') {
         // ignore aborts
-      } else if (err?.message === 'queue_not_found') {
-        setStatus('reconnecting');
-        try {
-          await registerQueue(true);
-          retryCountRef.current = 0;
-        } catch {
-          retryCountRef.current += 1;
-          if (retryCountRef.current >= MAX_RETRIES) {
-            stoppedRef.current = true;
-            setStatus('disabled');
-            return;
-          }
-          await new Promise((r) => setTimeout(r, backoffRef.current));
-          backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
+      } else if (err?.message === 'No queue_id') {
+        // No queue_id means we're not properly registered, likely not authenticated
+        if (!isAuthenticated || !accessToken) {
+          setStatus('disabled');
+          stoppedRef.current = true;
+          return;
         }
-        queryClient.invalidateQueries({
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, '/api/articles/') &&
-            (matchesQueryKey(query.queryKey, '/discussions') ||
-              matchesQueryKey(query.queryKey, '/comments')),
-        });
-        toast.info('Reconnected. Syncing latest discussions…');
-      } else {
-        console.error('[Realtime] Poll error:', err);
-        setStatus('error');
         retryCountRef.current += 1;
         if (retryCountRef.current >= MAX_RETRIES) {
           stoppedRef.current = true;
           setStatus('disabled');
+          return;
+        }
+        await new Promise((r) => setTimeout(r, backoffRef.current));
+        backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
+      } else if (err?.message === 'queue_not_found') {
+        setStatus('reconnecting');
+        let registered = false;
+        if (registerQueueRef.current) {
+          registered = await registerQueueRef.current(true);
+        }
+        // Only show toast and invalidate if registration succeeded and not stopped
+        if (registered && queueIdRef.current && !stoppedRef.current) {
+          retryCountRef.current = 0;
+          queryClient.invalidateQueries({
+            predicate: (query) =>
+              matchesQueryKey(query.queryKey, '/api/articles/') &&
+              (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/comments')),
+          });
+          toast.info('Reconnected. Syncing latest discussions…');
+        } else if (stoppedRef.current) {
+          // Auth failure - stop completely
+          return;
         } else {
+          retryCountRef.current += 1;
+          if (retryCountRef.current >= MAX_RETRIES) {
+            stoppedRef.current = true;
+            setStatus('disabled');
+            return;
+          }
+          await new Promise((r) => setTimeout(r, backoffRef.current));
+          backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
+        }
+      } else {
+        // Generic error - retry silently up to MAX_RETRIES
+        retryCountRef.current += 1;
+        if (retryCountRef.current >= MAX_RETRIES) {
+          // Only log on final failure
+          console.warn('[Realtime] Max retries reached, disabling realtime');
+          stoppedRef.current = true;
+          setStatus('disabled');
+        } else {
+          setStatus('error');
           await new Promise((r) => setTimeout(r, backoffRef.current));
           backoffRef.current = Math.min(backoffRef.current * 2, 10_000);
         }
       }
     } finally {
       isPollingRef.current = false;
-      if (!stoppedRef.current && isLeader) {
+      // Only continue polling if authenticated and not stopped
+      if (!stoppedRef.current && isLeader && isAuthenticated && accessToken) {
         window.setTimeout(() => {
           void pollLoop();
         }, 0);
@@ -683,24 +737,40 @@ export function useRealtime() {
         loopStartedRef.current = false;
       }
     }
-  }, [fetchPoll, handleEvents, isLeader, queryClient]);
+  }, [
+    fetchPoll,
+    handleEvents,
+    isLeader,
+    queryClient,
+    isAuthenticated,
+    accessToken,
+    saveQueueState,
+  ]);
 
   const sendHeartbeat = useCallback(async () => {
-    if (!queueIdRef.current || !accessToken) return;
+    if (!queueIdRef.current || !accessToken || stoppedRef.current) return;
     try {
       await myappRealtimeApiHeartbeat(
         { queue_id: queueIdRef.current },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
-    } catch (e) {
-      console.warn('[Realtime] Heartbeat failed, re-registering queue');
-      await registerQueue(true);
+    } catch (e: any) {
+      // Check for auth errors
+      const status = e?.response?.status || e?.status;
+      if (status === 401 || status === 403) {
+        stoppedRef.current = true;
+        setStatus('disabled');
+        return;
+      }
+      if (registerQueueRef.current && !stoppedRef.current) {
+        await registerQueueRef.current(true);
+      }
     }
   }, [accessToken]);
 
   const heartbeatLoop = useCallback(() => {
     const id = window.setInterval(() => {
-      if (isLeader) {
+      if (isLeader && !stoppedRef.current) {
         void sendHeartbeat();
       }
     }, HEARTBEAT_INTERVAL_MS);
@@ -708,26 +778,57 @@ export function useRealtime() {
   }, [sendHeartbeat, isLeader]);
 
   const registerQueue = useCallback(
-    async (force?: boolean) => {
+    async (force?: boolean): Promise<boolean> => {
       if (!isAuthenticated || !accessToken) {
         setStatus('disabled');
-        return;
+        stoppedRef.current = true;
+        return false;
       }
       loadQueueState();
       if (!force && queueIdRef.current && lastEventIdRef.current !== null) {
-        return;
+        return true;
       }
       setStatus('connecting');
-      const { data } = await myappRealtimeApiRegisterQueue({
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      saveQueueState(data.queue_id, data.last_event_id);
-      bc?.postMessage({ type: 'realtime:status', payload: 'connected' satisfies ConnectionStatus });
-      setStatus('connected');
-      console.log('[Realtime] Queue registered:', data.queue_id);
+      try {
+        const { data } = await myappRealtimeApiRegisterQueue({
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        saveQueueState(data.queue_id, data.last_event_id);
+        bc?.postMessage({
+          type: 'realtime:status',
+          payload: 'connected' satisfies ConnectionStatus,
+        });
+        setStatus('connected');
+        return true;
+      } catch (err: any) {
+        // Check for authentication errors (401)
+        const status = err?.response?.status || err?.status;
+        if (status === 401 || status === 403) {
+          // Auth failed - clear queue state and stop
+          queueIdRef.current = null;
+          lastEventIdRef.current = null;
+          try {
+            localStorage.removeItem(STORAGE_KEYS.QUEUE_ID);
+            localStorage.removeItem(STORAGE_KEYS.LAST_EVENT_ID);
+          } catch {
+            // ignore storage errors
+          }
+          stoppedRef.current = true;
+          setStatus('disabled');
+          return false;
+        }
+
+        setStatus('error');
+        return false;
+      }
     },
     [accessToken, isAuthenticated, loadQueueState, saveQueueState]
   );
+
+  // Store registerQueue in ref for use in pollLoop and sendHeartbeat
+  useEffect(() => {
+    registerQueueRef.current = registerQueue;
+  }, [registerQueue]);
 
   // Startup/shutdown
   useEffect(() => {
@@ -749,8 +850,16 @@ export function useRealtime() {
   // Re-attempt registration when auth state changes
   useEffect(() => {
     if (isAuthenticated && accessToken) {
+      // Reset stopped state when user logs back in
+      stoppedRef.current = false;
+      retryCountRef.current = 0;
+      backoffRef.current = 1000;
       void registerQueue(true);
     } else {
+      // User logged out - stop everything
+      stoppedRef.current = true;
+      queueIdRef.current = null;
+      lastEventIdRef.current = null;
       setStatus('disabled');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -759,10 +868,12 @@ export function useRealtime() {
   // If leadership changes, start/stop polling accordingly
   useEffect(() => {
     if (!isLeader || loopStartedRef.current) return;
+    // Don't start polling if not authenticated
+    if (!isAuthenticated || !accessToken) return;
     loopStartedRef.current = true;
     void pollLoop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLeader]);
+  }, [isLeader, isAuthenticated, accessToken]);
 
   // Keep status in other tabs updated
   useEffect(() => {
@@ -773,10 +884,13 @@ export function useRealtime() {
   useEffect(() => {
     if (isLeader) return;
     const id = window.setInterval(() => {
-      tryBecomeLeader();
+      // Don't try to become leader if stopped or not authenticated
+      if (!stoppedRef.current && isAuthenticated && accessToken) {
+        tryBecomeLeader();
+      }
     }, LEADER_TTL_MS);
     return () => clearInterval(id);
-  }, [isLeader, tryBecomeLeader]);
+  }, [isLeader, tryBecomeLeader, isAuthenticated, accessToken]);
 
   // React-query aware status for consumers
   return useMemo(

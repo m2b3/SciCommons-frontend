@@ -112,7 +112,7 @@ const LoginForm: React.FC = () => {
             placeholder="Username or Email"
             register={register}
             requiredMessage="Username or Email is required"
-            patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/}
+            patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[\w.]+$/}
             patternMessage="Enter a valid email or username"
             errors={errors}
             labelClassName="text-black/90"
@@ -148,7 +148,7 @@ const LoginForm: React.FC = () => {
             <div className="">
               <Link
                 href="/auth/forgotpassword"
-                className="text-functional-green hover:text-functional-greenContrast hover:underline"
+                className="text-sm text-functional-green hover:text-functional-greenContrast hover:underline"
               >
                 Forgot your password?
               </Link>
@@ -158,7 +158,7 @@ const LoginForm: React.FC = () => {
             Login
           </Button>
         </form>
-        <div className="mt-4 res-text-sm">
+        <div className="mt-4 text-xs">
           <p className="text-text-tertiary">
             Don&apos;t have an account?{' '}
             <Link href="/auth/register" className="text-functional-green hover:underline">
@@ -166,12 +166,12 @@ const LoginForm: React.FC = () => {
             </Link>
           </p>
           <p className="text-text-tertiary">
-            Didn&apos;t receive signup email?{' '}
+            Didn&apos;t receive verification email?{' '}
             <Link
               href="/auth/resendverificationemail"
               className="text-functional-green hover:underline"
             >
-              Resend Sign up email
+              Resend verification email
             </Link>
           </p>
         </div>

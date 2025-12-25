@@ -1,10 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { LayoutGrid, List, PanelLeft } from 'lucide-react';
+import { ChevronDown, Grid2X2, Grid3X3, LayoutGrid, PanelLeft, Square } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 
 import EmptyState from '@/components/common/EmptyState';
 import { Button, ButtonIcon } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
   Pagination,
@@ -45,6 +51,7 @@ interface SearchableListProps<T> {
   viewType?: 'grid' | 'list' | 'preview';
   showViewTypeIcons?: boolean;
   setViewType?: (viewType: 'grid' | 'list' | 'preview') => void;
+  setGridCount?: (gridCount: number) => void;
   allowedViewTypes?: Array<'grid' | 'list' | 'preview'>;
 }
 
@@ -71,6 +78,7 @@ function SearchableList<T>({
   showViewTypeIcons = false,
   viewType = 'grid',
   setViewType,
+  setGridCount,
   allowedViewTypes,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -141,15 +149,18 @@ function SearchableList<T>({
                 {(!allowedViewTypes || allowedViewTypes.includes('grid')) && (
                   <Button
                     variant={viewType === 'grid' ? 'gray' : 'transparent'}
-                    className="aspect-square p-1"
+                    className="p-1"
                     onClick={() => setViewType?.('grid')}
                   >
                     <ButtonIcon>
                       <LayoutGrid size={18} className="text-text-secondary" />
+                      {viewType === 'grid' && (
+                        <GridSectionMenu onSelectGrid={(count) => setGridCount?.(count)} />
+                      )}
                     </ButtonIcon>
                   </Button>
                 )}
-                {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
+                {/* {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
                   <Button
                     variant={viewType === 'list' ? 'gray' : 'transparent'}
                     className="aspect-square p-1"
@@ -159,7 +170,7 @@ function SearchableList<T>({
                       <List size={18} className="text-text-secondary" />
                     </ButtonIcon>
                   </Button>
-                )}
+                )} */}
                 {(!allowedViewTypes || allowedViewTypes.includes('preview')) && (
                   <Button
                     variant={viewType === 'preview' ? 'gray' : 'transparent'}
@@ -232,3 +243,29 @@ function SearchableList<T>({
 }
 
 export default SearchableList;
+
+const GridSectionMenu: React.FC<{ onSelectGrid: (count: number) => void }> = ({ onSelectGrid }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild className="hidden lg:block">
+        <button
+          className="ml-1 hover:bg-common-cardBackground"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ChevronDown size={14} className="text-text-secondary" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent sideOffset={12}>
+        <DropdownMenuItem onClick={() => onSelectGrid(1)}>
+          <Square size={16} className="mr-2" />1 Column
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onSelectGrid(2)}>
+          <Grid2X2 size={16} className="mr-2" />2 Columns
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onSelectGrid(3)}>
+          <Grid3X3 size={16} className="mr-2" />3 Columns
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};

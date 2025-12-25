@@ -27,6 +27,8 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
   const [articles, setArticles] = useState<ArticlesListOut[]>([]);
   const viewType = useArticlesViewStore((s) => s.viewType as 'grid' | 'list' | 'preview');
   const setViewType = useArticlesViewStore((s) => s.setViewType);
+  const gridCount = useArticlesViewStore((s) => s.gridCount);
+  const setGridCount = useArticlesViewStore((s) => s.setGridCount);
   const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
     null
   );
@@ -146,12 +148,17 @@ const CommunityArticles: React.FC<CommunityArticlesProps> = ({ communityId }) =>
             showViewTypeIcons={true}
             viewType={viewType}
             setViewType={setViewType}
+            setGridCount={setGridCount}
             allowedViewTypes={['grid', 'preview']}
             listContainerClassName={cn(
               'grid grid-cols-1',
               viewType === 'preview'
                 ? 'h-full md:grid-cols-1 lg:grid-cols-1'
-                : 'md:grid-cols-2 lg:grid-cols-3'
+                : {
+                    'md:grid-cols-1 lg:grid-cols-1': gridCount === 1,
+                    'md:grid-cols-2 lg:grid-cols-2': gridCount === 2,
+                    'md:grid-cols-2 lg:grid-cols-3': gridCount === 3,
+                  }
             )}
           />
         </ResizablePanel>
