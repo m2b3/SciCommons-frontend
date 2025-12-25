@@ -168,6 +168,7 @@ const CreateCommunity: React.FC = () => {
             textArea={true}
             placeholder="Briefly describe your community"
             register={register}
+            control={control}
             requiredMessage="Description is required"
             minLengthValue={1}
             maxLengthValue={500}
@@ -175,6 +176,7 @@ const CreateCommunity: React.FC = () => {
             maxLengthMessage="Description must not exceed 500 characters"
             info="Your community's name should be unique and descriptive."
             errors={errors}
+            supportMarkdown={true}
           />
           {/* <Controller
           name="tags"

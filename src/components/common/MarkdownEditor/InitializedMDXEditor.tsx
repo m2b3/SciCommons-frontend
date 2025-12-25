@@ -47,8 +47,9 @@ import { cn } from '@/lib/utils';
 // Only import this to the next file
 export default function InitializedMDXEditor({
   editorRef,
+  hideToolbar = false,
   ...props
-}: { editorRef: ForwardedRef<MDXEditorMethods> | null } & MDXEditorProps) {
+}: { editorRef: ForwardedRef<MDXEditorMethods> | null; hideToolbar?: boolean } & MDXEditorProps) {
   const { theme } = useTheme();
 
   const defaultSnippetContent = `
@@ -117,7 +118,7 @@ export default function App() {
   };
 
   const ALL_PLUGINS = [
-    toolbarPlugin({ toolbarContents: () => <CustomToolbar /> }),
+    ...(hideToolbar ? [] : [toolbarPlugin({ toolbarContents: () => <CustomToolbar /> })]),
     listsPlugin(),
     quotePlugin(),
     headingsPlugin({ allowedHeadingLevels: [1, 2, 3, 4, 5, 6] }),
@@ -164,8 +165,10 @@ export default function App() {
       onChange={(markdown, initialMarkdownNormalize) => {
         props.onChange?.(markdown, initialMarkdownNormalize);
       }}
-      placeholder="Write here..."
-      className={cn('rounded-lg border border-common-minimal', theme === 'dark' ? 'dark' : 'light')}
+      placeholder={props.placeholder || 'Write here...'}
+      className={cn('rounded-lg border border-common-contrast bg-common-background', theme, {
+        'bg-common-cardBackground': props.readOnly,
+      })}
       contentEditableClassName={markdownStyles}
     />
   );

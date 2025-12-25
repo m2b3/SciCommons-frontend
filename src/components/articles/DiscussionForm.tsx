@@ -29,6 +29,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -79,6 +80,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
         type="text"
         placeholder="Enter discussion content"
         register={register}
+        control={control}
         requiredMessage="Content is required"
         errors={errors}
         textArea={true}

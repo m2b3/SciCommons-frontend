@@ -14,8 +14,8 @@ import {
   useCommunitiesApiJoinJoinCommunity,
 } from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
-import TruncateText from '@/components/common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -98,10 +98,15 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 wordBreak: 'break-word',
               }}
             >
-              <TruncateText
+              {/* <TruncateText
                 text={community.description}
                 maxLines={2}
                 textClassName="text-text-secondary"
+              /> */}
+              <RenderParsedHTML
+                rawContent={community.description}
+                supportMarkdown={true}
+                supportLatex={true}
               />
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">

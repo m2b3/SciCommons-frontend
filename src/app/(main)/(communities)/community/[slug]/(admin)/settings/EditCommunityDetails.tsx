@@ -214,12 +214,14 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             textArea={true}
             placeholder="Briefly describe your community"
             register={register}
+            control={control}
             requiredMessage="Description is required"
             minLengthValue={10}
             minLengthMessage="Description must be at least 10 characters"
             info="Your community's name should be unique and descriptive."
             errors={errors}
             readOnly={!isEditEnabled}
+            supportMarkdown={true}
           />
           {/* Tags */}
           {/* <Controller

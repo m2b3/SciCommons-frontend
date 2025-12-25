@@ -7,8 +7,7 @@ import { Calendar, Clock, Eye, MessageCircle, MessageSquare, Star, ThumbsUp } fr
 
 import { ArticleOut } from '@/api/schemas';
 
-
-import { useAuthStore } from '@/stores/authStore';
+// import { useAuthStore } from '@/stores/authStore';
 
 interface ArticleStatsProps {
   article: ArticleOut;
@@ -18,7 +17,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
   dayjs.extend(relativeTime);
   dayjs.extend(advancedFormat);
 
-  const accessToken = useAuthStore((state) => state.accessToken);
+  // const accessToken = useAuthStore((state) => state.accessToken);
 
   // const { data, refetch } = useUsersCommonApiGetReactionCount(
   //   'articles.article',
