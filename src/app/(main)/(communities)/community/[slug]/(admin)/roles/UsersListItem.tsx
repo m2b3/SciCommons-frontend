@@ -13,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Action } from '@/types';
@@ -42,7 +41,6 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
   refetch,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
-  const imageData = useIdenticon(60);
 
   const { mutate, isPending } = useCommunitiesMembersApiManageCommunityMember({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -68,43 +66,43 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
   };
 
   return (
-    <div className="mb-2 flex items-center justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-4 text-text-primary res-text-sm">
+    <div className="flex items-center justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-3 text-sm text-text-primary">
       <div className="flex flex-col items-start">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <Image
-            src={profilePicture || `data:image/png;base64,${imageData}`}
+            src={profilePicture ? profilePicture : `/images/assets/user-icon.png`}
             alt={name}
-            width={42}
-            height={42}
-            className="mr-4 aspect-square shrink-0 rounded-full object-cover"
+            width={32}
+            height={32}
+            className="aspect-square shrink-0 rounded-full object-cover"
             quality={75}
-            sizes="42px"
+            sizes="32px"
             loading="lazy"
           />
           <div className="flex flex-col">
-            <p className="font-bold text-text-primary">{name}</p>
-            <p className="text-text-tertiary res-text-xs">Member since {memberSince}</p>
+            <p className="text-sm font-bold text-text-primary">{name}</p>
+            <p className="text-xs text-text-tertiary">Member since {memberSince}</p>
           </div>
         </div>
-        <div className="mt-4 flex gap-4 text-text-secondary res-text-xs">
+        <div className="mt-4 flex gap-4 text-xs text-text-secondary">
           {reviewedArticles != 0 && (
             <div className="flex items-center">
               <CheckCircle size={16} className="mr-1" />
-              <p>{reviewedArticles} Articles Reviewed</p>
+              <p className="text-xs text-text-secondary">{reviewedArticles} Articles Reviewed</p>
             </div>
           )}
           <div className="flex items-center">
             <FileText size={16} className="mr-1" />
-            <p>{submittedArticles} Articles Submitted</p>
+            <p className="text-xs text-text-secondary">{submittedArticles} Articles Submitted</p>
           </div>
         </div>
       </div>
       {activeTab === 'Members' && (
-        <div className="flex space-x-4">
+        <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button disabled={isPending} variant="default">
-                <ButtonTitle>Promote</ButtonTitle>
+                <ButtonTitle className="text-xxs">Promote</ButtonTitle>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -123,7 +121,7 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
           <Button disabled={isPending} variant="danger" onClick={() => handleAction(Action.Remove)}>
-            <ButtonTitle>Remove</ButtonTitle>
+            <ButtonTitle className="text-xxs">Remove</ButtonTitle>
           </Button>
         </div>
       )}
@@ -133,7 +131,7 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
           variant="gray"
           onClick={() => handleAction(Action.DemoteModerator)}
         >
-          <ButtonTitle>{isPending ? 'Demoting...' : 'Demote'}</ButtonTitle>
+          <ButtonTitle className="text-xxs">{isPending ? 'Demoting...' : 'Demote'}</ButtonTitle>
         </Button>
       )}
       {activeTab === 'Reviewers' && (
@@ -142,7 +140,7 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
           variant="gray"
           onClick={() => handleAction(Action.DemoteReviewer)}
         >
-          <ButtonTitle>{isPending ? 'Demoting...' : 'Demote'}</ButtonTitle>
+          <ButtonTitle className="text-xxs">{isPending ? 'Demoting...' : 'Demote'}</ButtonTitle>
         </Button>
       )}
       {/* {activeTab === 'Admins' && (
