@@ -109,7 +109,7 @@ const Requests = ({ params }: { params: { slug: string } }) => {
               communityId={item.community_id}
               name={item.user.username}
               status={item.status}
-              profilePicture={item.user.profile_pic_url || 'https://picsum.photos/200/200'}
+              profilePicture={item.user.profile_pic_url}
               requestedAt={item.requested_at}
               handleAction={handleAction}
               isPending={isMutating}
