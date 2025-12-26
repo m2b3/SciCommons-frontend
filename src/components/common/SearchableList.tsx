@@ -147,18 +147,20 @@ function SearchableList<T>({
             {showViewTypeIcons && (
               <div className="flex items-center gap-2">
                 {(!allowedViewTypes || allowedViewTypes.includes('grid')) && (
-                  <Button
-                    variant={viewType === 'grid' ? 'gray' : 'transparent'}
-                    className="p-1"
-                    onClick={() => setViewType?.('grid')}
-                  >
-                    <ButtonIcon>
-                      <LayoutGrid size={18} className="text-text-secondary" />
-                      {viewType === 'grid' && (
-                        <GridSectionMenu onSelectGrid={(count) => setGridCount?.(count)} />
-                      )}
-                    </ButtonIcon>
-                  </Button>
+                  <div className="flex items-center">
+                    <Button
+                      variant={viewType === 'grid' ? 'gray' : 'transparent'}
+                      className="p-1"
+                      onClick={() => setViewType?.('grid')}
+                    >
+                      <ButtonIcon>
+                        <LayoutGrid size={18} className="text-text-secondary" />
+                      </ButtonIcon>
+                    </Button>
+                    {viewType === 'grid' && (
+                      <GridSectionMenu onSelectGrid={(count) => setGridCount?.(count)} />
+                    )}
+                  </div>
                 )}
                 {/* {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
                   <Button
