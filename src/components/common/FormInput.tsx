@@ -47,6 +47,27 @@ interface InputProps<TFieldValues extends FieldValues> {
   autoFocus?: boolean;
 }
 
+// Wrapper component that uses useWatch - only rendered when control is provided
+function WatchedFieldSync<TFieldValues extends FieldValues>({
+  control,
+  name,
+  onValueChange,
+}: {
+  control: Control<TFieldValues>;
+  name: Path<TFieldValues>;
+  onValueChange: (value: string) => void;
+}) {
+  const fieldValue = useWatch({ control, name });
+
+  useEffect(() => {
+    if (fieldValue !== undefined) {
+      onValueChange(String(fieldValue || ''));
+    }
+  }, [fieldValue, onValueChange]);
+
+  return null;
+}
+
 const FormInput = <TFieldValues extends FieldValues>({
   label,
   name,
@@ -84,14 +105,14 @@ const FormInput = <TFieldValues extends FieldValues>({
   const reviewEditorRef = React.useRef<MDXEditorMethods>(null);
   const markdownRef = React.useRef<string>(markdown || '');
 
-  // Watch the field value when control is provided (for markdown/latex editors)
-  // useWatch must be called unconditionally due to React hooks rules
-  // We disable watching when control is not provided or when not using markdown/latex editors
-  const fieldValue = useWatch({
-    control,
-    name: name as Path<TFieldValues>,
-    disabled: !control || (!supportMarkdown && !supportLatex),
-  });
+  // Determine if we need to watch field values (only for markdown/latex editors with control)
+  const needsWatch = (supportMarkdown || supportLatex) && !!control;
+
+  // Callback for when watched field value changes
+  const handleWatchedValueChange = React.useCallback((value: string) => {
+    setMarkdown(value);
+    markdownRef.current = value;
+  }, []);
 
   // Get the registered field with validation rules
   const registeredField = register(name as Path<TFieldValues>, {
@@ -116,15 +137,6 @@ const FormInput = <TFieldValues extends FieldValues>({
       setMarkdown(e.target.value);
     }
   };
-
-  // Update markdown state when form is reset or values are set programmatically
-  useEffect(() => {
-    if ((supportMarkdown || supportLatex) && fieldValue !== undefined) {
-      const value = String(fieldValue || '');
-      setMarkdown(value);
-      markdownRef.current = value;
-    }
-  }, [fieldValue, supportMarkdown, supportLatex]);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -168,6 +180,14 @@ const FormInput = <TFieldValues extends FieldValues>({
 
   return (
     <div className="w-full">
+      {/* Only render the watch component when needed - this avoids useWatch errors when control is not provided */}
+      {needsWatch && control && (
+        <WatchedFieldSync
+          control={control}
+          name={name as Path<TFieldValues>}
+          onValueChange={handleWatchedValueChange}
+        />
+      )}
       {label && (
         <div className="mb-2 flex items-center space-x-2">
           <span className={cn('font-medium text-text-secondary res-text-xs', labelClassName)}>
