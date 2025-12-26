@@ -3,7 +3,7 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Link2, Settings } from 'lucide-react';
+import { Link2, PanelLeft, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMediaQuery } from 'usehooks-ts';
 
@@ -17,7 +17,7 @@ import { useAuthStore } from '@/stores/authStore';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import PdfIcon from '../ui/Icons/PdfIcon';
-import { Button } from '../ui/button';
+import { Button, ButtonTitle } from '../ui/button';
 import { Switch } from '../ui/switch';
 import ArticleStats from './ArticleStats';
 
@@ -49,9 +49,15 @@ const SheetTrigger = lazy(() =>
 
 interface DisplayArticleProps {
   article: ArticleOut;
+  showPdfViewerButton?: boolean;
+  handleOpenPdfViewer?: () => void;
 }
 
-const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
+const DisplayArticle: React.FC<DisplayArticleProps> = ({
+  article,
+  showPdfViewerButton = false,
+  handleOpenPdfViewer = () => {},
+}) => {
   const hasImage = !!article.article_image_url;
   const accessToken = useAuthStore((state) => state.accessToken);
   const [isPseudonymous, setIsPseudonymous] = useState(true);
@@ -174,6 +180,19 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
                   </a>
                 </div>
               ))}
+              {showPdfViewerButton && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => handleOpenPdfViewer()}
+                    variant="outline"
+                    className="gap-2 rounded-full p-2 hover:border-functional-blueLight/30 hover:text-functional-blueLight"
+                    size="xs"
+                  >
+                    <PanelLeft size={12} />
+                    <ButtonTitle>View PDF with Annotations</ButtonTitle>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

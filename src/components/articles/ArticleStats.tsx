@@ -7,8 +7,6 @@ import { Calendar, Clock, Eye, MessageCircle, MessageSquare, Star, ThumbsUp } fr
 
 import { ArticleOut } from '@/api/schemas';
 
-// import { useAuthStore } from '@/stores/authStore';
-
 interface ArticleStatsProps {
   article: ArticleOut;
 }
@@ -52,7 +50,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
 
   return (
     <div className="rounded-md p-0 res-text-sm">
-      <div className="flex flex-wrap gap-2 text-xs text-text-secondary md:gap-12">
+      <div className="flex flex-wrap gap-2 text-xs text-text-secondary">
         <div className="flex gap-2">
           <span className="font-bold">Published:</span>
           <span>{formatDate(article.created_at)}</span>
