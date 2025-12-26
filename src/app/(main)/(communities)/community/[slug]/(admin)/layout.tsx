@@ -2,14 +2,17 @@
 
 import React from 'react';
 
-import { useParams } from 'next/navigation';
-
 import { FileText, GitBranch, Mail, Settings, Users } from 'lucide-react';
 
 import Sidebar from '@/components/common/Sidebar';
 
-export default function CommunityAdminLayout({ children }: { children: React.ReactNode }) {
-  const params = useParams<{ slug: string }>();
+export default function CommunityAdminLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { slug: string };
+}) {
   const links = [
     // {
     //   href: `/community/${params?.slug}/dashboard`,

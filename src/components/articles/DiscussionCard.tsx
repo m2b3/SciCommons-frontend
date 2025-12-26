@@ -99,6 +99,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               supportMarkdown={true}
               supportLatex={true}
               contentClassName="text-xs sm:text-sm"
+              gradientClassName="sm:from-common-background"
             />
           </div>
           <div className="ml-auto flex items-center text-xs text-text-tertiary">

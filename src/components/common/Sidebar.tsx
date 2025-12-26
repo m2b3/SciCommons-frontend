@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -26,7 +26,12 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_MD}px)`);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleSheetClose = () => {
     const timeout = setTimeout(() => {
@@ -34,6 +39,11 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
     }, 500);
     return () => clearTimeout(timeout);
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return null;
+  }
 
   return isDesktop ? (
     <div className="fixed left-0 top-14 hidden h-screen overflow-y-auto border-r border-common-contrast bg-common-cardBackground p-4 text-text-primary md:block md:w-64">

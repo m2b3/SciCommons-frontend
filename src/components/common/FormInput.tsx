@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
+import { MDXEditorMethods } from '@mdxeditor/editor';
 import { Eye, EyeOff } from 'lucide-react';
-import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
-
-// Using lucide-react icons
+import {
+  Control,
+  FieldErrors,
+  FieldValues,
+  Path,
+  UseFormRegister,
+  useWatch,
+} from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 
-import { Switch } from '../ui/switch';
 import CustomTooltip from './CustomTooltip';
-import RenderParsedHTML from './RenderParsedHTML';
+import { ForwardRefEditor } from './MarkdownEditor/ForwardRefEditor';
 
 interface InputProps<TFieldValues extends FieldValues> {
   label?: string;
@@ -25,6 +30,7 @@ interface InputProps<TFieldValues extends FieldValues> {
   name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
+  control?: Control<TFieldValues>;
   isSubmitting?: boolean;
   readOnly?: boolean;
   info?: string;
@@ -55,6 +61,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   maxLengthValue,
   maxLengthMessage,
   errors,
+  control,
   isSubmitting = false,
   readOnly = false,
   info,
@@ -73,8 +80,18 @@ const FormInput = <TFieldValues extends FieldValues>({
   const [showPassword, setShowPassword] = useState(false);
   const error = errors[name];
   const isPasswordField = type === 'password';
-  const [isMarkdownPreview, setIsMarkdownPreview] = useState(false);
   const [markdown, setMarkdown] = useState<string>('');
+  const reviewEditorRef = React.useRef<MDXEditorMethods>(null);
+  const markdownRef = React.useRef<string>(markdown || '');
+
+  // Watch the field value when control is provided (for markdown/latex editors)
+  // useWatch must be called unconditionally due to React hooks rules
+  // We disable watching when control is not provided or when not using markdown/latex editors
+  const fieldValue = useWatch({
+    control,
+    name: name as Path<TFieldValues>,
+    disabled: !control || (!supportMarkdown && !supportLatex),
+  });
 
   // Get the registered field with validation rules
   const registeredField = register(name as Path<TFieldValues>, {
@@ -102,13 +119,12 @@ const FormInput = <TFieldValues extends FieldValues>({
 
   // Update markdown state when form is reset or values are set programmatically
   useEffect(() => {
-    if (supportMarkdown || supportLatex) {
-      const input = document.getElementById(String(name)) as HTMLInputElement | HTMLTextAreaElement;
-      if (input?.value) {
-        setMarkdown(input.value);
-      }
+    if ((supportMarkdown || supportLatex) && fieldValue !== undefined) {
+      const value = String(fieldValue || '');
+      setMarkdown(value);
+      markdownRef.current = value;
     }
-  }, [name, supportMarkdown, supportLatex]);
+  }, [fieldValue, supportMarkdown, supportLatex]);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -117,9 +133,22 @@ const FormInput = <TFieldValues extends FieldValues>({
   useEffect(() => {
     if (isSuccess) {
       setMarkdown('');
-      setIsMarkdownPreview(false);
     }
   }, [isSuccess]);
+
+  // Get support text based on markdown and latex support
+  const getSupportText = () => {
+    switch (true) {
+      case supportMarkdown && supportLatex:
+        return 'Markdown & Latex Supported';
+      case supportMarkdown:
+        return 'Markdown Supported';
+      case supportLatex:
+        return 'Latex Supported';
+      default:
+        return '';
+    }
+  };
 
   const commonProps = {
     id: String(name),
@@ -150,32 +179,37 @@ const FormInput = <TFieldValues extends FieldValues>({
       <div className="relative">
         {(supportMarkdown || supportLatex) && (
           <div className="absolute -top-6 right-2 flex items-center">
-            <Switch
-              checked={isMarkdownPreview}
-              onCheckedChange={setIsMarkdownPreview}
-              className="h-4 w-7"
-              thumbClassName="h-3 w-3 data-[state=checked]:translate-x-3"
-            />
             <span className="ml-2 hidden text-xxs text-text-tertiary/70 sm:block">
-              Markdown Preview
+              {getSupportText()}
             </span>
           </div>
         )}
-        {(supportMarkdown || supportLatex) && isMarkdownPreview && (
-          <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>
-            <RenderParsedHTML
-              rawContent={markdown}
-              {...(supportMarkdown ? { supportMarkdown: true } : { supportLatex: true })}
-            />
-          </div>
-        )}
-        <div
-          className={cn({
-            'h-0 overflow-hidden opacity-0': (supportMarkdown || supportLatex) && isMarkdownPreview,
-          })}
-        >
+        <div>
           {textArea ? (
-            <textarea {...commonProps} rows={4} />
+            supportMarkdown || supportLatex ? (
+              <ForwardRefEditor
+                markdown={markdown}
+                ref={reviewEditorRef}
+                onChange={(newMarkdown) => {
+                  markdownRef.current = newMarkdown;
+                  // Notify react-hook-form of the value change
+                  registeredField.onChange({
+                    target: {
+                      name: name as string,
+                      value: newMarkdown,
+                    },
+                  });
+                  // Update local markdown state for preview
+                  setMarkdown(newMarkdown);
+                }}
+                onBlur={registeredField.onBlur}
+                hideToolbar
+                placeholder={placeholder || commonProps.placeholder}
+                readOnly={readOnly}
+              />
+            ) : (
+              <textarea {...commonProps} rows={4} />
+            )
           ) : (
             <div className="relative">
               <input {...commonProps} type={isPasswordField && showPassword ? 'text' : type} />
