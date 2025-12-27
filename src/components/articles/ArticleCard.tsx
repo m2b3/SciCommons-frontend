@@ -12,7 +12,16 @@ import { useArticlesViewStore } from '@/stores/articlesViewStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { Skeleton, TextSkeleton } from '../common/Skeleton';
+import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+
+interface ActionType {
+  type: 'button';
+  label: string;
+  variant: 'default' | 'danger' | 'blue' | 'gray' | 'transparent' | 'outline' | 'inverted';
+  isLoading?: boolean;
+  onClick: () => void;
+}
 
 interface ArticleCardProps {
   article: ArticlesListOut;
@@ -25,10 +34,11 @@ interface ArticleCardProps {
    */
   compactType?: 'minimal' | 'default' | 'full';
   handleArticlePreview?: (article: ArticlesListOut) => void;
+  actions?: ActionType[];
 }
 
 const ArticleCard: FC<ArticleCardProps> = memo(
-  ({ article, forCommunity, className, compactType = 'full', handleArticlePreview }) => {
+  ({ article, forCommunity, className, compactType = 'full', handleArticlePreview, actions }) => {
     const viewType = useArticlesViewStore((state) => state.viewType);
 
     return (
@@ -156,9 +166,32 @@ const ArticleCard: FC<ArticleCardProps> = memo(
             )}
 
             {compactType === 'full' && (
-              <p className="mt-1 text-xxs text-text-secondary">
-                Submitted By: {article.user.username}
-              </p>
+              <div className="mt-1 flex items-center">
+                <p className="text-xxs text-text-secondary">
+                  Submitted By: {article.user.username}
+                </p>
+                {actions && actions.length > 0 && (
+                  <div className="ml-auto flex items-center gap-2">
+                    {actions.map((action) => (
+                      <Button
+                        variant={action.variant}
+                        className="px-2 py-1"
+                        size="xs"
+                        loading={action.isLoading}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.nativeEvent.stopImmediatePropagation();
+                          action.onClick();
+                        }}
+                        key={action.label}
+                      >
+                        {action.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
           {compactType !== 'minimal' && article.article_image_url && (

@@ -30,7 +30,7 @@ const buttonVariants = cva(
         sm: 'h-8 px-3 text-xs',
         lg: 'h-10 px-8',
         icon: 'h-9 w-9',
-        xs: 'h-6 px-2 text-xxs',
+        xs: 'text-xxs',
       },
       loading: {
         true: 'opacity-50 cursor-not-allowed hover:shadow-none',
