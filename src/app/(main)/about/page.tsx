@@ -72,13 +72,13 @@ const AboutPage = () => {
     {
       name: 'Armaan Alam',
       role: 'Backend Engineer',
-      image: '/images/armaan.jpg',
+      image: 'https://cdn.scicommons.org/assets/armaan.jpeg',
       linkedin: 'https://www.linkedin.com/in/armaanalam/',
     },
     {
       name: 'Mohd Faisal Ansari',
       role: 'Frontend Engineer',
-      image: '/images/mohd-faisal-ansari.jpeg',
+      image: 'https://cdn.scicommons.org/assets/faisal.jpg',
       linkedin: 'https://www.linkedin.com/in/mohd-faisal-ansari-1b62b9225/',
     },
   ];
