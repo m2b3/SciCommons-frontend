@@ -71,7 +71,7 @@ const AboutPage = () => {
   const contributors = [
     {
       name: 'Armaan Alam',
-      role: 'Backend Engineer',
+      role: 'Full Stack Engineer',
       image: 'https://cdn.scicommons.org/assets/armaan.jpeg',
       linkedin: 'https://www.linkedin.com/in/armaanalam/',
     },
