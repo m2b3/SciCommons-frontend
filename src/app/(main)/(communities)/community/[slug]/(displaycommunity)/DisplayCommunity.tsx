@@ -55,7 +55,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
 
   return (
     <div className="pb-1">
-      <div className="relative p-4">
+      <div className="relative p-2">
         <div className="flex gap-4">
           {/* <div className="relative aspect-square size-10 shrink-0 overflow-hidden rounded-full">
             <Image
@@ -102,7 +102,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                   <>
                     <ArticleSubmission communityName={community.name} />
                     <Link href={`/community/${params?.slug}/settings`}>
-                      <Button className="bg-black hover:bg-black">
+                      <Button size="sm" className="bg-black hover:bg-black">
                         <ButtonTitle className="text-white">Settings</ButtonTitle>
                       </Button>
                     </Link>

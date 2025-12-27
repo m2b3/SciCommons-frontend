@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
 import { Crown, Eye, Shield, UserCircle } from 'lucide-react';
 
+import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
+
 export interface ItemCardProps {
   icon: LucideIcon;
   title: string;
@@ -81,3 +83,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
 );
 
 export default ItemCard;
+
+export const ItemCardSkeleton: React.FC = () => (
+  <Skeleton className="mb-4 flex items-start gap-3 rounded-r-md border-l-4 border-common-contrast bg-common-cardBackground p-3 sm:gap-4 sm:p-4">
+    <BlockSkeleton className="h-8 w-8 flex-shrink-0 rounded-full sm:h-9 sm:w-9" />
+    <div className="flex flex-grow flex-col gap-2">
+      <BlockSkeleton className="h-4 w-3/4" />
+      <BlockSkeleton className="h-3 w-1/2" />
+      <BlockSkeleton className="h-5 w-16 rounded-full" />
+    </div>
+  </Skeleton>
+);

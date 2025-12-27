@@ -141,7 +141,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
           refetch={refetch}
         />
       ) : (
-        <div className="mb-4 rounded-xl border-common-contrast text-xs sm:border sm:bg-common-cardBackground sm:p-4">
+        <div className="mb-4 border-b border-common-minimal pb-4 text-xs">
           <div className="mb-1 flex justify-between">
             <div className="flex items-start gap-2">
               <Image
@@ -210,15 +210,15 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               ({dayjs(currentVersion.created_at).fromNow()})
             </div>
           </div>
-          <h3 className="mb-1 mt-2 text-sm font-semibold">
+          <h3 className="mt-2 text-sm font-semibold">
             <TruncateText
               text={currentVersion.subject}
               maxLines={2}
-              textClassName="text-text-primary"
+              textClassName="text-text-primary text-base"
             />
           </h3>
 
-          <div className="mb-1">
+          <div>
             {/* <TruncateText
               text={currentVersion.content}
               maxLines={4}
@@ -230,6 +230,8 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               isShrinked={true}
               supportMarkdown={true}
               supportLatex={true}
+              containerClassName="mb-0"
+              contentClassName="text-xs sm:text-sm"
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -308,7 +310,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div>
           </div>
           {displayComments && (
-            <div className="mt-4 w-full">
+            <div className="w-full">
               <ReviewComments
                 reviewId={Number(review.id)}
                 displayComments={displayComments}

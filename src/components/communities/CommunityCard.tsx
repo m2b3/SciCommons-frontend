@@ -1,13 +1,15 @@
 import { FC } from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { FileText, Users } from 'lucide-react';
 
-import { CommunityOut } from '@/api/schemas';
+import { CommunityListOut } from '@/api/schemas';
 import { cn } from '@/lib/utils';
 
 import { Skeleton, TextSkeleton } from '../common/Skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 // import { toast } from 'sonner';
 // import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
@@ -15,7 +17,7 @@ import { Skeleton, TextSkeleton } from '../common/Skeleton';
 // import { useAuthStore } from '@/stores/authStore';
 
 interface CommunityCardProps {
-  community: CommunityOut;
+  community: CommunityListOut;
 }
 
 const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
@@ -68,18 +70,29 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
           </div>
         </div>
       </div>
-      <span
-        className={cn(
-          'absolute bottom-2 right-2 rounded-sm border px-2 py-1 !text-xxs font-normal capitalize',
-          {
+      <div className="absolute bottom-2 right-2 flex items-center gap-2">
+        {community.org === 'ashoka' && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Image width={24} height={32} src={'/images/ashoka-logo.png'} alt="Ashoka" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>This community is part of Ashoka group</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        <span
+          className={cn('rounded-sm border px-2 py-1 !text-xxs font-normal capitalize', {
             'border-emerald-500 bg-emerald-500/10 text-emerald-500': community.type === 'public',
             'border-indigo-500 bg-indigo-500/10 text-indigo-500': community.type === 'private',
             'border-red-500 bg-red-500/10 text-red-500': community.type === 'hidden',
-          }
-        )}
-      >
-        {community.type}
-      </span>
+          })}
+        >
+          {community.type}
+        </span>
+      </div>
       {/* Enable this when auth is fixed. Handle cases for logged in and logged out users. */}
       {/* <div className="absolute right-6 top-6 flex gap-4">
         {community.is_admin && (

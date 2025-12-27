@@ -16,7 +16,7 @@ import { Button, ButtonTitle } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IResendForm {
-  email: string;
+  login: string;
 }
 
 const ResendVerificationForm: React.FC = () => {
@@ -33,8 +33,8 @@ const ResendVerificationForm: React.FC = () => {
 
   const { mutate, isPending } = useUsersApiAuthResendActivation({
     mutation: {
-      onSuccess: () => {
-        toast.success('Verification email sent successfully');
+      onSuccess: (message) => {
+        toast.success(message.data.message);
         setIsEmailSent(true);
       },
       onError: (err) => {
@@ -44,8 +44,8 @@ const ResendVerificationForm: React.FC = () => {
   });
 
   const onSubmit = (data: IResendForm) => {
-    mutate({ email: data.email });
-    setSentEmail(data.email);
+    mutate({ identifier: data.login });
+    setSentEmail(data.login);
   };
 
   const SuccessMessage = () => (
@@ -90,19 +90,19 @@ const ResendVerificationForm: React.FC = () => {
                 Resend Verification Email
               </h1>
               <p className="mt-2 text-sm text-text-secondary">
-                Enter your email address to receive a new verification email.
+                Enter your email or username to receive a new verification email.
               </p>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <FormInput<IResendForm>
-                label="Email Address"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
+                label="Email or Username"
+                name="login"
+                type="text"
+                placeholder="Enter your email or username"
                 register={register}
-                requiredMessage="Email is required"
-                patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/}
-                patternMessage="Enter a valid email address"
+                requiredMessage="Email or username is required"
+                patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[\w.]+$/}
+                patternMessage="Enter a valid email or username"
                 errors={errors}
                 inputClassName="bg-neutral-150 text-black ring-neutral-200"
               />
