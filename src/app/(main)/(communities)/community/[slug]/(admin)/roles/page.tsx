@@ -48,7 +48,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
       </div>
       {/* Todo: Reduce the number of lines of code */}
       {activeTab === 'Members' && (
-        <div className="my-4 flex flex-col">
+        <div className="my-4 flex flex-col gap-4">
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.members.length === 0 && (
@@ -74,7 +74,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
         </div>
       )}
       {data && activeTab === 'Moderators' && (
-        <div className="my-4 flex flex-col">
+        <div className="my-4 flex flex-col gap-4">
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.moderators.length === 0 && (
@@ -100,7 +100,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
         </div>
       )}
       {data && activeTab === 'Reviewers' && (
-        <div className="my-4 flex flex-col">
+        <div className="my-4 flex flex-col gap-4">
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data && data.data.reviewers.length === 0 && (
@@ -126,7 +126,7 @@ const Roles = ({ params }: { params: { slug: string } }) => {
         </div>
       )}
       {data && activeTab === 'Admins' && (
-        <div className="my-4 flex flex-col">
+        <div className="my-4 flex flex-col gap-4">
           {isPending &&
             Array.from({ length: 2 }).map((_, index) => <UsersListItemSkeleton key={index} />)}
           {data &&
