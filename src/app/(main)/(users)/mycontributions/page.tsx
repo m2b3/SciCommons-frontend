@@ -6,10 +6,10 @@ import { Award, Bookmark, FileText, MessageCircle, MessageSquare, Star, Users } 
 import { toast } from 'sonner';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
+import { useUsersCommonApiGetMyBookmarks } from '@/api/users-common-api/users-common-api';
 import {
   useUsersApiGetMe,
   useUsersApiGetMyArticles,
-  useUsersApiGetMyBookmarks,
   useUsersApiGetMyCommunities,
   useUsersApiGetMyFavorites,
   useUsersApiGetMyPosts,
@@ -122,15 +122,18 @@ const ContributionsPage: React.FC = () => {
     data: bookmarksData,
     isPending: isBookmarksPending,
     error: bookmarksDataError,
-  } = useUsersApiGetMyBookmarks({
-    request: requestConfig,
-    query: {
-      staleTime: FIFTEEN_MINUTES_IN_MS,
-      refetchOnWindowFocus: true,
-      queryKey: ['my-bookmarks'],
-      enabled: !!accessToken,
-    },
-  });
+  } = useUsersCommonApiGetMyBookmarks(
+    { filter_type: 'all' },
+    {
+      request: requestConfig,
+      query: {
+        staleTime: FIFTEEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: true,
+        queryKey: ['my-bookmarks'],
+        enabled: !!accessToken,
+      },
+    }
+  );
 
   const [activeTab, setActiveTab] = useState<TabType>('articles');
 
@@ -225,7 +228,7 @@ const ContributionsPage: React.FC = () => {
     })) || [];
 
   const bookmarksContent: ItemCardProps[] =
-    bookmarksData?.data.map((bookmark) => ({
+    bookmarksData?.data.items.map((bookmark) => ({
       icon: Bookmark,
       title: bookmark.title,
       subtitle: bookmark.details,

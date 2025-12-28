@@ -1,14 +1,18 @@
-import { FC, memo } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { TextAlignLeftIcon } from '@radix-ui/react-icons';
-import { Star } from 'lucide-react';
+import { Bookmark, Star } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { ArticlesListOut } from '@/api/schemas';
+import { ArticlesListOut, BookmarkContentTypeEnum } from '@/api/schemas';
+import { useUsersCommonApiToggleBookmark } from '@/api/users-common-api/users-common-api';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useArticlesViewStore } from '@/stores/articlesViewStore';
+import { useAuthStore } from '@/stores/authStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { Skeleton, TextSkeleton } from '../common/Skeleton';
@@ -40,11 +44,54 @@ interface ArticleCardProps {
 const ArticleCard: FC<ArticleCardProps> = memo(
   ({ article, forCommunity, className, compactType = 'full', handleArticlePreview, actions }) => {
     const viewType = useArticlesViewStore((state) => state.viewType);
+    const accessToken = useAuthStore((state) => state.accessToken);
+
+    const [isBookmarked, setIsBookmarked] = useState(article.is_bookmarked ?? false);
+
+    // Sync bookmark state when article data changes (e.g., after auth state changes)
+    useEffect(() => {
+      if (article.is_bookmarked !== undefined && article.is_bookmarked !== null) {
+        setIsBookmarked(article.is_bookmarked);
+      }
+    }, [article.is_bookmarked]);
+
+    const { mutate: toggleBookmark, isPending } = useUsersCommonApiToggleBookmark({
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      mutation: {
+        onMutate: () => {
+          // Optimistically update the UI
+          setIsBookmarked((prev) => !prev);
+        },
+        onSuccess: (response) => {
+          // Sync with server response
+          setIsBookmarked(response.data.is_bookmarked);
+        },
+        onError: (error) => {
+          // Revert optimistic update on error
+          setIsBookmarked((prev) => !prev);
+          showErrorToast(error);
+        },
+      },
+    });
+
+    const handleBookmarkToggle = () => {
+      if (!accessToken) {
+        toast.error('Please login to bookmark articles');
+        return;
+      }
+
+      toggleBookmark({
+        data: {
+          content_type: BookmarkContentTypeEnum.articlesarticle,
+          object_id: article.id,
+        },
+      });
+    };
 
     return (
       <div
         className={cn(
-          'group flex flex-row items-center gap-2 rounded-lg p-3 hover:bg-common-cardBackground',
+          'group flex flex-row items-center gap-2 rounded-lg p-2.5 hover:bg-common-cardBackground',
           className,
           {
             'border-none bg-transparent p-2 hover:shadow-none': compactType === 'minimal',
@@ -89,61 +136,86 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                 )}
                 containerClassName="mb-0"
               />
-              {(compactType !== 'full' || forCommunity) && viewType !== 'preview' && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      className="hidden cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:block"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.nativeEvent.stopImmediatePropagation();
-                      }}
+              <div className="flex h-full flex-col items-center justify-between gap-1">
+                <Button
+                  variant="transparent"
+                  size="xs"
+                  className="p-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.nativeEvent.stopImmediatePropagation();
+                    handleBookmarkToggle();
+                  }}
+                  disabled={isPending}
+                  withTooltip
+                  tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+                >
+                  <Bookmark
+                    className={cn('size-3.5 transition-colors', {
+                      'fill-functional-yellow text-functional-yellow': isBookmarked,
+                      'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+                    })}
+                  />
+                </Button>
+                {(compactType !== 'full' || forCommunity) && viewType !== 'preview' && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        className="hidden cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:block"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.nativeEvent.stopImmediatePropagation();
+                        }}
+                      >
+                        <TextAlignLeftIcon className="h-4 w-4 text-text-secondary" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="right"
+                      sideOffset={8}
+                      className="z-[1000] max-h-96 max-w-sm rounded-lg border-common-contrast bg-common-cardBackground p-3 shadow-lg"
                     >
-                      <TextAlignLeftIcon className="h-4 w-4 text-text-secondary" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
-                    sideOffset={8}
-                    className="z-[1000] max-h-96 max-w-sm rounded-lg border-common-contrast bg-common-cardBackground p-3 shadow-lg"
-                  >
-                    <div className="max-h-[calc(24rem-1.5rem)] space-y-2 overflow-y-auto">
-                      <RenderParsedHTML
-                        rawContent={article.title}
-                        supportLatex={true}
-                        supportMarkdown={false}
-                        contentClassName="text-sm font-semibold text-text-primary"
-                        containerClassName="mb-0"
-                      />
-                      {article.abstract && (
+                      <div className="max-h-[calc(24rem-1.5rem)] space-y-2 overflow-y-auto">
                         <RenderParsedHTML
-                          rawContent={article.abstract}
+                          rawContent={article.title}
                           supportLatex={true}
                           supportMarkdown={false}
-                          contentClassName="text-xs text-text-secondary line-clamp-4"
+                          contentClassName="text-sm font-semibold text-text-primary"
                           containerClassName="mb-0"
                         />
-                      )}
-                      <p className="text-xs text-text-secondary">
-                        Submitted By:{' '}
-                        <span className="text-text-tertiary">{article.user.username}</span>
-                      </p>
-                      <p className="text-wrap text-xs text-text-secondary">
-                        Authors:{' '}
-                        <span className="text-text-tertiary">
-                          {article.authors.map((author) => author.label).join(', ')}
-                        </span>
-                      </p>
-                      <div className="flex w-fit items-center rounded-md border border-common-minimal py-1 pl-0 pr-1.5">
-                        <Star className="h-3 text-functional-yellow" fill="currentColor" />
-                        <span className="text-xs text-text-secondary">{article.total_ratings}</span>
+                        {article.abstract && (
+                          <RenderParsedHTML
+                            rawContent={article.abstract}
+                            supportLatex={true}
+                            supportMarkdown={false}
+                            contentClassName="text-xs text-text-secondary line-clamp-4"
+                            containerClassName="mb-0"
+                          />
+                        )}
+                        <p className="text-xs text-text-secondary">
+                          Submitted By:{' '}
+                          <span className="text-text-tertiary">{article.user.username}</span>
+                        </p>
+                        <p className="text-wrap text-xs text-text-secondary">
+                          Authors:{' '}
+                          <span className="text-text-tertiary">
+                            {article.authors.map((author) => author.label).join(', ')}
+                          </span>
+                        </p>
+                        <div className="flex w-fit items-center rounded-md border border-common-minimal py-1 pl-0 pr-1.5">
+                          <Star className="h-3 text-functional-yellow" fill="currentColor" />
+                          <span className="text-xs text-text-secondary">
+                            {article.total_ratings}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              )}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
             </Link>
             {compactType === 'full' && (
               <RenderParsedHTML

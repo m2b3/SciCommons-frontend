@@ -9,6 +9,7 @@ import type { CommunityOutBannerPicUrl } from './communityOutBannerPicUrl';
 import type { CommunityOutCommunitySettings } from './communityOutCommunitySettings';
 import type { CommunityOutCreatedAt } from './communityOutCreatedAt';
 import type { CommunityOutIsAdmin } from './communityOutIsAdmin';
+import type { CommunityOutIsBookmarked } from './communityOutIsBookmarked';
 import type { CommunityOutIsMember } from './communityOutIsMember';
 import type { CommunityOutIsModerator } from './communityOutIsModerator';
 import type { CommunityOutIsReviewer } from './communityOutIsReviewer';
@@ -26,6 +27,7 @@ export interface CommunityOut {
   description: string;
   id: number;
   is_admin?: CommunityOutIsAdmin;
+  is_bookmarked?: CommunityOutIsBookmarked;
   is_member?: CommunityOutIsMember;
   is_moderator?: CommunityOutIsModerator;
   is_reviewer?: CommunityOutIsReviewer;

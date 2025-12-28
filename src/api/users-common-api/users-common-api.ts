@@ -22,6 +22,7 @@ import type {
   BookmarkToggleResponseSchema,
   BookmarkToggleSchema,
   Message,
+  PaginatedBookmarksResponseSchema,
   PaginatedHashtagOut,
   PaginatedPostsResponse,
   PermissionCheckOut,
@@ -29,6 +30,7 @@ import type {
   ReactionIn,
   UsersCommonApiCheckPermissionParams,
   UsersCommonApiGetHashtagsParams,
+  UsersCommonApiGetMyBookmarksParams,
   UsersCommonApiListMyPostsParams,
 } from '.././schemas';
 
@@ -111,7 +113,8 @@ export const useUsersCommonApiCheckPermission = <
 };
 
 /**
- * @summary Toggle Bookmark
+ * Toggle bookmark status. Adds if not bookmarked, removes if already bookmarked.
+ * @summary Toggle a bookmark
  */
 export const usersCommonApiToggleBookmark = (
   bookmarkToggleSchema: BodyType<BookmarkToggleSchema>,
@@ -119,7 +122,7 @@ export const usersCommonApiToggleBookmark = (
 ) => {
   return customInstance<BookmarkToggleResponseSchema>(
     {
-      url: `/api/users/toggle-bookmark`,
+      url: `/api/users/bookmarks/toggle`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: bookmarkToggleSchema,
@@ -166,7 +169,7 @@ export type UsersCommonApiToggleBookmarkMutationBody = BodyType<BookmarkToggleSc
 export type UsersCommonApiToggleBookmarkMutationError = ErrorType<Message>;
 
 /**
- * @summary Toggle Bookmark
+ * @summary Toggle a bookmark
  */
 export const useUsersCommonApiToggleBookmark = <
   TError = ErrorType<Message>,
@@ -190,53 +193,33 @@ export const useUsersCommonApiToggleBookmark = <
   return useMutation(mutationOptions);
 };
 /**
- * @summary Get Bookmark Status
+ * Check if an item is bookmarked by the current user.
+ * @summary Get bookmark status
  */
 export const usersCommonApiGetBookmarkStatus = (
-  contentType:
-    | 'articles.article'
-    | 'posts.post'
-    | 'posts.comment'
-    | 'articles.reviewcomment'
-    | 'articles.review'
-    | 'articles.discussion'
-    | 'articles.discussioncomment',
+  contentType: 'articles.article' | 'communities.community',
   objectId: number,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<BookmarkStatusResponseSchema>(
-    { url: `/api/users/bookmark-status/${contentType}/${objectId}`, method: 'GET', signal },
+    { url: `/api/users/bookmarks/status/${contentType}/${objectId}`, method: 'GET', signal },
     options
   );
 };
 
 export const getUsersCommonApiGetBookmarkStatusQueryKey = (
-  contentType:
-    | 'articles.article'
-    | 'posts.post'
-    | 'posts.comment'
-    | 'articles.reviewcomment'
-    | 'articles.review'
-    | 'articles.discussion'
-    | 'articles.discussioncomment',
+  contentType: 'articles.article' | 'communities.community',
   objectId: number
 ) => {
-  return [`/api/users/bookmark-status/${contentType}/${objectId}`] as const;
+  return [`/api/users/bookmarks/status/${contentType}/${objectId}`] as const;
 };
 
 export const getUsersCommonApiGetBookmarkStatusQueryOptions = <
   TData = Awaited<ReturnType<typeof usersCommonApiGetBookmarkStatus>>,
   TError = ErrorType<Message>,
 >(
-  contentType:
-    | 'articles.article'
-    | 'posts.post'
-    | 'posts.comment'
-    | 'articles.reviewcomment'
-    | 'articles.review'
-    | 'articles.discussion'
-    | 'articles.discussioncomment',
+  contentType: 'articles.article' | 'communities.community',
   objectId: number,
   options?: {
     query?: Partial<
@@ -272,20 +255,13 @@ export type UsersCommonApiGetBookmarkStatusQueryResult = NonNullable<
 export type UsersCommonApiGetBookmarkStatusQueryError = ErrorType<Message>;
 
 /**
- * @summary Get Bookmark Status
+ * @summary Get bookmark status
  */
 export const useUsersCommonApiGetBookmarkStatus = <
   TData = Awaited<ReturnType<typeof usersCommonApiGetBookmarkStatus>>,
   TError = ErrorType<Message>,
 >(
-  contentType:
-    | 'articles.article'
-    | 'posts.post'
-    | 'posts.comment'
-    | 'articles.reviewcomment'
-    | 'articles.review'
-    | 'articles.discussion'
-    | 'articles.discussioncomment',
+  contentType: 'articles.article' | 'communities.community',
   objectId: number,
   options?: {
     query?: Partial<
@@ -299,6 +275,83 @@ export const useUsersCommonApiGetBookmarkStatus = <
     objectId,
     options
   );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Get paginated list of user's bookmarks. Can filter by type (article/community).
+ * @summary Get user's bookmarks
+ */
+export const usersCommonApiGetMyBookmarks = (
+  params?: UsersCommonApiGetMyBookmarksParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PaginatedBookmarksResponseSchema>(
+    { url: `/api/users/bookmarks`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersCommonApiGetMyBookmarksQueryKey = (
+  params?: UsersCommonApiGetMyBookmarksParams
+) => {
+  return [`/api/users/bookmarks`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersCommonApiGetMyBookmarksQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>,
+  TError = ErrorType<Message>,
+>(
+  params?: UsersCommonApiGetMyBookmarksParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersCommonApiGetMyBookmarksQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>> = ({
+    signal,
+  }) => usersCommonApiGetMyBookmarks(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersCommonApiGetMyBookmarksQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>
+>;
+export type UsersCommonApiGetMyBookmarksQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get user's bookmarks
+ */
+export const useUsersCommonApiGetMyBookmarks = <
+  TData = Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>,
+  TError = ErrorType<Message>,
+>(
+  params?: UsersCommonApiGetMyBookmarksParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof usersCommonApiGetMyBookmarks>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersCommonApiGetMyBookmarksQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -392,6 +445,7 @@ export const useUsersCommonApiPostReaction = <
 export const usersCommonApiGetReactionCount = (
   contentType:
     | 'articles.article'
+    | 'communities.community'
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
@@ -411,6 +465,7 @@ export const usersCommonApiGetReactionCount = (
 export const getUsersCommonApiGetReactionCountQueryKey = (
   contentType:
     | 'articles.article'
+    | 'communities.community'
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
@@ -428,6 +483,7 @@ export const getUsersCommonApiGetReactionCountQueryOptions = <
 >(
   contentType:
     | 'articles.article'
+    | 'communities.community'
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'
@@ -477,6 +533,7 @@ export const useUsersCommonApiGetReactionCount = <
 >(
   contentType:
     | 'articles.article'
+    | 'communities.community'
     | 'posts.post'
     | 'posts.comment'
     | 'articles.reviewcomment'

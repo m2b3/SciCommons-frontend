@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { Check, FileText, Settings, UserCheck, UserPlus, Users } from 'lucide-react';
+import { Bookmark, Check, FileText, Settings, UserCheck, UserPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 import '@/api/communities/communities';
@@ -13,12 +13,14 @@ import {
   useCommunitiesApiJoinGetJoinRequests,
   useCommunitiesApiJoinJoinCommunity,
 } from '@/api/join-community/join-community';
-import { CommunityOut } from '@/api/schemas';
+import { BookmarkContentTypeEnum, CommunityOut } from '@/api/schemas';
+import { useUsersCommonApiToggleBookmark } from '@/api/users-common-api/users-common-api';
 import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import ArticleSubmission from './ArticleSubmission';
@@ -32,6 +34,14 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
   const params = useParams<{ slug: string }>();
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const [isBookmarked, setIsBookmarked] = useState(community.is_bookmarked ?? false);
+
+  // Sync bookmark state when community data changes (e.g., after auth state changes)
+  useEffect(() => {
+    if (community.is_bookmarked !== undefined && community.is_bookmarked !== null) {
+      setIsBookmarked(community.is_bookmarked);
+    }
+  }, [community.is_bookmarked]);
 
   const {
     mutate,
@@ -68,6 +78,39 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
       showErrorToast(error);
     }
   }, [isJoinSuccess, error, data, refetch]);
+
+  const { mutate: toggleBookmark, isPending: isBookmarkPending } = useUsersCommonApiToggleBookmark({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onMutate: () => {
+        // Optimistically update the UI
+        setIsBookmarked((prev) => !prev);
+      },
+      onSuccess: (response) => {
+        // Sync with server response
+        setIsBookmarked(response.data.is_bookmarked);
+      },
+      onError: (error) => {
+        // Revert optimistic update on error
+        setIsBookmarked((prev) => !prev);
+        showErrorToast(error);
+      },
+    },
+  });
+
+  const handleBookmarkToggle = () => {
+    if (!accessToken) {
+      toast.error('Please login to bookmark communities');
+      return;
+    }
+
+    toggleBookmark({
+      data: {
+        content_type: BookmarkContentTypeEnum.communitiescommunity,
+        object_id: community.id,
+      },
+    });
+  };
 
   return (
     <div className="pb-1">
@@ -107,6 +150,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 rawContent={community.description}
                 supportMarkdown={true}
                 supportLatex={true}
+                containerClassName="mb-0"
               />
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">
@@ -125,7 +169,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                     {pendingRequestsCount > 0 && (
                       <Link href={`/community/${params?.slug}/requests`}>
                         <Button
-                          size="sm"
+                          size="xs"
                           className="border border-common-minimal/70 bg-white hover:bg-white dark:bg-black dark:hover:bg-black"
                           withTooltip
                           tooltipData={`${pendingRequestsCount} pending requests`}
@@ -141,11 +185,11 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                     )}
                     <Link href={`/community/${params?.slug}/settings`}>
                       <Button
-                        size="sm"
+                        size="xs"
                         className="border border-common-minimal/70 bg-white hover:bg-white dark:bg-black dark:hover:bg-black"
                       >
                         <ButtonIcon>
-                          <Settings className="size-4 text-text-secondary" />
+                          <Settings className="size-3 text-text-secondary sm:size-4" />
                         </ButtonIcon>
                       </Button>
                     </Link>
@@ -154,9 +198,12 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 {!community.is_admin && community.is_member && (
                   <>
                     <ArticleSubmission communityName={community.name} />
-                    <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
+                    <Button
+                      className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent"
+                      size="xs"
+                    >
                       <ButtonIcon>
-                        <UserCheck className="size-4 text-text-secondary" />
+                        <UserCheck className="size-3 text-text-secondary sm:size-4" />
                       </ButtonIcon>
                       <ButtonTitle className="text-text-secondary">Joined</ButtonTitle>
                     </Button>
@@ -165,9 +212,12 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 {!community.is_admin &&
                   !community.is_member &&
                   community.join_request_status === 'pending' && (
-                    <Button className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent">
+                    <Button
+                      className="cursor-default bg-transparent ring-1 ring-common-contrast hover:bg-transparent"
+                      size="xs"
+                    >
                       <ButtonIcon>
-                        <Check className="size-4 text-text-secondary" />
+                        <Check className="size-3 text-text-secondary sm:size-4" />
                       </ButtonIcon>
                       <ButtonTitle className="text-text-secondary">Requested</ButtonTitle>
                     </Button>
@@ -180,13 +230,37 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                       onClick={() => handleJoin()}
                       loading={isPending}
                       showLoadingSpinner={true}
+                      size="xs"
                     >
                       <ButtonIcon>
-                        <UserPlus className="size-4 text-text-secondary" />
+                        <UserPlus className="size-3 text-text-secondary sm:size-4" />
                       </ButtonIcon>
                       <ButtonTitle className="text-text-secondary">Join</ButtonTitle>
                     </Button>
                   )}
+                {!community.is_admin && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    className="aspect-square p-1.5"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
+                      handleBookmarkToggle();
+                    }}
+                    disabled={isBookmarkPending}
+                    withTooltip
+                    tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+                  >
+                    <Bookmark
+                      className={cn('size-4 transition-colors', {
+                        'fill-functional-yellow text-functional-yellow': isBookmarked,
+                        'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+                      })}
+                    />
+                  </Button>
+                )}
               </div>
             </div>
           </div>

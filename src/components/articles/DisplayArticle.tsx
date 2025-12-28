@@ -3,15 +3,18 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Link2, PanelLeft, Settings } from 'lucide-react';
+import { Bookmark, Link2, PanelLeft, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMediaQuery } from 'usehooks-ts';
 
 import { useCommunitiesArticlesApiToggleArticlePseudonymous } from '@/api/community-articles/community-articles';
-import { ArticleOut } from '@/api/schemas';
+import { ArticleOut, BookmarkContentTypeEnum } from '@/api/schemas';
+import { useUsersCommonApiToggleBookmark } from '@/api/users-common-api/users-common-api';
 import TruncateText from '@/components/common/TruncateText';
 import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useDebounceFunction } from '@/hooks/useDebounceThrottle';
+import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
@@ -63,10 +66,18 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
   const [isPseudonymous, setIsPseudonymous] = useState(true);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(article.is_bookmarked ?? false);
 
   useEffect(() => {
     setIsPseudonymous(article.is_pseudonymous || false);
   }, [article.is_pseudonymous]);
+
+  // Sync bookmark state when article data changes (e.g., after auth state changes)
+  useEffect(() => {
+    if (article.is_bookmarked !== undefined && article.is_bookmarked !== null) {
+      setIsBookmarked(article.is_bookmarked);
+    }
+  }, [article.is_bookmarked]);
 
   const {
     mutate,
@@ -96,6 +107,44 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
   }, [isMutationSuccess, mutationData, isMutationError]);
 
   const debouncedIsPseudonymous = useDebounceFunction(handleMakePseudonymous, 500);
+
+  const { mutate: toggleBookmark, isPending: isBookmarkPending } = useUsersCommonApiToggleBookmark({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onMutate: () => {
+        // Optimistically update the UI
+        setIsBookmarked((prev) => !prev);
+      },
+      onSuccess: (response) => {
+        // Sync with server response
+        setIsBookmarked(response.data.is_bookmarked);
+      },
+      onError: (error) => {
+        // Revert optimistic update on error
+        setIsBookmarked((prev) => !prev);
+        showErrorToast(error);
+      },
+    },
+  });
+
+  const handleBookmarkToggle = () => {
+    if (!accessToken) {
+      toast.error('Please login to bookmark articles');
+      return;
+    }
+
+    if (!article.id) {
+      toast.error('Article ID is missing');
+      return;
+    }
+
+    toggleBookmark({
+      data: {
+        content_type: BookmarkContentTypeEnum.articlesarticle,
+        object_id: article.id,
+      },
+    });
+  };
 
   return (
     <div className={`flex flex-col items-start res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}>
@@ -204,10 +253,33 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
         <div className="mb-2 flex w-full items-center justify-end gap-2 sm:absolute sm:bottom-0 sm:right-0 sm:mb-0 sm:w-fit">
           {article.is_submitter && (
             <Link href={`/article/${article.slug}/settings`}>
-              <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
+              <div className="rounded-md border border-common-contrast bg-white px-3 py-1.5 text-xs text-black dark:bg-black dark:text-white">
                 Edit Article
               </div>
             </Link>
+          )}
+          {!article.community_article && (
+            <Button
+              variant="outline"
+              size="xs"
+              className="aspect-square p-1.5"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+                handleBookmarkToggle();
+              }}
+              disabled={isBookmarkPending}
+              withTooltip
+              tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+            >
+              <Bookmark
+                className={cn('size-4 transition-colors', {
+                  'fill-functional-yellow text-functional-yellow': isBookmarked,
+                  'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+                })}
+              />
+            </Button>
           )}
           {article.community_article && article.community_article?.is_admin && (
             <Suspense

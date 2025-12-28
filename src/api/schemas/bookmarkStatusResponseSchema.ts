@@ -4,7 +4,8 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { BookmarkStatusResponseSchemaIsBookmarked } from './bookmarkStatusResponseSchemaIsBookmarked';
 
 export interface BookmarkStatusResponseSchema {
-  is_bookmarked: boolean;
+  is_bookmarked: BookmarkStatusResponseSchemaIsBookmarked;
 }

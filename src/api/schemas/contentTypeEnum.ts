@@ -10,6 +10,7 @@ export type ContentTypeEnum = (typeof ContentTypeEnum)[keyof typeof ContentTypeE
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ContentTypeEnum = {
   articlesarticle: 'articles.article',
+  communitiescommunity: 'communities.community',
   postspost: 'posts.post',
   postscomment: 'posts.comment',
   articlesreviewcomment: 'articles.reviewcomment',

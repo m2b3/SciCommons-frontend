@@ -6,6 +6,7 @@
  */
 
 export interface BookmarkSchema {
+  created_at: string;
   details: string;
   id: number;
   slug: string;

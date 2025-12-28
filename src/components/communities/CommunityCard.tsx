@@ -1,20 +1,23 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { FileText, Users } from 'lucide-react';
+import { Bookmark, FileText, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
+import { BookmarkContentTypeEnum } from '@/api/schemas';
 import { CommunityListOut } from '@/api/schemas';
+import { useUsersCommonApiToggleBookmark } from '@/api/users-common-api/users-common-api';
+import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 
 import { Skeleton, TextSkeleton } from '../common/Skeleton';
+import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
-// import { toast } from 'sonner';
 // import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
-// import { showErrorToast } from '@/lib/toastHelpers';
-// import { useAuthStore } from '@/stores/authStore';
 
 interface CommunityCardProps {
   community: CommunityListOut;
@@ -22,7 +25,7 @@ interface CommunityCardProps {
 
 const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
   // COMMENTED OUT BCOZ WE ARE NOT SHOWING JOIN BUTTON IN COMMUNITY CARD UNTIL AUTH IS FIXED.
-  // const accessToken = useAuthStore((state) => state.accessToken);
+  const accessToken = useAuthStore((state) => state.accessToken);
   // const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   // const { mutate, data, isSuccess, error } = useCommunitiesApiJoinJoinCommunity({
@@ -41,6 +44,48 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
   //     showErrorToast(error);
   //   }
   // }, [isSuccess, error, data]);
+
+  const [isBookmarked, setIsBookmarked] = useState(community.is_bookmarked ?? false);
+
+  // Sync bookmark state when community data changes (e.g., after auth state changes)
+  useEffect(() => {
+    if (community.is_bookmarked !== undefined && community.is_bookmarked !== null) {
+      setIsBookmarked(community.is_bookmarked);
+    }
+  }, [community.is_bookmarked]);
+
+  const { mutate: toggleBookmark, isPending } = useUsersCommonApiToggleBookmark({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onMutate: () => {
+        // Optimistically update the UI
+        setIsBookmarked((prev) => !prev);
+      },
+      onSuccess: (response) => {
+        // Sync with server response
+        setIsBookmarked(response.data.is_bookmarked);
+      },
+      onError: (error) => {
+        // Revert optimistic update on error
+        setIsBookmarked((prev) => !prev);
+        showErrorToast(error);
+      },
+    },
+  });
+
+  const handleBookmarkToggle = () => {
+    if (!accessToken) {
+      toast.error('Please login to bookmark communities');
+      return;
+    }
+
+    toggleBookmark({
+      data: {
+        content_type: BookmarkContentTypeEnum.communitiescommunity,
+        object_id: community.id,
+      },
+    });
+  };
 
   return (
     <div className="relative flex h-full flex-col items-start gap-4 rounded-lg border border-common-contrast bg-common-cardBackground p-2.5 px-3.5 res-text-xs hover:shadow-md hover:shadow-common-minimal">
@@ -92,6 +137,26 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
         >
           {community.type}
         </span>
+        <Button
+          variant="transparent"
+          size="xs"
+          className="p-0"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleBookmarkToggle();
+          }}
+          disabled={isPending}
+          withTooltip
+          tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+        >
+          <Bookmark
+            className={cn('size-4 transition-colors', {
+              'fill-functional-yellow text-functional-yellow': isBookmarked,
+              'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+            })}
+          />
+        </Button>
       </div>
       {/* Enable this when auth is fixed. Handle cases for logged in and logged out users. */}
       {/* <div className="absolute right-6 top-6 flex gap-4">
