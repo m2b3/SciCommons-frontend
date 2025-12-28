@@ -15,4 +15,5 @@ export const ArticleStatus = {
   accepted: 'accepted',
   rejected: 'rejected',
   published: 'published',
+  unpublished: 'unpublished',
 } as const;

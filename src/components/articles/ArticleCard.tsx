@@ -22,6 +22,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 interface ActionType {
   type: 'button';
   label: string;
+  tooltipText?: string;
   variant: 'default' | 'danger' | 'blue' | 'gray' | 'transparent' | 'outline' | 'inverted';
   isLoading?: boolean;
   onClick: () => void;
@@ -238,7 +239,7 @@ const ArticleCard: FC<ArticleCardProps> = memo(
             )}
 
             {compactType === 'full' && (
-              <div className="mt-1 flex items-center">
+              <div className="mt-1 flex flex-wrap items-center gap-2">
                 <p className="text-xxs text-text-secondary">
                   Submitted By: {article.user.username}
                 </p>
@@ -250,6 +251,8 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                         className="px-2 py-1"
                         size="xs"
                         loading={action.isLoading}
+                        withTooltip
+                        tooltipData={action.tooltipText}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();

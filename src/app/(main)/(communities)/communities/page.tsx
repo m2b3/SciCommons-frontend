@@ -52,7 +52,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   isActive,
   headerTabs,
 }) => {
-  const { displayedItems, setItems, appendItems, setFilter, reset } =
+  const { displayedItems, setItems, appendItems, setFilter, activeFilter, reset } =
     useFilteredList<CommunityListOut>({
       filters: {
         [CommunityFilters.ALL]: () => true,
@@ -148,6 +148,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
           { label: 'All', value: CommunityFilters.ALL },
           { label: 'Bookmarked', value: CommunityFilters.BOOKMARKED },
         ]}
+        activeFilter={activeFilter}
         onSelectFilter={(filter) => {
           setFilter(filter);
         }}
@@ -165,7 +166,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   isActive,
   headerTabs,
 }) => {
-  const { displayedItems, setItems, appendItems, setFilter, reset } =
+  const { displayedItems, setItems, appendItems, setFilter, activeFilter, reset } =
     useFilteredList<CommunityListOut>({
       filters: {
         [CommunityFilters.ALL]: () => true,
@@ -261,6 +262,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
           { label: 'All', value: CommunityFilters.ALL },
           { label: 'Bookmarked', value: CommunityFilters.BOOKMARKED },
         ]}
+        activeFilter={activeFilter}
         onSelectFilter={(filter) => {
           setFilter(filter);
         }}

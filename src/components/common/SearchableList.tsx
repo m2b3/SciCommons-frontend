@@ -62,6 +62,7 @@ interface SearchableListProps<T> {
   setGridCount?: (gridCount: number) => void;
   allowedViewTypes?: Array<'grid' | 'list' | 'preview'>;
   filters?: Array<{ label: string; value: string }>;
+  activeFilter?: string;
   onSelectFilter?: (filter: string) => void;
 }
 
@@ -91,6 +92,7 @@ function SearchableList<T>({
   setGridCount,
   allowedViewTypes,
   filters,
+  activeFilter,
   onSelectFilter,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -160,7 +162,7 @@ function SearchableList<T>({
               {filters && filters.length > 0 && (
                 <FilterDropdownMenu
                   filters={filters}
-                  selectedFilter={filters[0].value}
+                  selectedFilter={activeFilter || filters[0].value}
                   onSelectFilter={(filter) => onSelectFilter?.(filter)}
                 />
               )}
@@ -315,7 +317,11 @@ const FilterDropdownMenu: React.FC<{
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={12}>
         {filters.map((filter) => (
-          <DropdownMenuItem key={filter.value} onClick={() => onSelectFilter(filter.value)}>
+          <DropdownMenuItem
+            key={filter.value}
+            onClick={() => onSelectFilter(filter.value)}
+            className="text-xs"
+          >
             {filter.label}
           </DropdownMenuItem>
         ))}

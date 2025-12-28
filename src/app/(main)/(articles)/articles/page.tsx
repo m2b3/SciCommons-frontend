@@ -66,7 +66,7 @@ const TabContent: React.FC<TabContentProps> = ({
   setGridCount,
   headerTabs,
 }) => {
-  const { displayedItems, setItems, appendItems, setFilter, reset } =
+  const { displayedItems, setItems, appendItems, setFilter, activeFilter, reset } =
     useFilteredList<ArticlesListOut>({
       filters: {
         [ArticleFilters.ALL]: () => true,
@@ -258,6 +258,7 @@ const TabContent: React.FC<TabContentProps> = ({
               { label: 'All', value: ArticleFilters.ALL },
               { label: 'Bookmarked', value: ArticleFilters.BOOKMARKED },
             ]}
+            activeFilter={activeFilter}
             onSelectFilter={(filter) => {
               setFilter(filter);
             }}
@@ -297,7 +298,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   setGridCount,
   headerTabs,
 }) => {
-  const { displayedItems, setItems, appendItems, setFilter, reset } =
+  const { displayedItems, setItems, appendItems, setFilter, activeFilter, reset } =
     useFilteredList<ArticlesListOut>({
       filters: {
         [ArticleFilters.ALL]: () => true,
@@ -487,6 +488,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
               { label: 'All', value: ArticleFilters.ALL },
               { label: 'Bookmarked', value: ArticleFilters.BOOKMARKED },
             ]}
+            activeFilter={activeFilter}
             onSelectFilter={(filter) => {
               setFilter(filter);
             }}
