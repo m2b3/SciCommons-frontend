@@ -8,6 +8,7 @@ import type { ArticleOutArticleImageUrl } from './articleOutArticleImageUrl';
 import type { ArticleOutArticleLink } from './articleOutArticleLink';
 import type { ArticleOutCommunityArticle } from './articleOutCommunityArticle';
 import type { ArticleOutId } from './articleOutId';
+import type { ArticleOutIsBookmarked } from './articleOutIsBookmarked';
 import type { ArticleOutSlug } from './articleOutSlug';
 import type { FAQSchema } from './fAQSchema';
 import type { SubmissionType } from './submissionType';
@@ -24,6 +25,7 @@ export interface ArticleOut {
   created_at: string;
   faqs: FAQSchema[];
   id?: ArticleOutId;
+  is_bookmarked?: ArticleOutIsBookmarked;
   is_pseudonymous?: boolean;
   is_submitter: boolean;
   slug?: ArticleOutSlug;

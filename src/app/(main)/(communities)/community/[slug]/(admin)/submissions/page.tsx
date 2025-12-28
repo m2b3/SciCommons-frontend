@@ -8,14 +8,14 @@ import { withAuth } from '@/HOCs/withAuth';
 import {
   useCommunitiesArticlesApiListCommunityArticlesByStatus,
   useCommunitiesArticlesApiManageArticle,
+  useCommunitiesArticlesApiRemoveArticleFromCommunity,
 } from '@/api/community-articles/community-articles';
 import { ArticleStatus, ArticlesListOut } from '@/api/schemas';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import TabComponent from '@/components/communities/TabComponent';
-import { Button, ButtonTitle } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/authStore';
 
-type Action = 'approve' | 'reject' | 'publish';
+type Action = 'approve' | 'reject' | 'publish' | 'unpublish' | 'remove';
 
 const Submissions = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -52,8 +52,140 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
     },
   });
 
-  const handleAction = (action: Action, communityArticleId: number) => {
-    mutate({ communityArticleId, action });
+  const { mutate: removeArticle } = useCommunitiesArticlesApiRemoveArticleFromCommunity({
+    request: axiosConfig,
+    mutation: {
+      onSuccess: (data) => {
+        refetch();
+        toast.success(`${data.data.message}`);
+        setActionInProgress({ action: 'approve', articleId: null });
+      },
+      onError: (error) => {
+        toast.error(`${error.response?.data.message}`);
+        setActionInProgress({ action: 'approve', articleId: null });
+      },
+    },
+  });
+
+  const handleAction = (action: Action, communityArticleId: number, articleId?: number) => {
+    if (action === 'remove') {
+      setActionInProgress({ action: 'remove', articleId: articleId || null });
+      removeArticle({ communityArticleId });
+    } else {
+      setActionInProgress({ action, articleId: articleId || null });
+      mutate({ communityArticleId, action });
+    }
+  };
+
+  const getArticleActions = (article: ArticlesListOut) => {
+    switch (activeTab) {
+      case 'submitted':
+        return [
+          {
+            type: 'button' as const,
+            label: 'Approve',
+            variant: 'default' as const,
+            onClick: () =>
+              handleAction('approve', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'approve' && actionInProgress.articleId === article.id,
+          },
+          {
+            type: 'button' as const,
+            label: 'Reject',
+            variant: 'danger' as const,
+            onClick: () =>
+              handleAction('reject', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'reject' && actionInProgress.articleId === article.id,
+          },
+          {
+            type: 'button' as const,
+            label: 'Publish',
+            variant: 'blue' as const,
+            onClick: () =>
+              handleAction('publish', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'publish' && actionInProgress.articleId === article.id,
+          },
+        ];
+
+      // Admin can publish any article at any point in the review process
+      case 'under_review':
+        return [
+          {
+            type: 'button' as const,
+            label: 'Publish',
+            variant: 'blue' as const,
+            onClick: () =>
+              handleAction('publish', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'publish' && actionInProgress.articleId === article.id,
+          },
+        ];
+
+      case 'accepted':
+        return [
+          {
+            type: 'button' as const,
+            label: 'Publish',
+            variant: 'blue' as const,
+            onClick: () =>
+              handleAction('publish', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'publish' && actionInProgress.articleId === article.id,
+          },
+        ];
+
+      case 'published':
+        return [
+          {
+            type: 'button' as const,
+            label: 'Unpublish',
+            variant: 'blue' as const,
+            onClick: () =>
+              handleAction('unpublish', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'unpublish' && actionInProgress.articleId === article.id,
+          },
+          {
+            type: 'button' as const,
+            label: 'Remove',
+            variant: 'danger' as const,
+            tooltipText: 'Remove from community (cannot be undone)',
+            onClick: () =>
+              handleAction('remove', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'remove' && actionInProgress.articleId === article.id,
+          },
+        ];
+
+      case 'unpublished':
+        return [
+          {
+            type: 'button' as const,
+            label: 'Publish',
+            variant: 'blue' as const,
+            onClick: () =>
+              handleAction('publish', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'publish' && actionInProgress.articleId === article.id,
+          },
+          {
+            type: 'button' as const,
+            label: 'Remove',
+            variant: 'danger' as const,
+            tooltipText: 'Remove from community (cannot be undone)',
+            onClick: () =>
+              handleAction('remove', Number(article.community_article?.id), article.id),
+            isLoading:
+              actionInProgress.action === 'remove' && actionInProgress.articleId === article.id,
+          },
+        ];
+
+      default:
+        return [];
+    }
   };
 
   useEffect(() => {
@@ -65,62 +197,6 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
   useEffect(() => {
     refetch();
   }, [activeTab, refetch]);
-
-  const renderActionButtons = (article: ArticlesListOut) => {
-    if (activeTab === 'submitted') {
-      return (
-        <div className="flex gap-2">
-          <Button
-            loading={
-              actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
-            }
-            onClick={() => handleAction('approve', Number(article.community_article?.id))}
-            type="button"
-          >
-            <ButtonTitle className="md:text-xs">
-              {actionInProgress.action === 'approve' && actionInProgress.articleId === article.id
-                ? 'Approving...'
-                : 'Approve'}
-            </ButtonTitle>
-          </Button>
-          <Button
-            variant={'danger'}
-            loading={
-              actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
-            }
-            onClick={() => handleAction('reject', Number(article.community_article?.id))}
-            type="button"
-          >
-            <ButtonTitle className="md:text-xs">
-              {actionInProgress.action === 'reject' && actionInProgress.articleId === article.id
-                ? 'Rejecting...'
-                : 'Reject'}
-            </ButtonTitle>
-          </Button>
-        </div>
-      );
-    } else if (activeTab === 'accepted') {
-      return (
-        <div className="flex space-x-2">
-          <Button
-            variant={'blue'}
-            loading={
-              actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
-            }
-            onClick={() => handleAction('publish', Number(article.community_article?.id))}
-            type="button"
-          >
-            <ButtonTitle>
-              {actionInProgress.action === 'publish' && actionInProgress.articleId === article.id
-                ? 'Publishing...'
-                : 'Publish'}
-            </ButtonTitle>
-          </Button>
-        </div>
-      );
-    }
-    return null;
-  };
 
   const renderArticles = () => {
     if (isPending) {
@@ -139,9 +215,8 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
       <div className="flex min-h-screen max-w-6xl flex-col space-y-4">
         {data &&
           data.data.items.map((article, index) => (
-            <div className="relative flex flex-col gap-2 sm:p-2" key={index}>
-              <div className="absolute bottom-4 right-4">{renderActionButtons(article)}</div>
-              <ArticleCard article={article} />
+            <div className="flex flex-col gap-2" key={index}>
+              <ArticleCard article={article} actions={getArticleActions(article)} />
             </div>
           ))}
       </div>
@@ -152,7 +227,7 @@ const Submissions = ({ params }: { params: { slug: string } }) => {
     <div className="flex w-full flex-col">
       <div className="w-full self-start">
         <TabComponent
-          tabs={['submitted', 'under_review', 'accepted', 'published', 'rejected']}
+          tabs={['submitted', 'under_review', 'accepted', 'published', 'unpublished', 'rejected']}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />

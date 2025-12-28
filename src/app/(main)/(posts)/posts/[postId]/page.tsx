@@ -6,13 +6,12 @@ import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Bookmark, FileX2, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { FileX2, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { usePostsApiGetPost, usePostsApiListPosts } from '@/api/posts/posts';
 import { PostOut } from '@/api/schemas';
 import {
-  useUsersCommonApiGetBookmarkStatus,
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
   useUsersCommonApiToggleBookmark,
@@ -21,7 +20,6 @@ import RedditStyleComments from '@/components/common/PostComments';
 import TruncateText from '@/components/common/TruncateText';
 import Hashtag from '@/components/posts/Hashtag';
 import PostHighlightCard, { PostHighlightCardSkeleton } from '@/components/posts/PostHighlightCard';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -47,13 +45,13 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   );
 
   // BookMarkStats
-  const { data: bookMarkStats, refetch: refetchBookMark } = useUsersCommonApiGetBookmarkStatus(
-    'posts.post',
-    params.postId,
-    {
-      request: requestConfig,
-    }
-  );
+  // const { data: bookMarkStats, refetch: refetchBookMark } = useUsersCommonApiGetBookmarkStatus(
+  //   'posts.post',
+  //   params.postId,
+  //   {
+  //     request: requestConfig,
+  //   }
+  // );
 
   // Likes/Dislikes
   const { data: userPostData, isPending: userPostDataPending } = usePostsApiListPosts({
@@ -77,7 +75,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
     mutation: {
       onSuccess: (data) => {
         toast.success(`${data.data.message}`);
-        refetchBookMark();
+        // refetchBookMark();
       },
       onError: (error) => {
         showErrorToast(error);
@@ -112,7 +110,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                   <p className="text-sm text-gray-400">{dayjs(data.data.created_at).fromNow()}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -141,7 +139,7 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </div>
+              </div> */}
             </div>
             <h1 className="mb-2 text-xl font-bold text-primary">{data.data.title}</h1>
             <div className="mb-4 text-sm text-gray-600">

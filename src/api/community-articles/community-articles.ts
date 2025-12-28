@@ -300,11 +300,20 @@ export const useCommunitiesArticlesApiListCommunityArticlesByStatus = <
 };
 
 /**
+ * Manage article status in a community. Only community admins can perform these actions.
+
+Actions:
+- approve: Move article from SUBMITTED to UNDER_REVIEW (assigns reviewers/moderators)
+- reject: Move article from SUBMITTED/UNDER_REVIEW to REJECTED
+- publish: Move article from ACCEPTED/UNPUBLISHED to PUBLISHED (creates discussion subscriptions)
+- unpublish: Move article from PUBLISHED to UNPUBLISHED (deactivates discussion subscriptions)
+
+Note: To completely remove an article from a community, use the DELETE /{community_article_id}/remove/ endpoint.
  * @summary Manage Article
  */
 export const communitiesArticlesApiManageArticle = (
   communityArticleId: number,
-  action: 'approve' | 'reject' | 'publish',
+  action: 'approve' | 'reject' | 'publish' | 'unpublish',
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Message>(
@@ -320,21 +329,21 @@ export const getCommunitiesArticlesApiManageArticleMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
     TError,
-    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
+    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' | 'unpublish' },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
   TError,
-  { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
+  { communityArticleId: number; action: 'approve' | 'reject' | 'publish' | 'unpublish' },
   TContext
 > => {
   const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
-    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' }
+    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' | 'unpublish' }
   > = (props) => {
     const { communityArticleId, action } = props ?? {};
 
@@ -360,17 +369,98 @@ export const useCommunitiesArticlesApiManageArticle = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
     TError,
-    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
+    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' | 'unpublish' },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
   TError,
-  { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
+  { communityArticleId: number; action: 'approve' | 'reject' | 'publish' | 'unpublish' },
   TContext
 > => {
   const mutationOptions = getCommunitiesArticlesApiManageArticleMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Remove an article from a community entirely by deleting the CommunityArticle record.
+This will CASCADE delete:
+- Reviews associated with this community_article
+- DiscussionSubscriptions for this community_article
+
+Note: The Article itself is NOT deleted, only its association with the community.
+ * @summary Remove Article From Community
+ */
+export const communitiesArticlesApiRemoveArticleFromCommunity = (
+  communityArticleId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    { url: `/api/communities/${communityArticleId}/remove/`, method: 'DELETE' },
+    options
+  );
+};
+
+export const getCommunitiesArticlesApiRemoveArticleFromCommunityMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>,
+    TError,
+    { communityArticleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>,
+  TError,
+  { communityArticleId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>,
+    { communityArticleId: number }
+  > = (props) => {
+    const { communityArticleId } = props ?? {};
+
+    return communitiesArticlesApiRemoveArticleFromCommunity(communityArticleId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CommunitiesArticlesApiRemoveArticleFromCommunityMutationResult = NonNullable<
+  Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>
+>;
+
+export type CommunitiesArticlesApiRemoveArticleFromCommunityMutationError = ErrorType<Message>;
+
+/**
+ * @summary Remove Article From Community
+ */
+export const useCommunitiesArticlesApiRemoveArticleFromCommunity = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>,
+    TError,
+    { communityArticleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>,
+  TError,
+  { communityArticleId: number },
+  TContext
+> => {
+  const mutationOptions =
+    getCommunitiesArticlesApiRemoveArticleFromCommunityMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
