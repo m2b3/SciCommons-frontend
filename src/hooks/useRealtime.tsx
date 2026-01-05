@@ -12,6 +12,7 @@ import {
 } from '../api/real-time/real-time';
 import { useAuthStore } from '../stores/authStore';
 import { useRealtimeContextStore } from '../stores/realtimeStore';
+import { isSoundOnDiscussionNotificationEnabled } from './useUserSettings';
 
 type RealtimeEventType =
   | 'new_discussion'
@@ -70,6 +71,10 @@ const STORAGE_KEYS = {
   LEADER: 'realtime_leader',
 };
 
+// Generate a unique tab ID to prevent processing our own broadcasts
+const TAB_ID =
+  typeof window !== 'undefined' ? `${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
+
 const bc =
   typeof window !== 'undefined' && 'BroadcastChannel' in window
     ? new BroadcastChannel('realtime')
@@ -117,6 +122,8 @@ export function useRealtime() {
   const isPollingRef = useRef<boolean>(false);
   const loopStartedRef = useRef<boolean>(false);
   const registerQueueRef = useRef<((force?: boolean) => Promise<boolean>) | null>(null);
+  // Track processed event IDs to prevent duplicate processing
+  const processedEventIdsRef = useRef<Set<number>>(new Set());
 
   const writeLeaderHeartbeat = useCallback((tabId: string) => {
     const payload = { tabId, ts: Date.now() };
@@ -157,22 +164,6 @@ export function useRealtime() {
       clearInterval(leaderHeartbeatRef.current);
       leaderHeartbeatRef.current = null;
     }
-  }, []);
-
-  // Broadcast received from leader → propagate events and status
-  useEffect(() => {
-    if (!bc) return;
-    const onMessage = (ev: MessageEvent) => {
-      const msg = ev.data;
-      if (msg?.type === 'realtime:events') {
-        handleEvents(msg.payload as RealtimeEvent[]);
-      } else if (msg?.type === 'realtime:status') {
-        setStatus(msg.payload as ConnectionStatus);
-      }
-    };
-    bc.addEventListener('message', onMessage);
-    return () => bc.removeEventListener('message', onMessage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Storage listener to detect leader loss
@@ -218,6 +209,11 @@ export function useRealtime() {
   }, []);
 
   const playNotification = useCallback(() => {
+    // Check if sound notifications are enabled in user settings
+    if (!isSoundOnDiscussionNotificationEnabled()) {
+      return;
+    }
+
     const audio = audioRef.current;
     if (!audio) return;
     try {
@@ -458,15 +454,33 @@ export function useRealtime() {
   }, []);
 
   const handleEvents = useCallback(
-    (events: RealtimeEvent[]) => {
+    (events: RealtimeEvent[], fromBroadcast = false) => {
       if (!events?.length) return;
 
-      // Process events silently
+      // Filter out already processed events to prevent duplicates
+      const newEvents = events.filter((event) => {
+        if (processedEventIdsRef.current.has(event.event_id)) {
+          return false;
+        }
+        // Add to processed set
+        processedEventIdsRef.current.add(event.event_id);
+        return true;
+      });
 
-      // Broadcast to other tabs
-      bc?.postMessage({ type: 'realtime:events', payload: events });
+      // Clean up old event IDs (keep only last 1000 to prevent memory leak)
+      if (processedEventIdsRef.current.size > 1000) {
+        const idsArray = Array.from(processedEventIdsRef.current);
+        processedEventIdsRef.current = new Set(idsArray.slice(-500));
+      }
 
-      for (const event of events) {
+      if (!newEvents.length) return;
+
+      // Only broadcast to other tabs if this is NOT from a broadcast (leader tab only)
+      if (!fromBroadcast) {
+        bc?.postMessage({ type: 'realtime:events', payload: newEvents, senderId: TAB_ID });
+      }
+
+      for (const event of newEvents) {
         const { article_id: articleId, community_id: communityId } = event.data;
 
         // Check if this event is relevant to current context
@@ -566,6 +580,32 @@ export function useRealtime() {
       playNotification,
     ]
   );
+
+  // Store handleEvents in a ref to avoid stale closure in BroadcastChannel listener
+  const handleEventsRef = useRef(handleEvents);
+  useEffect(() => {
+    handleEventsRef.current = handleEvents;
+  }, [handleEvents]);
+
+  // Broadcast received from leader → propagate events and status
+  useEffect(() => {
+    if (!bc) return;
+    const onMessage = (ev: MessageEvent) => {
+      const msg = ev.data;
+      // Ignore messages from our own tab
+      if (msg?.senderId === TAB_ID) {
+        return;
+      }
+      if (msg?.type === 'realtime:events') {
+        // Pass fromBroadcast=true to prevent re-broadcasting
+        handleEventsRef.current(msg.payload as RealtimeEvent[], true);
+      } else if (msg?.type === 'realtime:status') {
+        setStatus(msg.payload as ConnectionStatus);
+      }
+    };
+    bc.addEventListener('message', onMessage);
+    return () => bc.removeEventListener('message', onMessage);
+  }, []);
 
   const pollLoop = useCallback(async () => {
     // Check authentication first - don't poll if not logged in

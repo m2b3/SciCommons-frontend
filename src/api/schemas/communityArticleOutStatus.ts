@@ -16,4 +16,5 @@ export const CommunityArticleOutStatus = {
   accepted: 'accepted',
   rejected: 'rejected',
   published: 'published',
+  unpublished: 'unpublished',
 } as const;

@@ -65,7 +65,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
                   ? discussion.user.profile_pic_url?.startsWith('http')
                     ? discussion.user.profile_pic_url
                     : `data:image/png;base64,${discussion.user.profile_pic_url}`
-                  : `/images/assets/user-icon.png`
+                  : `/images/assets/user-icon.webp`
               }
               alt={discussion.user.username}
               width={32}
@@ -73,7 +73,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
               className="mr-2 aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
               quality={75}
               sizes="32px"
-              loading="lazy"
+              unoptimized={!discussion.user.profile_pic_url}
             />
             <div>
               <span className="text-sm font-semibold text-text-secondary">

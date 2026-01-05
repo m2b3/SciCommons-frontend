@@ -50,10 +50,7 @@ export default function RootLayout({
   return (
     <ReactQueryClientProvider>
       <html lang="en">
-        <head>
-          {/* Preload commonly used assets */}
-          <link rel="preload" href="/images/assets/user-icon.png" as="image" type="image/png" />
-        </head>
+        <head></head>
         <body className={cn(inter.className, 'relative bg-common-background')}>
           <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
           <SessionExpirationDialog />

@@ -16,6 +16,7 @@ import {
   MoveLeft,
   NotebookTabs,
   Plus,
+  Settings,
   SunMediumIcon,
   User,
   Users,
@@ -32,6 +33,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
 import useStore from '@/hooks/useStore';
+import { useUserSettings } from '@/hooks/useUserSettings';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -196,6 +198,8 @@ const ProfileDropdown: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { data } = useCurrentUser();
+  // Fetch user settings on app load (similar to useCurrentUser)
+  useUserSettings();
 
   const profileImage = data?.data?.profile_pic_url || `data:image/png;base64,${imageData}`;
 
@@ -227,6 +231,11 @@ const ProfileDropdown: React.FC = () => {
         <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/mycontributions" className="flex items-center">
             <NotebookTabs size={16} className="mr-2" /> Contributions
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+          <Link href="/settings" className="flex items-center">
+            <Settings size={16} className="mr-2" /> Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>

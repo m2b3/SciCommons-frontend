@@ -47,7 +47,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const [selectedType, setSelectedType] = useState<OptionType>(data?.data.type as OptionType);
-  const [isEditEnabled, setIsEditEnabled] = useState(false);
+  const [isEditEnabled, setIsEditEnabled] = useState(true);
   const [selectedPublicCommunitiesSettings, setSelectedPublicCommunitiesSettings] = useState(
     data?.data.community_settings as string
   );
