@@ -27,6 +27,10 @@ import type {
   UserCommunitySchema,
   UserDetails,
   UserPostSchema,
+  UserSettingsBulkUpdateSchema,
+  UserSettingsResetResponseSchema,
+  UserSettingsResponseSchema,
+  UserSettingsUpdateResponseSchema,
   UserStats,
   UsersApiGetNotificationsParams,
   UsersApiListMyArticlesParams,
@@ -787,6 +791,225 @@ export const useUsersApiMarkNotificationAsRead = <
   TContext
 > => {
   const mutationOptions = getUsersApiMarkNotificationAsReadMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Get all user settings. Returns default values for settings that haven't been set yet.
+Includes type information for each setting.
+ * @summary Get User Settings
+ */
+export const usersApiGetUserSettings = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<UserSettingsResponseSchema>(
+    { url: `/api/users/settings`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getUsersApiGetUserSettingsQueryKey = () => {
+  return [`/api/users/settings`] as const;
+};
+
+export const getUsersApiGetUserSettingsQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersApiGetUserSettings>>,
+  TError = ErrorType<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof usersApiGetUserSettings>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getUsersApiGetUserSettingsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof usersApiGetUserSettings>>> = ({
+    signal,
+  }) => usersApiGetUserSettings(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersApiGetUserSettings>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type UsersApiGetUserSettingsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiGetUserSettings>>
+>;
+export type UsersApiGetUserSettingsQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get User Settings
+ */
+export const useUsersApiGetUserSettings = <
+  TData = Awaited<ReturnType<typeof usersApiGetUserSettings>>,
+  TError = ErrorType<Message>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof usersApiGetUserSettings>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getUsersApiGetUserSettingsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Bulk update user settings. Creates or updates settings as needed.
+ * @summary Update User Settings
+ */
+export const usersApiUpdateUserSettings = (
+  userSettingsBulkUpdateSchema: BodyType<UserSettingsBulkUpdateSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<UserSettingsUpdateResponseSchema>(
+    {
+      url: `/api/users/settings`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: userSettingsBulkUpdateSchema,
+    },
+    options
+  );
+};
+
+export const getUsersApiUpdateUserSettingsMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiUpdateUserSettings>>,
+    TError,
+    { data: BodyType<UserSettingsBulkUpdateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usersApiUpdateUserSettings>>,
+  TError,
+  { data: BodyType<UserSettingsBulkUpdateSchema> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usersApiUpdateUserSettings>>,
+    { data: BodyType<UserSettingsBulkUpdateSchema> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return usersApiUpdateUserSettings(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UsersApiUpdateUserSettingsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiUpdateUserSettings>>
+>;
+export type UsersApiUpdateUserSettingsMutationBody = BodyType<UserSettingsBulkUpdateSchema>;
+export type UsersApiUpdateUserSettingsMutationError = ErrorType<Message>;
+
+/**
+ * @summary Update User Settings
+ */
+export const useUsersApiUpdateUserSettings = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiUpdateUserSettings>>,
+    TError,
+    { data: BodyType<UserSettingsBulkUpdateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof usersApiUpdateUserSettings>>,
+  TError,
+  { data: BodyType<UserSettingsBulkUpdateSchema> },
+  TContext
+> => {
+  const mutationOptions = getUsersApiUpdateUserSettingsMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Reset all user settings to default values by deleting all custom settings.
+ * @summary Reset User Settings
+ */
+export const usersApiResetUserSettings = (options?: SecondParameter<typeof customInstance>) => {
+  return customInstance<UserSettingsResetResponseSchema>(
+    { url: `/api/users/settings/reset`, method: 'POST' },
+    options
+  );
+};
+
+export const getUsersApiResetUserSettingsMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiResetUserSettings>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usersApiResetUserSettings>>,
+  TError,
+  void,
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usersApiResetUserSettings>>,
+    void
+  > = () => {
+    return usersApiResetUserSettings(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UsersApiResetUserSettingsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersApiResetUserSettings>>
+>;
+
+export type UsersApiResetUserSettingsMutationError = ErrorType<Message>;
+
+/**
+ * @summary Reset User Settings
+ */
+export const useUsersApiResetUserSettings = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usersApiResetUserSettings>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof usersApiResetUserSettings>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getUsersApiResetUserSettingsMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

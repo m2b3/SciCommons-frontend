@@ -60,9 +60,8 @@ function WatchedFieldSync<TFieldValues extends FieldValues>({
   const fieldValue = useWatch({ control, name });
 
   useEffect(() => {
-    if (fieldValue !== undefined) {
-      onValueChange(String(fieldValue || ''));
-    }
+    // Always call onValueChange to sync the value, including on initial mount
+    onValueChange(String(fieldValue || ''));
   }, [fieldValue, onValueChange]);
 
   return null;
@@ -112,6 +111,10 @@ const FormInput = <TFieldValues extends FieldValues>({
   const handleWatchedValueChange = React.useCallback((value: string) => {
     setMarkdown(value);
     markdownRef.current = value;
+    // Also update the editor ref if it exists (for when form is reset externally)
+    if (reviewEditorRef.current && reviewEditorRef.current.getMarkdown() !== value) {
+      reviewEditorRef.current.setMarkdown(value);
+    }
   }, []);
 
   // Get the registered field with validation rules

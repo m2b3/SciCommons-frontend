@@ -119,7 +119,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                       ? discussion.user.profile_pic_url?.startsWith('http')
                         ? discussion.user.profile_pic_url
                         : `data:image/png;base64,${discussion.user.profile_pic_url}`
-                      : `/images/assets/user-icon.png`
+                      : `/images/assets/user-icon.webp`
                   }
                   alt={discussion.user.username}
                   width={32}
@@ -127,7 +127,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({ discussionId, setDi
                   className="mr-2 rounded-full object-cover"
                   quality={75}
                   sizes="32px"
-                  loading="lazy"
+                  unoptimized={!discussion.user.profile_pic_url}
                 />
                 <div>
                   <span>{discussion.user.username}</span>

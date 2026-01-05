@@ -173,7 +173,7 @@ const Comment: React.FC<CommentProps> = ({
               ? author.profile_pic_url.startsWith('http')
                 ? author.profile_pic_url
                 : `data:image/png;base64,${author.profile_pic_url}`
-              : `/images/assets/user-icon.png`
+              : `/images/assets/user-icon.webp`
           }
           alt={author.username}
           width={32}
@@ -181,7 +181,7 @@ const Comment: React.FC<CommentProps> = ({
           className="aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
           quality={75}
           sizes="32px"
-          loading="lazy"
+          unoptimized={!author.profile_pic_url}
         />
       </div>
       <div className="flex-grow res-text-sm">

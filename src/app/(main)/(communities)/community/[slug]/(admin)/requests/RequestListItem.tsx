@@ -33,11 +33,12 @@ const RequestListItem: React.FC<RequestListItemProps> = ({
     <div className="flex items-center justify-between rounded-xl border border-common-contrast bg-common-cardBackground p-3 md:items-center">
       <div className="flex items-center gap-4 md:flex-row">
         <Image
-          src={profilePicture ? profilePicture : '/images/assets/user-icon.png'}
+          src={profilePicture ? profilePicture : '/images/assets/user-icon.webp'}
           alt={name}
           width={32}
           height={32}
           className="aspect-square shrink-0 rounded-full"
+          unoptimized={!profilePicture}
         />
         <div className="flex flex-col gap-2">
           <div>

@@ -150,7 +150,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                     ? review.user.profile_pic_url?.startsWith('http')
                       ? review.user.profile_pic_url
                       : `data:image/png;base64,${review.user.profile_pic_url}`
-                    : `/images/assets/user-icon.png`
+                    : `/images/assets/user-icon.webp`
                 }
                 alt={review.user.username}
                 width={32}
@@ -158,7 +158,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 className="shrink-0 rounded-full object-cover"
                 quality={75}
                 sizes="32px"
-                loading="lazy"
+                unoptimized={!review.user.profile_pic_url}
               />
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 text-sm font-bold text-text-secondary">

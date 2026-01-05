@@ -70,14 +70,14 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
       <div className="flex flex-col items-start">
         <div className="flex items-center gap-4">
           <Image
-            src={profilePicture ? profilePicture : `/images/assets/user-icon.png`}
+            src={profilePicture ? profilePicture : `/images/assets/user-icon.webp`}
             alt={name}
             width={32}
             height={32}
             className="aspect-square shrink-0 rounded-full object-cover"
             quality={75}
             sizes="32px"
-            loading="lazy"
+            unoptimized={!profilePicture}
           />
           <div className="flex flex-col">
             <p className="text-sm font-bold text-text-primary">{name}</p>
