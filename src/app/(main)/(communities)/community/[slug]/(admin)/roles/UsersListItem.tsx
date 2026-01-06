@@ -107,6 +107,12 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
+                onClick={() => !isPending && handleAction(Action.PromoteAdmin)}
+                className="cursor-pointer"
+              >
+                Admin
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => !isPending && handleAction(Action.PromoteModerator)}
                 className="cursor-pointer"
               >

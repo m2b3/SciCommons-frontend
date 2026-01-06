@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Bell, ChevronDown, ChevronRight } from 'lucide-react';
 
 import { useArticlesDiscussionApiGetUserSubscriptions } from '@/api/discussions/discussions';
+import { SubscriptionArticleOut } from '@/api/schemas';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
@@ -16,6 +17,8 @@ interface SelectedArticle {
   slug: string;
   abstract: string;
   communityId: number | null;
+  communityArticleId: number | null;
+  isAdmin: boolean;
 }
 
 interface DiscussionsSidebarProps {
@@ -109,7 +112,7 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
                 {/* Articles List - Shown when expanded */}
                 {isExpanded && (
                   <div className="border-t border-common-minimal">
-                    {subscription.articles.map((article: any) => (
+                    {subscription.articles.map((article: SubscriptionArticleOut) => (
                       <button
                         key={article.article_id}
                         onClick={() =>
@@ -119,6 +122,8 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
                             slug: article.article_slug,
                             abstract: article.article_abstract || '',
                             communityId: subscription.community_id,
+                            communityArticleId: article.community_article_id || null,
+                            isAdmin: subscription.is_admin || false,
                           })
                         }
                         className={cn(

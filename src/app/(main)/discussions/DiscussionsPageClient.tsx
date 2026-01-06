@@ -20,6 +20,8 @@ interface SelectedArticle {
   slug: string;
   abstract: string;
   communityId: number | null;
+  communityArticleId: number | null;
+  isAdmin: boolean;
 }
 
 const DiscussionsPageClient: React.FC = () => {
@@ -111,6 +113,8 @@ const DiscussionsPageClient: React.FC = () => {
                 <DiscussionForum
                   articleId={selectedArticle.id}
                   communityId={selectedArticle.communityId}
+                  communityArticleId={selectedArticle.communityArticleId}
+                  isAdmin={selectedArticle.isAdmin}
                 />
               </div>
             </div>
@@ -189,6 +193,8 @@ const DiscussionsPageClient: React.FC = () => {
                   <DiscussionForum
                     articleId={selectedArticle.id}
                     communityId={selectedArticle.communityId}
+                    communityArticleId={selectedArticle.communityArticleId}
+                    isAdmin={selectedArticle.isAdmin}
                   />
                 </div>
               </div>

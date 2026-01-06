@@ -24,6 +24,7 @@ import { useRealtimeContextStore } from '@/stores/realtimeStore';
 
 import DiscussionCard, { DiscussionCardSkeleton } from './DiscussionCard';
 import DiscussionForm from './DiscussionForm';
+import DiscussionSummary from './DiscussionSummary';
 import DiscussionThread from './DiscussionThread';
 
 interface DiscussionForumProps {
@@ -31,6 +32,7 @@ interface DiscussionForumProps {
   communityId?: number | null;
   communityArticleId?: number | null;
   showSubscribeButton?: boolean;
+  isAdmin?: boolean;
 }
 
 const DiscussionForum: React.FC<DiscussionForumProps> = ({
@@ -38,6 +40,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
   communityId,
   communityArticleId,
   showSubscribeButton = false,
+  isAdmin = false,
 }) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -184,6 +187,11 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
 
   return (
     <div>
+      {/* Discussion Summary - only for community articles */}
+      {communityArticleId && (
+        <DiscussionSummary communityArticleId={communityArticleId} isAdmin={isAdmin} />
+      )}
+
       <div className="mb-4 flex flex-wrap items-center justify-between text-sm">
         <h1 className="text-xl font-bold text-text-primary">Discussions</h1>
         <div className="flex items-center gap-2">
@@ -280,6 +288,9 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
               key={discussion.id}
               discussion={discussion}
               handleDiscussionClick={handleDiscussionClick}
+              isAdmin={isAdmin}
+              isCommunityArticle={!!communityId}
+              refetch={refetch}
             />
           ))}
       </div>

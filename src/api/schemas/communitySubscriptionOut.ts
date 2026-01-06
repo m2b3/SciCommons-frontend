@@ -4,10 +4,11 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { CommunitySubscriptionOutArticlesItem } from './communitySubscriptionOutArticlesItem';
+import type { SubscriptionArticleOut } from './subscriptionArticleOut';
 
 export interface CommunitySubscriptionOut {
-  articles: CommunitySubscriptionOutArticlesItem[];
+  articles: SubscriptionArticleOut[];
   community_id: number;
   community_name: string;
+  is_admin: boolean;
 }

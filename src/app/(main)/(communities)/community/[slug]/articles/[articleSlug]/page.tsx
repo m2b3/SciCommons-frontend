@@ -127,6 +127,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
               communityId={data?.data.community_article?.community.id}
               communityArticleId={data?.data.community_article?.id}
               showSubscribeButton={true}
+              isAdmin={data?.data.community_article?.is_admin || false}
             />
           ),
         },
