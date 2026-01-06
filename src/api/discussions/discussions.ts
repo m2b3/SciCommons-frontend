@@ -30,6 +30,9 @@ import type {
   DiscussionSubscriptionOut,
   DiscussionSubscriptionSchema,
   DiscussionSubscriptionUpdateSchema,
+  DiscussionSummaryCreateSchema,
+  DiscussionSummaryOut,
+  DiscussionSummaryUpdateSchema,
   Message,
   PaginatedDiscussionSchema,
   SubscriptionStatusSchema,
@@ -236,22 +239,6 @@ export const useArticlesDiscussionApiListDiscussions = <
 
 /**
  * Get all active subscriptions for the current user grouped by community
-Returns:
-{
-    "communities": [
-        {
-            "community_id": 1,
-            "community_name": "AI Research",
-            "articles": [
-                {
-                    "article_id": 123,
-                    "article_title": "Deep Learning Paper",
-                    "article_slug": "deep-learning-paper"
-                }
-            ]
-        }
-    ]
-}
  * @summary Get User Subscriptions
  */
 export const articlesDiscussionApiGetUserSubscriptions = (
@@ -723,6 +710,88 @@ export const useArticlesDiscussionApiDeleteDiscussion = <
   TContext
 > => {
   const mutationOptions = getArticlesDiscussionApiDeleteDiscussionMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Toggle the resolved status of a discussion.
+If resolved, it will be unresolved. If unresolved, it will be resolved.
+Only available for community articles and can only be done by:
+- Community admin
+- Discussion author
+
+Args:
+    discussion_id: The ID of the discussion to toggle resolved status
+ * @summary Toggle Discussion Resolved
+ */
+export const articlesDiscussionApiToggleDiscussionResolved = (
+  discussionId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<DiscussionOut>(
+    { url: `/api/articles/discussions/${discussionId}/resolve/`, method: 'PATCH' },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiToggleDiscussionResolvedMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>,
+    TError,
+    { discussionId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>,
+  TError,
+  { discussionId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>,
+    { discussionId: number }
+  > = (props) => {
+    const { discussionId } = props ?? {};
+
+    return articlesDiscussionApiToggleDiscussionResolved(discussionId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiToggleDiscussionResolvedMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>
+>;
+
+export type ArticlesDiscussionApiToggleDiscussionResolvedMutationError = ErrorType<Message>;
+
+/**
+ * @summary Toggle Discussion Resolved
+ */
+export const useArticlesDiscussionApiToggleDiscussionResolved = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>,
+    TError,
+    { discussionId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>,
+  TError,
+  { discussionId: number },
+  TContext
+> => {
+  const mutationOptions = getArticlesDiscussionApiToggleDiscussionResolvedMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -1289,6 +1358,344 @@ export const useArticlesDiscussionApiUnsubscribeFromDiscussion = <
   TContext
 > => {
   const mutationOptions = getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Get the discussion summary for a community article.
+Available to all users who can view the article.
+
+Optimized: Single query with all necessary joins.
+ * @summary Get Discussion Summary
+ */
+export const articlesDiscussionApiGetDiscussionSummary = (
+  communityArticleId: number,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<DiscussionSummaryOut>(
+    { url: `/api/articles/discussions/summary/${communityArticleId}/`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiGetDiscussionSummaryQueryKey = (
+  communityArticleId: number
+) => {
+  return [`/api/articles/discussions/summary/${communityArticleId}/`] as const;
+};
+
+export const getArticlesDiscussionApiGetDiscussionSummaryQueryOptions = <
+  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>,
+  TError = ErrorType<Message>,
+>(
+  communityArticleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getArticlesDiscussionApiGetDiscussionSummaryQueryKey(communityArticleId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>
+  > = ({ signal }) =>
+    articlesDiscussionApiGetDiscussionSummary(communityArticleId, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!communityArticleId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ArticlesDiscussionApiGetDiscussionSummaryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>
+>;
+export type ArticlesDiscussionApiGetDiscussionSummaryQueryError = ErrorType<Message>;
+
+/**
+ * @summary Get Discussion Summary
+ */
+export const useArticlesDiscussionApiGetDiscussionSummary = <
+  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>,
+  TError = ErrorType<Message>,
+>(
+  communityArticleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getArticlesDiscussionApiGetDiscussionSummaryQueryOptions(
+    communityArticleId,
+    options
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+/**
+ * Create a discussion summary for a community article.
+Only community admins can create summaries.
+
+Optimized: Uses prefetch for admin check, atomic create with get_or_create pattern.
+ * @summary Create Discussion Summary
+ */
+export const articlesDiscussionApiCreateDiscussionSummary = (
+  communityArticleId: number,
+  discussionSummaryCreateSchema: BodyType<DiscussionSummaryCreateSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<DiscussionSummaryOut>(
+    {
+      url: `/api/articles/discussions/summary/${communityArticleId}/`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: discussionSummaryCreateSchema,
+    },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiCreateDiscussionSummaryMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>,
+    TError,
+    { communityArticleId: number; data: BodyType<DiscussionSummaryCreateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>,
+  TError,
+  { communityArticleId: number; data: BodyType<DiscussionSummaryCreateSchema> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>,
+    { communityArticleId: number; data: BodyType<DiscussionSummaryCreateSchema> }
+  > = (props) => {
+    const { communityArticleId, data } = props ?? {};
+
+    return articlesDiscussionApiCreateDiscussionSummary(communityArticleId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiCreateDiscussionSummaryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>
+>;
+export type ArticlesDiscussionApiCreateDiscussionSummaryMutationBody =
+  BodyType<DiscussionSummaryCreateSchema>;
+export type ArticlesDiscussionApiCreateDiscussionSummaryMutationError = ErrorType<Message>;
+
+/**
+ * @summary Create Discussion Summary
+ */
+export const useArticlesDiscussionApiCreateDiscussionSummary = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>,
+    TError,
+    { communityArticleId: number; data: BodyType<DiscussionSummaryCreateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>,
+  TError,
+  { communityArticleId: number; data: BodyType<DiscussionSummaryCreateSchema> },
+  TContext
+> => {
+  const mutationOptions = getArticlesDiscussionApiCreateDiscussionSummaryMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Update the discussion summary for a community article.
+Only community admins can update summaries.
+ * @summary Update Discussion Summary
+ */
+export const articlesDiscussionApiUpdateDiscussionSummary = (
+  communityArticleId: number,
+  discussionSummaryUpdateSchema: BodyType<DiscussionSummaryUpdateSchema>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<DiscussionSummaryOut>(
+    {
+      url: `/api/articles/discussions/summary/${communityArticleId}/`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: discussionSummaryUpdateSchema,
+    },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiUpdateDiscussionSummaryMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>,
+    TError,
+    { communityArticleId: number; data: BodyType<DiscussionSummaryUpdateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>,
+  TError,
+  { communityArticleId: number; data: BodyType<DiscussionSummaryUpdateSchema> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>,
+    { communityArticleId: number; data: BodyType<DiscussionSummaryUpdateSchema> }
+  > = (props) => {
+    const { communityArticleId, data } = props ?? {};
+
+    return articlesDiscussionApiUpdateDiscussionSummary(communityArticleId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiUpdateDiscussionSummaryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>
+>;
+export type ArticlesDiscussionApiUpdateDiscussionSummaryMutationBody =
+  BodyType<DiscussionSummaryUpdateSchema>;
+export type ArticlesDiscussionApiUpdateDiscussionSummaryMutationError = ErrorType<Message>;
+
+/**
+ * @summary Update Discussion Summary
+ */
+export const useArticlesDiscussionApiUpdateDiscussionSummary = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>,
+    TError,
+    { communityArticleId: number; data: BodyType<DiscussionSummaryUpdateSchema> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>,
+  TError,
+  { communityArticleId: number; data: BodyType<DiscussionSummaryUpdateSchema> },
+  TContext
+> => {
+  const mutationOptions = getArticlesDiscussionApiUpdateDiscussionSummaryMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Delete the discussion summary for a community article.
+Only community admins can delete summaries.
+ * @summary Delete Discussion Summary
+ */
+export const articlesDiscussionApiDeleteDiscussionSummary = (
+  communityArticleId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<void>(
+    { url: `/api/articles/discussions/summary/${communityArticleId}/`, method: 'DELETE' },
+    options
+  );
+};
+
+export const getArticlesDiscussionApiDeleteDiscussionSummaryMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>,
+    TError,
+    { communityArticleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>,
+  TError,
+  { communityArticleId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>,
+    { communityArticleId: number }
+  > = (props) => {
+    const { communityArticleId } = props ?? {};
+
+    return articlesDiscussionApiDeleteDiscussionSummary(communityArticleId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesDiscussionApiDeleteDiscussionSummaryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>
+>;
+
+export type ArticlesDiscussionApiDeleteDiscussionSummaryMutationError = ErrorType<Message>;
+
+/**
+ * @summary Delete Discussion Summary
+ */
+export const useArticlesDiscussionApiDeleteDiscussionSummary = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>,
+    TError,
+    { communityArticleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>,
+  TError,
+  { communityArticleId: number },
+  TContext
+> => {
+  const mutationOptions = getArticlesDiscussionApiDeleteDiscussionSummaryMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

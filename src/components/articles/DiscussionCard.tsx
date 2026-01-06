@@ -4,24 +4,77 @@ import Image from 'next/image';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  MessageCircle,
+  MoreVertical,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
+import { useArticlesDiscussionApiToggleDiscussionResolved } from '@/api/discussions/discussions';
 import { DiscussionOut } from '@/api/schemas';
+import { showErrorToast } from '@/lib/toastHelpers';
+import { useAuthStore } from '@/stores/authStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import DiscussionComments from './DiscussionComments';
 
 interface DiscussionCardProps {
   discussion: DiscussionOut;
   handleDiscussionClick: (id: number) => void;
+  isAdmin?: boolean;
+  isCommunityArticle?: boolean;
+  refetch?: () => void;
 }
 
-const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscussionClick }) => {
+const DiscussionCard: React.FC<DiscussionCardProps> = ({
+  discussion,
+  handleDiscussionClick,
+  isAdmin = false,
+  isCommunityArticle = false,
+  refetch,
+}) => {
   dayjs.extend(relativeTime);
 
-  // const accessToken = useAuthStore((state) => state.accessToken);
+  const accessToken = useAuthStore((state) => state.accessToken);
   const [displayComments, setDisplayComments] = useState<boolean>(false);
+  const [isResolved, setIsResolved] = useState<boolean>(discussion.is_resolved || false);
+
+  // Check if user can resolve/unresolve (admin or discussion author)
+  const canResolve = isCommunityArticle && (isAdmin || discussion.is_author);
+
+  const { mutate: toggleResolved, isPending: isToggling } =
+    useArticlesDiscussionApiToggleDiscussionResolved({
+      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      mutation: {
+        onSuccess: (response) => {
+          const newResolvedState = response.data.is_resolved;
+          setIsResolved(newResolvedState || false);
+          toast.success(
+            newResolvedState ? 'Discussion marked as resolved' : 'Discussion marked as unresolved'
+          );
+          refetch?.();
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      },
+    });
+
+  const handleToggleResolved = () => {
+    if (!discussion.id || isToggling) return;
+    toggleResolved({ discussionId: Number(discussion.id) });
+  };
 
   // const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
   //   'articles.discussion',
@@ -58,31 +111,62 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussion, handleDiscu
     <div key={discussion.id} className="mb-4 border-b border-common-minimal pb-4 text-xs">
       <div className="flex w-full items-start justify-between">
         <div className="flex w-full flex-col gap-2">
-          <div className="flex items-center">
-            <Image
-              src={
-                discussion.user.profile_pic_url
-                  ? discussion.user.profile_pic_url?.startsWith('http')
-                    ? discussion.user.profile_pic_url
-                    : `data:image/png;base64,${discussion.user.profile_pic_url}`
-                  : `/images/assets/user-icon.webp`
-              }
-              alt={discussion.user.username}
-              width={32}
-              height={32}
-              className="mr-2 aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
-              quality={75}
-              sizes="32px"
-              unoptimized={!discussion.user.profile_pic_url}
-            />
-            <div>
-              <span className="text-sm font-semibold text-text-secondary">
-                {discussion.user.username}
-              </span>
-              <span className="ml-2 text-xxs text-text-tertiary">
-                • {dayjs(discussion.created_at).fromNow()}
-              </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Image
+                src={
+                  discussion.user.profile_pic_url
+                    ? discussion.user.profile_pic_url?.startsWith('http')
+                      ? discussion.user.profile_pic_url
+                      : `data:image/png;base64,${discussion.user.profile_pic_url}`
+                    : `/images/assets/user-icon.webp`
+                }
+                alt={discussion.user.username}
+                width={32}
+                height={32}
+                className="mr-2 aspect-square h-7 w-7 rounded-full object-cover md:h-8 md:w-8"
+                quality={75}
+                sizes="32px"
+                unoptimized={!discussion.user.profile_pic_url}
+              />
+              <div className="flex items-center">
+                <span className="text-sm font-semibold text-text-secondary">
+                  {discussion.user.username}
+                </span>
+                <span className="ml-2 text-xxs text-text-tertiary">
+                  • {dayjs(discussion.created_at).fromNow()}
+                </span>
+                {isResolved && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Check className="ml-2 h-4 w-4 text-functional-green" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>This discussion is resolved</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
             </div>
+            {canResolve && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="rounded-md p-1 text-text-tertiary hover:bg-common-minimal hover:text-text-primary focus:outline-none"
+                    disabled={isToggling}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleToggleResolved} disabled={isToggling}>
+                    {isResolved ? 'Mark as Unresolved' : 'Mark as Resolved'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
           <div className="flex w-full flex-col gap-0">
             <span

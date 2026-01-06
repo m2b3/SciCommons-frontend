@@ -17,6 +17,7 @@ export interface DiscussionOut {
   id?: DiscussionOutId;
   is_author?: boolean;
   is_pseudonymous?: boolean;
+  is_resolved?: boolean;
   /** @maxLength 200 */
   topic: string;
   updated_at: string;
