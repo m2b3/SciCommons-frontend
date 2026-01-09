@@ -12,6 +12,7 @@ export interface CommunityArticleStatsResponse {
   average_rating: number;
   community_name: CommunityArticleStatsResponseCommunityName;
   discussions: number;
+  has_user_reviewed?: boolean;
   likes: number;
   likes_over_time: DateCount[];
   recent_reviews: ReviewExcerpt[];

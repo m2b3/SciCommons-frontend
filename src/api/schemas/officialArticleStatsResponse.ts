@@ -10,6 +10,7 @@ import type { ReviewExcerpt } from './reviewExcerpt';
 export interface OfficialArticleStatsResponse {
   average_rating: number;
   discussions: number;
+  has_user_reviewed?: boolean;
   likes: number;
   likes_over_time: DateCount[];
   recent_reviews: ReviewExcerpt[];

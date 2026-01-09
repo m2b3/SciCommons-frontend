@@ -6,7 +6,7 @@
  */
 
 export type ArticlesDiscussionApiListDiscussionsParams = {
-  community_id?: number;
+  community_id?: number | null;
   page?: number;
   size?: number;
 };
