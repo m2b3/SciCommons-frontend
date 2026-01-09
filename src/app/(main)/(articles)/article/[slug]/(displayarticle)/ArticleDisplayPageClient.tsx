@@ -25,7 +25,7 @@ function ArticleDisplayPageClient({ params }: Props) {
   const axiosConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
   const [submitReview, setSubmitReview] = useState(false);
 
-  const { data, error, isPending } = useArticlesApiGetArticle(
+  const { data, error, isPending, refetch } = useArticlesApiGetArticle(
     params.slug,
     {},
     {
@@ -66,7 +66,7 @@ function ArticleDisplayPageClient({ params }: Props) {
     if (reviewsError) showErrorToast(reviewsError);
   }, [reviewsError]);
 
-  const hasUserReviewed = reviewsData?.data.items.some((review) => review.is_author) || false;
+  const hasUserReviewed = data?.data.has_user_reviewed || false;
 
   const tabs = data
     ? [
@@ -74,7 +74,13 @@ function ArticleDisplayPageClient({ params }: Props) {
           title: 'Reviews',
           content: (
             <div className="flex flex-col">
-              {!hasUserReviewed && (
+              {hasUserReviewed ? (
+                <div className="mb-4 flex items-center justify-center rounded-md border border-common-minimal bg-common-minimal/10 px-4 py-3">
+                  <span className="text-sm font-semibold italic text-text-secondary">
+                    You have already reviewed this article.
+                  </span>
+                </div>
+              ) : (
                 <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
                   <span className="text-sm font-semibold text-text-secondary">
                     Have your reviews? (You can add a review only once.)
@@ -90,7 +96,10 @@ function ArticleDisplayPageClient({ params }: Props) {
               {submitReview && !hasUserReviewed && (
                 <ReviewForm
                   articleId={Number(data.data.id)}
-                  refetch={reviewsRefetch}
+                  refetch={() => {
+                    reviewsRefetch(); // Updates the list of reviews
+                    refetch(); // You need to destructure 'refetch' from useArticlesApiGetArticle
+                  }}
                   is_submitter={data.data.is_submitter}
                   onSubmitSuccess={() => setSubmitReview(false)}
                 />

@@ -84,17 +84,23 @@ const CommunityArticleDisplayPage: React.FC = () => {
                   communityId={data?.data.community_article?.community.id}
                 />
               )} */}
-              {!hasUserReviewed && (
+              {hasUserReviewed ? (
+                <div className="mb-4 flex items-center justify-center rounded-md border border-common-minimal bg-common-minimal/10 px-4 py-3">
+                  <span className="text-sm font-semibold italic text-text-secondary">
+                    You have already reviewed this article.
+                  </span>
+                </div>
+              ) : (
                 <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
                   <span className="text-sm font-semibold text-text-secondary">
                     Have your reviews? (You can add a review only once.)
                   </span>
-                  <span
-                    className="cursor-pointer text-xs text-functional-green hover:underline"
+                  <button
+                    className="text-xs text-functional-green hover:underline"
                     onClick={() => setSubmitReview(!submitReview)}
                   >
                     {submitReview ? 'Cancel' : 'Add review'}
-                  </span>
+                  </button>
                 </div>
               )}
               {submitReview && !hasUserReviewed && (
