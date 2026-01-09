@@ -23,6 +23,7 @@ export interface ArticleOut {
   community_article: ArticleOutCommunityArticle;
   created_at: string;
   faqs: FAQSchema[];
+  has_user_reviewed?: boolean;
   id?: ArticleOutId;
   is_pseudonymous?: boolean;
   is_submitter: boolean;
