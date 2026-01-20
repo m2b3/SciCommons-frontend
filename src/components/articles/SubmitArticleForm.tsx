@@ -255,7 +255,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
               {showPrivateCheckOption && (
                 <div className="flex items-center gap-2">
                   <Checkbox
-                    onCheckedChange={(checked) => onChange(checked ? 'Private' : 'Public')}
+                    onCheckedChange={(checked: boolean) => onChange(checked ? 'Private' : 'Public')}
                     checked={value === 'Private'}
                   />
                   <span className="text-sm text-text-secondary">
