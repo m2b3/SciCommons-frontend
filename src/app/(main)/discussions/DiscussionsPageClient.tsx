@@ -2,11 +2,21 @@
 
 import React, { useEffect, useState } from 'react';
 
+import Link from 'next/link';
+
 import { ChevronsDown, PanelLeft } from 'lucide-react';
 
 import DiscussionForum from '@/components/articles/DiscussionForum';
 import EmptyState from '@/components/common/EmptyState';
 import RenderParsedHTML from '@/components/common/RenderParsedHTML';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -22,6 +32,7 @@ interface SelectedArticle {
   communityId: number | null;
   communityArticleId: number | null;
   isAdmin: boolean;
+  communityName: string;
 }
 
 const DiscussionsPageClient: React.FC = () => {
@@ -152,11 +163,35 @@ const DiscussionsPageClient: React.FC = () => {
           <div className="h-full overflow-auto">
             {selectedArticle ? (
               <div className="p-6">
+                <Breadcrumb className="mb-2">
+                  <BreadcrumbList className="text-xs">
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link
+                          href={`/community/${selectedArticle.communityName}`}
+                          className="max-w-[150px] truncate text-text-tertiary hover:text-text-secondary sm:max-w-[200px]"
+                          title={selectedArticle.communityName}
+                        >
+                          {selectedArticle.communityName}
+                        </Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage
+                        className="max-w-[200px] truncate text-text-secondary sm:max-w-[400px]"
+                        title={selectedArticle.title}
+                      >
+                        {selectedArticle.title}
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
                 <div
                   className={cn(
                     'mb-6 max-h-20 overflow-hidden border-b border-common-minimal pb-10 transition-all duration-300 ease-in-out',
                     {
-                      'max-h-96 overflow-auto': isExpanded,
+                      'h-fit max-h-96 overflow-auto': isExpanded,
                     }
                   )}
                 >
@@ -178,6 +213,7 @@ const DiscussionsPageClient: React.FC = () => {
                         supportLatex={true}
                         gradientClassName="sm:from-common-background to-transparent"
                         contentClassName="text-sm"
+                        containerClassName="mb-0"
                       />
                     </div>
                   )}

@@ -7,6 +7,7 @@ import { CircleXIcon } from 'lucide-react';
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import EmptyState from '@/components/common/EmptyState';
+import CommunityBreadcrumb from '@/components/communities/CommunityBreadcrumb';
 import TabNavigation from '@/components/ui/tab-navigation';
 import useStore from '@/hooks/useStore';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -76,6 +77,13 @@ const Community = ({ params }: { params: { slug: string } }) => {
 
   return (
     <div className="container h-fit p-4">
+      <div className="pl-2">
+        <CommunityBreadcrumb
+          communityName={data?.data.name}
+          communitySlug={params.slug}
+          isLoading={isPending}
+        />
+      </div>
       {isPending ? (
         <DisplayCommunitySkeleton />
       ) : (

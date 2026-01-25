@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 
-import { Bell, ChevronDown, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+
+import { Bell, ChevronRight } from 'lucide-react';
 
 import { useArticlesDiscussionApiGetUserSubscriptions } from '@/api/discussions/discussions';
-import { SubscriptionArticleOut } from '@/api/schemas';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
@@ -19,6 +20,18 @@ interface SelectedArticle {
   communityId: number | null;
   communityArticleId: number | null;
   isAdmin: boolean;
+  communityName: string;
+}
+
+interface FlattenedArticle {
+  articleId: number;
+  articleTitle: string;
+  articleSlug: string;
+  articleAbstract: string;
+  communityArticleId: number | null;
+  communityId: number;
+  communityName: string;
+  isAdmin: boolean;
 }
 
 interface DiscussionsSidebarProps {
@@ -31,7 +44,6 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
   selectedArticle,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
-  const [expandedCommunities, setExpandedCommunities] = useState<Set<number>>(new Set());
 
   // Fetch user subscriptions
   const { data: subscriptionsData, isPending: subscriptionsLoading } =
@@ -44,25 +56,28 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
       },
     });
 
-  const subscriptions = subscriptionsData?.data?.communities || [];
+  const communities = subscriptionsData?.data?.communities || [];
 
-  const toggleCommunity = (communityId: number) => {
-    setExpandedCommunities((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(communityId)) {
-        newSet.delete(communityId);
-      } else {
-        newSet.add(communityId);
-      }
-      return newSet;
-    });
-  };
+  // Flatten the data: each article becomes its own item with community info
+  const flattenedArticles = useMemo<FlattenedArticle[]>(() => {
+    return communities.flatMap((community) =>
+      community.articles.map((article) => ({
+        articleId: article.article_id,
+        articleTitle: article.article_title,
+        articleSlug: article.article_slug,
+        articleAbstract: article.article_abstract || '',
+        communityArticleId: article.community_article_id || null,
+        communityId: community.community_id,
+        communityName: community.community_name,
+        isAdmin: community.is_admin || false,
+      }))
+    );
+  }, [communities]);
 
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="mb-4">
         <h2 className="flex items-center gap-2 text-lg font-bold text-text-primary">Discussions</h2>
-        {/* <p className="mt-1 text-xs text-text-tertiary">Select an article to view discussions</p> */}
       </div>
 
       {/* Subscriptions Loading State */}
@@ -82,70 +97,60 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
         </div>
       )}
 
-      {/* Subscribed Articles Section */}
-      {!subscriptionsLoading && subscriptions.length > 0 && (
-        <div className="space-y-3">
-          {subscriptions.map((subscription) => {
-            const isExpanded = expandedCommunities.has(subscription.community_id);
-            return (
-              <div
-                key={subscription.community_id}
-                className="rounded-lg border border-common-minimal"
-              >
-                {/* Community Header - Clickable */}
-                <button
-                  onClick={() => toggleCommunity(subscription.community_id)}
-                  className="flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors hover:bg-common-minimal"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-text-primary">
-                      {subscription.community_name}
-                    </span>
-                  </div>
-                  {isExpanded ? (
-                    <ChevronDown size={16} className="flex-shrink-0 text-text-tertiary" />
-                  ) : (
-                    <ChevronRight size={16} className="flex-shrink-0 text-text-tertiary" />
+      {/* Flattened Articles List */}
+      {!subscriptionsLoading && flattenedArticles.length > 0 && (
+        <div className="space-y-4">
+          {flattenedArticles.map((article) => (
+            <button
+              key={`${article.communityId}-${article.articleId}`}
+              onClick={() =>
+                onArticleSelect({
+                  id: article.articleId,
+                  title: article.articleTitle,
+                  slug: article.articleSlug,
+                  abstract: article.articleAbstract,
+                  communityId: article.communityId,
+                  communityArticleId: article.communityArticleId,
+                  isAdmin: article.isAdmin,
+                  communityName: article.communityName,
+                })
+              }
+              className={cn(
+                'relative flex w-full flex-col gap-1 text-left transition-colors',
+                'before:absolute before:-inset-x-2 before:-inset-y-1.5 before:rounded-sm before:transition-colors',
+                'hover:before:bg-common-minimal/50',
+                selectedArticle?.id === article.articleId &&
+                  'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10'
+              )}
+            >
+              <div className="relative z-10 flex w-full flex-nowrap items-center">
+                <Link
+                  href={`/community/${article.communityName}`}
+                  className={cn(
+                    'line-clamp-1 truncate text-[9px] font-semibold text-text-tertiary hover:text-functional-blueLight hover:underline',
+                    selectedArticle?.id === article.articleId && 'text-text-secondary'
                   )}
-                </button>
-
-                {/* Articles List - Shown when expanded */}
-                {isExpanded && (
-                  <div className="border-t border-common-minimal">
-                    {subscription.articles.map((article: SubscriptionArticleOut) => (
-                      <button
-                        key={article.article_id}
-                        onClick={() =>
-                          onArticleSelect({
-                            id: article.article_id,
-                            title: article.article_title,
-                            slug: article.article_slug,
-                            abstract: article.article_abstract || '',
-                            communityId: subscription.community_id,
-                            communityArticleId: article.community_article_id || null,
-                            isAdmin: subscription.is_admin || false,
-                          })
-                        }
-                        className={cn(
-                          'w-full border-b border-common-minimal p-3 text-left transition-colors last:border-b-0 hover:bg-common-minimal',
-                          selectedArticle?.id === article.article_id && 'bg-functional-green/10'
-                        )}
-                      >
-                        <p className="line-clamp-2 text-xs font-medium text-text-secondary">
-                          {article.article_title}
-                        </p>
-                      </button>
-                    ))}
-                  </div>
-                )}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {article.communityName}
+                </Link>
+                <ChevronRight size={12} className="flex-shrink-0 text-text-tertiary" />
               </div>
-            );
-          })}
+              <p
+                className={cn(
+                  'relative z-10 line-clamp-2 text-xs font-medium text-text-secondary',
+                  selectedArticle?.id === article.articleId && 'text-text-primary'
+                )}
+              >
+                {article.articleTitle}
+              </p>
+            </button>
+          ))}
         </div>
       )}
 
       {/* Empty State */}
-      {!subscriptionsLoading && subscriptions.length === 0 && (
+      {!subscriptionsLoading && flattenedArticles.length === 0 && (
         <div className="flex h-[calc(100vh-12rem)] flex-col items-center justify-center py-8 text-center">
           <Bell className="mb-4 h-16 w-16 text-text-tertiary" />
           <p className="text-lg font-semibold text-text-secondary">No subscriptions yet</p>
