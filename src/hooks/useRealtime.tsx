@@ -12,6 +12,7 @@ import {
 } from '../api/real-time/real-time';
 import { useAuthStore } from '../stores/authStore';
 import { useRealtimeContextStore } from '../stores/realtimeStore';
+import { useUnreadNotificationsStore } from '../stores/unreadNotificationsStore';
 import { isSoundOnDiscussionNotificationEnabled } from './useUserSettings';
 
 type RealtimeEventType =
@@ -502,10 +503,19 @@ export function useRealtime() {
             });
           }
 
-          // Show notification
+          // Show notification and track unread
           if (event.type === 'new_discussion' && event.data.discussion) {
             const username = event.data.discussion.user?.username || 'Unknown user';
             const topic = event.data.discussion.topic || 'Untitled discussion';
+            const discussionId = event.data.discussion.id;
+
+            // Add to unread notifications store
+            if (discussionId !== undefined) {
+              useUnreadNotificationsStore.getState().addUnreadItem(communityId, articleId, {
+                id: discussionId,
+                type: 'discussion',
+              });
+            }
 
             toast.warning(
               <div className="flex items-start gap-3">
@@ -543,10 +553,21 @@ export function useRealtime() {
             }
           }
 
-          // Show notification
+          // Show notification and track unread
           if (event.type === 'new_comment' && event.data.comment) {
             const username = event.data.comment.author?.username || 'Unknown user';
             const content = event.data.comment.content || 'No content';
+            const commentId = event.data.comment.id;
+
+            // Add to unread notifications store
+            if (commentId !== undefined) {
+              useUnreadNotificationsStore.getState().addUnreadItem(communityId, articleId, {
+                id: commentId,
+                type: event.data.parent_id ? 'reply' : 'comment',
+                discussionId: event.data.discussion_id,
+                parentId: event.data.parent_id,
+              });
+            }
 
             toast.warning(
               <div className="flex items-start gap-3">

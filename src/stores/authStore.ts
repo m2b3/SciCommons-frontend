@@ -2,6 +2,8 @@ import Cookies from 'js-cookie';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { useUnreadNotificationsStore } from './unreadNotificationsStore';
+
 export interface AuthenticatedUserType {
   email: string;
   first_name: string;
@@ -46,6 +48,8 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         Cookies.remove(AUTH_COOKIE_NAME);
         Cookies.remove('expiresAt');
+        // Clear unread notifications on logout
+        useUnreadNotificationsStore.getState().clearAll();
         set(() => ({
           isAuthenticated: false,
           accessToken: null,

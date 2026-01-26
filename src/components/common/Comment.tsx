@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -21,8 +21,10 @@ import {
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
 import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { useMarkAsReadOnViewSimple } from '@/hooks/useMarkAsReadOnView';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { useUnreadNotificationsStore } from '@/stores/unreadNotificationsStore';
 
 import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
@@ -114,6 +116,54 @@ const Comment: React.FC<CommentProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [highlight, setHighlight] = useState(isNew);
   const hasReplies = replies && replies.length > 0;
+  const commentRef = useRef<HTMLDivElement>(null);
+
+  // Check if this comment is unread in the store (for realtime updates)
+  const isUnreadInStore = useUnreadNotificationsStore((state) =>
+    state.isItemUnread(Number(id), depth === 0 ? 'comment' : 'reply')
+  );
+
+  // Combined unread state: either from prop (isNew) or from store
+  const isUnread = isNew || isUnreadInStore;
+
+  // Get the function to mark items as read - we need to find which article this belongs to
+  const articleUnreads = useUnreadNotificationsStore((state) => state.articleUnreads);
+
+  // Find the article context for this comment
+  const findArticleContext = useCallback(() => {
+    for (const [key, article] of Object.entries(articleUnreads)) {
+      const hasItem = article.items.some(
+        (item) => item.id === Number(id) && (item.type === 'comment' || item.type === 'reply')
+      );
+      if (hasItem) {
+        return { communityId: article.communityId, articleId: article.articleId };
+      }
+    }
+    return null;
+  }, [articleUnreads, id]);
+
+  const markItemRead = useUnreadNotificationsStore((state) => state.markItemRead);
+
+  // Mark as read when visible for 2 seconds
+  const handleMarkRead = useCallback(() => {
+    const context = findArticleContext();
+    if (context) {
+      markItemRead(
+        context.communityId,
+        context.articleId,
+        Number(id),
+        depth === 0 ? 'comment' : 'reply'
+      );
+    }
+  }, [findArticleContext, markItemRead, id, depth]);
+
+  useMarkAsReadOnViewSimple(commentRef, {
+    itemId: Number(id),
+    type: depth === 0 ? 'comment' : 'reply',
+    enabled: isUnreadInStore,
+    delay: 2000,
+    onMarkRead: handleMarkRead,
+  });
 
   useEffect(() => {
     setIsCollapsed(depth >= maxDepth || isAllCollapsed);
@@ -158,11 +208,19 @@ const Comment: React.FC<CommentProps> = ({
 
   return (
     <div
+      ref={commentRef}
       className={cn(
-        'relative mb-4 flex space-x-0 rounded-xl border-common-minimal',
-        highlight && 'bg-yellow-100 transition-colors duration-1000 dark:bg-yellow-900'
+        'relative mb-4 flex space-x-0 rounded-xl border-common-minimal transition-colors duration-500',
+        highlight && 'bg-yellow-100 dark:bg-yellow-900',
+        isUnreadInStore && !highlight && 'bg-functional-blue/5'
       )}
     >
+      {/* NEW badge for unread comments */}
+      {isUnread && depth === 0 && (
+        <span className="absolute -left-1 -top-1 z-10 rounded bg-functional-blue px-1 text-[9px] font-semibold uppercase text-white">
+          New
+        </span>
+      )}
       <div className="aspect-square h-7 w-7 flex-shrink-0 rounded-full bg-common-minimal md:h-8 md:w-8">
         {hasReplies && (
           <div className="absolute bottom-1 left-3.5 top-10 w-[1px] bg-common-heavyContrast md:left-4" />
