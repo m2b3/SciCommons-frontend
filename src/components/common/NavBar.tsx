@@ -33,9 +33,11 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
 import useStore from '@/hooks/useStore';
+import { useTabTitleNotification } from '@/hooks/useTabTitleNotification';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { useUnreadNotificationsStore } from '@/stores/unreadNotificationsStore';
 
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
@@ -45,13 +47,19 @@ const NavBar: React.FC = () => {
   const user = useStore(useAuthStore, (state) => state.user);
   const pathname = usePathname();
 
+  // Get total unread count for discussions badge
+  const totalUnread = useUnreadNotificationsStore((state) => state.getTotalUnreadCount());
+
+  // Update tab title with unread count
+  useTabTitleNotification();
+
   const isAshokaUser = user?.email?.endsWith('ashoka.edu.in') ?? false;
   const router = useRouter();
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/articles', label: 'Articles' },
-    { href: '/communities', label: 'Communities' },
-    { href: '/discussions', label: 'Discussions' },
+    { href: '/articles', label: 'Articles', altHref: '/article' },
+    { href: '/communities', label: 'Communities', altHref: '/community' },
+    { href: '/discussions', label: 'Discussions', altHref: '/discussion' },
     // { href: '/posts', label: 'Posts' },
     // { href: '/about', label: 'About' },
   ];
@@ -85,19 +93,33 @@ const NavBar: React.FC = () => {
           </div>
         </div>
         <ul className="mx-auto hidden items-center space-x-1 md:absolute md:left-1/2 md:flex md:-translate-x-1/2">
-          {navLinks?.map((link) => (
-            <li
-              key={link.href}
-              className={cn(
-                'rounded-full px-3 py-1 text-sm text-text-primary hover:bg-functional-green/10',
-                {
-                  'bg-functional-green/10 font-bold text-functional-green': link.href === pathname,
-                }
-              )}
-            >
-              <Link href={link.href}>{link.label}</Link>
-            </li>
-          ))}
+          {navLinks?.map((link) => {
+            // Check if current path matches this nav link
+            const isActive =
+              link.href === pathname || (link.altHref && pathname?.startsWith(link.altHref));
+
+            return (
+              <li
+                key={link.href}
+                className={cn(
+                  'relative rounded-full px-3 py-1 text-sm text-text-primary hover:bg-functional-green/10',
+                  {
+                    'bg-functional-green/10 font-bold text-functional-green': isActive,
+                  }
+                )}
+              >
+                <Link href={link.href}>{link.label}</Link>
+                {/* Unread badge for Discussions */}
+                {link.href === '/discussions' &&
+                  totalUnread > 0 &&
+                  !pathname?.startsWith('/discussion') && (
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-functional-red px-1 text-[9px] font-bold text-white">
+                      {totalUnread > 99 ? '99+' : totalUnread}
+                    </span>
+                  )}
+              </li>
+            );
+          })}
         </ul>
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">

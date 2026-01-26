@@ -12,6 +12,7 @@ import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/Di
 import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard';
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
+import CommunityBreadcrumb from '@/components/communities/CommunityBreadcrumb';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -146,6 +147,12 @@ const CommunityArticleDisplayPage: React.FC = () => {
 
   return (
     <div className="w-full p-4 py-4 md:px-6">
+      <CommunityBreadcrumb
+        communityName={data?.data.community_article?.community.name}
+        communitySlug={params?.slug}
+        articleTitle={data?.data.title}
+        isLoading={isPending}
+      />
       {isPending ? (
         <DisplayArticleSkeleton />
       ) : (

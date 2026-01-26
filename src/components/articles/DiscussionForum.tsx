@@ -291,6 +291,8 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
               isAdmin={isAdmin}
               isCommunityArticle={!!communityId}
               refetch={refetch}
+              articleId={articleId}
+              communityId={communityId}
             />
           ))}
       </div>
