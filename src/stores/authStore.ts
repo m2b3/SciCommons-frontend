@@ -1,7 +1,6 @@
 import Cookies from 'js-cookie';
 import { create } from 'zustand';
-
-import { clearRegisteredQueryCache } from '@/api/queryClientRegistry';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 export interface AuthenticatedUserType {
   email: string;
@@ -25,109 +24,81 @@ interface AuthState {
 
 const AUTH_COOKIE_NAME = 'auth_token';
 const TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 1 day
-const SERVER_SESSION_FALLBACK_TTL_MS = 60 * 60 * 1000; // 1 hour
 
-const getExpiresAtFromToken = (token: string): number | null => {
-  const parts = token.split('.');
-  if (parts.length < 2) return null;
-  try {
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-    if (!payload?.exp || typeof payload.exp !== 'number') return null;
-    return payload.exp * 1000;
-  } catch {
-    return null;
-  }
-};
-
-const probeServerSession = async (): Promise<boolean> => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  if (!backendUrl) return false;
-  try {
-    const response = await fetch(`${backendUrl}/api/users/me`, {
-      method: 'GET',
-      credentials: 'include',
-      cache: 'no-store',
-    });
-    return response.ok;
-  } catch {
-    return false;
-  }
-};
-
-export const useAuthStore = create<AuthState>()((set, get) => ({
-  isAuthenticated: false,
-  accessToken: null,
-  expiresAt: null,
-  user: null,
-  setAccessToken: (token: string, user: AuthenticatedUserType) => {
-    const expiresAt = getExpiresAtFromToken(token) ?? Date.now() + TOKEN_EXPIRATION_TIME;
-    Cookies.set(AUTH_COOKIE_NAME, token, { secure: true, sameSite: 'strict' });
-    Cookies.set('expiresAt', expiresAt.toString(), { secure: true, sameSite: 'strict' });
-    set(() => ({
-      isAuthenticated: true,
-      accessToken: token,
-      expiresAt,
-      user,
-    }));
-  },
-  logout: () => {
-    Cookies.remove(AUTH_COOKIE_NAME);
-    Cookies.remove('expiresAt');
-    clearRegisteredQueryCache();
-    set(() => ({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
       isAuthenticated: false,
       accessToken: null,
       expiresAt: null,
       user: null,
-    }));
-  },
-  initializeAuth: async () => {
-    const cookieToken = Cookies.get(AUTH_COOKIE_NAME);
-    const cookieExpiresAt = Cookies.get('expiresAt');
-
-    if (!cookieToken) {
-      set({
-        isAuthenticated: false,
-        accessToken: null,
-        expiresAt: null,
-        user: null,
-      });
-      return;
-    }
-
-    let expiresAt = cookieExpiresAt ? Number.parseInt(cookieExpiresAt, 10) : NaN;
-    if (!Number.isFinite(expiresAt)) {
-      const tokenExpiry = getExpiresAtFromToken(cookieToken);
-      expiresAt = tokenExpiry ?? NaN;
-    }
-
-    if (!Number.isFinite(expiresAt) || Date.now() >= expiresAt) {
-      const hasValidServerSession = await probeServerSession();
-      if (!hasValidServerSession) {
+      setAccessToken: (token: string, user: AuthenticatedUserType) => {
+        const expiresAt = Date.now() + TOKEN_EXPIRATION_TIME;
+        Cookies.set(AUTH_COOKIE_NAME, token, { secure: true, sameSite: 'strict' });
+        Cookies.set('expiresAt', expiresAt.toString(), { secure: true, sameSite: 'strict' });
+        set(() => ({
+          isAuthenticated: true,
+          accessToken: token,
+          expiresAt,
+          user,
+        }));
+      },
+      logout: () => {
         Cookies.remove(AUTH_COOKIE_NAME);
         Cookies.remove('expiresAt');
-        set({
+        set(() => ({
           isAuthenticated: false,
           accessToken: null,
           expiresAt: null,
           user: null,
-        });
-        return;
-      }
-
-      expiresAt = Date.now() + SERVER_SESSION_FALLBACK_TTL_MS;
-      Cookies.set('expiresAt', expiresAt.toString(), { secure: true, sameSite: 'strict' });
+        }));
+      },
+      initializeAuth: async () => {
+        const cookieToken = Cookies.get(AUTH_COOKIE_NAME);
+        const cookieExpiresAt = Cookies.get('expiresAt');
+        if (cookieToken && cookieExpiresAt) {
+          const expiresAt = parseInt(cookieExpiresAt, 10);
+          set({
+            isAuthenticated: true,
+            accessToken: cookieToken,
+            expiresAt,
+          });
+        } else {
+          // If no cookie, check localStorage as fallback
+          const { state } = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+          if (state && state.accessToken && state.expiresAt) {
+            // Move token from localStorage to cookie
+            Cookies.set(AUTH_COOKIE_NAME, state.accessToken, { secure: true, sameSite: 'strict' });
+            Cookies.set('expiresAt', state.expiresAt.toString(), {
+              secure: true,
+              sameSite: 'strict',
+            });
+            set({
+              isAuthenticated: true,
+              accessToken: state.accessToken,
+              expiresAt: state.expiresAt,
+              user: state.user,
+            });
+          } else {
+            // No valid token found
+            set({
+              isAuthenticated: false,
+              accessToken: null,
+              expiresAt: null,
+              user: null,
+            });
+          }
+        }
+      },
+      isTokenExpired: () => {
+        const { expiresAt } = get();
+        return expiresAt ? Date.now() >= expiresAt : true;
+      },
+      getUser: () => get().user,
+    }),
+    {
+      name: 'auth-storage',
+      storage: createJSONStorage(() => localStorage),
     }
-
-    set({
-      isAuthenticated: true,
-      accessToken: cookieToken,
-      expiresAt,
-    });
-  },
-  isTokenExpired: () => {
-    const { expiresAt } = get();
-    return expiresAt ? Date.now() >= expiresAt : true;
-  },
-  getUser: () => get().user,
-}));
+  )
+);
