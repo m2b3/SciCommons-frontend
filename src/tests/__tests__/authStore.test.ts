@@ -38,8 +38,14 @@ describe('authStore', () => {
 
     await useAuthStore.getState().initializeAuth();
 
-    expect(mockedCookies.remove).toHaveBeenCalledWith('auth_token');
-    expect(mockedCookies.remove).toHaveBeenCalledWith('expiresAt');
+    expect(mockedCookies.remove).toHaveBeenCalledWith('auth_token', {
+      sameSite: 'strict',
+      secure: false,
+    });
+    expect(mockedCookies.remove).toHaveBeenCalledWith('expiresAt', {
+      sameSite: 'strict',
+      secure: false,
+    });
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
   });
 });

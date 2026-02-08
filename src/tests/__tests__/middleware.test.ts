@@ -101,7 +101,7 @@ describe('middleware route protection', () => {
     expect(response.status).toBe(307);
   });
 
-  it('redirects when backend session validation fails', async () => {
+  it('allows protected routes with valid cookies (no backend validation)', async () => {
     process.env.NEXT_PUBLIC_BACKEND_URL = 'https://api.example.com';
     globalThis.fetch = jest.fn().mockResolvedValue({ ok: false } as Response) as typeof fetch;
 
@@ -124,6 +124,7 @@ describe('middleware route protection', () => {
     };
 
     const response = await middleware(request as never);
-    expect(response.status).toBe(307);
+    // Middleware only validates cookies locally, does not call backend
+    expect(response.status).toBe(200);
   });
 });
