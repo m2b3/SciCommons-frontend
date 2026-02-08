@@ -65,7 +65,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
           containerClassName="mb-0"
           contentClassName="text-sm text-text-secondary"
         />
-        <div className="mt-3 flex flex-wrap items-center gap-4 text-text-secondary">
+        <div className="mt-4 flex flex-wrap items-center gap-4 text-text-secondary">
           <div className="flex items-center">
             <Users className="mr-1 h-4 w-4" />
             <span className="text-xs">{community.num_members} Members</span>
