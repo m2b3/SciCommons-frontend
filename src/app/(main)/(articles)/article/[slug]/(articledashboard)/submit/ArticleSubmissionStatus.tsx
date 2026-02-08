@@ -8,8 +8,8 @@ import clsx from 'clsx';
 
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { StatusFilter } from '@/api/schemas';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import useIdenticon from '@/hooks/useIdenticons';
-import { getCommunitySummaryText } from '@/lib/communityDescription';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -61,9 +61,13 @@ const ArticleSubmissionStatus = () => {
                 {data.data.community_article.community.name}
               </h3>
             </Link>
-            <p className="text-gray-600 res-text-sm">
-              {getCommunitySummaryText(data.data.community_article.community.description)}
-            </p>
+            <RenderParsedHTML
+              rawContent={data.data.community_article.community.description || ''}
+              supportMarkdown={true}
+              supportLatex={false}
+              containerClassName="mb-0"
+              contentClassName="line-clamp-2 text-gray-600 res-text-sm"
+            />
           </div>
           <div className="ml-auto">
             <span

@@ -8,7 +8,7 @@ import { FilePlus, FileText, Users } from 'lucide-react';
 import { withAuth } from '@/HOCs/withAuth';
 import { useCommunitiesApiGetCommunityDashboard } from '@/api/communities/communities';
 import ArticleHighlightCard from '@/components/articles/ArticleHighlightCard';
-import { getCommunitySummaryText } from '@/lib/communityDescription';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -36,9 +36,13 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
         {/* Header */}
         <header className="mb-6">
           <h1 className="font-bold res-heading-sm">{data.data.name}</h1>
-          <p className="text-gray-500 res-text-xs">
-            {getCommunitySummaryText(data.data.description)}
-          </p>
+          <RenderParsedHTML
+            rawContent={data.data.description || ''}
+            supportMarkdown={true}
+            supportLatex={false}
+            containerClassName="mb-0"
+            contentClassName="line-clamp-2 text-gray-500 res-text-xs"
+          />
         </header>
 
         {/* Community Performance Metrics */}

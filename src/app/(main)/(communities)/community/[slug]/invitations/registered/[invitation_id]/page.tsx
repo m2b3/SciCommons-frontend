@@ -12,6 +12,7 @@ import {
   useCommunitiesApiInvitationGetCommunityInvitationDetails,
   useCommunitiesApiInvitationRespondToInvitation,
 } from '@/api/community-invitations/community-invitations';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -105,7 +106,13 @@ export default function RegisteredUsersInvitation({
                 <Users className="mr-1 h-4 w-4" />
                 <span>{data.data.num_members} members</span>
               </div>
-              <p className="mt-2 text-gray-600">{data.data.description}</p>
+              <RenderParsedHTML
+                rawContent={data.data.description || ''}
+                supportMarkdown={true}
+                supportLatex={false}
+                containerClassName="mt-2 mb-0"
+                contentClassName="text-gray-600"
+              />
             </div>
             <div className="flex space-x-4 self-end">
               <button

@@ -11,10 +11,9 @@ import { toast } from 'sonner';
 import '@/api/communities/communities';
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
-import TruncateText from '@/components/common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
-import { getCommunitySummaryText } from '@/lib/communityDescription';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -81,10 +80,12 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 wordBreak: 'break-word',
               }}
             >
-              <TruncateText
-                text={getCommunitySummaryText(community.description)}
-                maxLines={2}
-                textClassName="text-text-secondary"
+              <RenderParsedHTML
+                rawContent={community.description || ''}
+                supportMarkdown={true}
+                supportLatex={false}
+                containerClassName="mb-0"
+                contentClassName="line-clamp-2 text-text-secondary"
               />
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">

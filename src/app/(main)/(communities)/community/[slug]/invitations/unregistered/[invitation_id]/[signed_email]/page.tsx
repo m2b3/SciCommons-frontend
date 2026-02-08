@@ -13,6 +13,7 @@ import {
   useCommunitiesApiInvitationGetCommunityInvitationDetails,
   useCommunitiesApiInvitationRespondToEmailInvitation,
 } from '@/api/community-invitations/community-invitations';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import useIdenticon from '@/hooks/useIdenticons';
@@ -112,9 +113,13 @@ export default function UnRegisteredUsersInvitation({
               <h3 className="mb-2 truncate font-bold text-text-primary res-text-base">
                 {data.data.name}
               </h3>
-              <p className="mb-4 line-clamp-2 text-base text-text-secondary">
-                {data.data.description}
-              </p>
+              <RenderParsedHTML
+                rawContent={data.data.description || ''}
+                supportMarkdown={true}
+                supportLatex={false}
+                containerClassName="mb-4"
+                contentClassName="line-clamp-2 text-base text-text-secondary"
+              />
               <div className="flex flex-wrap items-center gap-4 text-text-secondary">
                 <div className="flex items-center">
                   <Users className="mr-1 h-4 w-4" />
