@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
@@ -13,18 +13,27 @@ import ReviewCard, { ReviewCardSkeleton } from '@/components/articles/ReviewCard
 import ReviewForm from '@/components/articles/ReviewForm';
 import EmptyState from '@/components/common/EmptyState';
 import TabNavigation from '@/components/ui/tab-navigation';
+import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
 const CommunityArticleDisplayPage: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const params = useParams<{ articleSlug: string; slug: string }>();
+  const [submitReview, setSubmitReview] = useState(false);
 
   const { data, error, isPending } = useArticlesApiGetArticle(
     params?.articleSlug || '',
     { community_name: params?.slug || '' },
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        refetchOnReconnect: true,
+      },
     }
   );
 
@@ -37,7 +46,12 @@ const CommunityArticleDisplayPage: React.FC = () => {
     data?.data.id || 0,
     { community_id: data?.data.community_article?.community.id || 0 },
     {
-      query: { enabled: !!accessToken && !!data },
+      query: {
+        enabled: !!accessToken && !!data,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        staleTime: FIFTEEN_MINUTES_IN_MS,
+      },
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
@@ -68,12 +82,25 @@ const CommunityArticleDisplayPage: React.FC = () => {
                   communityId={data?.data.community_article?.community.id}
                 />
               )} */}
-              <ReviewForm
-                articleId={Number(data.data.id)}
-                refetch={reviewsRefetch}
-                is_submitter={data.data.is_submitter}
-                communityId={data?.data.community_article?.community.id}
-              />
+              <div className="flex items-center justify-between rounded-md bg-functional-green/5 px-4 py-2">
+                <span className="text-sm font-semibold text-text-secondary">
+                  Have your reviews?
+                </span>
+                <span
+                  className="cursor-pointer text-xs text-functional-green hover:underline"
+                  onClick={() => setSubmitReview(!submitReview)}
+                >
+                  {submitReview ? 'Cancel' : 'Add review'}
+                </span>
+              </div>
+              {submitReview && (
+                <ReviewForm
+                  articleId={Number(data.data.id)}
+                  refetch={reviewsRefetch}
+                  is_submitter={data.data.is_submitter}
+                  communityId={data?.data.community_article?.community.id}
+                />
+              )}
               {reviewsIsPending && [...Array(5)].map((_, i) => <ReviewCardSkeleton key={i} />)}
               {reviewsData?.data.items.length === 0 && (
                 <EmptyState
@@ -93,6 +120,8 @@ const CommunityArticleDisplayPage: React.FC = () => {
             <DiscussionForum
               articleId={data?.data.id || 0}
               communityId={data?.data.community_article?.community.id}
+              communityArticleId={data?.data.community_article?.id}
+              showSubscribeButton={true}
             />
           ),
         },

@@ -44,10 +44,10 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     abstract,
     authors,
     submissionType,
-    defaultImageURL,
+    defaultImageURL: _defaultImageURL,
     articleId,
     isEditEnabled,
-    setIsEditEnabled,
+    setIsEditEnabled: _setIsEditEnabled,
     articleSlug,
   } = props;
   const {

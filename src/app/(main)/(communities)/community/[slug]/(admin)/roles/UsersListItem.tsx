@@ -76,7 +76,10 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
             alt={name}
             width={42}
             height={42}
-            className="mr-4 aspect-square shrink-0 rounded-full"
+            className="mr-4 aspect-square shrink-0 rounded-full object-cover"
+            quality={75}
+            sizes="42px"
+            loading="lazy"
           />
           <div className="flex flex-col">
             <p className="font-bold text-text-primary">{name}</p>

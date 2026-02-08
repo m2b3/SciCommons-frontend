@@ -5,20 +5,15 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CommunityListOutCreatedAt } from './communityListOutCreatedAt';
-import type { CommunityListOutRequestedAt } from './communityListOutRequestedAt';
 import type { CommunityType } from './communityType';
 
 export interface CommunityListOut {
   created_at?: CommunityListOutCreatedAt;
   description: string;
   id: number;
-  is_admin?: boolean;
-  is_member?: boolean;
-  is_request_sent?: boolean;
   name: string;
   num_members: number;
   num_published_articles: number;
-  requested_at?: CommunityListOutRequestedAt;
   slug: string;
   type: CommunityType;
 }

@@ -10,9 +10,9 @@ const createJestConfig = nextJest({
 const config: Config = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  moduleNameMapper: { // Handle Module Path Aliases
-    '^@/(.*)$': '<rootDir>/$1', 
-    '^next/router$': '<rootDir>/tests/__mocks__/router.ts',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^next/router$': '<rootDir>/src/tests/__mocks__/router.ts',
   },
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',

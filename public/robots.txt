@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Allow crawling of all articles
+Allow: /article/
+Allow: /articles/
+
+# Allow crawling of communities
+Allow: /community/
+Allow: /communities/
+
+# Allow crawling of posts
+Allow: /posts/
+
+# Allow crawling of static pages
+Allow: /about/
+Allow: /privacy-policy/
+Allow: /terms-and-conditions/
+
+# Disallow admin and authentication pages
+Disallow: /auth/
+Disallow: /*/admin/
+Disallow: /*/dashboard/
+Disallow: /*/settings/
+Disallow: /*/dashboard
+Disallow: /*/settings
+Disallow: /myprofile/
+Disallow: /mycontributions/
+Disallow: /notifications/
+
+# Disallow API endpoints
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://www.scicommons.org/sitemap.xml

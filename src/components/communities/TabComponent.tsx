@@ -29,7 +29,7 @@ const TabComponent = <ActiveTabType extends string>({
     if (tab && tabs.includes(tab as ActiveTabType)) {
       setActiveTab(tab as ActiveTabType);
     }
-  }, [searchParams]);
+  }, [searchParams, tabs, setActiveTab]);
 
   return (
     <div className="scrollbar-hide flex w-full gap-2 overflow-x-auto rounded-full p-1 text-xs text-text-primary">

@@ -26,7 +26,7 @@ import type {
   SendInvitationsPayload,
 } from '.././schemas';
 
-type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+type SecondParameter<T> = T extends (...args: infer P) => unknown ? P[1] : never;
 
 /**
  * @summary Invite Registered Users

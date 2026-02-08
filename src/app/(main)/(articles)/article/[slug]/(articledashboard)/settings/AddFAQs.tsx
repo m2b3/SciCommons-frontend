@@ -25,7 +25,7 @@ interface AddFAQsProps {
 }
 
 const AddFAQs: React.FC<AddFAQsProps> = (props) => {
-  const { articleId, title, abstract, authors, keywords, submissionType, faqs } = props;
+  const { articleId, title, abstract, authors, keywords: _keywords, submissionType, faqs } = props;
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 

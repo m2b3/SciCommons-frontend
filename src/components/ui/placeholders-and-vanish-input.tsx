@@ -53,7 +53,7 @@ export function PlaceholdersAndVanishInput({
 
     const imageData = ctx.getImageData(0, 0, 800, 800);
     const pixelData = imageData.data;
-    const newData: any[] = [];
+    const newData: Array<{ x: number; y: number; color: [number, number, number, number] }> = [];
 
     for (let t = 0; t < 800; t++) {
       const i = 4 * t * 800;
@@ -161,7 +161,7 @@ export function PlaceholdersAndVanishInput({
     >
       <canvas
         className={cn(
-          'pointer-events-none absolute  left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-8',
+          'pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-8',
           !animating ? 'opacity-0' : 'opacity-100'
         )}
         ref={canvasRef}

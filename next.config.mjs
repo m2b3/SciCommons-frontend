@@ -4,11 +4,11 @@ import nextra from 'nextra';
 
 const withPWA = withPWAInit({
   dest: 'public',
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
+  cacheOnFrontEndNav: false,
+  aggressiveFrontEndNavCaching: false,
   reloadOnOnline: true,
   swcMinify: true,
-  disable: false,
+  disable: process.env.NODE_ENV === 'development',
   workboxOptions: {
     disableDevLogs: true,
   },
@@ -16,15 +16,33 @@ const withPWA = withPWAInit({
 
 const nextConfig = withPWA({
   images: {
+    // Keep Next.js image optimization enabled; `unoptimized: true` caused images not to render in this app.
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'gsoc2024.s3.amazonaws.com',
       },
       {
+        protocol: 'http',
+        hostname: 'gsoc2024.s3.amazonaws.com',
+      },
+      {
         protocol: 'https',
         hostname: 'picsum.photos',
       },
+      {
+        protocol: 'http',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.scicommons.org',
+      },
+      {
+        protocol: 'http',
+        hostname: 'cdn.scicommons.org',
+      },
+      // Do not allow loopback hosts here; Next image optimizer would create an SSRF path.
     ],
   },
   output: 'standalone'

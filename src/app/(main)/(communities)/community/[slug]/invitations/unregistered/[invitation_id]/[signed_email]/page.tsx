@@ -37,8 +37,12 @@ export default function UnRegisteredUsersInvitation({
     invitationId,
     {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      query: {
+        enabled: !!accessToken,
+      },
     }
   );
+  const communityName = data?.data.name;
 
   const {
     mutate,
@@ -60,12 +64,12 @@ export default function UnRegisteredUsersInvitation({
     if (isRespondSuccess) {
       toast.success(respondData.data.message);
       if (action === 'accept') {
-        router.push(`/community/${data?.data.name}`);
+        router.push(`/community/${communityName}`);
       } else {
         router.push('/communities');
       }
     }
-  }, [isRespondSuccess, respondData, router, action, communityId]);
+  }, [isRespondSuccess, respondData, router, action, communityId, communityName]);
 
   useEffect(() => {
     if (respondError) {

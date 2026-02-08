@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-import { ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
+import { ChevronUp, ChevronsDown, ChevronsUp, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -17,6 +17,7 @@ import { CommentData } from '@/components/common/Comment';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import convertToCommentData from '@/lib/convertReviewCommentData';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
@@ -40,8 +41,10 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
 
   const [maxDepth, setMaxDepth] = useState<number>(Infinity);
   const [isAllCollapsed, setIsAllCollapsed] = useState<boolean>(true);
+  const [isCommentFormCollapsed, setIsCommentFormCollapsed] = useState<boolean>(true);
+
   const { data, refetch, isPending } = useArticlesReviewApiListReviewComments(reviewId, {
-    query: { enabled: displayComments },
+    query: { enabled: displayComments && !!accessToken },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
   const {
@@ -49,7 +52,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
     isPending: isRatingsLoading,
     isError: isRatingsError,
   } = useArticlesReviewApiGetRating(reviewId, {
-    query: { enabled: displayComments && !isAuthor, retry: 5 },
+    query: { enabled: displayComments && !isAuthor && !!accessToken, retry: 5 },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
 
@@ -177,18 +180,30 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
 
   return (
     <div className="flex flex-col border-t border-common-contrast pt-4">
-      <span className="mb-2 text-sm font-bold text-text-tertiary">Add Comment:</span>
-      <CommentInput
-        onSubmit={addNewComment}
-        placeholder="Write a new comment..."
-        buttonText="Post Comment"
-        isReview={true}
-        initialRating={ratings?.data.rating || 0}
-        isRatingsLoading={isRatingsLoading}
-        isRatingsError={isRatingsError}
-        isAuthor={isAuthor}
-        isPending={isCreateCommentPending}
-      />
+      <div className="mb-2 flex items-center gap-2">
+        <span className="text-xs font-bold text-text-tertiary">Add Comment:</span>
+        <ChevronUp
+          size={14}
+          className={cn(
+            'cursor-pointer text-text-secondary',
+            isCommentFormCollapsed && 'rotate-180'
+          )}
+          onClick={() => setIsCommentFormCollapsed(!isCommentFormCollapsed)}
+        />
+      </div>
+      {!isCommentFormCollapsed && (
+        <CommentInput
+          onSubmit={addNewComment}
+          placeholder="Write a new comment..."
+          buttonText="Post Comment"
+          isReview={true}
+          initialRating={ratings?.data.rating || 0}
+          isRatingsLoading={isRatingsLoading}
+          isRatingsError={isRatingsError}
+          isAuthor={isAuthor}
+          isPending={isCreateCommentPending}
+        />
+      )}
       {isPending && (
         <div className="mt-4 flex w-full animate-pulse items-center justify-center gap-2">
           <div className="w-5">

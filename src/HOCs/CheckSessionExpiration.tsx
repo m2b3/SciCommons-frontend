@@ -17,24 +17,13 @@ import { useAuthStore } from '@/stores/authStore';
 
 export const SessionExpirationDialog: React.FC = () => {
   const [showDialog, setShowDialog] = useState(false);
-  const { isAuthenticated, isTokenExpired, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    const checkExpiration = () => {
-      if (isAuthenticated && isTokenExpired()) {
-        setShowDialog(true);
-      }
-    };
-
-    // Check initially
-    checkExpiration();
-
-    // Set up interval to check periodically
-    const intervalId = setInterval(checkExpiration, 60000); // Check every minute
-
-    return () => clearInterval(intervalId);
-  }, [isAuthenticated, isTokenExpired]);
+    // Session expiry is handled by server 401 responses in the request layer.
+    setShowDialog(false);
+  }, []);
 
   const handleDialogClose = () => {
     setShowDialog(false);

@@ -16,6 +16,9 @@ const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
 
   const { data, isPending } = useCommunitiesArticlesApiGetAssignedArticles(communityId, {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    query: {
+      enabled: !!accessToken,
+    },
   });
 
   return (

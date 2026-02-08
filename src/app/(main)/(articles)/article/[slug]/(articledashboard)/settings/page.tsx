@@ -14,8 +14,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDetails';
 
-type ActiveTab = 'Details' | 'FAQs';
-
 const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };

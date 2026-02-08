@@ -21,9 +21,12 @@ const PostHighlightCard: React.FC<{ post: PostOut }> = ({ post }) => {
         <Image
           src={post.author.profile_pic_url || `data:image/png;base64,${imageData}`}
           alt={`Profile of ${post.author.username}`}
-          className="h-8 w-8 rounded-full"
+          className="h-8 w-8 rounded-full object-cover"
           width={32}
           height={32}
+          quality={75}
+          sizes="32px"
+          loading="lazy"
         />
         <div className="flex-grow">
           <Link href={`/posts/${post.id}`} className="block">

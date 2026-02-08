@@ -26,10 +26,7 @@ const EmptyState = ({
       </div>
       <p className="text-center text-xl font-semibold text-text-tertiary">{content}</p>
       {subcontent && (
-        <div
-          className="mt-2 text-center text-sm text-text-tertiary"
-          dangerouslySetInnerHTML={{ __html: subcontent }}
-        />
+        <div className="mt-2 text-center text-sm text-text-tertiary">{subcontent}</div>
       )}
     </div>
   );

@@ -16,6 +16,15 @@ interface ArticleState {
   fetchArticle: (query: string) => Promise<void>;
 }
 
+interface CrossRefAuthor {
+  given?: string;
+  family?: string;
+}
+
+interface PubMedAuthor {
+  name?: string;
+}
+
 const useFetchExternalArticleStore = create<ArticleState>((set) => ({
   articleData: null,
   loading: false,
@@ -96,21 +105,30 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
   },
 }));
 
-function parseData(query: string, data: any, source: string): ArticleData | null {
+function parseData(query: string, data: unknown, source: string): ArticleData | null {
+  const recordData = (data ?? {}) as Record<string, unknown>;
   if (source === 'CrossRef') {
-    if (!data.message) return null;
+    const message = recordData.message as
+      | {
+          title?: string[];
+          author?: CrossRefAuthor[];
+          abstract?: string;
+          URL?: string;
+        }
+      | undefined;
+    if (!message) return null;
     return {
-      title: data.message.title?.[0] || 'No title available',
+      title: message.title?.[0] || 'No title available',
       authors:
-        data.message.author?.map((author: any) =>
+        message.author?.map((author: CrossRefAuthor) =>
           `${author.given || ''} ${author.family || ''}`.trim()
         ) || [],
-      abstract: data.message.abstract || 'No abstract available',
-      link: data.message.URL || `https://doi.org/${query}`,
+      abstract: message.abstract || 'No abstract available',
+      link: message.URL || `https://doi.org/${query}`,
     };
   } else if (source === 'arXiv') {
     const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data, 'text/xml');
+    const xmlDoc = parser.parseFromString(String(data), 'text/xml');
     const entries = xmlDoc.getElementsByTagName('entry');
     let arxivId = query.split(':')[1];
     arxivId = arxivId.trim();
@@ -134,11 +152,16 @@ function parseData(query: string, data: any, source: string): ArticleData | null
   } else if (source === 'PubMed') {
     let pmid = query.split(':')[1];
     pmid = pmid.trim();
-    if (!data.result || !data.result[pmid]) return null;
-    const result = data.result[pmid];
+    const resultRoot = recordData.result as Record<string, unknown> | undefined;
+    if (!resultRoot || !resultRoot[pmid]) return null;
+    const result = resultRoot[pmid] as {
+      title?: string;
+      authors?: PubMedAuthor[];
+      abstract?: string;
+    };
     return {
       title: result.title || 'No title available',
-      authors: result.authors?.map((author: any) => author.name) || [],
+      authors: result.authors?.map((author: PubMedAuthor) => author.name || '') || [],
       abstract: result.abstract || 'No abstract available',
       link: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
     };

@@ -25,10 +25,12 @@ WORKDIR /app
 
 # Declare ARG again here
 ARG NEXT_PUBLIC_BACKEND_URL
+ARG NEXT_PUBLIC_REALTIME_URL
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN echo "NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL" >> .env
+RUN echo "NEXT_PUBLIC_REALTIME_URL=$NEXT_PUBLIC_REALTIME_URL" >> .env
 RUN npm run build
 
 # 3. Production image, copy all the files and run next

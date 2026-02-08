@@ -12,6 +12,7 @@ import {
 import FileUpload from '@/components/common/FileUpload';
 import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
+import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { cn } from '@/lib/utils';
 import { SubmitArticleFormValues } from '@/types';
 
@@ -31,7 +32,9 @@ interface SubmitArticleFormProps {
   setActiveTab: React.Dispatch<React.SetStateAction<'upload' | 'search'>>;
   onSearch: (query: string) => void;
   showPrivateCheckOption?: boolean;
-  articleData: any;
+  articleData: {
+    pdfLink?: string;
+  } | null;
 }
 
 const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
@@ -47,8 +50,11 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
   showPrivateCheckOption = false,
   articleData,
 }) => {
+  const formRef = React.useRef<HTMLFormElement>(null);
+  useSubmitOnCtrlEnter(formRef, isPending);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       {/* Select the tab to upload a file or search for an article */}
       <div className="mx-auto w-full">
         <div className="flex border-b border-common-minimal">

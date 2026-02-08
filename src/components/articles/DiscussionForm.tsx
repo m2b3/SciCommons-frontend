@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { useArticlesDiscussionApiCreateDiscussion } from '@/api/discussions/discussions';
 import FormInput from '@/components/common/FormInput';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonTitle } from '@/components/ui/button';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -62,7 +62,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mb-4 flex flex-col gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4"
+      className="mb-4 flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4"
     >
       <FormInput<FormValues>
         label="Topic"
@@ -86,7 +86,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
         supportMarkdown={true}
       />
       <Button type="submit" variant={'blue'} loading={isPending} showLoadingSpinner>
-        Submit
+        <ButtonTitle>Submit</ButtonTitle>
       </Button>
     </form>
   );

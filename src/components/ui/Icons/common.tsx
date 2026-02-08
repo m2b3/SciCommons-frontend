@@ -7,6 +7,7 @@ import {
   IconBrandTwitterFilled,
   IconBrandYoutubeFilled,
   IconChevronLeft,
+  type IconProps as TablerIconProps,
 } from '@tabler/icons-react';
 
 import { cn } from '@/lib/utils';
@@ -14,10 +15,7 @@ import { cn } from '@/lib/utils';
 const defaultClasses = 'text-lg';
 const defaultStrokeWidth = 1.5;
 
-interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'ref'> {
-  className?: string;
-  strokeWidth?: number;
-}
+type IconProps = TablerIconProps;
 
 /**
  * A IconComponent component that wraps an Icon component with default props.
@@ -25,7 +23,7 @@ interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'ref'> {
  * @return {React.FC} A new functional component with merged props */
 
 export function IconComponent(
-  Icon: React.ComponentType<any>
+  Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>
 ): React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>> {
   const WrappedIcon = React.forwardRef<SVGSVGElement, IconProps>(
     ({ className, strokeWidth = defaultStrokeWidth, ...props }, ref) => (

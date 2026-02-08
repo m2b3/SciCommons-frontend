@@ -46,7 +46,7 @@ const UnRegistered = ({ communityId }: { communityId: number }) => {
       reset();
       toast.success('Invitation sent successfully!');
     }
-  }, [isSuccess]);
+  }, [isSuccess, reset]);
 
   const onSubmit = (data: IUnRegisteredProps) => {
     const emails = data.emails.map((email) => email.value);

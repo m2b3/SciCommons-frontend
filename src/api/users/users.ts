@@ -22,7 +22,7 @@ import type {
   FavoriteItemSchema,
   Message,
   NotificationSchema,
-  PaginatedArticlesResponse,
+  PaginatedArticlesListResponse,
   PaginatedCommunities,
   UserArticleSchema,
   UserCommunitySchema,
@@ -35,7 +35,7 @@ import type {
   UsersApiUpdateUserBody,
 } from '.././schemas';
 
-type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+type SecondParameter<T> = T extends (...args: infer P) => unknown ? P[1] : never;
 
 /**
  * @summary Get Me
@@ -309,7 +309,7 @@ export const usersApiListMyArticles = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedArticlesResponse>(
+  return customInstance<PaginatedArticlesListResponse>(
     { url: `/api/users/my-articles`, method: 'GET', params, signal },
     options
   );

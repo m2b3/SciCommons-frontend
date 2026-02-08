@@ -6,7 +6,11 @@ import StarterKit from '@tiptap/starter-kit';
 
 import MenuBar from './MenuBar';
 
-const Tiptap = ({ onChange }: any) => {
+interface TiptapProps {
+  onChange: (content: string) => void;
+}
+
+const Tiptap = ({ onChange }: TiptapProps) => {
   const handleChange = (newContent: string) => {
     onChange(newContent);
   };

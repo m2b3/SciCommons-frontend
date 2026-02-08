@@ -3,6 +3,8 @@
 import React, { useEffect } from 'react';
 
 import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
+import { useAuthHeaders } from '@/hooks/useAuthHeaders';
+import { getSafeExternalUrl } from '@/lib/safeUrl';
 import { useAuthStore } from '@/stores/authStore';
 
 interface NotificationsProps {
@@ -10,16 +12,20 @@ interface NotificationsProps {
 }
 
 const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const authHeaders = useAuthHeaders();
 
   const query_params = article_slug ? { article_slug } : {};
 
   const { data, isPending, refetch } = useUsersApiGetNotifications(query_params, {
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: authHeaders,
+    query: {
+      enabled: isAuthenticated,
+    },
   });
 
   const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: authHeaders,
   });
 
   useEffect(() => {
@@ -29,7 +35,14 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
   }, [isSuccess, refetch]);
 
   const markAsRead = (id: number) => {
-    mutate({ notificationId: id });
+    mutate(
+      { notificationId: id },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
   };
 
   return (
@@ -41,41 +54,49 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
             <NotificationCardSkeletonLoader key={index} />
           ))}
         {data &&
-          data.data.map((notif) => (
-            <li
-              key={notif.id}
-              className={`mb-2 rounded p-4 ${
-                notif.isRead ? 'bg-gray-200' : 'bg-white-secondary shadow-md'
-              }`}
-            >
-              <p
-                className={`font-medium res-text-base ${
-                  notif.isRead ? 'text-gray-600' : 'text-gray-900'
+          data.data.map((notif) => {
+            const safeLink = getSafeExternalUrl(notif.link);
+            return (
+              <li
+                key={notif.id}
+                className={`mb-2 rounded p-4 ${
+                  notif.isRead ? 'bg-gray-200' : 'bg-white-secondary shadow-md'
                 }`}
               >
-                {notif.message}
-              </p>
-              <p className="text-gray-500 res-text-xs">
-                {notif.notificationType} - {new Date(notif.createdAt).toLocaleDateString()}
-              </p>
-              {notif.content && <p className="text-gray-500 res-text-xs">{notif.content}</p>}
-              <div className="mt-2 flex items-center justify-between">
-                {notif.link && (
-                  <a href={notif.link} className="text-green-500 hover:text-green-700">
-                    View
-                  </a>
-                )}
-                {!notif.isRead && (
-                  <button
-                    className="rounded bg-green-500 px-2 py-1 text-white res-text-xs hover:bg-green-700"
-                    onClick={() => markAsRead(notif.id)}
-                  >
-                    Mark as Read
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
+                <p
+                  className={`font-medium res-text-base ${
+                    notif.isRead ? 'text-gray-600' : 'text-gray-900'
+                  }`}
+                >
+                  {notif.message}
+                </p>
+                <p className="text-gray-500 res-text-xs">
+                  {notif.notificationType} - {new Date(notif.createdAt).toLocaleDateString()}
+                </p>
+                {notif.content && <p className="text-gray-500 res-text-xs">{notif.content}</p>}
+                <div className="mt-2 flex items-center justify-between">
+                  {safeLink && (
+                    <a
+                      href={safeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-500 hover:text-green-700"
+                    >
+                      View
+                    </a>
+                  )}
+                  {!notif.isRead && (
+                    <button
+                      className="rounded bg-green-500 px-2 py-1 text-white res-text-xs hover:bg-green-700"
+                      onClick={() => markAsRead(notif.id)}
+                    >
+                      Mark as Read
+                    </button>
+                  )}
+                </div>
+              </li>
+            );
+          })}
       </ul>
       {data?.data.length === 0 && (
         <p className="text-center text-gray-500 res-text-base">No notifications to show.</p>

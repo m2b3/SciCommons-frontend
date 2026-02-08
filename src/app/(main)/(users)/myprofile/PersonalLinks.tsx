@@ -31,7 +31,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           errors={errors}
           patternValue={/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/}
           patternMessage="Invalid URL format"
-          requiredMessage="Home page URL is required"
+          // requiredMessage="Home page URL is required"
           readOnly={!editMode}
         />
         <FormInput
@@ -43,7 +43,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           errors={errors}
           patternValue={/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/}
           patternMessage="Invalid LinkedIn URL"
-          requiredMessage="LinkedIn URL is required"
+          // requiredMessage="LinkedIn URL is required"
           readOnly={!editMode}
         />
         <FormInput
@@ -55,7 +55,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           errors={errors}
           patternValue={/^https:\/\/github\.com\/.*$/}
           patternMessage="Invalid GitHub URL"
-          requiredMessage="GitHub URL is required"
+          // requiredMessage="GitHub URL is required"
           readOnly={!editMode}
         />
         <FormInput
@@ -67,7 +67,7 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           errors={errors}
           patternValue={/^https:\/\/scholar\.google\.com\/.*$/}
           patternMessage="Invalid Google Scholar URL"
-          requiredMessage="Google Scholar URL is required"
+          // requiredMessage="Google Scholar URL is required"
           readOnly={!editMode}
         />
       </div>
