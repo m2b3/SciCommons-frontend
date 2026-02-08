@@ -36,7 +36,9 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
         {/* Header */}
         <header className="mb-6">
           <h1 className="font-bold res-heading-sm">{data.data.name}</h1>
-          <p className="text-gray-500 res-text-xs">{getCommunitySummaryText(data.data.description)}</p>
+          <p className="text-gray-500 res-text-xs">
+            {getCommunitySummaryText(data.data.description)}
+          </p>
         </header>
 
         {/* Community Performance Metrics */}

@@ -123,7 +123,9 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
                 <p className="text-center text-text-secondary">You have no articles to submit</p>
                 <Button
                   className="mx-auto mt-4"
-                  onClick={() => router.push(`/community/${encodedCommunityName}/createcommunityarticle`)}
+                  onClick={() =>
+                    router.push(`/community/${encodedCommunityName}/createcommunityarticle`)
+                  }
                 >
                   <ButtonTitle>Create Article</ButtonTitle>
                 </Button>

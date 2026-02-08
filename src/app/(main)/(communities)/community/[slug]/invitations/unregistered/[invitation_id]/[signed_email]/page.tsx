@@ -64,7 +64,9 @@ export default function UnRegisteredUsersInvitation({
     if (isRespondSuccess) {
       toast.success(respondData.data.message);
       if (action === 'accept') {
-        router.push(communityName ? `/community/${encodeURIComponent(communityName)}` : '/communities');
+        router.push(
+          communityName ? `/community/${encodeURIComponent(communityName)}` : '/communities'
+        );
       } else {
         router.push('/communities');
       }

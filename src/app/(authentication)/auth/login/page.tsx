@@ -54,7 +54,9 @@ const LoginForm: React.FC = () => {
         );
         const requestedRedirect = searchParams?.get('redirect');
         const safeRedirect =
-          requestedRedirect && requestedRedirect.startsWith('/') && !requestedRedirect.startsWith('/auth')
+          requestedRedirect &&
+          requestedRedirect.startsWith('/') &&
+          !requestedRedirect.startsWith('/auth')
             ? requestedRedirect
             : null;
         const previousPath = getPreviousPath();

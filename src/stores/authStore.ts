@@ -31,7 +31,9 @@ const SERVER_SESSION_FALLBACK_TTL_MS = 60 * 60 * 1000; // 1 hour
 const AUTH_STORAGE_KEY = 'auth-storage';
 const getCookieOptions = () => ({
   secure:
-    typeof window === 'undefined' ? process.env.NODE_ENV === 'production' : location.protocol === 'https:',
+    typeof window === 'undefined'
+      ? process.env.NODE_ENV === 'production'
+      : location.protocol === 'https:',
   sameSite: 'strict' as const,
 });
 
