@@ -11,6 +11,7 @@ import {
   useUsersCommonApiGetBookmarkStatus,
   useUsersCommonApiToggleBookmark,
 } from '@/api/users-common-api/users-common-api';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
@@ -18,7 +19,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
-import ArticlePreviewDrawer from './ArticlePreviewDrawer';
+import TruncateText from '../common/TruncateText';
 
 interface ArticleCardProps {
   article: ArticlesListOut;
@@ -42,7 +43,7 @@ const ArticleCard: FC<ArticleCardProps> = ({
 }) => {
   const encodedCommunityName = encodeURIComponent(article.community_article?.community.name || '');
   const [isHovered, setIsHovered] = useState(false);
-  const [previewDrawerOpen, setPreviewDrawerOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
@@ -83,12 +84,6 @@ const ArticleCard: FC<ArticleCardProps> = ({
     });
   };
 
-  const handlePreviewClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setPreviewDrawerOpen(true);
-  };
-
   return (
     <>
       <div
@@ -109,27 +104,8 @@ const ArticleCard: FC<ArticleCardProps> = ({
       >
         {/* Bookmark and Preview Icons */}
         {compactType !== 'minimal' && (
-          <div className="absolute right-2 top-2 z-10 flex items-center gap-2">
-            {/* Preview Icon - shows on hover */}
-            {isHovered && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={handlePreviewClick}
-                      className="rounded-md bg-common-background/80 p-1.5 text-text-secondary backdrop-blur-sm transition hover:bg-common-background hover:text-functional-blue"
-                      aria-label="Preview article"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="res-text-xs">Preview</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            {/* Bookmark Icon - always visible */}
+          <div className="absolute right-2 top-2 z-10 flex flex-col items-center gap-2">
+            {/* Bookmark Icon - always visible, on top */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -160,6 +136,64 @@ const ArticleCard: FC<ArticleCardProps> = ({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            {/* Preview Icon - shows on hover, below bookmark */}
+            {isHovered && (
+              <Popover open={previewOpen} onOpenChange={setPreviewOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    onMouseEnter={() => setPreviewOpen(true)}
+                    onMouseLeave={() => setPreviewOpen(false)}
+                    className="rounded-md bg-common-background/80 p-1.5 text-text-secondary backdrop-blur-sm transition hover:bg-common-background hover:text-functional-blue"
+                    aria-label="Preview article"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="left"
+                  align="start"
+                  className="max-h-[500px] w-96 overflow-y-auto"
+                  onMouseEnter={() => setPreviewOpen(true)}
+                  onMouseLeave={() => setPreviewOpen(false)}
+                >
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="mb-2 font-semibold text-text-primary res-text-base">
+                        {article.title}
+                      </h3>
+                    </div>
+                    <div>
+                      <h4 className="mb-1 font-semibold text-text-secondary res-text-xs">
+                        Abstract
+                      </h4>
+                      <RenderParsedHTML
+                        rawContent={article.abstract}
+                        supportLatex={true}
+                        supportMarkdown={false}
+                        contentClassName="text-text-primary res-text-xs"
+                        containerClassName="mb-0"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="mb-1 font-semibold text-text-secondary res-text-xs">
+                        Authors
+                      </h4>
+                      <TruncateText
+                        text={article.authors.map((author) => author.label).join(', ')}
+                        maxLines={2}
+                        textClassName="text-text-primary res-text-xs"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 text-functional-yellow" fill="currentColor" />
+                      <span className="text-xs text-text-secondary">
+                        {article.total_ratings} ratings
+                      </span>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         )}
         <div className="flex">
@@ -277,12 +311,6 @@ const ArticleCard: FC<ArticleCardProps> = ({
           </div>
         )}
       </div>
-      {/* Preview Drawer */}
-      <ArticlePreviewDrawer
-        article={article}
-        open={previewDrawerOpen}
-        onOpenChange={setPreviewDrawerOpen}
-      />
     </>
   );
 };
