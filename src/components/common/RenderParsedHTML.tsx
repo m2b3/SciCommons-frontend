@@ -59,7 +59,7 @@ const RenderParsedHTML = ({
       // This regex matches \begin{envname}...\end{envname} environments
       processedContent = processedContent.replace(
         /\\begin\{(equation\*?|align\*?|gather\*?|split|multline\*?|alignat\*?|flalign\*?|eqnarray\*?)\}([\s\S]*?)\\end\{\1\}/g,
-        (match, envName, expr) => {
+        (match, _envName, _expr) => {
           try {
             return katex.renderToString(match, {
               ...katexOptions,
@@ -165,6 +165,7 @@ const RenderParsedHTML = ({
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawContent, supportMarkdown, supportLatex]);
   const contentRef = useRef<HTMLDivElement>(null);
 
