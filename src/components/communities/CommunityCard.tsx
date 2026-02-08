@@ -28,7 +28,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
     request: axiosConfig,
   });
 
-  const handleJoin = () => {
+  const _handleJoin = () => {
     mutate({ communityId: community.id });
   };
 
@@ -115,7 +115,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
           community.join_request_status !== 'pending' && (
             <Button
               className="w-fit bg-transparent ring-1 ring-common-contrast hover:bg-common-minimal"
-              onClick={() => handleJoin()}
+              onClick={() => _handleJoin()}
             >
               <ButtonIcon>
                 <UserPlus className="size-3 text-text-secondary" />
