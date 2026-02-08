@@ -14,6 +14,7 @@ import { CommunityOut } from '@/api/schemas';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import TruncateText from '@/components/common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
+import { getCommunitySummaryText } from '@/lib/communityDescription';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -81,7 +82,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
               }}
             >
               <TruncateText
-                text={community.description}
+                text={getCommunitySummaryText(community.description)}
                 maxLines={2}
                 textClassName="text-text-secondary"
               />
