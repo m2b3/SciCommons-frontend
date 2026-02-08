@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useCommunitiesApiJoinJoinCommunity } from '@/api/join-community/join-community';
 import { CommunityOut } from '@/api/schemas';
 // import useIdenticon from '@/hooks/useIdenticons';
+import { getCommunitySummaryText } from '@/lib/communityDescription';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -57,7 +58,9 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
             {community.name}
           </h3>
         </Link>
-        <p className="mb-4 line-clamp-2 text-sm text-text-secondary">{community.description}</p>
+        <p className="mb-4 line-clamp-2 text-sm text-text-secondary">
+          {getCommunitySummaryText(community.description)}
+        </p>
         <div className="flex flex-wrap items-center gap-4 text-text-secondary">
           <div className="flex items-center">
             <Users className="mr-1 h-4 w-4" />

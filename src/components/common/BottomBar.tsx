@@ -2,7 +2,6 @@
 
 import React, { lazy, useEffect, useState } from 'react';
 
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { BookOpenText, Home, Newspaper, Plus, Users } from 'lucide-react';
@@ -86,6 +85,7 @@ export default BottomBar;
 
 const CreateDropdown: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger>
@@ -95,22 +95,28 @@ const CreateDropdown: React.FC = () => {
       </DrawerTrigger>
       <DrawerContent className="flex flex-col items-center p-0 pt-4" showThumb={true}>
         <div className="flex w-full flex-col px-4 pb-4 text-sm font-semibold text-text-secondary">
-          <Link
-            href="/submitarticle"
+          <button
+            type="button"
             className="flex select-none items-center gap-2 border-b border-common-minimal p-4 hover:bg-common-minimal/50 hover:text-text-primary"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              router.push('/submitarticle');
+            }}
           >
             <BookOpenText size={18} />
             <span>Submit Article</span>
-          </Link>
-          <Link
-            href="/createcommunity"
+          </button>
+          <button
+            type="button"
             className="flex select-none items-center gap-2 p-4 hover:bg-common-minimal/50 hover:text-text-primary"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              router.push('/createcommunity');
+            }}
           >
             <Users size={18} />
             <span>Create Community</span>
-          </Link>
+          </button>
         </div>
       </DrawerContent>
     </Drawer>

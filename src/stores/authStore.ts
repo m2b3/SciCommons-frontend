@@ -29,6 +29,11 @@ const AUTH_COOKIE_NAME = 'auth_token';
 const TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 1 day
 const SERVER_SESSION_FALLBACK_TTL_MS = 60 * 60 * 1000; // 1 hour
 const AUTH_STORAGE_KEY = 'auth-storage';
+const getCookieOptions = () => ({
+  secure:
+    typeof window === 'undefined' ? process.env.NODE_ENV === 'production' : location.protocol === 'https:',
+  sameSite: 'strict' as const,
+});
 
 type StoredAuthState = {
   accessToken?: string;
@@ -116,8 +121,9 @@ const probeServerSession = async (): Promise<{
 };
 
 const clearCookies = () => {
-  Cookies.remove(AUTH_COOKIE_NAME);
-  Cookies.remove('expiresAt');
+  const cookieOptions = getCookieOptions();
+  Cookies.remove(AUTH_COOKIE_NAME, cookieOptions);
+  Cookies.remove('expiresAt', cookieOptions);
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -130,8 +136,9 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       setAccessToken: (token: string, user: AuthenticatedUserType) => {
         const expiresAt = getExpiresAtFromToken(token) ?? Date.now() + TOKEN_EXPIRATION_TIME;
-        Cookies.set(AUTH_COOKIE_NAME, token, { secure: true, sameSite: 'strict' });
-        Cookies.set('expiresAt', expiresAt.toString(), { secure: true, sameSite: 'strict' });
+        const cookieOptions = getCookieOptions();
+        Cookies.set(AUTH_COOKIE_NAME, token, cookieOptions);
+        Cookies.set('expiresAt', expiresAt.toString(), cookieOptions);
 
         set(() => ({
           isAuthenticated: true,
@@ -170,9 +177,10 @@ export const useAuthStore = create<AuthState>()(
                 : (getExpiresAtFromToken(token) ?? NaN);
             user = stored.user ?? user;
 
-            Cookies.set(AUTH_COOKIE_NAME, token, { secure: true, sameSite: 'strict' });
+            const cookieOptions = getCookieOptions();
+            Cookies.set(AUTH_COOKIE_NAME, token, cookieOptions);
             if (Number.isFinite(expiresAt)) {
-              Cookies.set('expiresAt', String(expiresAt), { secure: true, sameSite: 'strict' });
+              Cookies.set('expiresAt', String(expiresAt), cookieOptions);
             }
           }
         }
@@ -208,7 +216,7 @@ export const useAuthStore = create<AuthState>()(
           }
 
           expiresAt = Date.now() + SERVER_SESSION_FALLBACK_TTL_MS;
-          Cookies.set('expiresAt', String(expiresAt), { secure: true, sameSite: 'strict' });
+          Cookies.set('expiresAt', String(expiresAt), getCookieOptions());
           user = session.user ?? user ?? null;
         } else if (!user) {
           // If auth looks valid but user is missing, try to hydrate once.

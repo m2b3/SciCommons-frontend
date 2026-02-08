@@ -39,6 +39,7 @@ export default function RegisteredUsersInvitation({
       },
     }
   );
+  const communityName = data?.data.name;
 
   const {
     mutate,
@@ -60,12 +61,12 @@ export default function RegisteredUsersInvitation({
     if (isRespondSuccess) {
       toast.success(respondData.data.message);
       if (action === 'accept') {
-        router.push(`/community/${communityId}`);
+        router.push(communityName ? `/community/${encodeURIComponent(communityName)}` : '/communities');
       } else {
         router.push('/communities');
       }
     }
-  }, [isRespondSuccess, respondData, router, action, communityId]);
+  }, [isRespondSuccess, respondData, router, action, communityName]);
 
   useEffect(() => {
     if (respondError) {

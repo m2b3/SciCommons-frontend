@@ -9,6 +9,8 @@ interface CommunityHighlightCardProps {
 }
 
 const CommunityHighlightCard: React.FC<CommunityHighlightCardProps> = ({ community }) => {
+  const encodedCommunityName = encodeURIComponent(community.name || '');
+
   return (
     <div className="flex items-start">
       {/* <Image
@@ -23,7 +25,7 @@ const CommunityHighlightCard: React.FC<CommunityHighlightCardProps> = ({ communi
         className="mr-4 h-12 w-12 rounded-full"
       /> */}
       <div>
-        <Link href={`/community/${community.name}`}>
+        <Link href={`/community/${encodedCommunityName}`}>
           <p className="mb-1 text-gray-700 hover:underline">{community.name}</p>
         </Link>
         <div className="flex items-center space-x-4">

@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { StatusFilter } from '@/api/schemas';
 import useIdenticon from '@/hooks/useIdenticons';
+import { getCommunitySummaryText } from '@/lib/communityDescription';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -32,6 +33,8 @@ const ArticleSubmissionStatus = () => {
       showErrorToast(error);
     }
   }, [error]);
+  const communityName = data?.data.community_article?.community.name ?? '';
+  const encodedCommunityName = encodeURIComponent(communityName);
 
   return (
     <div className="my-4 rounded bg-white-secondary px-8 py-4 text-gray-900 shadow">
@@ -53,13 +56,13 @@ const ArticleSubmissionStatus = () => {
             objectFit="cover"
           />
           <div className="ml-4">
-            <Link href={`/community/${data.data.community_article.community.name}`}>
+            <Link href={`/community/${encodedCommunityName}`}>
               <h3 className="cursor-pointer font-semibold res-text-base hover:underline">
                 {data.data.community_article.community.name}
               </h3>
             </Link>
             <p className="text-gray-600 res-text-sm">
-              {data.data.community_article.community.description}
+              {getCommunitySummaryText(data.data.community_article.community.description)}
             </p>
           </div>
           <div className="ml-auto">

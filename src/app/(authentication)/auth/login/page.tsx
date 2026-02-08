@@ -4,7 +4,7 @@ import React from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,6 +26,7 @@ interface ILoginForm {
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { getPreviousPath } = usePathTracker();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
@@ -51,10 +52,17 @@ const LoginForm: React.FC = () => {
             last_name: '',
           }
         );
+        const requestedRedirect = searchParams?.get('redirect');
+        const safeRedirect =
+          requestedRedirect && requestedRedirect.startsWith('/') && !requestedRedirect.startsWith('/auth')
+            ? requestedRedirect
+            : null;
         const previousPath = getPreviousPath();
 
         // Redirect logic
-        if (previousPath && !previousPath.startsWith('/auth')) {
+        if (safeRedirect) {
+          router.push(safeRedirect);
+        } else if (previousPath && !previousPath.startsWith('/auth')) {
           router.push(previousPath);
         } else {
           router.push('/'); // Redirect to home if previous path is auth-related or not available

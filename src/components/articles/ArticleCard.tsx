@@ -31,6 +31,8 @@ const ArticleCard: FC<ArticleCardProps> = ({
   compactType = 'full',
   handleArticlePreview,
 }) => {
+  const encodedCommunityName = encodeURIComponent(article.community_article?.community.name || '');
+
   return (
     <div
       className={cn(
@@ -51,7 +53,7 @@ const ArticleCard: FC<ArticleCardProps> = ({
           <Link
             href={
               forCommunity
-                ? `/community/${article.community_article?.community.name}/articles/${article.slug}`
+                ? `/community/${encodedCommunityName}/articles/${article.slug}`
                 : `/article/${article.slug}`
             }
           >
@@ -95,7 +97,7 @@ const ArticleCard: FC<ArticleCardProps> = ({
             <p className="mt-1 flex flex-wrap items-center text-xs text-text-secondary">
               <span className="whitespace-nowrap">Published Community/Journal:</span>
               <Link
-                href={`/community/${article.community_article?.community.name}`}
+                href={`/community/${encodedCommunityName}`}
                 className="ml-1 text-functional-blue hover:underline"
               >
                 <span className="whitespace-nowrap">

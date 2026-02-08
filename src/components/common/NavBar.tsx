@@ -116,6 +116,7 @@ export default NavBar;
 
 const CreateDropdown: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)} open={isDropdownOpen}>
@@ -131,11 +132,15 @@ const CreateDropdown: React.FC = () => {
       <DropdownMenuContent sideOffset={12}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-              <Link href="/submitarticle" className="flex items-center gap-2">
-                <BookOpenText size={16} />
-                <span>Submit Article</span>
-              </Link>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsDropdownOpen(false);
+                router.push('/submitarticle');
+              }}
+              className="flex items-center gap-2"
+            >
+              <BookOpenText size={16} />
+              <span>Submit Article</span>
             </DropdownMenuItem>
           </TooltipTrigger>
           <TooltipContent side="left" sideOffset={8}>
@@ -145,11 +150,15 @@ const CreateDropdown: React.FC = () => {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-              <Link href="/createcommunity" className="flex items-center gap-2">
-                <Users size={16} />
-                <span>Create Community</span>
-              </Link>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsDropdownOpen(false);
+                router.push('/createcommunity');
+              }}
+              className="flex items-center gap-2"
+            >
+              <Users size={16} />
+              <span>Create Community</span>
             </DropdownMenuItem>
           </TooltipTrigger>
           <TooltipContent side="left" sideOffset={8}>
