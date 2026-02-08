@@ -52,7 +52,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community }) => {
         />
       </div> */}
       <div className="w-full flex-1 pb-4 sm:pb-0">
-        <Link href={`/community/${encodeURIComponent(community.name)}`}>
+        <Link href={`/community/${encodeURIComponent(community.slug || community.name)}`}>
           <h3 className="mb-2 truncate font-bold text-text-primary res-text-base hover:underline">
             {community.name}
           </h3>
