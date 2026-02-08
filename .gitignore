@@ -45,3 +45,5 @@ next-env.d.ts
 /public/swe-worker-*.js
 /public/workbox-*.js
 /public/workbox-*.js.map
+# Claude Code local memory and config
+.claude/
