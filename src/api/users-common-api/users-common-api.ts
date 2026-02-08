@@ -119,7 +119,7 @@ export const usersCommonApiToggleBookmark = (
 ) => {
   return customInstance<BookmarkToggleResponseSchema>(
     {
-      url: `/api/users/toggle-bookmark`,
+      url: `/api/users/bookmarks/toggle`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: bookmarkToggleSchema,
