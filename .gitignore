@@ -47,3 +47,8 @@ next-env.d.ts
 /public/workbox-*.js.map
 # Claude Code local memory and config
 .claude/
+
+# Test images
+fig*.jpg
+inp.jpg
+bkm.jpg
