@@ -85,7 +85,7 @@ const DisplayCommunity: React.FC<DisplayCommunityProps> = ({ community, refetch 
                 supportMarkdown={true}
                 supportLatex={false}
                 containerClassName="mb-0"
-                contentClassName="line-clamp-2 text-text-secondary"
+                contentClassName="text-text-secondary"
               />
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-4 text-text-secondary">

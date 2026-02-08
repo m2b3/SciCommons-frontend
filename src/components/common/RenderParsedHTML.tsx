@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import katex, { KatexOptions } from 'katex';
 import { ChevronsDown } from 'lucide-react';
-import { marked } from 'marked';
+import { Renderer, marked } from 'marked';
 
 import { markdownStyles } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
@@ -21,12 +21,14 @@ const RenderParsedHTML = ({
   gradientClassName,
   supportMarkdown = true,
   supportLatex = true,
+  flattenHeadings = false,
 }: {
   rawContent: string;
   isShrinked?: boolean;
   containerClassName?: string;
   contentClassName?: string;
   gradientClassName?: string;
+  flattenHeadings?: boolean;
 } & SupportConfig) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -113,10 +115,20 @@ const RenderParsedHTML = ({
     try {
       let processedContent = content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, '');
 
+      // Create custom renderer if flattenHeadings is true
+      let renderer: Renderer | undefined;
+      if (flattenHeadings && supportMarkdown) {
+        renderer = new Renderer();
+        // Convert all headings to strong tags instead of h1-h6
+        renderer.heading = ({ text }) => {
+          return `<strong>${text}</strong> `;
+        };
+      }
+
       // If only markdown is supported
       if (supportMarkdown && !supportLatex) {
         try {
-          return marked.parse(processedContent) as string;
+          return marked.parse(processedContent, renderer ? { renderer } : {}) as string;
         } catch (e) {
           console.warn('Markdown parsing failed:', e);
           return processedContent;
@@ -137,7 +149,7 @@ const RenderParsedHTML = ({
 
         // Finally process markdown
         try {
-          return marked.parse(processedContent) as string;
+          return marked.parse(processedContent, renderer ? { renderer } : {}) as string;
         } catch (e) {
           console.warn('Markdown parsing failed:', e);
           return processedContent;
@@ -166,7 +178,7 @@ const RenderParsedHTML = ({
         .replace(/'/g, '&#039;');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawContent, supportMarkdown, supportLatex]);
+  }, [rawContent, supportMarkdown, supportLatex, flattenHeadings]);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
