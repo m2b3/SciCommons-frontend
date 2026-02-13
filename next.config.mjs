@@ -56,6 +56,14 @@ const nextConfig = withPWA({
 
   // Remove X-Powered-By header for security (hides that you're using Next.js)
   poweredByHeader: false,
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://127.0.0.1:8000/api/:path*', // 
+      },
+    ]
+  },
 
   // Optimize images
   images: {
