@@ -73,7 +73,7 @@
     "nextjs-toploader": "^1.6.12",
     "nextra": "^2.13.4",
     "nextra-theme-docs": "^2.13.4",
-    "pdfjs-dist": "3.11.174",
+    "pdfjs-dist": "^5.4.624",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
