@@ -48,6 +48,12 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
   });
 
   const onSubmit = (rules: Rule[]) => {
+    const hasEmptyRule = rules.some((r) => !r.rule || r.rule.trim() === '');
+
+    if (hasEmptyRule) {
+      toast.error('Rules cannot be empty.');
+      return;
+    }
     if (data) {
       const dataToSend = {
         description: data.data.description,
