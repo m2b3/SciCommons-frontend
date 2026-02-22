@@ -14,7 +14,7 @@ interface ProfessionalStatusProps {
 }
 
 const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMode }) => {
-  const { register, control } = useFormContext();
+  const { register, control, watch } = useFormContext<IProfileForm>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'professionalStatuses',
@@ -30,74 +30,87 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
       <p className="mb-4 pt-2 text-sm text-text-tertiary">
         Provide your academic or professional status to help us ensure relevant content.
       </p>
-      {fields.map((field, index) => (
-        <div key={field.id} className="border-b pb-6 last:border-b-0">
-          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-6">
-            <div className="md:col-span-3">
+      {fields.map((field, index) => {
+        const startYearValue = watch(`professionalStatuses.${index}.startYear`);
+
+        return (
+          <div key={field.id} className="border-b pb-6 last:border-b-0">
+            <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-6">
+              <div className="md:col-span-3">
+                <FormInput
+                  label="Status"
+                  name={`professionalStatuses.${index}.status`}
+                  type="text"
+                  register={register}
+                  errors={errors}
+                  requiredMessage="Status is required"
+                  readOnly={!editMode}
+                />
+              </div>
               <FormInput
-                label="Status"
-                name={`professionalStatuses.${index}.status`}
+                label="Start Year"
+                name={`professionalStatuses.${index}.startYear`}
                 type="text"
                 register={register}
                 errors={errors}
-                requiredMessage="Status is required"
+                requiredMessage="Start year is required"
+                patternValue={/^\d{4}$/}
+                patternMessage="Invalid year format"
                 readOnly={!editMode}
               />
-            </div>
-            <FormInput
-              label="Start Year"
-              name={`professionalStatuses.${index}.startYear`}
-              type="text"
-              register={register}
-              errors={errors}
-              requiredMessage="Start year is required"
-              patternValue={/^\d{4}$/}
-              patternMessage="Invalid year format"
-              readOnly={!editMode}
-            />
-            <FormInput
-              label="End Year"
-              name={`professionalStatuses.${index}.endYear`}
-              type="text"
-              register={register}
-              errors={errors}
-              patternValue={/^\d{4}$|^Present$/i}
-              patternMessage="Invalid year format (use 'Present' for current positions)"
-              readOnly={!editMode}
-            />
-            <div className="flex h-full w-full items-end justify-center">
-              {fields.length < 3 && editMode && (
-                <Button
-                  variant={'blue'}
-                  className="w-full py-2.5"
-                  onClick={addNewStatus}
-                  title="Add new status"
-                  type="button"
-                >
-                  <ButtonIcon>
-                    <Plus size={16} />
-                  </ButtonIcon>
-                  <ButtonTitle>Add Status</ButtonTitle>
-                </Button>
-              )}
-              {index > 0 && editMode && (
-                <Button
-                  variant={'danger'}
-                  className="w-full py-2.5"
-                  onClick={() => remove(index)}
-                  title="Remove this status"
-                  type="button"
-                >
-                  <ButtonIcon>
-                    <Trash2 size={16} />
-                  </ButtonIcon>
-                  <ButtonTitle>Remove Status</ButtonTitle>
-                </Button>
-              )}
+              <FormInput
+                label="End Year"
+                name={`professionalStatuses.${index}.endYear`}
+                type="text"
+                register={register}
+                errors={errors}
+                patternValue={/^\d{4}$|^Present$/i}
+                patternMessage="Invalid year format (use 'Present' for current positions)"
+                readOnly={!editMode}
+                validateFn={(value: string) => {
+                  if (!value || value.toLowerCase() === 'present') return true;
+                  const start = parseInt(startYearValue);
+                  const end = parseInt(value);
+                  if (!isNaN(start) && !isNaN(end) && end < start) {
+                    return 'End year must be after start year';
+                  }
+                  return true;
+                }}
+              />
+              <div className="flex h-full w-full items-end justify-center">
+                {fields.length < 3 && editMode && (
+                  <Button
+                    variant={'blue'}
+                    className="w-full py-2.5"
+                    onClick={addNewStatus}
+                    title="Add new status"
+                    type="button"
+                  >
+                    <ButtonIcon>
+                      <Plus size={16} />
+                    </ButtonIcon>
+                    <ButtonTitle>Add Status</ButtonTitle>
+                  </Button>
+                )}
+                {index > 0 && editMode && (
+                  <Button
+                    variant={'danger'}
+                    className="w-full py-2.5"
+                    onClick={() => remove(index)}
+                    title="Remove this status"
+                    type="button"
+                  >
+                    <ButtonIcon>
+                      <Trash2 size={16} />
+                    </ButtonIcon>
+                    <ButtonTitle>Remove Status</ButtonTitle>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       {fields.length === 0 && editMode && (
         <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-8">
           <div className="md:col-span-3">
