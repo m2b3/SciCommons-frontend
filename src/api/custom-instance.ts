@@ -56,6 +56,13 @@ AXIOS_INSTANCE.interceptors.response.use(
     // ONLY handle 401 (Unauthorized - session expired) globally
     // 403 (Forbidden - no permission) should be handled by individual components
     if (status === 401 && !isHandlingAuthFailure) {
+      if (
+        typeof window !== 'undefined' &&
+        (window.location.pathname === '/auth/login' || window.location.pathname === '/login')
+      ) {
+        return Promise.reject(error);
+      }
+
       isHandlingAuthFailure = true;
 
       try {
@@ -74,8 +81,8 @@ AXIOS_INSTANCE.interceptors.response.use(
         if (typeof window !== 'undefined') {
           const currentPath = window.location.pathname;
           // Only redirect if not already on login page
-          if (currentPath !== '/login' && currentPath !== '/signup') {
-            window.location.href = '/login';
+          if (currentPath !== '/auth/login' && currentPath !== '/auth/register') {
+            window.location.href = '/auth/login';
           }
         }
       } catch (importError) {
