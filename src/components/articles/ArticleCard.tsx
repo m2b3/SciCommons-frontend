@@ -142,28 +142,22 @@ const ArticleCard: FC<ArticleCardProps> = memo(
                 Problem: Link extended full width even for short titles, making card hard to click
                 Solution: Link uses inline-block (not flex-1) to only be as wide as title text
                 Layout: flex container with justify-between pushes buttons to right, link stays minimal */}
-            <div className="flex w-full flex-row items-center justify-between gap-2">
+            <div className="flex w-full flex-row items-start justify-between gap-2 min-w-0">
               <Link
                 href={
                   forCommunity
                     ? `/community/${encodedCommunityName}/articles/${article.slug}`
                     : `/article/${article.slug}`
                 }
-                className="inline-block"
+                className="flex-1 min-w-0"
               >
                 <RenderParsedHTML
                   rawContent={article.title}
                   supportLatex={true}
                   supportMarkdown={false}
-                  contentClassName={cn(
-                    `text-wrap font-semibold text-text-primary text-sm sm:text-sm md:text-sm lg:text-sm hover:underline`,
-                    {
-                      'line-clamp-2 text-xs sm:text-xs md:text-xs lg:text-xs':
-                        compactType === 'minimal' || compactType === 'default',
-                      'underline underline-text-tertiary hover:text-functional-green':
-                        compactType === 'minimal',
-                    }
-                  )}
+                  contentClassName="font-semibold text-text-primary text-sm 
+                            overflow-hidden text-ellipsis whitespace-nowrap
+                            hover:underline"
                   containerClassName="mb-0"
                 />
               </Link>
