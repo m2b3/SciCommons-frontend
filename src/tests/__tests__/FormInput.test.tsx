@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { render, screen } from '@testing-library/react';
+import { z } from 'zod';
 
 import FormInput from '@/components/common/FormInput';
 
@@ -58,25 +59,18 @@ describe('FormInput', () => {
     expect(screen.getByText('Error message')).toBeInTheDocument();
   });
 
-  it('calls register function with correct parameters', () => {
+  it('calls register function with a zod schema', () => {
+    const testSchema = z.string().min(5, "Too short");
     render(
       <FormInput
         {...defaultProps}
-        patternValue={/test/}
-        patternMessage="Invalid pattern"
-        minLengthValue={5}
-        minLengthMessage="Too short"
-        maxLengthValue={10}
-        maxLengthMessage="Too long"
+        schema={testSchema}
       />
     );
     expect(mockRegister).toHaveBeenCalledWith(
       'testInput',
       expect.objectContaining({
         required: { value: true, message: 'This field is required' },
-        pattern: { value: /test/, message: 'Invalid pattern' },
-        minLength: { value: 5, message: 'Too short' },
-        maxLength: { value: 10, message: 'Too long' },
         validate: expect.any(Function),
       })
     );

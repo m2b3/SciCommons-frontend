@@ -13,6 +13,7 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthResendActivation } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/common/FormInput';
 import { Button, ButtonTitle } from '@/components/ui/button';
+import { emailOrUsernameSchema } from '@/constants/zod-schema';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IResendForm {
@@ -115,8 +116,7 @@ const ResendVerificationForm: React.FC = () => {
                   placeholder="Enter your email or username"
                   register={register}
                   requiredMessage="Email or username is required"
-                  patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[\w.]+$/}
-                  patternMessage="Enter a valid email or username"
+                  schema={emailOrUsernameSchema}
                   errors={errors}
                   inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
                 />

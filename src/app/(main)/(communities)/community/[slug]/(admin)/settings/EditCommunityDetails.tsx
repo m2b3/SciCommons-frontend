@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 
 import { AxiosResponse } from 'axios';
@@ -13,6 +15,7 @@ import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skele
 import OptionCard from '@/components/communities/OptionCard';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
+import { communityDescriptionSchema } from '@/constants/zod-schema';
 import { useAuthStore } from '@/stores/authStore';
 
 type OptionType = 'public' | 'private' | 'hidden';
@@ -47,7 +50,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const [selectedType, setSelectedType] = useState<OptionType>(data?.data.type as OptionType);
-  const [isEditEnabled, setIsEditEnabled] = useState(true);
+  const [isEditEnabled, setIsEditEnabled] = useState(false);
   const [selectedPublicCommunitiesSettings, setSelectedPublicCommunitiesSettings] = useState(
     data?.data.community_settings as string
   );
@@ -57,6 +60,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
     mutation: {
       onSuccess: () => {
         toast.success('Community Details updated successfully');
+        setIsEditEnabled(false);
         refetch && refetch();
       },
       onError: (error) => {
@@ -226,9 +230,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             placeholder="Briefly describe your community"
             register={register}
             control={control}
-            requiredMessage="Description is required"
-            minLengthValue={10}
-            minLengthMessage="Description must be at least 10 characters"
+            schema={communityDescriptionSchema}
             info="Provide a brief description of your community."
             errors={errors}
             readOnly={!isEditEnabled}

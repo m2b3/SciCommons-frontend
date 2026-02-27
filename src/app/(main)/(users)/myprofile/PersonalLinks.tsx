@@ -4,6 +4,8 @@ import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
 
+import { githubUrlSchema, linkedInUrlSchema,scholarUrlSchema, urlSchema } from '@/constants/zod-schema';
+
 import { IProfileForm } from './page';
 
 interface PersonalLinksProps {
@@ -24,50 +26,38 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormInput
           label="Home Page URL"
-          placeholder="https://example.com"
           name="homePage"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/}
-          patternMessage="Invalid URL format"
-          // requiredMessage="Home page URL is required"
+          schema={urlSchema}
           readOnly={!editMode}
         />
         <FormInput
           label="LinkedIn URL"
-          placeholder="https://linkedin.com/in/username"
           name="linkedIn"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/}
-          patternMessage="Invalid LinkedIn URL"
-          // requiredMessage="LinkedIn URL is required"
+          schema={linkedInUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
           label="Github URL"
-          placeholder="https://github.com/username"
           name="github"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/github\.com\/.*$/}
-          patternMessage="Invalid GitHub URL"
-          // requiredMessage="GitHub URL is required"
+          schema={githubUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
           label="GoogleScholar URL"
-          placeholder="https://scholar.google.com/citations?user=..."
           name="googleScholar"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/scholar\.google\.com\/.*$/}
-          patternMessage="Invalid Google Scholar URL"
-          // requiredMessage="Google Scholar URL is required"
+          schema={scholarUrlSchema}
           readOnly={!editMode}
         />
       </div>

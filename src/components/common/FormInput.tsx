@@ -10,7 +10,7 @@ import {
   UseFormRegister,
   useWatch,
 } from 'react-hook-form';
-import { ZodTypeAny } from 'zod';
+import { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 
@@ -22,12 +22,6 @@ interface InputProps<TFieldValues extends FieldValues> {
   type: string;
   placeholder?: string;
   requiredMessage?: string;
-  patternMessage?: string;
-  patternValue?: RegExp;
-  minLengthValue?: number;
-  minLengthMessage?: string;
-  maxLengthValue?: number;
-  maxLengthMessage?: string;
   name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
@@ -46,7 +40,7 @@ interface InputProps<TFieldValues extends FieldValues> {
   isSuccess?: boolean;
   validateFn?: (value: string) => true | string;
   autoFocus?: boolean;
-  schema?: ZodTypeAny;
+  schema?: z.ZodTypeAny;
   mentionCandidates?: string[];
 }
 
@@ -77,12 +71,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   placeholder,
   register,
   requiredMessage,
-  patternMessage,
-  patternValue,
-  minLengthValue,
-  minLengthMessage,
-  maxLengthValue,
-  maxLengthMessage,
   errors,
   control,
   isSubmitting = false,
@@ -125,21 +113,13 @@ const FormInput = <TFieldValues extends FieldValues>({
   // Get the registered field with validation rules
   const registeredField = register(name as Path<TFieldValues>, {
     required: requiredMessage ? { value: true, message: requiredMessage } : undefined,
-    pattern:
-      patternValue && patternMessage ? { value: patternValue, message: patternMessage } : undefined,
-    minLength:
-      minLengthValue && minLengthMessage
-        ? { value: minLengthValue, message: minLengthMessage }
-        : undefined,
-    maxLength:
-      maxLengthValue && maxLengthMessage
-        ? { value: maxLengthValue, message: maxLengthMessage }
-        : undefined,
     validate: (value) => {
       if (validateFn) return validateFn(value);
       if (schema) {
         const result = schema.safeParse(value);
-        if (!result.success) return result.error.issues[0]?.message ?? 'Invalid value';
+        if (!result.success) {
+          return result.error.issues[0]?.message ?? 'Invalid input';
+        }
       }
       return true;
     },
@@ -280,7 +260,7 @@ const FormInput = <TFieldValues extends FieldValues>({
                      How: Remove the negative tabIndex so it can receive focus. */
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPassword ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
                 </button>
               )}
             </div>

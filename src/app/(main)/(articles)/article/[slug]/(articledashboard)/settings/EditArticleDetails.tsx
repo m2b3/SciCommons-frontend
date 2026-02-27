@@ -13,7 +13,7 @@ import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
-import { ARTICLE_TITLE_MIN_LENGTH } from '@/constants/common.constants';
+import { articleAbstractSchema, articleTitleSchema } from '@/constants/zod-schema';
 import { useAuthStore } from '@/stores/authStore';
 import { FileObj } from '@/types';
 
@@ -190,9 +190,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         type="text"
         placeholder="Enter the title of your article"
         register={register}
-        requiredMessage="Title is required"
-        minLengthValue={ARTICLE_TITLE_MIN_LENGTH}
-        minLengthMessage={`Title must be at least ${ARTICLE_TITLE_MIN_LENGTH} characters`}
+        schema={articleTitleSchema}
         info="Please provide a clear and concise title for your article."
         errors={errors}
       />
@@ -203,9 +201,7 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         textArea={true}
         placeholder="Enter the abstract of your article"
         register={register}
-        requiredMessage="Abstract is required"
-        minLengthValue={10}
-        minLengthMessage="Abstract must be at least 10 characters"
+        schema={articleAbstractSchema}
         info="Provide a brief summary of your article's content."
         errors={errors}
       />

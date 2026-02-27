@@ -14,10 +14,10 @@ import { useUsersApiAuthSignup } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/common/FormInput';
 import { ArrowNarrowLeft } from '@/components/ui/Icons/common';
 import { Button } from '@/components/ui/button';
+import { emailSchema, matchPassword, nameSchema, passwordSchema, usernameSchema } from '@/constants/zod-schema';
 import {
   getPasswordRequirementsStatus,
   getPasswordStrength,
-  passwordRegex,
   passwordRequirements,
 } from '@/lib/formValidation';
 import { showErrorToast } from '@/lib/toastHelpers';
@@ -84,7 +84,7 @@ const RegisterForm: React.FC = () => {
           Who: Codex
           What: Convert registration page colors to semantic tokens.
           Why: Ensure UI skins can swap palettes without editing markup.
-          How: Replace fixed black/white/gray utilities with design tokens. */}
+          How: Replace fixed black/white utilities with design tokens. */}
       <div className="flex h-dvh flex-col bg-common-background p-4 md:flex-row md:p-0">
         <Image
           src="/images/assets/bg-auth-pages.webp"
@@ -161,13 +161,8 @@ const RegisterForm: React.FC = () => {
               type="text"
               placeholder="e.g., john_doe"
               register={register}
-              patternValue={/^[a-z0-9._]+$/}
-              patternMessage="Username must only contain lowercase letters, numbers, dots, and underscores."
+              schema={usernameSchema}
               requiredMessage="Username is required"
-              minLengthValue={3}
-              minLengthMessage="Username must be at least 3 characters long"
-              maxLengthValue={30}
-              maxLengthMessage="Username cannot exceed 30 characters"
               errors={errors}
               isSubmitting={isSubmitting}
               helperText="Username must only contain lowercase letters, numbers, dots, and underscores."
@@ -183,6 +178,7 @@ const RegisterForm: React.FC = () => {
                 placeholder="First Name"
                 register={register}
                 requiredMessage="First Name is required"
+                schema={nameSchema}
                 errors={errors}
                 labelClassName="text-text-primary"
                 inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
@@ -194,6 +190,7 @@ const RegisterForm: React.FC = () => {
                 placeholder="Last Name"
                 register={register}
                 requiredMessage="Last Name is required"
+                schema={nameSchema}
                 errors={errors}
                 labelClassName="text-text-primary"
                 inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
@@ -207,8 +204,7 @@ const RegisterForm: React.FC = () => {
               placeholder="e.g., john.doe@example.com"
               register={register}
               requiredMessage="Email is required"
-              patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-              patternMessage="Enter a valid email address."
+              schema={emailSchema}
               errors={errors}
               labelClassName="text-text-primary"
               inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
@@ -221,8 +217,7 @@ const RegisterForm: React.FC = () => {
               placeholder="Create a password"
               register={register}
               requiredMessage="Password is required"
-              patternValue={passwordRegex}
-              patternMessage="Password must be at least 8 characters, include uppercase, lowercase, digit, and special character."
+              schema={passwordSchema}
               errors={errors}
               labelClassName="text-text-primary"
               inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
@@ -271,7 +266,7 @@ const RegisterForm: React.FC = () => {
               placeholder="Re-enter your password"
               register={register}
               requiredMessage="Confirm your password"
-              validateFn={(value) => value === watch('password') || 'Passwords do not match'}
+              schema={matchPassword(new RegExp(`^${watch('password')}$`))}
               errors={errors}
               labelClassName="text-text-primary"
               inputClassName="bg-common-minimal text-text-primary ring-common-contrast"

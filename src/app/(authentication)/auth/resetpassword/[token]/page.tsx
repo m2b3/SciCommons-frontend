@@ -12,6 +12,7 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiAuthResetPassword } from '@/api/users-auth/users-auth';
 import FormInput from '@/components/common/FormInput';
 import { Button } from '@/components/ui/button';
+import { matchPassword, passwordSchema } from '@/constants/zod-schema';
 import { showErrorToast } from '@/lib/toastHelpers';
 
 interface IResetPasswordForm {
@@ -58,7 +59,7 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
           Who: Codex
           What: Swap reset-password styling to token-driven colors.
           Why: Allow skin variants to change the palette without code edits.
-          How: Replace fixed black/white/gray utilities with design tokens. */}
+          How: Replace fixed black/white utilities with design tokens. */}
       <div className="relative flex h-dvh flex-col items-center justify-center bg-common-background p-4 sm:p-0">
         <Image
           src="/images/assets/bg-auth-pages.webp"
@@ -92,8 +93,7 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
               placeholder="Password"
               register={register}
               requiredMessage="Password is required"
-              minLengthValue={8}
-              minLengthMessage="Password must be at least 8 characters"
+              schema={passwordSchema}
               errors={errors}
               inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
               eyeBtnClassName="text-text-tertiary hover:text-text-secondary"
@@ -105,9 +105,8 @@ const ResetPasswordForm = ({ params }: { params: { token: string } }) => {
               placeholder="Confirm Password"
               register={register}
               requiredMessage="Confirm Password is required"
+              schema={matchPassword(new RegExp(`^${watch('password')}$`))}
               errors={errors}
-              patternMessage="The passwords do not match"
-              patternValue={new RegExp(watch('password'))}
               inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
               eyeBtnClassName="text-text-tertiary hover:text-text-secondary"
             />

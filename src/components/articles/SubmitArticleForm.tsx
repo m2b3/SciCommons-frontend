@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 import {
@@ -12,7 +14,7 @@ import {
 import FileUpload from '@/components/common/FileUpload';
 import FormInput from '@/components/common/FormInput';
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
-import { ARTICLE_TITLE_MIN_LENGTH } from '@/constants/common.constants';
+import { articleAbstractSchema, articleTitleSchema, nameSchema, urlSchema } from '@/constants/zod-schema';
 import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -106,11 +108,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
           type="text"
           placeholder="Enter the title of your article"
           register={register}
-          requiredMessage="Title is required"
-          minLengthValue={ARTICLE_TITLE_MIN_LENGTH}
-          minLengthMessage={`Title must be at least ${ARTICLE_TITLE_MIN_LENGTH} characters`}
-          maxLengthValue={500}
-          maxLengthMessage="Title cannot exceed 500 characters"
+          schema={articleTitleSchema}
           info="Please provide a clear and concise title for your article."
           errors={errors}
           readOnly={activeTab === 'search'}
@@ -125,7 +123,18 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
         <Controller
           name="authors"
           control={control}
-          rules={{ required: 'Authors are required' }}
+          rules={{
+            validate: (value: any[]) => {
+              if (!value || value.length === 0) return 'Authors are required';
+              for (const item of value) {
+                const result = nameSchema.safeParse(item.label);
+                if (!result.success) {
+                  return result.error.issues[0]?.message ?? 'Invalid author name';
+                }
+              }
+              return true;
+            },
+          }}
           render={({ field: { onChange, value }, fieldState }) => (
             <MultiLabelSelector
               label="Authors"
@@ -153,7 +162,7 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
           type="text"
           placeholder="Enter the abstract of your article"
           register={register}
-          requiredMessage="Abstract is required"
+          schema={articleAbstractSchema}
           info="Provide a brief summary of your article's content."
           errors={errors}
           textArea={true}
@@ -176,12 +185,10 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
             type="text"
             placeholder="Enter the link to the article"
             register={register}
-            requiredMessage="Article link is required"
+            schema={urlSchema}
             info="Provide a link to the article you want to submit."
             errors={errors}
             readOnly={activeTab === 'search'}
-            maxLengthMessage="Article link cannot exceed 2000 characters"
-            maxLengthValue={2000}
           />
           <p className="mt-2 text-xs italic text-text-tertiary">
             You cannot edit the article link when searching for articles.

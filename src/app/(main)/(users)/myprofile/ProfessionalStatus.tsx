@@ -5,6 +5,7 @@ import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
+import { yearSchema, statusSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -31,11 +32,6 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
         Provide your academic or professional status to help us ensure relevant content.
       </p>
       {fields.map((field, index) => {
-        /* Fixed by Codex on 2026-02-22
-           Who: Codex
-           What: Keep nested professional status field names compatible with the current FormInput name type.
-           Why: FormInput currently accepts `keyof IProfileForm`, while these inputs use nested array paths.
-           How: Reuse typed field-name constants and cast nested paths at the boundary so strict form typing remains enabled. */
         const statusFieldName = `professionalStatuses.${index}.status` as keyof IProfileForm;
         const startYearFieldName = `professionalStatuses.${index}.startYear` as keyof IProfileForm;
         const endYearFieldName = `professionalStatuses.${index}.endYear` as keyof IProfileForm;
@@ -55,7 +51,7 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                   type="text"
                   register={register}
                   errors={errors}
-                  requiredMessage="Status is required"
+                  schema={statusSchema}
                   readOnly={!editMode}
                 />
               </div>
@@ -67,18 +63,11 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                   type="text"
                   register={register}
                   errors={errors}
-                  requiredMessage="Start year is required"
-                  patternValue={/^\d{4}$/}
-                  patternMessage="Invalid year format"
+                  schema={yearSchema}
                   readOnly={!editMode}
                 />
               </div>
 
-              {/* Fixed by Codex on 2026-02-22
-                 Who: Codex
-                 What: Restore strict numeric validation for End Year while keeping ongoing mode.
-                 Why: Free-text values could bypass validation and reach the API payload.
-                 How: Reinstate 4-digit pattern validation and reject non-numeric/invalid ordering in validateFn. */}
               <div className="w-28">
                 {!isOngoing ? (
                   <FormInput
@@ -87,15 +76,13 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                     type="text"
                     register={register}
                     errors={errors}
-                    patternValue={/^\d{4}$/}
-                    patternMessage="Invalid year format"
+                    schema={yearSchema}
                     readOnly={!editMode}
                     validateFn={(value: string) => {
                       if (isOngoing) return true;
-                      if (!value) return 'End year is required unless ongoing is selected';
+                      if (!value) return 'End year is required';
                       const start = parseInt(startYearValue, 10);
                       const end = parseInt(value, 10);
-                      if (isNaN(end)) return 'Invalid year format';
                       if (!isNaN(start) && !isNaN(end) && end < start) {
                         return 'End year must be after start year';
                       }
@@ -114,7 +101,6 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                 )}
               </div>
 
-              {/* Ongoing checkbox */}
               {editMode && (
                 <div className="flex items-center gap-2 pb-1">
                   <input
@@ -126,7 +112,6 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                 </div>
               )}
 
-              {/* Remove */}
               {editMode && (
                 <Button
                   variant={'danger'}
