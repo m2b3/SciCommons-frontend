@@ -6,5 +6,5 @@
  */
 
 export type MyappRealtimeApiHeartbeatParams = {
-  queue_id: string;
+queue_id: string;
 };

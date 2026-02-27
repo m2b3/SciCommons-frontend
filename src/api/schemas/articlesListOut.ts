@@ -5,8 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ArticlesListOutArticleImageUrl } from './articlesListOutArticleImageUrl';
-import type { ArticlesListOutCommunityArticle } from './articlesListOutCommunityArticle';
 import type { Tag } from './tag';
+import type { ArticlesListOutCommunityArticle } from './articlesListOutCommunityArticle';
+import type { ArticlesListOutIsBookmarked } from './articlesListOutIsBookmarked';
 import type { UserStats } from './userStats';
 
 export interface ArticlesListOut {
@@ -15,6 +16,7 @@ export interface ArticlesListOut {
   authors: Tag[];
   community_article: ArticlesListOutCommunityArticle;
   id: number;
+  is_bookmarked?: ArticlesListOutIsBookmarked;
   slug: string;
   title: string;
   total_ratings: number;

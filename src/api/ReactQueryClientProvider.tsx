@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+import { registerQueryClient, unregisterQueryClient } from './queryClientRegistry';
 
 export const ReactQueryClientProvider = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -17,5 +19,11 @@ export const ReactQueryClientProvider = ({ children }: { children: React.ReactNo
         },
       })
   );
+
+  useEffect(() => {
+    registerQueryClient(queryClient);
+    return () => unregisterQueryClient(queryClient);
+  }, [queryClient]);
+
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };

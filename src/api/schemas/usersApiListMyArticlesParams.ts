@@ -6,7 +6,7 @@
  */
 
 export type UsersApiListMyArticlesParams = {
-  page?: number;
-  per_page?: number;
-  search?: string | null;
+page?: number;
+per_page?: number;
+search?: string | null;
 };

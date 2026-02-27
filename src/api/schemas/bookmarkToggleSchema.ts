@@ -4,9 +4,9 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { ContentTypeEnum } from './contentTypeEnum';
+import type { BookmarkContentTypeEnum } from './bookmarkContentTypeEnum';
 
 export interface BookmarkToggleSchema {
-  content_type: ContentTypeEnum;
+  content_type: BookmarkContentTypeEnum;
   object_id: number;
 }

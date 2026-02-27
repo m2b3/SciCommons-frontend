@@ -5,8 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ArticleCreateDetailsSubmissionType =
-  (typeof ArticleCreateDetailsSubmissionType)[keyof typeof ArticleCreateDetailsSubmissionType];
+export type ArticleCreateDetailsSubmissionType = typeof ArticleCreateDetailsSubmissionType[keyof typeof ArticleCreateDetailsSubmissionType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArticleCreateDetailsSubmissionType = {

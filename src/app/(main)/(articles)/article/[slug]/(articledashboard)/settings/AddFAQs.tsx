@@ -25,7 +25,7 @@ interface AddFAQsProps {
 }
 
 const AddFAQs: React.FC<AddFAQsProps> = (props) => {
-  const { articleId, title, abstract, authors, keywords, submissionType, faqs } = props;
+  const { articleId, title, abstract, authors, keywords: _keywords, submissionType, faqs } = props;
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
 
@@ -70,21 +70,25 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
     }
   }, [isSuccess, error]);
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: FAQ editor used fixed grays/blue/green/red utilities that ignored skins.
+     Solution: Replace hard-coded colors with semantic token classes for text, borders, and actions.
+     Result: FAQ form styling now adapts to the active skin. */
   return (
     <form onSubmit={handleSubmit((data) => onSubmit(data.faqs))} className="my-4 space-y-6">
       {fields.map((field, index) => (
-        <div key={field.id} className="rounded-lg bg-white-secondary p-4 shadow-md">
+        <div key={field.id} className="rounded-lg bg-common-cardBackground p-4 shadow-md">
           <div className="mb-4 flex items-center space-x-2">
             <label
               htmlFor={`faqs.${index}.question`}
-              className="block font-medium text-gray-700 res-text-xs"
+              className="block font-medium text-text-secondary res-text-xs"
             >
               Question {index + 1}
             </label>
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600 hover:text-red-900"
+              className="text-functional-red hover:text-functional-redContrast"
             >
               <Trash2 size={16} />
             </button>
@@ -97,13 +101,13 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
                 {...field}
                 id={`faqs.${index}.question`}
                 placeholder="Enter question"
-                className="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm res-text-xs focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-md border border-common-contrast bg-common-cardBackground p-2 text-text-primary shadow-sm res-text-xs focus:border-functional-blue focus:ring-functional-blue"
               />
             )}
           />
           <label
             htmlFor={`faqs.${index}.answer`}
-            className="mt-4 block font-medium text-gray-700 res-text-xs"
+            className="mt-4 block font-medium text-text-secondary res-text-xs"
           >
             Answer
           </label>
@@ -115,7 +119,7 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
                 {...field}
                 id={`faqs.${index}.answer`}
                 placeholder="Enter answer"
-                className="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm res-text-xs focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-md border border-common-contrast bg-common-cardBackground p-2 text-text-primary shadow-sm res-text-xs focus:border-functional-blue focus:ring-functional-blue"
               />
             )}
           />
@@ -125,13 +129,13 @@ const AddFAQs: React.FC<AddFAQsProps> = (props) => {
         <button
           type="button"
           onClick={() => append({ question: '', answer: '' })}
-          className="flex items-center text-green-600 res-text-sm hover:text-green-900"
+          className="flex items-center text-functional-green res-text-sm hover:text-functional-greenContrast"
         >
           <Plus className="mr-1 h-5 w-5" /> Add FAQ
         </button>
         <button
           type="submit"
-          className="rounded-md bg-blue-500 px-4 py-2 text-white res-text-sm hover:bg-blue-600"
+          className="rounded-md bg-functional-blue px-4 py-2 text-primary-foreground res-text-sm hover:bg-functional-blueContrast"
         >
           {isPending ? 'Updating...' : 'Update FAQs'}
         </button>

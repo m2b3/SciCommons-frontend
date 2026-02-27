@@ -6,8 +6,8 @@
  */
 
 export type UsersCommonApiGetHashtagsParams = {
-  sort?: 'popular' | 'recent' | 'alphabetical';
-  search?: string;
-  page?: number;
-  per_page?: number;
+sort?: 'popular' | 'recent' | 'alphabetical';
+search?: string;
+page?: number;
+per_page?: number;
 };

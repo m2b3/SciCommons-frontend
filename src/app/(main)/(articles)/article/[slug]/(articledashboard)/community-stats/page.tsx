@@ -28,15 +28,19 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
     }
   }, [error]);
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Community stats page used fixed gray/blue/green colors that ignored UI skins.
+     Solution: Replace hard-coded utility colors with semantic surface/text/functional tokens.
+     Result: Dashboard visuals now respond to active skin palettes. */
   return (
     data && (
-      <div className="container mx-auto p-6 text-gray-900">
+      <div className="container mx-auto p-6 text-text-primary">
         {/* Header */}
         <header className="mb-6">
           <h1 className="font-bold res-heading-lg">
             <TruncateText text={data.data.title} maxLines={2} />
           </h1>
-          <p className="text-gray-500 res-text-xs">
+          <p className="text-text-tertiary res-text-xs">
             Community: {data.data.community_name} | Author: {data.data.submitter}
           </p>
         </header>
@@ -44,17 +48,17 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
           <>
             {/* Community Performance Metrics */}
             <section className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div className="rounded bg-white-primary p-4 shadow">
+              <div className="rounded bg-common-cardBackground p-4 shadow">
                 <h2 className="font-semibold res-heading-sm">{data.data.discussions}</h2>
-                <p className="text-gray-500 res-text-xs">Community Discussions</p>
+                <p className="text-text-tertiary res-text-xs">Community Discussions</p>
               </div>
-              <div className="rounded bg-white-primary p-4 shadow">
+              <div className="rounded bg-common-cardBackground p-4 shadow">
                 <h2 className="font-semibold res-heading-sm">{data.data.likes}</h2>
-                <p className="text-gray-500 res-text-xs">Community Likes</p>
+                <p className="text-text-tertiary res-text-xs">Community Likes</p>
               </div>
-              <div className="rounded bg-white-primary p-4 shadow">
+              <div className="rounded bg-common-cardBackground p-4 shadow">
                 <h2 className="font-semibold res-heading-sm">{data.data.reviews_count}</h2>
-                <p className="text-gray-500 res-text-xs">Community Reviews and Ratings</p>
+                <p className="text-text-tertiary res-text-xs">Community Reviews and Ratings</p>
               </div>
             </section>
 
@@ -104,7 +108,7 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
             {/* Community Reviews and Feedback */}
             <section className="mb-6">
               <h2 className="mb-4 font-semibold res-heading-sm">Community Reviews and Feedback</h2>
-              <div className="rounded bg-white-primary p-4 shadow">
+              <div className="rounded bg-common-cardBackground p-4 shadow">
                 <h3 className="mb-2 font-semibold res-heading-xs">Recent Community Reviews</h3>
                 {data.data.recent_reviews.length === 0 && (
                   <p className="res-text-sm">No community reviews available for this article.</p>
@@ -112,8 +116,8 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
                 <ul>
                   {data.data.recent_reviews.map((review, index) => (
                     <li key={index} className="mb-2">
-                      <p className="text-gray-700 res-text-sm">{review.excerpt}</p>
-                      <p className="text-gray-500 res-text-xs">
+                      <p className="text-text-secondary res-text-sm">{review.excerpt}</p>
+                      <p className="text-text-tertiary res-text-xs">
                         {new Date(review.date).toLocaleDateString()}
                       </p>
                     </li>
@@ -125,18 +129,18 @@ const CommunityDashboard = ({ params }: { params: { slug: string } }) => {
             {/* Community Engagement Actions */}
             <section className="mb-6">
               <h2 className="mb-4 font-semibold res-heading-sm">Community Engagement Actions</h2>
-              <div className="rounded bg-white-primary p-4 shadow">
-                <button className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+              <div className="rounded bg-common-cardBackground p-4 shadow">
+                <button className="mr-2 rounded bg-functional-blue px-4 py-2 text-primary-foreground hover:bg-functional-blueContrast">
                   Share Article
                 </button>
-                <button className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600">
+                <button className="rounded bg-functional-green px-4 py-2 text-primary-foreground hover:bg-functional-greenContrast">
                   Respond to Reviews
                 </button>
               </div>
             </section>
           </>
         ) : (
-          <div className="rounded bg-white-primary p-4 shadow">
+          <div className="rounded bg-common-cardBackground p-4 shadow">
             <p className="text-center res-text-base">
               No community data available for this article.
             </p>

@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 
-import { ChevronsDown, PanelLeft } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import DiscussionForum from '@/components/articles/DiscussionForum';
+import { PanelLeft } from 'lucide-react';
+
+import ArticleContentView from '@/components/articles/ArticleContentView';
 import EmptyState from '@/components/common/EmptyState';
-import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
 
 import DiscussionsSidebar from './DiscussionsSidebar';
 
@@ -20,13 +20,25 @@ interface SelectedArticle {
   slug: string;
   abstract: string;
   communityId: number | null;
+  communityArticleId: number | null;
+  isAdmin: boolean;
+  communityName: string;
 }
 
-const DiscussionsPageClient: React.FC = () => {
+const DiscussionsPageClientInner: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [selectedArticle, setSelectedArticle] = useState<SelectedArticle | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const sidebarScrollPositionRef = useRef<number>(0);
+  const hasRestoredFromUrl = useRef(false);
+
+  /* Fixed by Claude Sonnet 4.5 on 2026-02-09
+     Problem: When navigating to article page and using back button, sidebar resets to top article
+     Solution: Store selected article ID in URL params and restore scroll position
+     Result: Selected article and scroll position preserved across navigation */
 
   // Check if screen is mobile size
   useEffect(() => {
@@ -42,10 +54,75 @@ const DiscussionsPageClient: React.FC = () => {
 
   const handleArticleSelect = (article: SelectedArticle) => {
     setSelectedArticle(article);
+    // Update URL with selected article ID
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('articleId', article.id.toString());
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
     // Close mobile sidebar when article is selected
     if (isMobile) {
       setIsMobileSidebarOpen(false);
     }
+  };
+
+  // Handle articles loaded - restore selected article from URL
+  const handleArticlesLoaded = React.useCallback(
+    (
+      articles: Array<{
+        articleId: number;
+        articleTitle: string;
+        articleSlug: string;
+        articleAbstract: string;
+        communityArticleId: number | null;
+        communityId: number;
+        communityName: string;
+        isAdmin: boolean;
+      }>
+    ) => {
+      const articleIdParam = searchParams?.get('articleId');
+      // Only restore once when component mounts with URL param
+      if (articleIdParam && !selectedArticle && !hasRestoredFromUrl.current) {
+        const articleId = parseInt(articleIdParam, 10);
+        const article = articles.find((a) => a.articleId === articleId);
+        if (article) {
+          hasRestoredFromUrl.current = true;
+          setSelectedArticle({
+            id: article.articleId,
+            title: article.articleTitle,
+            slug: article.articleSlug,
+            abstract: article.articleAbstract,
+            communityId: article.communityId,
+            communityArticleId: article.communityArticleId,
+            isAdmin: article.isAdmin,
+            communityName: article.communityName,
+          });
+        }
+      }
+    },
+    [searchParams, selectedArticle]
+  );
+
+  /* Fixed by Claude Sonnet 4.5 on 2026-02-09
+     Problem: Clicking PDF viewer in discussions should open article page, then back button should return
+     Solution: Navigate to article page with returnTo=discussions and articleId params
+     Result: Browser back naturally returns to discussions with preserved article selection */
+  const handleOpenPdfViewer = () => {
+    if (selectedArticle) {
+      const params = new URLSearchParams();
+      params.set('returnTo', 'discussions');
+      params.set('articleId', selectedArticle.id.toString());
+      router.push(`/article/${selectedArticle.slug}?${params.toString()}`);
+    }
+  };
+
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Default the discussions view to the Discussions tab and reset per article.
+     Why: Clicking a sidebar discussion should open its discussions, not reviews.
+     How: Provide defaultTab and a reset key tied to the selected article. */
+  const discussionTabDefaults = {
+    defaultTab: 'discussions' as const,
+    tabResetKey: selectedArticle?.id,
   };
 
   // Mobile Layout
@@ -66,6 +143,8 @@ const DiscussionsPageClient: React.FC = () => {
               <DiscussionsSidebar
                 onArticleSelect={handleArticleSelect}
                 selectedArticle={selectedArticle}
+                onArticlesLoaded={handleArticlesLoaded}
+                scrollPositionRef={sidebarScrollPositionRef}
               />
             </SheetContent>
           </Sheet>
@@ -78,41 +157,19 @@ const DiscussionsPageClient: React.FC = () => {
         <div className="flex-1 overflow-auto">
           {selectedArticle ? (
             <div className="p-4">
-              <div
-                className={cn(
-                  'mb-6 max-h-10 overflow-hidden border-b border-common-minimal pb-10 transition-all duration-300 ease-in-out',
-                  {
-                    'max-h-96 overflow-auto': isExpanded,
-                  }
-                )}
-              >
-                {selectedArticle.abstract.trim().length > 0 && (
-                  <div className="mb-4">
-                    <h2 className="mb-2 text-base font-semibold text-text-secondary">Abstract</h2>
-                    <RenderParsedHTML
-                      rawContent={selectedArticle.abstract}
-                      isShrinked={true}
-                      supportMarkdown={true}
-                      supportLatex={true}
-                      containerClassName="prose prose-sm max-w-none text-sm"
-                      gradientClassName="sm:from-common-background to-transparent"
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="relative">
-                <div
-                  className="absolute -top-9 left-1/2 flex -translate-x-1/2 cursor-pointer items-center gap-1 rounded-full border border-common-contrast bg-common-cardBackground px-2 py-1 text-xxs text-text-tertiary hover:text-text-secondary"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? 'Collapse' : 'Expand'}
-                  <ChevronsDown className={cn('h-3 w-3', isExpanded && 'rotate-180')} />
-                </div>
-                <DiscussionForum
-                  articleId={selectedArticle.id}
-                  communityId={selectedArticle.communityId}
-                />
-              </div>
+              {/* Refactored by Claude Sonnet 4.5 on 2026-02-09: Use shared ArticleContentView
+                  instead of duplicating article fetching, reviews, and tabs logic */}
+              <ArticleContentView
+                articleSlug={selectedArticle.slug}
+                articleId={selectedArticle.id}
+                communityId={selectedArticle.communityId}
+                communityArticleId={selectedArticle.communityArticleId}
+                communityName={selectedArticle.communityName}
+                isAdmin={selectedArticle.isAdmin}
+                showPdfViewerButton={true}
+                handleOpenPdfViewer={handleOpenPdfViewer}
+                {...discussionTabDefaults}
+              />
             </div>
           ) : (
             <div className="flex h-full items-center justify-center p-4">
@@ -137,6 +194,8 @@ const DiscussionsPageClient: React.FC = () => {
             <DiscussionsSidebar
               onArticleSelect={handleArticleSelect}
               selectedArticle={selectedArticle}
+              onArticlesLoaded={handleArticlesLoaded}
+              scrollPositionRef={sidebarScrollPositionRef}
             />
           </div>
         </ResizablePanel>
@@ -147,50 +206,20 @@ const DiscussionsPageClient: React.FC = () => {
         <ResizablePanel defaultSize={75} minSize={60}>
           <div className="h-full overflow-auto">
             {selectedArticle ? (
-              <div className="p-6">
-                <div
-                  className={cn(
-                    'mb-6 max-h-20 overflow-hidden border-b border-common-minimal pb-10 transition-all duration-300 ease-in-out',
-                    {
-                      'max-h-96 overflow-auto': isExpanded,
-                    }
-                  )}
-                >
-                  <h1
-                    className={cn(
-                      'line-clamp-2 text-2xl font-bold text-text-primary',
-                      isExpanded && 'line-clamp-none'
-                    )}
-                  >
-                    {selectedArticle.title}
-                  </h1>
-                  {selectedArticle.abstract.trim().length > 0 && (
-                    <div className="mt-4 pb-4">
-                      <h2 className="mb-2 text-sm font-semibold text-text-secondary">Abstract</h2>
-                      <RenderParsedHTML
-                        rawContent={selectedArticle.abstract}
-                        isShrinked={true}
-                        supportMarkdown={true}
-                        supportLatex={true}
-                        gradientClassName="sm:from-common-background to-transparent"
-                        contentClassName="text-sm"
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="relative">
-                  <div
-                    className="absolute -top-9 left-1/2 flex -translate-x-1/2 cursor-pointer items-center gap-1 rounded-full border border-common-contrast bg-common-cardBackground px-2 py-1 text-xxs text-text-tertiary hover:text-text-secondary"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                  >
-                    {isExpanded ? 'Collapse' : 'Expand'}
-                    <ChevronsDown className={cn('h-3 w-3', isExpanded && 'rotate-180')} />
-                  </div>
-                  <DiscussionForum
-                    articleId={selectedArticle.id}
-                    communityId={selectedArticle.communityId}
-                  />
-                </div>
+              <div className="p-4 md:p-6">
+                {/* Refactored by Claude Sonnet 4.5 on 2026-02-09: Use shared ArticleContentView
+                    instead of duplicating article fetching, reviews, and tabs logic */}
+                <ArticleContentView
+                  articleSlug={selectedArticle.slug}
+                  articleId={selectedArticle.id}
+                  communityId={selectedArticle.communityId}
+                  communityArticleId={selectedArticle.communityArticleId}
+                  communityName={selectedArticle.communityName}
+                  isAdmin={selectedArticle.isAdmin}
+                  showPdfViewerButton={true}
+                  handleOpenPdfViewer={handleOpenPdfViewer}
+                  {...discussionTabDefaults}
+                />
               </div>
             ) : (
               <div className="flex h-full items-center justify-center">
@@ -204,6 +233,23 @@ const DiscussionsPageClient: React.FC = () => {
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
+  );
+};
+
+const DiscussionsPageClient: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center">
+          <EmptyState
+            content="Loading discussions..."
+            subcontent="Please wait while we load your subscriptions"
+          />
+        </div>
+      }
+    >
+      <DiscussionsPageClientInner />
+    </Suspense>
   );
 };
 

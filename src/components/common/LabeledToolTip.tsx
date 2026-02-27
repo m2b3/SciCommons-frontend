@@ -16,8 +16,13 @@ const LabeledTooltip: React.FC<LabeledTooltipProps> = ({ label, info }) => {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button>
-              <Info size={16} />
+            {/* Fixed by Codex on 2026-02-15
+                Who: Codex
+                What: Label the tooltip trigger for assistive tech.
+                Why: Icon-only controls need a readable label.
+                How: Add type=button and aria-label tied to the field label. */}
+            <button type="button" aria-label={`${label} help`}>
+              <Info size={16} aria-hidden="true" />
             </button>
           </TooltipTrigger>
           <TooltipContent>

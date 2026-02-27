@@ -4,10 +4,12 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { CommunityRoleFilter } from './communityRoleFilter';
 
 export type UsersApiListMyCommunitiesParams = {
-  search?: string | null;
-  sort?: string | null;
-  page?: number;
-  per_page?: number;
+role?: CommunityRoleFilter | null;
+search?: string | null;
+sort?: string | null;
+page?: number;
+per_page?: number;
 };

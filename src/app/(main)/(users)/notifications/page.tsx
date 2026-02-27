@@ -7,23 +7,26 @@ import { Check, CheckCheck, SquareArrowOutUpRight } from 'lucide-react';
 import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
 import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
+import { useAuthHeaders } from '@/hooks/useAuthHeaders';
+import { getSafeExternalUrl } from '@/lib/safeUrl';
 import { useAuthStore } from '@/stores/authStore';
 
 const NotificationPage: React.FC = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const authHeaders = useAuthHeaders();
 
   const { data, isPending, refetch } = useUsersApiGetNotifications(
     {},
     {
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
+      request: authHeaders,
       query: {
-        enabled: !!accessToken,
+        enabled: isAuthenticated,
       },
     }
   );
 
   const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
-    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    request: authHeaders,
   });
 
   useEffect(() => {
@@ -61,53 +64,60 @@ const NotificationPage: React.FC = () => {
       <ul className="flex w-full flex-col items-center gap-4">
         {isPending && <NotificationCardSkeletonLoader />}
         {data &&
-          data.data.map((notif) => (
-            <li
-              key={notif.id}
-              className={`w-full rounded-xl border p-4 ${notif.isRead ? 'border-common-minimal bg-common-background' : 'border-common-contrast bg-common-cardBackground'}`}
-            >
-              <p
-                className={`text-base font-medium ${notif.isRead ? 'text-text-secondary' : 'text-text-primary'}`}
+          data.data.map((notif) => {
+            const safeLink = getSafeExternalUrl(notif.link);
+            return (
+              <li
+                key={notif.id}
+                className={`w-full rounded-xl border p-4 ${notif.isRead ? 'border-common-minimal bg-common-background' : 'border-common-contrast bg-common-cardBackground'}`}
               >
-                {notif.message}
-              </p>
-              <p className="text-sm text-text-tertiary">
-                {notif.notificationType} - {new Date(notif.createdAt).toLocaleDateString()}
-                {/* {new Date(notif.expiresAt).toLocaleDateString()} */}
-              </p>
-              {notif.content && <p className="mt-2 text-sm text-text-secondary">{notif.content}</p>}
-              <div className="mt-2 flex items-center justify-between">
-                {/* Display View only if the link is present */}
-                {notif.link && (
-                  <a
-                    href={notif.link}
-                    className="flex items-center gap-1 text-sm text-functional-green hover:text-functional-greenContrast"
-                  >
-                    View
-                    <SquareArrowOutUpRight size={12} className="inline" />
-                  </a>
+                <p
+                  className={`text-base font-medium ${notif.isRead ? 'text-text-secondary' : 'text-text-primary'}`}
+                >
+                  {notif.message}
+                </p>
+                <p className="text-sm text-text-tertiary">
+                  {notif.notificationType} - {new Date(notif.createdAt).toLocaleDateString()}
+                  {/* {new Date(notif.expiresAt).toLocaleDateString()} */}
+                </p>
+                {notif.content && (
+                  <p className="mt-2 text-sm text-text-secondary">{notif.content}</p>
                 )}
-                {!notif.isRead ? (
-                  <Button onClick={() => markAsRead(notif.id)} className="px-3 py-1.5">
-                    <ButtonIcon>
-                      <Check size={14} />
-                    </ButtonIcon>
-                    <ButtonTitle className="sm:text-xs">Mark as Read</ButtonTitle>
-                  </Button>
-                ) : (
-                  <Button
-                    className="px-3 py-1.5 text-text-tertiary hover:bg-transparent"
-                    variant={'outline'}
-                  >
-                    <ButtonIcon>
-                      <CheckCheck size={14} />
-                    </ButtonIcon>
-                    <ButtonTitle className="sm:text-xs">Read</ButtonTitle>
-                  </Button>
-                )}
-              </div>
-            </li>
-          ))}
+                <div className="mt-2 flex items-center justify-between">
+                  {/* Display View only if the link is present */}
+                  {safeLink && (
+                    <a
+                      href={safeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-functional-green hover:text-functional-greenContrast"
+                    >
+                      View
+                      <SquareArrowOutUpRight size={12} className="inline" />
+                    </a>
+                  )}
+                  {!notif.isRead ? (
+                    <Button onClick={() => markAsRead(notif.id)} className="px-3 py-1.5">
+                      <ButtonIcon>
+                        <Check size={14} />
+                      </ButtonIcon>
+                      <ButtonTitle className="sm:text-xs">Mark as Read</ButtonTitle>
+                    </Button>
+                  ) : (
+                    <Button
+                      className="px-3 py-1.5 text-text-tertiary hover:bg-transparent"
+                      variant={'outline'}
+                    >
+                      <ButtonIcon>
+                        <CheckCheck size={14} />
+                      </ButtonIcon>
+                      <ButtonTitle className="sm:text-xs">Read</ButtonTitle>
+                    </Button>
+                  )}
+                </div>
+              </li>
+            );
+          })}
       </ul>
       {data?.data.length === 0 && (
         <p className="text-center text-text-tertiary">No notifications to show.</p>

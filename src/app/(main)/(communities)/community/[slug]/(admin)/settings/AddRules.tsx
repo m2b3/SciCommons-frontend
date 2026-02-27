@@ -48,16 +48,37 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
   });
 
   const onSubmit = (rules: Rule[]) => {
-    if (data) {
-      const dataToSend = {
-        description: data.data.description,
-        tags: data.data.tags,
-        type: data.data.type,
-        rules: rules.map((rule) => rule.rule),
-        about: data.data.about,
-      };
-      mutate({ communityId: data.data.id, data: { payload: { details: dataToSend } } });
+    const normalizedRules = rules.map((r) => r.rule?.trim() ?? '');
+
+    if (normalizedRules.some((r) => r.length === 0)) {
+      toast.error('Rules cannot be empty.');
+      return;
     }
+
+    if (!data) {
+      toast.error('Community data is missing.');
+      return;
+    }
+
+    const { id, description, type, community_settings } = data.data;
+
+    mutate({
+      communityId: id,
+      data: {
+        payload: {
+          /* Fixed by Codex on 2026-02-18
+             Problem: Update payload included unsupported fields (`tags`, `about`), causing TS2353.
+             Solution: Align payload with UpdateCommunityDetails and preserve existing community settings.
+             Result: Type-check passes and rule updates remain API-compatible. */
+          details: {
+            description,
+            type,
+            rules: normalizedRules,
+            community_settings: community_settings ?? undefined,
+          },
+        },
+      },
+    });
   };
 
   useEffect(() => {
@@ -71,7 +92,7 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
 
   return (
     <div className="my-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 res-text-sm">
-      {isPending && RuleLoading()}
+      {isPending && <RuleLoading />}
       {data && (
         <form onSubmit={handleSubmit((data) => onSubmit(data.rules))} className="space-y-4">
           {fields.map((field, index) => (
@@ -129,13 +150,11 @@ const AddRules: React.FC<AddRulesProps> = ({ data, isPending }) => {
   );
 };
 
-const RuleLoading = () => {
-  return (
-    <Skeleton>
-      <TextSkeleton className="w-44" />
-      <BlockSkeleton className="h-8" />
-    </Skeleton>
-  );
-};
+const RuleLoading = () => (
+  <Skeleton>
+    <TextSkeleton className="w-44" />
+    <BlockSkeleton className="h-8" />
+  </Skeleton>
+);
 
 export default AddRules;

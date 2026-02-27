@@ -7,8 +7,8 @@
 import type { ReviewOutCommunityArticle } from './reviewOutCommunityArticle';
 import type { ReviewOutDeletedAt } from './reviewOutDeletedAt';
 import type { ReviewOutId } from './reviewOutId';
-import type { ReviewVersionSchema } from './reviewVersionSchema';
 import type { UserStats } from './userStats';
+import type { ReviewVersionSchema } from './reviewVersionSchema';
 
 export interface ReviewOut {
   article_id: number;

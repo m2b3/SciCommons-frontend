@@ -7,7 +7,7 @@
 import type { StatusFilter } from './statusFilter';
 
 export type CommunitiesArticlesApiGetMyArticlesParams = {
-  status_filter?: StatusFilter | null;
-  page?: number;
-  limit?: number;
+status_filter?: StatusFilter | null;
+page?: number;
+limit?: number;
 };

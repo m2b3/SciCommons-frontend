@@ -5,8 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type JoinRequestSchemaStatus =
-  (typeof JoinRequestSchemaStatus)[keyof typeof JoinRequestSchemaStatus];
+export type JoinRequestSchemaStatus = typeof JoinRequestSchemaStatus[keyof typeof JoinRequestSchemaStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const JoinRequestSchemaStatus = {

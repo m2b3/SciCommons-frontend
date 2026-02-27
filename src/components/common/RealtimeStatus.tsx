@@ -15,14 +15,19 @@ export const RealtimeStatus: React.FC<Props> = ({ className }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Replace realtime status colors with functional tokens.
+     Why: Keep status dot palettes consistent across skins.
+     How: Map connection states to functional color tokens. */
   const color =
     status === 'connected'
-      ? 'bg-green-500'
+      ? 'bg-functional-green'
       : status === 'connecting' || status === 'reconnecting'
-        ? 'bg-yellow-500'
+        ? 'bg-functional-yellow'
         : status === 'error'
-          ? 'bg-red-500'
-          : 'bg-gray-400';
+          ? 'bg-functional-red'
+          : 'bg-functional-gray';
 
   const label = `${status}${isLeader ? ' · leader' : ''}`;
 
@@ -52,7 +57,12 @@ export const RealtimeStatus: React.FC<Props> = ({ className }) => {
                     e.stopPropagation();
                     setIsVisible(false);
                   }}
-                  className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white transition-all hover:bg-red-600"
+                  /* Fixed by Codex on 2026-02-15
+                     Who: Codex
+                     What: Tokenize realtime badge close-button colors.
+                     Why: Align state styling with skin palettes.
+                     How: Use functional red + tokenized foreground. */
+                  className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-functional-red text-primary-foreground transition-all hover:bg-functional-redContrast"
                   aria-label="Close"
                 >
                   <X size={10} />

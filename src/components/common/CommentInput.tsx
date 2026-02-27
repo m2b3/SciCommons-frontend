@@ -47,7 +47,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
   isReply = false,
   isAuthor = false,
   isPending = false,
-  onChange,
+  onChange: _onChange,
 }) => {
   const {
     register,

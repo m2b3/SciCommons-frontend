@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -12,7 +13,7 @@ import MultiLabelSelector from '@/components/common/MultiLabelSelector';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '@/components/common/Skeleton';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
-import { cn } from '@/lib/utils';
+import { ARTICLE_TITLE_MIN_LENGTH } from '@/constants/common.constants';
 import { useAuthStore } from '@/stores/authStore';
 import { FileObj } from '@/types';
 
@@ -33,9 +34,10 @@ interface EditArticleDetailsProps {
   // keywords: Option[];
   submissionType: 'Public' | 'Private';
   defaultImageURL: string | null;
-  isEditEnabled: boolean;
-  setIsEditEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   articleSlug: string;
+  communityName?: string | null;
+  returnTo?: string | null;
+  returnPath?: string | null;
 }
 
 const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
@@ -44,11 +46,12 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     abstract,
     authors,
     submissionType,
-    defaultImageURL,
+    defaultImageURL: _defaultImageURL,
     articleId,
-    isEditEnabled,
-    setIsEditEnabled,
     articleSlug,
+    communityName,
+    returnTo,
+    returnPath,
   } = props;
   const {
     control,
@@ -67,15 +70,69 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
-
-  const {
-    mutate,
-    error: updateError,
-    isPending: isUpdatePending,
-    isSuccess,
-  } = useArticlesApiUpdateArticle({ request: axiosConfig });
-
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  /* Fixed by Codex on 2026-02-19
+     Who: Codex
+     What: Resolve settings post-save destination with explicit context priority.
+     Why: List/preview edits should return users to where they started, not a default article page.
+     How: Prefer safe returnPath, then returnTo-based fallbacks, then article detail as final fallback. */
+  const getPostUpdateDestination = React.useCallback(() => {
+    const isSafeReturnPath =
+      typeof returnPath === 'string' && returnPath.startsWith('/') && !returnPath.startsWith('//');
+
+    if (isSafeReturnPath) {
+      return returnPath;
+    }
+
+    if (returnTo === 'community-list' && communityName) {
+      return `/community/${encodeURIComponent(communityName)}?articleId=${articleId}`;
+    }
+
+    if (returnTo === 'community' && communityName) {
+      return `/community/${encodeURIComponent(communityName)}/articles/${articleSlug}`;
+    }
+
+    if (returnTo === 'discussions') {
+      return `/discussions?articleId=${articleId}`;
+    }
+
+    return `/article/${articleSlug}`;
+  }, [returnPath, returnTo, communityName, articleId, articleSlug]);
+
+  const invalidateArticleCaches = React.useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ['articles'] });
+    void queryClient.invalidateQueries({ queryKey: ['my_articles'] });
+    void queryClient.invalidateQueries({ queryKey: [`/api/articles/article/${articleSlug}`] });
+
+    if (communityName) {
+      void queryClient.invalidateQueries({
+        queryKey: [`/api/articles/article/${articleSlug}`, { community_name: communityName }],
+      });
+    }
+  }, [queryClient, articleSlug, communityName]);
+
+  const { mutate, isPending: isUpdatePending } = useArticlesApiUpdateArticle({
+    request: axiosConfig,
+    mutation: {
+      onSuccess: () => {
+        const destination = getPostUpdateDestination();
+
+        /* Fixed by Codex on 2026-02-19
+           Who: Codex
+           What: Prioritize redirect before cache invalidation on successful updates.
+           Why: Users perceived update completion as slow while waiting on post-save work.
+           How: Navigate immediately, then run cache invalidations asynchronously in the next tick. */
+        toast.success('Article details updated successfully');
+        router.replace(destination);
+        setTimeout(() => invalidateArticleCaches(), 0);
+      },
+      onError: (error) => {
+        toast.error(`${error.response?.data.message}`);
+      },
+    },
+  });
 
   const onSubmit = (formData: FormValues) => {
     const dataToSend: ArticleUpdateSchema = {
@@ -108,17 +165,11 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
     mutate({ articleId, data: { details: dataToSend } });
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Article details updated successfully');
-      router.push(`/article/${articleSlug}`);
-    }
-    if (updateError) {
-      toast.error(`${updateError.response?.data.message}`);
-    }
-  }, [updateError, isSuccess, router, articleSlug]);
-
   return (
+    /* Fixed by Codex on 2026-02-09
+       Problem: Edit screen required an extra toggle and showed community-focused helper text.
+       Solution: Keep fields editable by default and update labels/messages for articles.
+       Result: Users can edit immediately with accurate guidance. */
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
       {/* <Controller
         name="articleImageFile"
@@ -137,28 +188,26 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         label="Title"
         name="title"
         type="text"
-        placeholder="Briefly describe your community"
+        placeholder="Enter the title of your article"
         register={register}
-        requiredMessage="Description is required"
-        minLengthValue={10}
-        minLengthMessage="Description must be at least 10 characters"
-        info="Your community's name should be unique and descriptive."
+        requiredMessage="Title is required"
+        minLengthValue={ARTICLE_TITLE_MIN_LENGTH}
+        minLengthMessage={`Title must be at least ${ARTICLE_TITLE_MIN_LENGTH} characters`}
+        info="Please provide a clear and concise title for your article."
         errors={errors}
-        readOnly={!isEditEnabled}
       />
       <FormInput<FormValues>
         label="Abstract"
         name="abstract"
         type="text"
         textArea={true}
-        placeholder="Briefly describe your community"
+        placeholder="Enter the abstract of your article"
         register={register}
-        requiredMessage="Description is required"
+        requiredMessage="Abstract is required"
         minLengthValue={10}
-        minLengthMessage="Description must be at least 10 characters"
-        info="Your community's name should be unique and descriptive."
+        minLengthMessage="Abstract must be at least 10 characters"
+        info="Provide a brief summary of your article's content."
         errors={errors}
-        readOnly={!isEditEnabled}
       />
       <Controller
         name="authors"
@@ -167,13 +216,12 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         render={({ field: { onChange, value }, fieldState }) => (
           <MultiLabelSelector
             label="Authors"
-            tooltipText="Help users find your community by adding tags."
-            placeholder="Add Tags"
+            tooltipText="Select authors for the article."
+            placeholder="Add Authors"
             creatable
             value={value}
             onChange={onChange}
             fieldState={fieldState}
-            readonly={!isEditEnabled}
           />
         )}
       />
@@ -193,51 +241,15 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
           />
         )}
       /> */}
-      <div className="mb-4 space-y-2">
-        <label className="block text-sm font-medium text-text-secondary">Submission Type</label>
-        <Controller
-          name="submissionType"
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <div className="mt-1 flex gap-2">
-              <Button
-                className={cn(
-                  'w-fit cursor-pointer rounded-lg border px-4 py-2',
-                  value === 'Public'
-                    ? 'border-functional-green bg-functional-green/10'
-                    : 'border-common-contrast'
-                )}
-                type="button"
-                variant={'outline'}
-                onClick={() => isEditEnabled && onChange('Public')}
-              >
-                <ButtonTitle className="text-base">Public</ButtonTitle>
-              </Button>
-              {/* <Button
-                className={cn(
-                  'w-fit cursor-pointer rounded-lg border px-4 py-2',
-                  value === 'Private'
-                    ? 'border-functional-green bg-functional-green/10'
-                    : 'border-common-contrast'
-                )}
-                type="button"
-                variant={'outline'}
-                onClick={() => isEditEnabled && onChange('Private')}
-              >
-                <ButtonTitle className="text-base">Private</ButtonTitle>
-              </Button> */}
-            </div>
-          )}
-        />
-      </div>
+      {/* Submission type removed - cannot be changed after article creation.
+          Determined at creation time only. */}
       <Button
-        showLoadingSpinner={false}
+        showLoadingSpinner={true}
         loading={isUpdatePending}
         className="mx-auto w-full"
         type="submit"
-        disabled={!isEditEnabled}
       >
-        <ButtonTitle>{isUpdatePending ? 'Loading...' : 'Submit Article'}</ButtonTitle>
+        <ButtonTitle>{isUpdatePending ? 'Updating article...' : 'Update Article'}</ButtonTitle>
       </Button>
     </form>
   );

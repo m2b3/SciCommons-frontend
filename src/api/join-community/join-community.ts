@@ -4,7 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,240 +15,190 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
+  UseQueryResult
+} from '@tanstack/react-query'
+import type {
+  JoinRequestSchema,
+  Message
+} from '.././schemas'
 import { customInstance } from '.././custom-instance';
 import type { ErrorType } from '.././custom-instance';
-import type { JoinRequestSchema, Message } from '.././schemas';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * @summary Get Join Requests
  */
 export const communitiesApiJoinGetJoinRequests = (
-  communityName: string,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    communityName: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<JoinRequestSchema[]>(
-    { url: `/api/communities/${communityName}/join-requests`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<JoinRequestSchema[]>(
+      {url: `/api/communities/${communityName}/join-requests`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getCommunitiesApiJoinGetJoinRequestsQueryKey = (communityName: string) => {
-  return [`/api/communities/${communityName}/join-requests`] as const;
-};
+export const getCommunitiesApiJoinGetJoinRequestsQueryKey = (communityName: string,) => {
+    return [`/api/communities/${communityName}/join-requests`] as const;
+    }
 
-export const getCommunitiesApiJoinGetJoinRequestsQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getCommunitiesApiJoinGetJoinRequestsQueryOptions = <TData = Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError = ErrorType<Message>>(communityName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getCommunitiesApiJoinGetJoinRequestsQueryKey(communityName);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>> = ({
-    signal,
-  }) => communitiesApiJoinGetJoinRequests(communityName, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesApiJoinGetJoinRequestsQueryKey(communityName);
 
-  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type CommunitiesApiJoinGetJoinRequestsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>
->;
-export type CommunitiesApiJoinGetJoinRequestsQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>> = ({ signal }) => communitiesApiJoinGetJoinRequests(communityName, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesApiJoinGetJoinRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>>
+export type CommunitiesApiJoinGetJoinRequestsQueryError = ErrorType<Message>
 
 /**
  * @summary Get Join Requests
  */
-export const useCommunitiesApiJoinGetJoinRequests = <
-  TData = Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiJoinGetJoinRequestsQueryOptions(communityName, options);
+export const useCommunitiesApiJoinGetJoinRequests = <TData = Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError = ErrorType<Message>>(
+ communityName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesApiJoinGetJoinRequests>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesApiJoinGetJoinRequestsQueryOptions(communityName,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Join Community
  */
 export const communitiesApiJoinJoinCommunity = (
-  communityId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/communities/${communityId}/join`, method: 'POST' },
-    options
-  );
-};
+    communityId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/${communityId}/join`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getCommunitiesApiJoinJoinCommunityMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
-    TError,
-    { communityId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
-  TError,
-  { communityId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
-    { communityId: number }
-  > = (props) => {
-    const { communityId } = props ?? {};
+export const getCommunitiesApiJoinJoinCommunityMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>, TError,{communityId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>, TError,{communityId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesApiJoinJoinCommunity(communityId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesApiJoinJoinCommunityMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>, {communityId: number}> = (props) => {
+          const {communityId} = props ?? {};
 
-export type CommunitiesApiJoinJoinCommunityMutationError = ErrorType<Message>;
+          return  communitiesApiJoinJoinCommunity(communityId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesApiJoinJoinCommunityMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>>
+    
+    export type CommunitiesApiJoinJoinCommunityMutationError = ErrorType<Message>
+
+    /**
  * @summary Join Community
  */
-export const useCommunitiesApiJoinJoinCommunity = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
-    TError,
-    { communityId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
-  TError,
-  { communityId: number },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiJoinJoinCommunityMutationOptions(options);
+export const useCommunitiesApiJoinJoinCommunity = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>, TError,{communityId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesApiJoinJoinCommunity>>,
+        TError,
+        {communityId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesApiJoinJoinCommunityMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Manage Join Request
  */
 export const communitiesApiJoinManageJoinRequest = (
-  communityId: number,
-  joinRequestId: number,
-  action: 'approve' | 'reject',
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/communities/${communityId}/manage-join-request/${joinRequestId}/${action}`,
-      method: 'POST',
+    communityId: number,
+    joinRequestId: number,
+    action: 'approve' | 'reject',
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/${communityId}/manage-join-request/${joinRequestId}/${action}`, method: 'POST'
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesApiJoinManageJoinRequestMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
-    TError,
-    { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
-  TError,
-  { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
-    { communityId: number; joinRequestId: number; action: 'approve' | 'reject' }
-  > = (props) => {
-    const { communityId, joinRequestId, action } = props ?? {};
+export const getCommunitiesApiJoinManageJoinRequestMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>, TError,{communityId: number;joinRequestId: number;action: 'approve' | 'reject'}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>, TError,{communityId: number;joinRequestId: number;action: 'approve' | 'reject'}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesApiJoinManageJoinRequest(communityId, joinRequestId, action, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesApiJoinManageJoinRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>, {communityId: number;joinRequestId: number;action: 'approve' | 'reject'}> = (props) => {
+          const {communityId,joinRequestId,action} = props ?? {};
 
-export type CommunitiesApiJoinManageJoinRequestMutationError = ErrorType<Message>;
+          return  communitiesApiJoinManageJoinRequest(communityId,joinRequestId,action,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesApiJoinManageJoinRequestMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>>
+    
+    export type CommunitiesApiJoinManageJoinRequestMutationError = ErrorType<Message>
+
+    /**
  * @summary Manage Join Request
  */
-export const useCommunitiesApiJoinManageJoinRequest = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
-    TError,
-    { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
-  TError,
-  { communityId: number; joinRequestId: number; action: 'approve' | 'reject' },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiJoinManageJoinRequestMutationOptions(options);
+export const useCommunitiesApiJoinManageJoinRequest = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>, TError,{communityId: number;joinRequestId: number;action: 'approve' | 'reject'}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesApiJoinManageJoinRequest>>,
+        TError,
+        {communityId: number;joinRequestId: number;action: 'approve' | 'reject'},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
+      const mutationOptions = getCommunitiesApiJoinManageJoinRequestMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

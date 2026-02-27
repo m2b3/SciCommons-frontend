@@ -6,16 +6,16 @@
  */
 
 export type UsersApiGetNotificationsParams = {
-  /**
-   * Filter by article slug
-   */
-  article_slug?: string | null;
-  /**
-   * Filter by community ID
-   */
-  community_id?: number | null;
-  /**
-   * Filter by post ID
-   */
-  post_id?: number | null;
+/**
+ * Filter by article slug
+ */
+article_slug?: string | null;
+/**
+ * Filter by community ID
+ */
+community_id?: number | null;
+/**
+ * Filter by post ID
+ */
+post_id?: number | null;
 };

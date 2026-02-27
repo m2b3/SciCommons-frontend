@@ -1,7 +1,11 @@
 ---
 name: ✨ Enhancement
 about: Suggest an improvement to an existing feature.
+
 title: "[ENHANCEMENT] "
+labels: enhancement
+assignees: ''
+title: '[ENHANCEMENT] '
 labels: enhancement
 assignees: ''
 
@@ -14,4 +18,8 @@ Describe how the feature currently works.
 Describe how we can make it better (UI/UX improvements, performance, etc).
 
 **Why is this enhancement necessary?**
+
 Explain the benefit to the users or the codebase.
+
+Explain the benefit to the users or the codebase.
+

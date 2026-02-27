@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -34,6 +35,7 @@ const ArticleForm: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'upload' | 'search'>('upload');
   const accessToken = useAuthStore((state) => state.accessToken);
   const [isInitialized, setIsInitialized] = useState(false);
+  const queryClient = useQueryClient();
 
   const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
     request: {
@@ -43,6 +45,14 @@ const ArticleForm: React.FC = () => {
     },
     mutation: {
       onSuccess: (data) => {
+        /* Fixed by Codex on 2026-02-09
+           Problem: Newly created articles did not appear in list views until a hard refresh.
+           Solution: Invalidate article list queries on successful create.
+           Result: Articles/My Articles lists refetch and show the new entry promptly.
+           Alternatives (not implemented): (1) Optimistically insert the new item into caches,
+           (2) Force a refetch on the list page when users navigate back. */
+        queryClient.invalidateQueries({ queryKey: ['articles'] });
+        queryClient.invalidateQueries({ queryKey: ['my_articles'] });
         toast.success('Article submitted successfully! Redirecting....');
         router.push(`/article/${data.data.slug}`);
         localStorage.removeItem(STORAGE_KEY);
@@ -66,6 +76,11 @@ const ArticleForm: React.FC = () => {
     mode: 'onChange',
   });
 
+  // Fixed by Claude Sonnet 4.5 on 2026-02-08
+  // Issue 9: Add refs to coordinate localStorage writes and prevent race conditions
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<number | null>(null);
+
   // Load saved form data on component mount
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
@@ -78,25 +93,55 @@ const ArticleForm: React.FC = () => {
     setIsInitialized(true);
   }, [reset]);
 
+  // Fixed by Claude Sonnet 4.5 on 2026-02-08
+  // Issue 9: Add debouncing (300ms) and isSaving flag to prevent concurrent writes
   // Save form data to local storage whenever it changes
   useEffect(() => {
     if (isInitialized) {
       const subscription = watch((formData) => {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        const parsedData = savedData ? JSON.parse(savedData) : {};
+        // Clear any pending save
+        if (saveTimeoutRef.current !== null) {
+          clearTimeout(saveTimeoutRef.current);
+        }
 
-        const dataToSave = {
-          ...parsedData,
-          [activeTab]: { ...formData, pdfFiles: undefined },
-          activeTab,
-        };
+        // Debounce the save operation
+        saveTimeoutRef.current = window.setTimeout(() => {
+          // Check if another save is in progress
+          if (isSaving) {
+            return;
+          }
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+          setIsSaving(true);
+          try {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            const parsedData = savedData ? JSON.parse(savedData) : {};
+
+            const dataToSave = {
+              ...parsedData,
+              [activeTab]: { ...formData, pdfFiles: undefined },
+              activeTab,
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+          } finally {
+            setIsSaving(false);
+            saveTimeoutRef.current = null;
+          }
+        }, 300); // 300ms debounce
       });
-      return () => subscription.unsubscribe();
-    }
-  }, [watch, activeTab, isInitialized]);
 
+      return () => {
+        subscription.unsubscribe();
+        // Clean up pending save on unmount
+        if (saveTimeoutRef.current !== null) {
+          clearTimeout(saveTimeoutRef.current);
+        }
+      };
+    }
+  }, [watch, activeTab, isInitialized, isSaving]);
+
+  // Fixed by Claude Sonnet 4.5 on 2026-02-08
+  // Issue 9: Tab change effect now only reads (doesn't write) to prevent race conditions
   // Handle tab change - preserve pdfFiles when switching tabs
   useEffect(() => {
     if (isInitialized) {
@@ -114,9 +159,17 @@ const ArticleForm: React.FC = () => {
     }
   }, [activeTab, reset, isInitialized, getValues]);
 
+  // Fixed by Claude Sonnet 4.5 on 2026-02-08
+  // Issue 9: Wait for pending saves before writing to prevent data loss
   // Handle article data - preserve pdfFiles when loading article data
   useEffect(() => {
     if (isInitialized && articleData && activeTab === 'search') {
+      // Wait for any pending save to complete
+      if (saveTimeoutRef.current !== null) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+
       // Preserve pdfFiles from current form state
       const currentPdfFiles = getValues('pdfFiles');
       const newData = {
@@ -165,19 +218,37 @@ const ArticleForm: React.FC = () => {
         if (fileObj && fileObj.file instanceof File) {
           let file = fileObj.file;
 
-          // Check if filename is 100 characters or longer
-          if (file.name.length >= 100) {
+          // Fixed by Claude Sonnet 4.5 on 2026-02-08
+          // Issue 14: Sanitize filename to prevent path traversal attacks
+          let sanitizedName = file.name
+            // Remove path separators (forward slash, backslash)
+            .replace(/[/\\]/g, '_')
+            // Remove null bytes
+            .replace(/\0/g, '')
+            // Remove ".." sequences
+            .replace(/\.\./g, '_')
+            // Remove leading dots to prevent hidden files
+            .replace(/^\.+/, '');
+
+          // Validate file extension
+          const hasValidExtension = /\.(pdf|PDF)$/i.test(sanitizedName);
+          if (!hasValidExtension) {
+            sanitizedName += '.pdf';
+          }
+
+          // Check if filename is 100 characters or longer and truncate
+          if (sanitizedName.length >= 100) {
             // Split the filename and extension
-            const nameParts = file.name.split('.');
+            const nameParts = sanitizedName.split('.');
             const extension = nameParts.pop() || '';
             const baseName = nameParts.join('.');
 
             // Truncate the base name and add the extension back
-            const newName = baseName.slice(0, 95) + '...' + (extension ? `.${extension}` : '');
-
-            // Create a new File object with the truncated name
-            file = new File([file], newName, { type: file.type });
+            sanitizedName = baseName.slice(0, 95) + '...' + (extension ? `.${extension}` : '');
           }
+
+          // Create a new File object with the sanitized name
+          file = new File([file], sanitizedName, { type: file.type });
 
           pdf_files.push(file);
         }

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useArticlesDiscussionApiCreateDiscussion } from '@/api/discussions/discussions';
 import FormInput from '@/components/common/FormInput';
 import { Button, ButtonTitle } from '@/components/ui/button';
+import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -28,7 +29,9 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
   refetchDiscussions,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
+  const formRef = React.useRef<HTMLFormElement>(null);
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -54,6 +57,12 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
       },
     },
   });
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Enable Ctrl/Cmd+Enter to submit new discussions.
+     Why: Users expect keyboard submit parity across discussion, comment, and review forms.
+     How: Attach the shared submit-on-ctrl-enter hook to the discussion form ref. */
+  useSubmitOnCtrlEnter(formRef, isPending);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     mutate({ articleId, data, params: { community_id: communityId } });
@@ -61,6 +70,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit(onSubmit)}
       className="mb-4 flex flex-col gap-2 rounded-xl border border-common-contrast bg-common-cardBackground p-4"
     >
@@ -79,6 +89,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
         type="text"
         placeholder="Enter discussion content"
         register={register}
+        control={control}
         requiredMessage="Content is required"
         errors={errors}
         textArea={true}

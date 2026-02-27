@@ -7,15 +7,29 @@ import Link from 'next/link';
 
 import { Globe, LinkedinIcon, LucideIcon, Target, TwitterIcon, Users, Zap } from 'lucide-react';
 
-const SocialLink = ({ href, icon: Icon }: { href?: string; icon: LucideIcon }) =>
+const SocialLink = ({
+  href,
+  icon: Icon,
+  label,
+}: {
+  href?: string;
+  icon: LucideIcon;
+  label: string;
+}) =>
   href ? (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       className="transition-colors hover:text-functional-green"
+      aria-label={label}
     >
-      <Icon size={20} />
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Add aria-labels to icon-only social links.
+          Why: Screen readers need a text label for links that render only icons.
+          How: Pass an explicit label per social network and hide the icon. */}
+      <Icon size={20} aria-hidden="true" />
     </a>
   ) : null;
 
@@ -45,8 +59,8 @@ const ContributorCard = ({
     <h3 className="break-words text-center font-semibold text-text-primary">{name}</h3>
     <p className="mb-4 text-center text-xs text-text-secondary">{role}</p>
     <div className="flex space-x-3 text-text-secondary">
-      <SocialLink href={linkedin} icon={LinkedinIcon} />
-      <SocialLink href={twitter} icon={TwitterIcon} />
+      <SocialLink href={linkedin} icon={LinkedinIcon} label="LinkedIn profile" />
+      <SocialLink href={twitter} icon={TwitterIcon} label="Twitter profile" />
     </div>
   </div>
 );
@@ -83,7 +97,11 @@ const AboutPage = () => {
     },
   ];
 
-  const otherContributors = ['Jyothi Swaroop Bommareddy', 'Dinakar Chennupati', 'Raju Bugude'];
+  const otherContributors = [
+    { name: 'Jyothi Swaroop Bommareddy', role: 'GSoC 2023, original architect' },
+    { name: 'Dinakar Chennupati', role: 'GSoC 2024, front-end architect' },
+    { name: 'Raju Bugude', role: 'Volunteer contributor, site-testing' },
+  ];
 
   const features = [
     {
@@ -124,6 +142,10 @@ const AboutPage = () => {
             <p className="mx-auto mb-8 max-w-2xl text-lg text-text-secondary sm:text-xl">
               Revolutionizing scientific publishing and peer review through community-driven
               collaboration
+            </p>
+            <p className="mx-auto max-w-3xl text-center text-sm text-text-secondary">
+              Be part of the change. Join our open platform to review, rate, and access research
+              freely. Improve research quality and accessibility with community-driven peer review.
             </p>
           </div>
         </div>
@@ -241,16 +263,16 @@ const AboutPage = () => {
           ))}
         </div>
 
-        <div className="mt-8 text-center text-sm text-text-secondary">
-          <p className="mb-1">Also contributed by:</p>
-          <p>
-            {otherContributors.map((name, idx) => (
-              <span key={idx} className="mr-1 inline">
-                {name}
-                {idx < otherContributors.length - 1 ? ',' : ''}
-              </span>
+        <div className="mt-12 text-center">
+          <h3 className="mb-6 text-2xl font-bold text-text-primary">Previous Contributors</h3>
+          <div className="mx-auto max-w-2xl space-y-3">
+            {otherContributors.map((contributor, idx) => (
+              <p key={idx} className="text-text-secondary">
+                <span className="font-semibold text-text-primary">{contributor.name}</span>
+                <span className="text-sm"> ({contributor.role})</span>
+              </p>
             ))}
-          </p>
+          </div>
         </div>
       </div>
 
@@ -265,12 +287,19 @@ const AboutPage = () => {
               and free for everyone.
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              {/* Fixed by Codex on 2026-02-16
+                  Who: Codex
+                  What: Hid the "Explore Articles" CTA in About.
+                  Why: Keep users from landing on /articles until IA is revisited.
+                  How: Commented out the /articles Link while preserving markup for later restore. */}
+              {/*
               <Link
                 href="/articles"
-                className="rounded-lg bg-functional-green px-8 py-3 font-semibold text-white transition-all hover:bg-functional-green/90 hover:shadow-lg hover:shadow-functional-green/30"
+                className="rounded-lg bg-functional-green px-8 py-3 font-semibold text-primary-foreground transition-all hover:bg-functional-green/90 hover:shadow-lg hover:shadow-functional-green/30"
               >
                 Explore Articles
               </Link>
+              */}
               <Link
                 href="/communities"
                 className="rounded-lg border border-functional-green bg-transparent px-8 py-3 font-semibold text-functional-green transition-all hover:bg-functional-green/10 hover:shadow-lg hover:shadow-functional-green/30"

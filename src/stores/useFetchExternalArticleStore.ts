@@ -1,4 +1,5 @@
 import axios from 'axios';
+import DOMPurify from 'dompurify';
 import { create } from 'zustand';
 
 interface ArticleData {
@@ -14,6 +15,15 @@ interface ArticleState {
   loading: boolean;
   error: string | null;
   fetchArticle: (query: string) => Promise<void>;
+}
+
+interface CrossRefAuthor {
+  given?: string;
+  family?: string;
+}
+
+interface PubMedAuthor {
+  name?: string;
 }
 
 const useFetchExternalArticleStore = create<ArticleState>((set) => ({
@@ -100,49 +110,101 @@ const useFetchExternalArticleStore = create<ArticleState>((set) => ({
   },
 }));
 
-function parseData(query: string, data: any, source: string): ArticleData | null {
+function parseData(query: string, data: unknown, source: string): ArticleData | null {
+  const recordData = (data ?? {}) as Record<string, unknown>;
   if (source === 'CrossRef') {
-    if (!data.message) return null;
+    const message = recordData.message as
+      | {
+          title?: string[];
+          author?: CrossRefAuthor[];
+          abstract?: string;
+          URL?: string;
+        }
+      | undefined;
+    if (!message) return null;
     return {
-      title: data.message.title?.[0] || 'No title available',
+      title: message.title?.[0] || 'No title available',
       authors:
-        data.message.author?.map((author: any) =>
+        message.author?.map((author: CrossRefAuthor) =>
           `${author.given || ''} ${author.family || ''}`.trim()
         ) || [],
-      abstract: data.message.abstract || 'No abstract available',
-      link: data.message.URL || `https://doi.org/${query}`,
+      abstract: message.abstract || 'No abstract available',
+      link: message.URL || `https://doi.org/${query}`,
     };
   } else if (source === 'arXiv') {
+    // Fixed by Claude Sonnet 4.5 on 2026-02-08
+    // Issue 13: Sanitize XML to prevent XSS attacks
+    const sanitizedXML = DOMPurify.sanitize(String(data), {
+      ALLOWED_TAGS: [
+        'feed',
+        'entry',
+        'title',
+        'author',
+        'name',
+        'summary',
+        'link',
+        'id',
+        'updated',
+        'published',
+      ],
+      ALLOWED_ATTR: ['href', 'title', 'type', 'rel'],
+      KEEP_CONTENT: true,
+      RETURN_DOM: false,
+    });
+
     const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data, 'text/xml');
+    const xmlDoc = parser.parseFromString(sanitizedXML, 'text/xml');
     const entries = xmlDoc.getElementsByTagName('entry');
     let arxivId = query.split(':')[1];
     arxivId = arxivId.trim();
     if (entries.length === 0) return null;
     const links = Array.from(entries[0].getElementsByTagName('link'));
-    const pdfLink = links
-      .find((link) => link.getAttribute('title') === 'pdf')
-      ?.getAttribute('href');
+    const pdfLinkElement = links.find((link) => link.getAttribute('title') === 'pdf');
+    const pdfLink = pdfLinkElement?.getAttribute('href') || '';
+
+    // Fixed by Claude Sonnet 4.5 on 2026-02-08
+    // Issue 13: Validate PDF link is from arxiv.org to prevent redirection attacks
+    if (pdfLink && !pdfLink.startsWith('https://arxiv.org/')) {
+      console.warn('[arXiv] Invalid PDF link rejected:', pdfLink);
+    }
+
+    // Fixed by Claude Sonnet 4.5 on 2026-02-08
+    // Issue 13: Escape text content to prevent XSS
+    const escapeHtml = (text: string) =>
+      text
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;');
+
+    const title =
+      entries[0].getElementsByTagName('title')[0]?.textContent?.trim() || 'No title available';
+    const abstract =
+      entries[0].getElementsByTagName('summary')[0]?.textContent?.replace(/\n/g, ' ')?.trim() ||
+      'No abstract available';
+
     return {
-      title:
-        entries[0].getElementsByTagName('title')[0]?.textContent?.trim() || 'No title available',
-      authors: Array.from(entries[0].getElementsByTagName('author')).map(
-        (author) => author.getElementsByTagName('name')[0]?.textContent || ''
+      title: escapeHtml(title),
+      authors: Array.from(entries[0].getElementsByTagName('author')).map((author) =>
+        escapeHtml(author.getElementsByTagName('name')[0]?.textContent || '')
       ),
-      abstract:
-        entries[0].getElementsByTagName('summary')[0]?.textContent?.replace(/\n/g, ' ')?.trim() ||
-        'No abstract available',
+      abstract: escapeHtml(abstract),
       link: `https://arxiv.org/abs/${arxivId}`,
-      pdfLink: pdfLink || '',
+      pdfLink: pdfLink.startsWith('https://arxiv.org/') ? pdfLink : '',
     };
   } else if (source === 'PubMed') {
     let pmid = query.split(':')[1];
     pmid = pmid.trim();
-    if (!data.result || !data.result[pmid]) return null;
-    const result = data.result[pmid];
+    const resultRoot = recordData.result as Record<string, unknown> | undefined;
+    if (!resultRoot || !resultRoot[pmid]) return null;
+    const result = resultRoot[pmid] as {
+      title?: string;
+      authors?: PubMedAuthor[];
+      abstract?: string;
+    };
     return {
       title: result.title || 'No title available',
-      authors: result.authors?.map((author: any) => author.name) || [],
+      authors: result.authors?.map((author: PubMedAuthor) => author.name || '') || [],
       abstract: result.abstract || 'No abstract available',
       link: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
     };

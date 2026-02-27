@@ -41,6 +41,7 @@ const Ratings = ({
   onRatingChange,
   ...props
 }: RatingsProps) => {
+  const isInteractive = !readonly && !!onRatingChange;
   const handleClick = (index: number) => {
     if (!readonly && onRatingChange) {
       onRatingChange(index);
@@ -48,6 +49,7 @@ const Ratings = ({
   };
 
   const fullStars = Math.floor(rating);
+  const roundedRating = Math.round(rating);
   const partialStar =
     rating % 1 > 0 ? (
       <PartialStar
@@ -57,27 +59,62 @@ const Ratings = ({
         Icon={Icon}
       />
     ) : null;
+  const {
+    className,
+    'aria-label': ariaLabelProp,
+    'aria-labelledby': ariaLabelledByProp,
+    ...rest
+  } = props;
+  const fallbackAriaLabel =
+    isInteractive && !ariaLabelProp && !ariaLabelledByProp ? 'Rating' : undefined;
+
+  const renderStar = (index: number, isFilled: boolean) => {
+    const iconElement = React.cloneElement(Icon, {
+      size,
+      className: cn(
+        isFilled ? (fill ? 'fill-current' : 'fill-transparent') : '',
+        isFilled ? ratingVariants[variant].star : ratingVariants[variant].emptyStar
+      ),
+      'aria-hidden': true,
+      focusable: false,
+    });
+
+    if (!isInteractive) {
+      return <React.Fragment key={index}>{iconElement}</React.Fragment>;
+    }
+
+    return (
+      <button
+        key={index}
+        type="button"
+        onClick={() => handleClick(index)}
+        className="leading-none text-inherit"
+        role="radio"
+        aria-checked={roundedRating === index}
+        aria-label={`Rate ${index} out of ${totalStars}`}
+      >
+        {iconElement}
+      </button>
+    );
+  };
 
   return (
-    <div className={cn('flex h-fit items-center gap-1')} {...props}>
-      {[...Array(fullStars)].map((_, i) =>
-        React.cloneElement(Icon, {
-          key: i,
-          size,
-          className: cn(fill ? 'fill-current' : 'fill-transparent', ratingVariants[variant].star),
-          onClick: () => handleClick(i + 1),
-          style: { cursor: readonly ? 'default' : 'pointer' },
-        })
-      )}
-      {partialStar}
+    <div
+      className={cn('flex h-fit items-center gap-1', isInteractive && 'cursor-pointer', className)}
+      role={isInteractive ? 'radiogroup' : undefined}
+      aria-label={fallbackAriaLabel || ariaLabelProp}
+      aria-labelledby={ariaLabelledByProp}
+      {...rest}
+    >
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Render interactive ratings as buttons with radio semantics.
+          Why: SVG click handlers are not keyboard accessible or announced.
+          How: Wrap stars in buttons with aria-checked and labels when interactive. */}
+      {[...Array(fullStars)].map((_, i) => renderStar(i + 1, true))}
+      {partialStar && <span aria-hidden="true">{partialStar}</span>}
       {[...Array(totalStars - fullStars - (partialStar ? 1 : 0))].map((_, i) =>
-        React.cloneElement(Icon, {
-          key: i + fullStars + 1,
-          size,
-          className: cn(ratingVariants[variant].emptyStar),
-          onClick: () => handleClick(i + fullStars + 1),
-          style: { cursor: readonly ? 'default' : 'pointer' },
-        })
+        renderStar(i + fullStars + 1, false)
       )}
     </div>
   );
@@ -95,6 +132,8 @@ const PartialStar = ({ fillPercentage, size, className, Icon }: PartialStarProps
     {React.cloneElement(Icon, {
       size,
       className: cn('fill-current', className),
+      'aria-hidden': true,
+      focusable: false,
     })}
     <div
       style={{
@@ -107,6 +146,8 @@ const PartialStar = ({ fillPercentage, size, className, Icon }: PartialStarProps
       {React.cloneElement(Icon, {
         size,
         className: cn('fill-current', className),
+        'aria-hidden': true,
+        focusable: false,
       })}
     </div>
   </div>

@@ -4,7 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,547 +15,378 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
-import { customInstance } from '.././custom-instance';
-import type { BodyType, ErrorType } from '.././custom-instance';
+  UseQueryResult
+} from '@tanstack/react-query'
 import type {
   CommunityInvitationDetails,
   InvitationDetails,
   InvitationResponseRequest,
   InvitePayload,
   Message,
-  SendInvitationsPayload,
-} from '.././schemas';
+  SendInvitationsPayload
+} from '.././schemas'
+import { customInstance } from '.././custom-instance';
+import type { ErrorType, BodyType } from '.././custom-instance';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * @summary Invite Registered Users
  */
 export const communitiesApiInvitationInviteRegisteredUsers = (
-  communityId: number,
-  invitePayload: BodyType<InvitePayload>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/communities/communities/${communityId}/invite-users`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: invitePayload,
+    communityId: number,
+    invitePayload: BodyType<InvitePayload>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/communities/${communityId}/invite-users`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: invitePayload
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
-    TError,
-    { communityId: number; data: BodyType<InvitePayload> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
-  TError,
-  { communityId: number; data: BodyType<InvitePayload> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
-    { communityId: number; data: BodyType<InvitePayload> }
-  > = (props) => {
-    const { communityId, data } = props ?? {};
+export const getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>, TError,{communityId: number;data: BodyType<InvitePayload>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>, TError,{communityId: number;data: BodyType<InvitePayload>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesApiInvitationInviteRegisteredUsers(communityId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesApiInvitationInviteRegisteredUsersMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>
->;
-export type CommunitiesApiInvitationInviteRegisteredUsersMutationBody = BodyType<InvitePayload>;
-export type CommunitiesApiInvitationInviteRegisteredUsersMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>, {communityId: number;data: BodyType<InvitePayload>}> = (props) => {
+          const {communityId,data} = props ?? {};
 
-/**
+          return  communitiesApiInvitationInviteRegisteredUsers(communityId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesApiInvitationInviteRegisteredUsersMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>>
+    export type CommunitiesApiInvitationInviteRegisteredUsersMutationBody = BodyType<InvitePayload>
+    export type CommunitiesApiInvitationInviteRegisteredUsersMutationError = ErrorType<Message>
+
+    /**
  * @summary Invite Registered Users
  */
-export const useCommunitiesApiInvitationInviteRegisteredUsers = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
-    TError,
-    { communityId: number; data: BodyType<InvitePayload> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
-  TError,
-  { communityId: number; data: BodyType<InvitePayload> },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions(options);
+export const useCommunitiesApiInvitationInviteRegisteredUsers = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>, TError,{communityId: number;data: BodyType<InvitePayload>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesApiInvitationInviteRegisteredUsers>>,
+        TError,
+        {communityId: number;data: BodyType<InvitePayload>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesApiInvitationInviteRegisteredUsersMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Respond To Invitation
  */
 export const communitiesApiInvitationRespondToInvitation = (
-  invitationId: number,
-  invitationResponseRequest: BodyType<InvitationResponseRequest>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/communities/invitations/${invitationId}/respond`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: invitationResponseRequest,
+    invitationId: number,
+    invitationResponseRequest: BodyType<InvitationResponseRequest>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/invitations/${invitationId}/respond`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: invitationResponseRequest
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesApiInvitationRespondToInvitationMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
-    TError,
-    { invitationId: number; data: BodyType<InvitationResponseRequest> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
-  TError,
-  { invitationId: number; data: BodyType<InvitationResponseRequest> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
-    { invitationId: number; data: BodyType<InvitationResponseRequest> }
-  > = (props) => {
-    const { invitationId, data } = props ?? {};
+export const getCommunitiesApiInvitationRespondToInvitationMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>, TError,{invitationId: number;data: BodyType<InvitationResponseRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>, TError,{invitationId: number;data: BodyType<InvitationResponseRequest>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesApiInvitationRespondToInvitation(invitationId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesApiInvitationRespondToInvitationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>
->;
-export type CommunitiesApiInvitationRespondToInvitationMutationBody =
-  BodyType<InvitationResponseRequest>;
-export type CommunitiesApiInvitationRespondToInvitationMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>, {invitationId: number;data: BodyType<InvitationResponseRequest>}> = (props) => {
+          const {invitationId,data} = props ?? {};
 
-/**
+          return  communitiesApiInvitationRespondToInvitation(invitationId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesApiInvitationRespondToInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>>
+    export type CommunitiesApiInvitationRespondToInvitationMutationBody = BodyType<InvitationResponseRequest>
+    export type CommunitiesApiInvitationRespondToInvitationMutationError = ErrorType<Message>
+
+    /**
  * @summary Respond To Invitation
  */
-export const useCommunitiesApiInvitationRespondToInvitation = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
-    TError,
-    { invitationId: number; data: BodyType<InvitationResponseRequest> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
-  TError,
-  { invitationId: number; data: BodyType<InvitationResponseRequest> },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesApiInvitationRespondToInvitationMutationOptions(options);
+export const useCommunitiesApiInvitationRespondToInvitation = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>, TError,{invitationId: number;data: BodyType<InvitationResponseRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesApiInvitationRespondToInvitation>>,
+        TError,
+        {invitationId: number;data: BodyType<InvitationResponseRequest>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesApiInvitationRespondToInvitationMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Send Invitations To Unregistered Users
  */
 export const communitiesApiInvitationSendInvitationsToUnregisteredUsers = (
-  communityId: number,
-  sendInvitationsPayload: BodyType<SendInvitationsPayload>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/communities/communities/${communityId}/send-invitations`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: sendInvitationsPayload,
+    communityId: number,
+    sendInvitationsPayload: BodyType<SendInvitationsPayload>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/communities/${communityId}/send-invitations`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sendInvitationsPayload
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
-    TError,
-    { communityId: number; data: BodyType<SendInvitationsPayload> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
-  TError,
-  { communityId: number; data: BodyType<SendInvitationsPayload> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
-    { communityId: number; data: BodyType<SendInvitationsPayload> }
-  > = (props) => {
-    const { communityId, data } = props ?? {};
+export const getCommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>, TError,{communityId: number;data: BodyType<SendInvitationsPayload>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>, TError,{communityId: number;data: BodyType<SendInvitationsPayload>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesApiInvitationSendInvitationsToUnregisteredUsers(
-      communityId,
-      data,
-      requestOptions
-    );
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>
->;
-export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationBody =
-  BodyType<SendInvitationsPayload>;
-export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationError =
-  ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>, {communityId: number;data: BodyType<SendInvitationsPayload>}> = (props) => {
+          const {communityId,data} = props ?? {};
 
-/**
+          return  communitiesApiInvitationSendInvitationsToUnregisteredUsers(communityId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>>
+    export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationBody = BodyType<SendInvitationsPayload>
+    export type CommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationError = ErrorType<Message>
+
+    /**
  * @summary Send Invitations To Unregistered Users
  */
-export const useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
-    TError,
-    { communityId: number; data: BodyType<SendInvitationsPayload> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
-  TError,
-  { communityId: number; data: BodyType<SendInvitationsPayload> },
-  TContext
-> => {
-  const mutationOptions =
-    getCommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationOptions(options);
+export const useCommunitiesApiInvitationSendInvitationsToUnregisteredUsers = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>, TError,{communityId: number;data: BodyType<SendInvitationsPayload>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesApiInvitationSendInvitationsToUnregisteredUsers>>,
+        TError,
+        {communityId: number;data: BodyType<SendInvitationsPayload>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesApiInvitationSendInvitationsToUnregisteredUsersMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Respond To Email Invitation
  */
 export const communitiesApiInvitationRespondToEmailInvitation = (
-  token: string,
-  invitationResponseRequest: BodyType<InvitationResponseRequest>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/communities/invitations/respond/${token}`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: invitationResponseRequest,
+    token: string,
+    invitationResponseRequest: BodyType<InvitationResponseRequest>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/invitations/respond/${token}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: invitationResponseRequest
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesApiInvitationRespondToEmailInvitationMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
-    TError,
-    { token: string; data: BodyType<InvitationResponseRequest> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
-  TError,
-  { token: string; data: BodyType<InvitationResponseRequest> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
-    { token: string; data: BodyType<InvitationResponseRequest> }
-  > = (props) => {
-    const { token, data } = props ?? {};
+export const getCommunitiesApiInvitationRespondToEmailInvitationMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>, TError,{token: string;data: BodyType<InvitationResponseRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>, TError,{token: string;data: BodyType<InvitationResponseRequest>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesApiInvitationRespondToEmailInvitation(token, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesApiInvitationRespondToEmailInvitationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>
->;
-export type CommunitiesApiInvitationRespondToEmailInvitationMutationBody =
-  BodyType<InvitationResponseRequest>;
-export type CommunitiesApiInvitationRespondToEmailInvitationMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>, {token: string;data: BodyType<InvitationResponseRequest>}> = (props) => {
+          const {token,data} = props ?? {};
 
-/**
+          return  communitiesApiInvitationRespondToEmailInvitation(token,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesApiInvitationRespondToEmailInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>>
+    export type CommunitiesApiInvitationRespondToEmailInvitationMutationBody = BodyType<InvitationResponseRequest>
+    export type CommunitiesApiInvitationRespondToEmailInvitationMutationError = ErrorType<Message>
+
+    /**
  * @summary Respond To Email Invitation
  */
-export const useCommunitiesApiInvitationRespondToEmailInvitation = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
-    TError,
-    { token: string; data: BodyType<InvitationResponseRequest> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
-  TError,
-  { token: string; data: BodyType<InvitationResponseRequest> },
-  TContext
-> => {
-  const mutationOptions =
-    getCommunitiesApiInvitationRespondToEmailInvitationMutationOptions(options);
+export const useCommunitiesApiInvitationRespondToEmailInvitation = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>, TError,{token: string;data: BodyType<InvitationResponseRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesApiInvitationRespondToEmailInvitation>>,
+        TError,
+        {token: string;data: BodyType<InvitationResponseRequest>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesApiInvitationRespondToEmailInvitationMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Get Community Invitations
  */
 export const communitiesApiInvitationGetCommunityInvitations = (
-  communityName: string,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    communityName: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<InvitationDetails[]>(
-    { url: `/api/communities/${communityName}/invitations`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<InvitationDetails[]>(
+      {url: `/api/communities/${communityName}/invitations`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getCommunitiesApiInvitationGetCommunityInvitationsQueryKey = (
-  communityName: string
+export const getCommunitiesApiInvitationGetCommunityInvitationsQueryKey = (communityName: string,) => {
+    return [`/api/communities/${communityName}/invitations`] as const;
+    }
+
+    
+export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>, TError = ErrorType<Message>>(communityName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/communities/${communityName}/invitations`] as const;
-};
 
-export const getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCommunitiesApiInvitationGetCommunityInvitationsQueryKey(communityName);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesApiInvitationGetCommunityInvitationsQueryKey(communityName);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>
-  > = ({ signal }) =>
-    communitiesApiInvitationGetCommunityInvitations(communityName, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>> = ({ signal }) => communitiesApiInvitationGetCommunityInvitations(communityName, requestOptions, signal);
 
-export type CommunitiesApiInvitationGetCommunityInvitationsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>
->;
-export type CommunitiesApiInvitationGetCommunityInvitationsQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesApiInvitationGetCommunityInvitationsQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>>
+export type CommunitiesApiInvitationGetCommunityInvitationsQueryError = ErrorType<Message>
 
 /**
  * @summary Get Community Invitations
  */
-export const useCommunitiesApiInvitationGetCommunityInvitations = <
-  TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions(
-    communityName,
-    options
-  );
+export const useCommunitiesApiInvitationGetCommunityInvitations = <TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>, TError = ErrorType<Message>>(
+ communityName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationsQueryOptions(communityName,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Get Community Invitation Details
  */
 export const communitiesApiInvitationGetCommunityInvitationDetails = (
-  communityId: number,
-  invitationId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    communityId: number,
+    invitationId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<CommunityInvitationDetails>(
-    {
-      url: `/api/communities/${communityId}/invitation-details/${invitationId}`,
-      method: 'GET',
-      signal,
+      
+      
+      return customInstance<CommunityInvitationDetails>(
+      {url: `/api/communities/${communityId}/invitation-details/${invitationId}`, method: 'GET', signal
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryKey = (
-  communityId: number,
-  invitationId: number
+export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryKey = (communityId: number,
+    invitationId: number,) => {
+    return [`/api/communities/${communityId}/invitation-details/${invitationId}`] as const;
+    }
+
+    
+export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOptions = <TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>, TError = ErrorType<Message>>(communityId: number,
+    invitationId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/communities/${communityId}/invitation-details/${invitationId}`] as const;
-};
 
-export const getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-  TError = ErrorType<Message>,
->(
-  communityId: number,
-  invitationId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryKey(communityId, invitationId);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryKey(communityId,invitationId);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>
-  > = ({ signal }) =>
-    communitiesApiInvitationGetCommunityInvitationDetails(
-      communityId,
-      invitationId,
-      requestOptions,
-      signal
-    );
+  
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!(communityId && invitationId),
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>> = ({ signal }) => communitiesApiInvitationGetCommunityInvitationDetails(communityId,invitationId, requestOptions, signal);
 
-export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>
->;
-export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityId && invitationId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>>
+export type CommunitiesApiInvitationGetCommunityInvitationDetailsQueryError = ErrorType<Message>
 
 /**
  * @summary Get Community Invitation Details
  */
-export const useCommunitiesApiInvitationGetCommunityInvitationDetails = <
-  TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-  TError = ErrorType<Message>,
->(
-  communityId: number,
-  invitationId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOptions(
-    communityId,
-    invitationId,
-    options
-  );
+export const useCommunitiesApiInvitationGetCommunityInvitationDetails = <TData = Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>, TError = ErrorType<Message>>(
+ communityId: number,
+    invitationId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesApiInvitationGetCommunityInvitationDetails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesApiInvitationGetCommunityInvitationDetailsQueryOptions(communityId,invitationId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
+

@@ -13,6 +13,7 @@ import {
   useCommunitiesApiInvitationGetCommunityInvitationDetails,
   useCommunitiesApiInvitationRespondToEmailInvitation,
 } from '@/api/community-invitations/community-invitations';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import useIdenticon from '@/hooks/useIdenticons';
@@ -42,6 +43,7 @@ export default function UnRegisteredUsersInvitation({
       },
     }
   );
+  const communityName = data?.data.name;
 
   const {
     mutate,
@@ -63,12 +65,14 @@ export default function UnRegisteredUsersInvitation({
     if (isRespondSuccess) {
       toast.success(respondData.data.message);
       if (action === 'accept') {
-        router.push(`/community/${data?.data.name}`);
+        router.push(
+          communityName ? `/community/${encodeURIComponent(communityName)}` : '/communities'
+        );
       } else {
         router.push('/communities');
       }
     }
-  }, [isRespondSuccess, respondData, router, action, communityId]);
+  }, [isRespondSuccess, respondData, router, action, communityId, communityName]);
 
   useEffect(() => {
     if (respondError) {
@@ -88,6 +92,7 @@ export default function UnRegisteredUsersInvitation({
         src={'/images/assets/gradient.webp'}
         fill
         alt=""
+        aria-hidden="true"
         className="z-0 opacity-10 invert dark:invert-0"
         quality={10}
       />
@@ -109,9 +114,13 @@ export default function UnRegisteredUsersInvitation({
               <h3 className="mb-2 truncate font-bold text-text-primary res-text-base">
                 {data.data.name}
               </h3>
-              <p className="mb-4 line-clamp-2 text-base text-text-secondary">
-                {data.data.description}
-              </p>
+              <RenderParsedHTML
+                rawContent={data.data.description || ''}
+                supportMarkdown={true}
+                supportLatex={false}
+                containerClassName="mb-4"
+                contentClassName="line-clamp-2 text-base text-text-secondary"
+              />
               <div className="flex flex-wrap items-center gap-4 text-text-secondary">
                 <div className="flex items-center">
                   <Users className="mr-1 h-4 w-4" />
@@ -150,7 +159,9 @@ export default function UnRegisteredUsersInvitation({
                 </ButtonTitle>
               </Button>
             </div>
-            {respondError && <p className="text-red-500">{respondError.response?.data.message}</p>}
+            {respondError && (
+              <p className="text-functional-red">{respondError.response?.data.message}</p>
+            )}
           </>
         )}
       </div>

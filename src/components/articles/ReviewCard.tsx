@@ -102,18 +102,23 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     }
   }, [review, selectedVersion]);
 
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Tokenize review type badges.
+     Why: Keep role pills consistent across skins.
+     How: Replace purple/blue utilities with functional tokens. */
   const getReviewTypeTag = (reviewType: string) => {
     switch (reviewType) {
       case 'reviewer':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800 dark:bg-purple-950 dark:text-purple-400">
+          <span className="ml-2 flex items-center rounded-full bg-functional-green/10 px-2 py-1 text-xs font-medium text-functional-green">
             <UserCircle className="mr-1 h-3 w-3" />
             Reviewer
           </span>
         );
       case 'moderator':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+          <span className="ml-2 flex items-center rounded-full bg-functional-blue/10 px-2 py-1 text-xs font-medium text-functional-blue">
             <Shield className="mr-1 h-3 w-3" />
             Moderator
           </span>
@@ -150,7 +155,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                     ? review.user.profile_pic_url?.startsWith('http')
                       ? review.user.profile_pic_url
                       : `data:image/png;base64,${review.user.profile_pic_url}`
-                    : `/images/assets/user-icon.png`
+                    : `/images/assets/user-icon.webp`
                 }
                 alt={review.user.username}
                 width={32}
@@ -158,7 +163,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 className="shrink-0 rounded-full object-cover"
                 quality={75}
                 sizes="32px"
-                loading="lazy"
+                unoptimized={!review.user.profile_pic_url}
               />
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 text-sm font-bold text-text-secondary">
@@ -166,11 +171,19 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   {review.is_author && (
                     <>
                       <span className="text-[10px] font-normal text-text-tertiary">(You)</span>
-                      <Pencil
-                        size={12}
+                      {/* Fixed by Codex on 2026-02-15
+                         Who: Codex
+                         What: Make the edit action keyboard accessible.
+                         Why: Clickable icons without buttons are not focusable.
+                         How: Wrap the icon in a button with an aria-label. */}
+                      <button
+                        type="button"
+                        aria-label="Edit review"
                         onClick={() => setEdit(!edit)}
-                        className="cursor-pointer hover:text-functional-green"
-                      />
+                        className="inline-flex items-center"
+                      >
+                        <Pencil size={12} className="cursor-pointer hover:text-functional-green" />
+                      </button>
                     </>
                   )}
                   {getReviewTypeTag(review.review_type || '')}
@@ -232,6 +245,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               supportLatex={true}
               containerClassName="mb-0"
               contentClassName="text-xs sm:text-sm"
+              gradientClassName="sm:from-common-background"
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -276,6 +290,9 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div> */}
             <div className="ml-auto flex items-center space-x-2 text-text-secondary">
               <button
+                type="button"
+                aria-expanded={displayComments}
+                aria-controls={`review-${review.id}-comments`}
                 onClick={() => setDisplayComments((prev) => !prev)}
                 className="flex items-center gap-2 text-[10px] hover:underline focus:outline-none"
               >
@@ -310,7 +327,12 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div>
           </div>
           {displayComments && (
-            <div className="w-full">
+            /* Fixed by Codex on 2026-02-17
+               Who: Codex
+               What: Add a small vertical gap above expanded review comments.
+               Why: The comments toolbar row sat too close to the right-side "{n} comments" toggle row.
+               How: Apply a subtle top margin on the review comments container. */
+            <div className="mt-1 w-full" id={`review-${review.id}-comments`}>
               <ReviewComments
                 reviewId={Number(review.id)}
                 displayComments={displayComments}

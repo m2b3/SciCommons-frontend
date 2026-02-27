@@ -4,473 +4,363 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation } from '@tanstack/react-query';
+import {
+  useMutation
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   UseMutationOptions,
-  UseMutationResult,
-} from '@tanstack/react-query';
-
-import { customInstance } from '.././custom-instance';
-import type { BodyType, ErrorType } from '.././custom-instance';
+  UseMutationResult
+} from '@tanstack/react-query'
 import type {
   LogInSchemaIn,
   LogInSchemaOut,
   Message,
   ResetPasswordSchema,
-  UserCreateSchema,
-} from '.././schemas';
+  UserCreateSchema
+} from '.././schemas'
+import { customInstance } from '.././custom-instance';
+import type { ErrorType, BodyType } from '.././custom-instance';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * @summary Signup
  */
 export const usersApiAuthSignup = (
-  userCreateSchema: BodyType<UserCreateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/users/signup`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: userCreateSchema,
+    userCreateSchema: BodyType<UserCreateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/users/signup`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: userCreateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getUsersApiAuthSignupMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthSignup>>,
-    TError,
-    { data: BodyType<UserCreateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiAuthSignup>>,
-  TError,
-  { data: BodyType<UserCreateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiAuthSignup>>,
-    { data: BodyType<UserCreateSchema> }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getUsersApiAuthSignupMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthSignup>>, TError,{data: BodyType<UserCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthSignup>>, TError,{data: BodyType<UserCreateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return usersApiAuthSignup(data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UsersApiAuthSignupMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiAuthSignup>>
->;
-export type UsersApiAuthSignupMutationBody = BodyType<UserCreateSchema>;
-export type UsersApiAuthSignupMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersApiAuthSignup>>, {data: BodyType<UserCreateSchema>}> = (props) => {
+          const {data} = props ?? {};
 
-/**
+          return  usersApiAuthSignup(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersApiAuthSignupMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiAuthSignup>>>
+    export type UsersApiAuthSignupMutationBody = BodyType<UserCreateSchema>
+    export type UsersApiAuthSignupMutationError = ErrorType<Message>
+
+    /**
  * @summary Signup
  */
-export const useUsersApiAuthSignup = <TError = ErrorType<Message>, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthSignup>>,
-    TError,
-    { data: BodyType<UserCreateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiAuthSignup>>,
-  TError,
-  { data: BodyType<UserCreateSchema> },
-  TContext
-> => {
-  const mutationOptions = getUsersApiAuthSignupMutationOptions(options);
+export const useUsersApiAuthSignup = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthSignup>>, TError,{data: BodyType<UserCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof usersApiAuthSignup>>,
+        TError,
+        {data: BodyType<UserCreateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getUsersApiAuthSignupMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Activate
  */
 export const usersApiAuthActivate = (
-  token: string,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>({ url: `/api/users/activate/${token}`, method: 'POST' }, options);
-};
+    token: string,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/users/activate/${token}`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getUsersApiAuthActivateMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthActivate>>,
-    TError,
-    { token: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiAuthActivate>>,
-  TError,
-  { token: string },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiAuthActivate>>,
-    { token: string }
-  > = (props) => {
-    const { token } = props ?? {};
+export const getUsersApiAuthActivateMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError,{token: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError,{token: string}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return usersApiAuthActivate(token, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UsersApiAuthActivateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiAuthActivate>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersApiAuthActivate>>, {token: string}> = (props) => {
+          const {token} = props ?? {};
 
-export type UsersApiAuthActivateMutationError = ErrorType<Message>;
+          return  usersApiAuthActivate(token,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersApiAuthActivateMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiAuthActivate>>>
+    
+    export type UsersApiAuthActivateMutationError = ErrorType<Message>
+
+    /**
  * @summary Activate
  */
-export const useUsersApiAuthActivate = <TError = ErrorType<Message>, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthActivate>>,
-    TError,
-    { token: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiAuthActivate>>,
-  TError,
-  { token: string },
-  TContext
-> => {
-  const mutationOptions = getUsersApiAuthActivateMutationOptions(options);
+export const useUsersApiAuthActivate = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthActivate>>, TError,{token: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof usersApiAuthActivate>>,
+        TError,
+        {token: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getUsersApiAuthActivateMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Resend Activation
  */
 export const usersApiAuthResendActivation = (
-  identifier: string,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/users/resend-activation/${identifier}`, method: 'POST' },
-    options
-  );
-};
+    identifier: string,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/users/resend-activation/${identifier}`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getUsersApiAuthResendActivationMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-    TError,
-    { identifier: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-  TError,
-  { identifier: string },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-    { identifier: string }
-  > = (props) => {
-    const { identifier } = props ?? {};
+export const getUsersApiAuthResendActivationMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthResendActivation>>, TError,{identifier: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthResendActivation>>, TError,{identifier: string}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return usersApiAuthResendActivation(identifier, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UsersApiAuthResendActivationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiAuthResendActivation>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersApiAuthResendActivation>>, {identifier: string}> = (props) => {
+          const {identifier} = props ?? {};
 
-export type UsersApiAuthResendActivationMutationError = ErrorType<Message>;
+          return  usersApiAuthResendActivation(identifier,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersApiAuthResendActivationMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiAuthResendActivation>>>
+    
+    export type UsersApiAuthResendActivationMutationError = ErrorType<Message>
+
+    /**
  * @summary Resend Activation
  */
-export const useUsersApiAuthResendActivation = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-    TError,
-    { identifier: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
-  TError,
-  { identifier: string },
-  TContext
-> => {
-  const mutationOptions = getUsersApiAuthResendActivationMutationOptions(options);
+export const useUsersApiAuthResendActivation = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthResendActivation>>, TError,{identifier: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof usersApiAuthResendActivation>>,
+        TError,
+        {identifier: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getUsersApiAuthResendActivationMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Login User
  */
 export const usersApiAuthLoginUser = (
-  logInSchemaIn: BodyType<LogInSchemaIn>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<LogInSchemaOut>(
-    {
-      url: `/api/users/login`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: logInSchemaIn,
+    logInSchemaIn: BodyType<LogInSchemaIn>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<LogInSchemaOut>(
+      {url: `/api/users/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: logInSchemaIn
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getUsersApiAuthLoginUserMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
-    TError,
-    { data: BodyType<LogInSchemaIn> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
-  TError,
-  { data: BodyType<LogInSchemaIn> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
-    { data: BodyType<LogInSchemaIn> }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getUsersApiAuthLoginUserMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthLoginUser>>, TError,{data: BodyType<LogInSchemaIn>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthLoginUser>>, TError,{data: BodyType<LogInSchemaIn>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return usersApiAuthLoginUser(data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UsersApiAuthLoginUserMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiAuthLoginUser>>
->;
-export type UsersApiAuthLoginUserMutationBody = BodyType<LogInSchemaIn>;
-export type UsersApiAuthLoginUserMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersApiAuthLoginUser>>, {data: BodyType<LogInSchemaIn>}> = (props) => {
+          const {data} = props ?? {};
 
-/**
+          return  usersApiAuthLoginUser(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersApiAuthLoginUserMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiAuthLoginUser>>>
+    export type UsersApiAuthLoginUserMutationBody = BodyType<LogInSchemaIn>
+    export type UsersApiAuthLoginUserMutationError = ErrorType<Message>
+
+    /**
  * @summary Login User
  */
-export const useUsersApiAuthLoginUser = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
-    TError,
-    { data: BodyType<LogInSchemaIn> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
-  TError,
-  { data: BodyType<LogInSchemaIn> },
-  TContext
-> => {
-  const mutationOptions = getUsersApiAuthLoginUserMutationOptions(options);
+export const useUsersApiAuthLoginUser = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthLoginUser>>, TError,{data: BodyType<LogInSchemaIn>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof usersApiAuthLoginUser>>,
+        TError,
+        {data: BodyType<LogInSchemaIn>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getUsersApiAuthLoginUserMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Request Reset
  */
 export const usersApiAuthRequestReset = (
-  email: string,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/users/forgot-password/${email}`, method: 'POST' },
-    options
-  );
-};
+    email: string,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/users/forgot-password/${email}`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getUsersApiAuthRequestResetMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
-    TError,
-    { email: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
-  TError,
-  { email: string },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
-    { email: string }
-  > = (props) => {
-    const { email } = props ?? {};
+export const getUsersApiAuthRequestResetMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthRequestReset>>, TError,{email: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthRequestReset>>, TError,{email: string}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return usersApiAuthRequestReset(email, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UsersApiAuthRequestResetMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiAuthRequestReset>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersApiAuthRequestReset>>, {email: string}> = (props) => {
+          const {email} = props ?? {};
 
-export type UsersApiAuthRequestResetMutationError = ErrorType<Message>;
+          return  usersApiAuthRequestReset(email,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersApiAuthRequestResetMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiAuthRequestReset>>>
+    
+    export type UsersApiAuthRequestResetMutationError = ErrorType<Message>
+
+    /**
  * @summary Request Reset
  */
-export const useUsersApiAuthRequestReset = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
-    TError,
-    { email: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
-  TError,
-  { email: string },
-  TContext
-> => {
-  const mutationOptions = getUsersApiAuthRequestResetMutationOptions(options);
+export const useUsersApiAuthRequestReset = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthRequestReset>>, TError,{email: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof usersApiAuthRequestReset>>,
+        TError,
+        {email: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getUsersApiAuthRequestResetMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Reset Password
  */
 export const usersApiAuthResetPassword = (
-  token: string,
-  resetPasswordSchema: BodyType<ResetPasswordSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/users/reset-password/${token}`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: resetPasswordSchema,
+    token: string,
+    resetPasswordSchema: BodyType<ResetPasswordSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/users/reset-password/${token}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getUsersApiAuthResetPasswordMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
-    TError,
-    { token: string; data: BodyType<ResetPasswordSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
-  TError,
-  { token: string; data: BodyType<ResetPasswordSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
-    { token: string; data: BodyType<ResetPasswordSchema> }
-  > = (props) => {
-    const { token, data } = props ?? {};
+export const getUsersApiAuthResetPasswordMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthResetPassword>>, TError,{token: string;data: BodyType<ResetPasswordSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthResetPassword>>, TError,{token: string;data: BodyType<ResetPasswordSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return usersApiAuthResetPassword(token, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UsersApiAuthResetPasswordMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersApiAuthResetPassword>>
->;
-export type UsersApiAuthResetPasswordMutationBody = BodyType<ResetPasswordSchema>;
-export type UsersApiAuthResetPasswordMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersApiAuthResetPassword>>, {token: string;data: BodyType<ResetPasswordSchema>}> = (props) => {
+          const {token,data} = props ?? {};
 
-/**
+          return  usersApiAuthResetPassword(token,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersApiAuthResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof usersApiAuthResetPassword>>>
+    export type UsersApiAuthResetPasswordMutationBody = BodyType<ResetPasswordSchema>
+    export type UsersApiAuthResetPasswordMutationError = ErrorType<Message>
+
+    /**
  * @summary Reset Password
  */
-export const useUsersApiAuthResetPassword = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
-    TError,
-    { token: string; data: BodyType<ResetPasswordSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
-  TError,
-  { token: string; data: BodyType<ResetPasswordSchema> },
-  TContext
-> => {
-  const mutationOptions = getUsersApiAuthResetPasswordMutationOptions(options);
+export const useUsersApiAuthResetPassword = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersApiAuthResetPassword>>, TError,{token: string;data: BodyType<ResetPasswordSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof usersApiAuthResetPassword>>,
+        TError,
+        {token: string;data: BodyType<ResetPasswordSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
+      const mutationOptions = getUsersApiAuthResetPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

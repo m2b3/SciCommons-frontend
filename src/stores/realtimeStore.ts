@@ -29,7 +29,6 @@ export const useRealtimeContextStore = create<RealtimeContextState>((set, get) =
   contextSetAt: null,
 
   setActiveContext: (articleId, communityId) => {
-    console.log(`[Realtime] Setting context: article=${articleId}, community=${communityId}`);
     set({
       activeArticleId: articleId,
       activeCommunityId: communityId,
@@ -38,12 +37,10 @@ export const useRealtimeContextStore = create<RealtimeContextState>((set, get) =
   },
 
   setActiveDiscussion: (discussionId) => {
-    console.log(`[Realtime] Setting discussion: ${discussionId}`);
     set({ activeDiscussionId: discussionId });
   },
 
   setViewingDiscussions: (viewing) => {
-    console.log(`[Realtime] Setting viewing discussions: ${viewing}`);
     set({
       isViewingDiscussions: viewing,
       isViewingComments: viewing ? false : get().isViewingComments,
@@ -51,7 +48,6 @@ export const useRealtimeContextStore = create<RealtimeContextState>((set, get) =
   },
 
   setViewingComments: (viewing, discussionId) => {
-    console.log(`[Realtime] Setting viewing comments: ${viewing}, discussion: ${discussionId}`);
     set({
       isViewingComments: viewing,
       isViewingDiscussions: viewing ? false : get().isViewingDiscussions,
@@ -60,7 +56,6 @@ export const useRealtimeContextStore = create<RealtimeContextState>((set, get) =
   },
 
   clearActiveContext: () => {
-    console.log(`[Realtime] Clearing context`);
     set({
       activeArticleId: null,
       activeCommunityId: null,

@@ -45,3 +45,17 @@ next-env.d.ts
 /public/swe-worker-*.js
 /public/workbox-*.js
 /public/workbox-*.js.map
+# AI tool directories and config
+.claude/
+.openai/
+.anthropic/
+
+# Test images
+fig*.jpg
+inp.jpg
+bkm.jpg
+Nul
+
+# Environment files (comprehensive)
+.env
+.env.*

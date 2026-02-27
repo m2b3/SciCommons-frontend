@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
+import { MDXEditorMethods } from '@mdxeditor/editor';
 import { Eye, EyeOff } from 'lucide-react';
-import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
-
-// Using lucide-react icons
+import {
+  Control,
+  FieldErrors,
+  FieldValues,
+  Path,
+  UseFormRegister,
+  useWatch,
+} from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 
-import { Switch } from '../ui/switch';
 import CustomTooltip from './CustomTooltip';
-import RenderParsedHTML from './RenderParsedHTML';
+import { ForwardRefEditor } from './MarkdownEditor/ForwardRefEditor';
 
 interface InputProps<TFieldValues extends FieldValues> {
   label?: string;
@@ -25,6 +30,7 @@ interface InputProps<TFieldValues extends FieldValues> {
   name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
+  control?: Control<TFieldValues>;
   isSubmitting?: boolean;
   readOnly?: boolean;
   info?: string;
@@ -41,6 +47,26 @@ interface InputProps<TFieldValues extends FieldValues> {
   autoFocus?: boolean;
 }
 
+// Wrapper component that uses useWatch - only rendered when control is provided
+function WatchedFieldSync<TFieldValues extends FieldValues>({
+  control,
+  name,
+  onValueChange,
+}: {
+  control: Control<TFieldValues>;
+  name: Path<TFieldValues>;
+  onValueChange: (value: string) => void;
+}) {
+  const fieldValue = useWatch({ control, name });
+
+  useEffect(() => {
+    // Always call onValueChange to sync the value, including on initial mount
+    onValueChange(String(fieldValue || ''));
+  }, [fieldValue, onValueChange]);
+
+  return null;
+}
+
 const FormInput = <TFieldValues extends FieldValues>({
   label,
   name,
@@ -55,6 +81,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   maxLengthValue,
   maxLengthMessage,
   errors,
+  control,
   isSubmitting = false,
   readOnly = false,
   info,
@@ -73,8 +100,22 @@ const FormInput = <TFieldValues extends FieldValues>({
   const [showPassword, setShowPassword] = useState(false);
   const error = errors[name];
   const isPasswordField = type === 'password';
-  const [isMarkdownPreview, setIsMarkdownPreview] = useState(false);
   const [markdown, setMarkdown] = useState<string>('');
+  const reviewEditorRef = React.useRef<MDXEditorMethods>(null);
+  const markdownRef = React.useRef<string>(markdown || '');
+
+  // Determine if we need to watch field values (only for markdown/latex editors with control)
+  const needsWatch = (supportMarkdown || supportLatex) && !!control;
+
+  // Callback for when watched field value changes
+  const handleWatchedValueChange = React.useCallback((value: string) => {
+    setMarkdown(value);
+    markdownRef.current = value;
+    // Also update the editor ref if it exists (for when form is reset externally)
+    if (reviewEditorRef.current && reviewEditorRef.current.getMarkdown() !== value) {
+      reviewEditorRef.current.setMarkdown(value);
+    }
+  }, []);
 
   // Get the registered field with validation rules
   const registeredField = register(name as Path<TFieldValues>, {
@@ -100,26 +141,45 @@ const FormInput = <TFieldValues extends FieldValues>({
     }
   };
 
-  // Update markdown state when form is reset or values are set programmatically
-  useEffect(() => {
-    if (supportMarkdown || supportLatex) {
-      const input = document.getElementById(String(name)) as HTMLInputElement | HTMLTextAreaElement;
-      if (input?.value) {
-        setMarkdown(input.value);
-      }
-    }
-  }, [name, supportMarkdown, supportLatex]);
-
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  /* Fixed by Codex on 2026-02-19
+     Who: Codex
+     What: Add Ctrl/Cmd+Enter submit support for plain textarea inputs.
+     Why: Abstract/note fields built with FormInput should submit quickly from keyboard.
+     How: On modifier+Enter, prevent default newline and submit the owning form. */
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!(e.ctrlKey || e.metaKey) || e.key !== 'Enter') return;
+    if (readOnly || isSubmitting) return;
+    const parentForm = e.currentTarget.form;
+    if (!parentForm) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    parentForm.requestSubmit();
   };
 
   useEffect(() => {
     if (isSuccess) {
       setMarkdown('');
-      setIsMarkdownPreview(false);
     }
   }, [isSuccess]);
+
+  // Get support text based on markdown and latex support
+  const getSupportText = () => {
+    switch (true) {
+      case supportMarkdown && supportLatex:
+        return 'Markdown & Latex Supported';
+      case supportMarkdown:
+        return 'Markdown Supported';
+      case supportLatex:
+        return 'Latex Supported';
+      default:
+        return '';
+    }
+  };
 
   const commonProps = {
     id: String(name),
@@ -139,6 +199,14 @@ const FormInput = <TFieldValues extends FieldValues>({
 
   return (
     <div className="w-full">
+      {/* Only render the watch component when needed - this avoids useWatch errors when control is not provided */}
+      {needsWatch && control && (
+        <WatchedFieldSync
+          control={control}
+          name={name as Path<TFieldValues>}
+          onValueChange={handleWatchedValueChange}
+        />
+      )}
       {label && (
         <div className="mb-2 flex items-center space-x-2">
           <span className={cn('font-medium text-text-secondary res-text-xs', labelClassName)}>
@@ -150,32 +218,37 @@ const FormInput = <TFieldValues extends FieldValues>({
       <div className="relative">
         {(supportMarkdown || supportLatex) && (
           <div className="absolute -top-6 right-2 flex items-center">
-            <Switch
-              checked={isMarkdownPreview}
-              onCheckedChange={setIsMarkdownPreview}
-              className="h-4 w-7"
-              thumbClassName="h-3 w-3 data-[state=checked]:translate-x-3"
-            />
             <span className="ml-2 hidden text-xxs text-text-tertiary/70 sm:block">
-              Markdown Preview
+              {getSupportText()}
             </span>
           </div>
         )}
-        {(supportMarkdown || supportLatex) && isMarkdownPreview && (
-          <div className={cn('mb-4 rounded-md border border-common-contrast p-4')}>
-            <RenderParsedHTML
-              rawContent={markdown}
-              {...(supportMarkdown ? { supportMarkdown: true } : { supportLatex: true })}
-            />
-          </div>
-        )}
-        <div
-          className={cn({
-            'h-0 overflow-hidden opacity-0': (supportMarkdown || supportLatex) && isMarkdownPreview,
-          })}
-        >
+        <div>
           {textArea ? (
-            <textarea {...commonProps} rows={4} />
+            supportMarkdown || supportLatex ? (
+              <ForwardRefEditor
+                markdown={markdown}
+                ref={reviewEditorRef}
+                onChange={(newMarkdown) => {
+                  markdownRef.current = newMarkdown;
+                  // Notify react-hook-form of the value change
+                  registeredField.onChange({
+                    target: {
+                      name: name as string,
+                      value: newMarkdown,
+                    },
+                  });
+                  // Update local markdown state for preview
+                  setMarkdown(newMarkdown);
+                }}
+                onBlur={registeredField.onBlur}
+                hideToolbar
+                placeholder={placeholder || commonProps.placeholder}
+                readOnly={readOnly}
+              />
+            ) : (
+              <textarea {...commonProps} rows={4} onKeyDown={handleTextareaKeyDown} />
+            )
           ) : (
             <div className="relative">
               <input {...commonProps} type={isPasswordField && showPassword ? 'text' : type} />
@@ -187,7 +260,11 @@ const FormInput = <TFieldValues extends FieldValues>({
                     eyeBtnClassName
                   )}
                   onClick={togglePasswordVisibility}
-                  tabIndex={-1}
+                  /* Fixed by Codex on 2026-02-15
+                     Who: Codex
+                     What: Allow keyboard access to the password visibility toggle.
+                     Why: tabIndex -1 hides the control from keyboard users.
+                     How: Remove the negative tabIndex so it can receive focus. */
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -203,7 +280,16 @@ const FormInput = <TFieldValues extends FieldValues>({
       )}
 
       {!error && helperText && !isSubmitting && (
-        <p className={cn('mt-2 text-gray-500 res-text-xs', helperTextClassName)}>{helperText}</p>
+        <>
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Tokenize helper text color.
+              Why: Ensure input helper text adapts to skin palettes.
+              How: Replace gray utility with text-tertiary token. */}
+          <p className={cn('mt-2 text-text-tertiary res-text-xs', helperTextClassName)}>
+            {helperText}
+          </p>
+        </>
       )}
     </div>
   );

@@ -15,5 +15,18 @@
       }
     ]
   },
+  "overrides": [
+    {
+      "files": ["src/api/**/*.ts", "src/api/**/*.tsx"],
+      "excludedFiles": [
+        "src/api/custom-instance.ts",
+        "src/api/ReactQueryClientProvider.tsx",
+        "src/api/queryClientRegistry.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ],
   "ignorePatterns": ["node_modules/", ".next/", "out/", "public/"]
 }

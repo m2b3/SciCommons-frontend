@@ -6,7 +6,7 @@
  */
 
 export type CommunitiesApiGetRelevantCommunitiesParams = {
-  offset?: number;
-  limit?: number;
-  filter_type?: 'popular' | 'recent' | 'relevant';
+offset?: number;
+limit?: number;
+filter_type?: 'popular' | 'recent' | 'relevant';
 };

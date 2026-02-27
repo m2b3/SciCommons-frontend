@@ -88,9 +88,13 @@ const About: React.FC<AboutProps> = ({ data }) => {
     }
   };
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Admin about editor used a hard-coded white surface.
+     Solution: Swap to a semantic card background token.
+     Result: Editor surface now respects active skin palettes. */
   return (
     <div>
-      <div className="my-4 w-full bg-white-primary p-16 res-text-sm" ref={selectionRef}>
+      <div className="my-4 w-full bg-common-cardBackground p-16 res-text-sm" ref={selectionRef}>
         <YooptaEditor
           editor={editor}
           plugins={plugins}

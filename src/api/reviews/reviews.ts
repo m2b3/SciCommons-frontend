@@ -4,7 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,11 +15,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
-import { customInstance } from '.././custom-instance';
-import type { BodyType, ErrorType } from '.././custom-instance';
+  UseQueryResult
+} from '@tanstack/react-query'
 import type {
   ArticlesReviewApiCreateReviewParams,
   ArticlesReviewApiListReviewsParams,
@@ -28,883 +28,666 @@ import type {
   ReviewCommentRatingByUserOut,
   ReviewCommentUpdateSchema,
   ReviewOut,
-  ReviewUpdateSchema,
-} from '.././schemas';
+  ReviewUpdateSchema
+} from '.././schemas'
+import { customInstance } from '.././custom-instance';
+import type { ErrorType, BodyType } from '.././custom-instance';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * @summary Create Review
  */
 export const articlesReviewApiCreateReview = (
-  articleId: number,
-  createReviewSchema: BodyType<CreateReviewSchema>,
-  params?: ArticlesReviewApiCreateReviewParams,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<ReviewOut>(
-    {
-      url: `/api/articles/${articleId}/reviews/`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    articleId: number,
+    createReviewSchema: BodyType<CreateReviewSchema>,
+    params?: ArticlesReviewApiCreateReviewParams,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ReviewOut>(
+      {url: `/api/articles/${articleId}/reviews/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
       data: createReviewSchema,
-      params,
+        params
     },
-    options
-  );
-};
-
-export const getArticlesReviewApiCreateReviewMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiCreateReview>>,
-    TError,
-    {
-      articleId: number;
-      data: BodyType<CreateReviewSchema>;
-      params?: ArticlesReviewApiCreateReviewParams;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesReviewApiCreateReview>>,
-  TError,
-  {
-    articleId: number;
-    data: BodyType<CreateReviewSchema>;
-    params?: ArticlesReviewApiCreateReviewParams;
-  },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesReviewApiCreateReview>>,
-    {
-      articleId: number;
-      data: BodyType<CreateReviewSchema>;
-      params?: ArticlesReviewApiCreateReviewParams;
+      options);
     }
-  > = (props) => {
-    const { articleId, data, params } = props ?? {};
+  
 
-    return articlesReviewApiCreateReview(articleId, data, params, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getArticlesReviewApiCreateReviewMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiCreateReview>>, TError,{articleId: number;data: BodyType<CreateReviewSchema>;params?: ArticlesReviewApiCreateReviewParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiCreateReview>>, TError,{articleId: number;data: BodyType<CreateReviewSchema>;params?: ArticlesReviewApiCreateReviewParams}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-export type ArticlesReviewApiCreateReviewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiCreateReview>>
->;
-export type ArticlesReviewApiCreateReviewMutationBody = BodyType<CreateReviewSchema>;
-export type ArticlesReviewApiCreateReviewMutationError = ErrorType<Message>;
+      
 
-/**
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesReviewApiCreateReview>>, {articleId: number;data: BodyType<CreateReviewSchema>;params?: ArticlesReviewApiCreateReviewParams}> = (props) => {
+          const {articleId,data,params} = props ?? {};
+
+          return  articlesReviewApiCreateReview(articleId,data,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesReviewApiCreateReviewMutationResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiCreateReview>>>
+    export type ArticlesReviewApiCreateReviewMutationBody = BodyType<CreateReviewSchema>
+    export type ArticlesReviewApiCreateReviewMutationError = ErrorType<Message>
+
+    /**
  * @summary Create Review
  */
-export const useArticlesReviewApiCreateReview = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiCreateReview>>,
-    TError,
-    {
-      articleId: number;
-      data: BodyType<CreateReviewSchema>;
-      params?: ArticlesReviewApiCreateReviewParams;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesReviewApiCreateReview>>,
-  TError,
-  {
-    articleId: number;
-    data: BodyType<CreateReviewSchema>;
-    params?: ArticlesReviewApiCreateReviewParams;
-  },
-  TContext
-> => {
-  const mutationOptions = getArticlesReviewApiCreateReviewMutationOptions(options);
+export const useArticlesReviewApiCreateReview = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiCreateReview>>, TError,{articleId: number;data: BodyType<CreateReviewSchema>;params?: ArticlesReviewApiCreateReviewParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesReviewApiCreateReview>>,
+        TError,
+        {articleId: number;data: BodyType<CreateReviewSchema>;params?: ArticlesReviewApiCreateReviewParams},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesReviewApiCreateReviewMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary List Reviews
  */
 export const articlesReviewApiListReviews = (
-  articleId: number,
-  params?: ArticlesReviewApiListReviewsParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    articleId: number,
+    params?: ArticlesReviewApiListReviewsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedReviewSchema>(
-    { url: `/api/articles/${articleId}/reviews/`, method: 'GET', params, signal },
-    options
-  );
-};
+      
+      
+      return customInstance<PaginatedReviewSchema>(
+      {url: `/api/articles/${articleId}/reviews/`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiListReviewsQueryKey = (
-  articleId: number,
-  params?: ArticlesReviewApiListReviewsParams
+export const getArticlesReviewApiListReviewsQueryKey = (articleId: number,
+    params?: ArticlesReviewApiListReviewsParams,) => {
+    return [`/api/articles/${articleId}/reviews/`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getArticlesReviewApiListReviewsQueryOptions = <TData = Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError = ErrorType<Message>>(articleId: number,
+    params?: ArticlesReviewApiListReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/articles/${articleId}/reviews/`, ...(params ? [params] : [])] as const;
-};
 
-export const getArticlesReviewApiListReviewsQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiListReviews>>,
-  TError = ErrorType<Message>,
->(
-  articleId: number,
-  params?: ArticlesReviewApiListReviewsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getArticlesReviewApiListReviewsQueryKey(articleId, params);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesReviewApiListReviewsQueryKey(articleId,params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiListReviews>>> = ({
-    signal,
-  }) => articlesReviewApiListReviews(articleId, params, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, enabled: !!articleId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesReviewApiListReviews>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiListReviews>>> = ({ signal }) => articlesReviewApiListReviews(articleId,params, requestOptions, signal);
 
-export type ArticlesReviewApiListReviewsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiListReviews>>
->;
-export type ArticlesReviewApiListReviewsQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(articleId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesReviewApiListReviewsQueryResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiListReviews>>>
+export type ArticlesReviewApiListReviewsQueryError = ErrorType<Message>
 
 /**
  * @summary List Reviews
  */
-export const useArticlesReviewApiListReviews = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiListReviews>>,
-  TError = ErrorType<Message>,
->(
-  articleId: number,
-  params?: ArticlesReviewApiListReviewsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesReviewApiListReviewsQueryOptions(articleId, params, options);
+export const useArticlesReviewApiListReviews = <TData = Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError = ErrorType<Message>>(
+ articleId: number,
+    params?: ArticlesReviewApiListReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviews>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesReviewApiListReviewsQueryOptions(articleId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Get Review
  */
 export const articlesReviewApiGetReview = (
-  reviewId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    reviewId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<ReviewOut>(
-    { url: `/api/articles/reviews/${reviewId}/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<ReviewOut>(
+      {url: `/api/articles/reviews/${reviewId}/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiGetReviewQueryKey = (reviewId: number) => {
-  return [`/api/articles/reviews/${reviewId}/`] as const;
-};
+export const getArticlesReviewApiGetReviewQueryKey = (reviewId: number,) => {
+    return [`/api/articles/reviews/${reviewId}/`] as const;
+    }
 
-export const getArticlesReviewApiGetReviewQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiGetReview>>,
-  TError = ErrorType<Message>,
->(
-  reviewId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getArticlesReviewApiGetReviewQueryOptions = <TData = Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError = ErrorType<Message>>(reviewId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getArticlesReviewApiGetReviewQueryKey(reviewId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetReview>>> = ({
-    signal,
-  }) => articlesReviewApiGetReview(reviewId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesReviewApiGetReviewQueryKey(reviewId);
 
-  return { queryKey, queryFn, enabled: !!reviewId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesReviewApiGetReview>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesReviewApiGetReviewQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiGetReview>>
->;
-export type ArticlesReviewApiGetReviewQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetReview>>> = ({ signal }) => articlesReviewApiGetReview(reviewId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(reviewId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesReviewApiGetReviewQueryResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiGetReview>>>
+export type ArticlesReviewApiGetReviewQueryError = ErrorType<Message>
 
 /**
  * @summary Get Review
  */
-export const useArticlesReviewApiGetReview = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiGetReview>>,
-  TError = ErrorType<Message>,
->(
-  reviewId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesReviewApiGetReviewQueryOptions(reviewId, options);
+export const useArticlesReviewApiGetReview = <TData = Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError = ErrorType<Message>>(
+ reviewId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetReview>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesReviewApiGetReviewQueryOptions(reviewId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Update Review
  */
 export const articlesReviewApiUpdateReview = (
-  reviewId: number,
-  reviewUpdateSchema: BodyType<ReviewUpdateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<ReviewOut>(
-    {
-      url: `/api/articles/reviews/${reviewId}/`,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      data: reviewUpdateSchema,
+    reviewId: number,
+    reviewUpdateSchema: BodyType<ReviewUpdateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ReviewOut>(
+      {url: `/api/articles/reviews/${reviewId}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: reviewUpdateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesReviewApiUpdateReviewMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>,
-    TError,
-    { reviewId: number; data: BodyType<ReviewUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>,
-  TError,
-  { reviewId: number; data: BodyType<ReviewUpdateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>,
-    { reviewId: number; data: BodyType<ReviewUpdateSchema> }
-  > = (props) => {
-    const { reviewId, data } = props ?? {};
+export const getArticlesReviewApiUpdateReviewMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>, TError,{reviewId: number;data: BodyType<ReviewUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>, TError,{reviewId: number;data: BodyType<ReviewUpdateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesReviewApiUpdateReview(reviewId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesReviewApiUpdateReviewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>
->;
-export type ArticlesReviewApiUpdateReviewMutationBody = BodyType<ReviewUpdateSchema>;
-export type ArticlesReviewApiUpdateReviewMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>, {reviewId: number;data: BodyType<ReviewUpdateSchema>}> = (props) => {
+          const {reviewId,data} = props ?? {};
 
-/**
+          return  articlesReviewApiUpdateReview(reviewId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesReviewApiUpdateReviewMutationResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>>
+    export type ArticlesReviewApiUpdateReviewMutationBody = BodyType<ReviewUpdateSchema>
+    export type ArticlesReviewApiUpdateReviewMutationError = ErrorType<Message>
+
+    /**
  * @summary Update Review
  */
-export const useArticlesReviewApiUpdateReview = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>,
-    TError,
-    { reviewId: number; data: BodyType<ReviewUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>,
-  TError,
-  { reviewId: number; data: BodyType<ReviewUpdateSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesReviewApiUpdateReviewMutationOptions(options);
+export const useArticlesReviewApiUpdateReview = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>, TError,{reviewId: number;data: BodyType<ReviewUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesReviewApiUpdateReview>>,
+        TError,
+        {reviewId: number;data: BodyType<ReviewUpdateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesReviewApiUpdateReviewMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Delete Review
  */
 export const articlesReviewApiDeleteReview = (
-  reviewId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/articles/reviews/${reviewId}/`, method: 'DELETE' },
-    options
-  );
-};
+    reviewId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/articles/reviews/${reviewId}/`, method: 'DELETE'
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiDeleteReviewMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>,
-    TError,
-    { reviewId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>,
-  TError,
-  { reviewId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>,
-    { reviewId: number }
-  > = (props) => {
-    const { reviewId } = props ?? {};
+export const getArticlesReviewApiDeleteReviewMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>, TError,{reviewId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>, TError,{reviewId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesReviewApiDeleteReview(reviewId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesReviewApiDeleteReviewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>, {reviewId: number}> = (props) => {
+          const {reviewId} = props ?? {};
 
-export type ArticlesReviewApiDeleteReviewMutationError = ErrorType<Message>;
+          return  articlesReviewApiDeleteReview(reviewId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesReviewApiDeleteReviewMutationResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>>
+    
+    export type ArticlesReviewApiDeleteReviewMutationError = ErrorType<Message>
+
+    /**
  * @summary Delete Review
  */
-export const useArticlesReviewApiDeleteReview = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>,
-    TError,
-    { reviewId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>,
-  TError,
-  { reviewId: number },
-  TContext
-> => {
-  const mutationOptions = getArticlesReviewApiDeleteReviewMutationOptions(options);
+export const useArticlesReviewApiDeleteReview = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>, TError,{reviewId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesReviewApiDeleteReview>>,
+        TError,
+        {reviewId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesReviewApiDeleteReviewMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Create Comment
  */
 export const articlesReviewApiCreateComment = (
-  reviewId: number,
-  reviewCommentCreateSchema: BodyType<ReviewCommentCreateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<ReviewCommentOut>(
-    {
-      url: `/api/articles/reviews/${reviewId}/comments/`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: reviewCommentCreateSchema,
+    reviewId: number,
+    reviewCommentCreateSchema: BodyType<ReviewCommentCreateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ReviewCommentOut>(
+      {url: `/api/articles/reviews/${reviewId}/comments/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: reviewCommentCreateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesReviewApiCreateCommentMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiCreateComment>>,
-    TError,
-    { reviewId: number; data: BodyType<ReviewCommentCreateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesReviewApiCreateComment>>,
-  TError,
-  { reviewId: number; data: BodyType<ReviewCommentCreateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesReviewApiCreateComment>>,
-    { reviewId: number; data: BodyType<ReviewCommentCreateSchema> }
-  > = (props) => {
-    const { reviewId, data } = props ?? {};
+export const getArticlesReviewApiCreateCommentMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiCreateComment>>, TError,{reviewId: number;data: BodyType<ReviewCommentCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiCreateComment>>, TError,{reviewId: number;data: BodyType<ReviewCommentCreateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesReviewApiCreateComment(reviewId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesReviewApiCreateCommentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiCreateComment>>
->;
-export type ArticlesReviewApiCreateCommentMutationBody = BodyType<ReviewCommentCreateSchema>;
-export type ArticlesReviewApiCreateCommentMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesReviewApiCreateComment>>, {reviewId: number;data: BodyType<ReviewCommentCreateSchema>}> = (props) => {
+          const {reviewId,data} = props ?? {};
 
-/**
+          return  articlesReviewApiCreateComment(reviewId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesReviewApiCreateCommentMutationResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiCreateComment>>>
+    export type ArticlesReviewApiCreateCommentMutationBody = BodyType<ReviewCommentCreateSchema>
+    export type ArticlesReviewApiCreateCommentMutationError = ErrorType<Message>
+
+    /**
  * @summary Create Comment
  */
-export const useArticlesReviewApiCreateComment = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiCreateComment>>,
-    TError,
-    { reviewId: number; data: BodyType<ReviewCommentCreateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesReviewApiCreateComment>>,
-  TError,
-  { reviewId: number; data: BodyType<ReviewCommentCreateSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesReviewApiCreateCommentMutationOptions(options);
+export const useArticlesReviewApiCreateComment = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiCreateComment>>, TError,{reviewId: number;data: BodyType<ReviewCommentCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesReviewApiCreateComment>>,
+        TError,
+        {reviewId: number;data: BodyType<ReviewCommentCreateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesReviewApiCreateCommentMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary List Review Comments
  */
 export const articlesReviewApiListReviewComments = (
-  reviewId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    reviewId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<ReviewCommentOut[]>(
-    { url: `/api/articles/reviews/${reviewId}/comments/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<ReviewCommentOut[]>(
+      {url: `/api/articles/reviews/${reviewId}/comments/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiListReviewCommentsQueryKey = (reviewId: number) => {
-  return [`/api/articles/reviews/${reviewId}/comments/`] as const;
-};
+export const getArticlesReviewApiListReviewCommentsQueryKey = (reviewId: number,) => {
+    return [`/api/articles/reviews/${reviewId}/comments/`] as const;
+    }
 
-export const getArticlesReviewApiListReviewCommentsQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-  TError = ErrorType<Message>,
->(
-  reviewId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getArticlesReviewApiListReviewCommentsQueryOptions = <TData = Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>, TError = ErrorType<Message>>(reviewId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getArticlesReviewApiListReviewCommentsQueryKey(reviewId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>> = ({
-    signal,
-  }) => articlesReviewApiListReviewComments(reviewId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesReviewApiListReviewCommentsQueryKey(reviewId);
 
-  return { queryKey, queryFn, enabled: !!reviewId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesReviewApiListReviewCommentsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>
->;
-export type ArticlesReviewApiListReviewCommentsQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>> = ({ signal }) => articlesReviewApiListReviewComments(reviewId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(reviewId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesReviewApiListReviewCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>>
+export type ArticlesReviewApiListReviewCommentsQueryError = ErrorType<Message>
 
 /**
  * @summary List Review Comments
  */
-export const useArticlesReviewApiListReviewComments = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-  TError = ErrorType<Message>,
->(
-  reviewId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesReviewApiListReviewCommentsQueryOptions(reviewId, options);
+export const useArticlesReviewApiListReviewComments = <TData = Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>, TError = ErrorType<Message>>(
+ reviewId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiListReviewComments>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesReviewApiListReviewCommentsQueryOptions(reviewId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Get Comment
  */
 export const articlesReviewApiGetComment = (
-  commentId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    commentId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<ReviewCommentOut>(
-    { url: `/api/articles/reviews/comments/${commentId}/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<ReviewCommentOut>(
+      {url: `/api/articles/reviews/comments/${commentId}/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiGetCommentQueryKey = (commentId: number) => {
-  return [`/api/articles/reviews/comments/${commentId}/`] as const;
-};
+export const getArticlesReviewApiGetCommentQueryKey = (commentId: number,) => {
+    return [`/api/articles/reviews/comments/${commentId}/`] as const;
+    }
 
-export const getArticlesReviewApiGetCommentQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiGetComment>>,
-  TError = ErrorType<Message>,
->(
-  commentId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getArticlesReviewApiGetCommentQueryOptions = <TData = Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError = ErrorType<Message>>(commentId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getArticlesReviewApiGetCommentQueryKey(commentId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetComment>>> = ({
-    signal,
-  }) => articlesReviewApiGetComment(commentId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesReviewApiGetCommentQueryKey(commentId);
 
-  return { queryKey, queryFn, enabled: !!commentId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesReviewApiGetComment>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesReviewApiGetCommentQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiGetComment>>
->;
-export type ArticlesReviewApiGetCommentQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetComment>>> = ({ signal }) => articlesReviewApiGetComment(commentId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(commentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesReviewApiGetCommentQueryResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiGetComment>>>
+export type ArticlesReviewApiGetCommentQueryError = ErrorType<Message>
 
 /**
  * @summary Get Comment
  */
-export const useArticlesReviewApiGetComment = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiGetComment>>,
-  TError = ErrorType<Message>,
->(
-  commentId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesReviewApiGetCommentQueryOptions(commentId, options);
+export const useArticlesReviewApiGetComment = <TData = Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError = ErrorType<Message>>(
+ commentId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetComment>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesReviewApiGetCommentQueryOptions(commentId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Update Comment
  */
 export const articlesReviewApiUpdateComment = (
-  commentId: number,
-  reviewCommentUpdateSchema: BodyType<ReviewCommentUpdateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<ReviewCommentOut>(
-    {
-      url: `/api/articles/reviews/comments/${commentId}/`,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      data: reviewCommentUpdateSchema,
+    commentId: number,
+    reviewCommentUpdateSchema: BodyType<ReviewCommentUpdateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ReviewCommentOut>(
+      {url: `/api/articles/reviews/comments/${commentId}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: reviewCommentUpdateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesReviewApiUpdateCommentMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>,
-    TError,
-    { commentId: number; data: BodyType<ReviewCommentUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>,
-  TError,
-  { commentId: number; data: BodyType<ReviewCommentUpdateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>,
-    { commentId: number; data: BodyType<ReviewCommentUpdateSchema> }
-  > = (props) => {
-    const { commentId, data } = props ?? {};
+export const getArticlesReviewApiUpdateCommentMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>, TError,{commentId: number;data: BodyType<ReviewCommentUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>, TError,{commentId: number;data: BodyType<ReviewCommentUpdateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesReviewApiUpdateComment(commentId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesReviewApiUpdateCommentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>
->;
-export type ArticlesReviewApiUpdateCommentMutationBody = BodyType<ReviewCommentUpdateSchema>;
-export type ArticlesReviewApiUpdateCommentMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>, {commentId: number;data: BodyType<ReviewCommentUpdateSchema>}> = (props) => {
+          const {commentId,data} = props ?? {};
 
-/**
+          return  articlesReviewApiUpdateComment(commentId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesReviewApiUpdateCommentMutationResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>>
+    export type ArticlesReviewApiUpdateCommentMutationBody = BodyType<ReviewCommentUpdateSchema>
+    export type ArticlesReviewApiUpdateCommentMutationError = ErrorType<Message>
+
+    /**
  * @summary Update Comment
  */
-export const useArticlesReviewApiUpdateComment = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>,
-    TError,
-    { commentId: number; data: BodyType<ReviewCommentUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>,
-  TError,
-  { commentId: number; data: BodyType<ReviewCommentUpdateSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesReviewApiUpdateCommentMutationOptions(options);
+export const useArticlesReviewApiUpdateComment = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>, TError,{commentId: number;data: BodyType<ReviewCommentUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesReviewApiUpdateComment>>,
+        TError,
+        {commentId: number;data: BodyType<ReviewCommentUpdateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesReviewApiUpdateCommentMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Delete Comment
  */
 export const articlesReviewApiDeleteComment = (
-  commentId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<void>(
-    { url: `/api/articles/reviews/comments/${commentId}/`, method: 'DELETE' },
-    options
-  );
-};
+    commentId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/articles/reviews/comments/${commentId}/`, method: 'DELETE'
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiDeleteCommentMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>,
-    TError,
-    { commentId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>,
-  TError,
-  { commentId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>,
-    { commentId: number }
-  > = (props) => {
-    const { commentId } = props ?? {};
+export const getArticlesReviewApiDeleteCommentMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>, TError,{commentId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>, TError,{commentId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesReviewApiDeleteComment(commentId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesReviewApiDeleteCommentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>, {commentId: number}> = (props) => {
+          const {commentId} = props ?? {};
 
-export type ArticlesReviewApiDeleteCommentMutationError = ErrorType<Message>;
+          return  articlesReviewApiDeleteComment(commentId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesReviewApiDeleteCommentMutationResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>>
+    
+    export type ArticlesReviewApiDeleteCommentMutationError = ErrorType<Message>
+
+    /**
  * @summary Delete Comment
  */
-export const useArticlesReviewApiDeleteComment = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>,
-    TError,
-    { commentId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>,
-  TError,
-  { commentId: number },
-  TContext
-> => {
-  const mutationOptions = getArticlesReviewApiDeleteCommentMutationOptions(options);
+export const useArticlesReviewApiDeleteComment = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>, TError,{commentId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesReviewApiDeleteComment>>,
+        TError,
+        {commentId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesReviewApiDeleteCommentMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Get Rating
  */
 export const articlesReviewApiGetRating = (
-  reviewId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    reviewId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<ReviewCommentRatingByUserOut>(
-    { url: `/api/articles/reviews/${reviewId}/rating/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<ReviewCommentRatingByUserOut>(
+      {url: `/api/articles/reviews/${reviewId}/rating/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getArticlesReviewApiGetRatingQueryKey = (reviewId: number) => {
-  return [`/api/articles/reviews/${reviewId}/rating/`] as const;
-};
+export const getArticlesReviewApiGetRatingQueryKey = (reviewId: number,) => {
+    return [`/api/articles/reviews/${reviewId}/rating/`] as const;
+    }
 
-export const getArticlesReviewApiGetRatingQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiGetRating>>,
-  TError = ErrorType<Message>,
->(
-  reviewId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getArticlesReviewApiGetRatingQueryOptions = <TData = Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError = ErrorType<Message>>(reviewId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getArticlesReviewApiGetRatingQueryKey(reviewId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetRating>>> = ({
-    signal,
-  }) => articlesReviewApiGetRating(reviewId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesReviewApiGetRatingQueryKey(reviewId);
 
-  return { queryKey, queryFn, enabled: !!reviewId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesReviewApiGetRating>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesReviewApiGetRatingQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesReviewApiGetRating>>
->;
-export type ArticlesReviewApiGetRatingQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesReviewApiGetRating>>> = ({ signal }) => articlesReviewApiGetRating(reviewId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(reviewId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesReviewApiGetRatingQueryResult = NonNullable<Awaited<ReturnType<typeof articlesReviewApiGetRating>>>
+export type ArticlesReviewApiGetRatingQueryError = ErrorType<Message>
 
 /**
  * @summary Get Rating
  */
-export const useArticlesReviewApiGetRating = <
-  TData = Awaited<ReturnType<typeof articlesReviewApiGetRating>>,
-  TError = ErrorType<Message>,
->(
-  reviewId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesReviewApiGetRatingQueryOptions(reviewId, options);
+export const useArticlesReviewApiGetRating = <TData = Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError = ErrorType<Message>>(
+ reviewId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesReviewApiGetRating>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesReviewApiGetRatingQueryOptions(reviewId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
+

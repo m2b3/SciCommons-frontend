@@ -7,8 +7,8 @@
 import type { ArticlesApiGetRelevantArticlesFilterType } from './articlesApiGetRelevantArticlesFilterType';
 
 export type ArticlesApiGetRelevantArticlesParams = {
-  filter_type: ArticlesApiGetRelevantArticlesFilterType;
-  limit?: number;
-  offset?: number;
-  community_id?: number | null;
+filter_type: ArticlesApiGetRelevantArticlesFilterType;
+limit?: number;
+offset?: number;
+community_id?: number | null;
 };

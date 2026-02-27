@@ -12,6 +12,7 @@ import {
   useCommunitiesApiInvitationGetCommunityInvitationDetails,
   useCommunitiesApiInvitationRespondToInvitation,
 } from '@/api/community-invitations/community-invitations';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import CommunityInvitationSkeletonLoader from '@/components/loaders/CommunityInvitationSkeletonLoader';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -39,6 +40,7 @@ export default function RegisteredUsersInvitation({
       },
     }
   );
+  const communityName = data?.data.name;
 
   const {
     mutate,
@@ -60,12 +62,14 @@ export default function RegisteredUsersInvitation({
     if (isRespondSuccess) {
       toast.success(respondData.data.message);
       if (action === 'accept') {
-        router.push(`/community/${communityId}`);
+        router.push(
+          communityName ? `/community/${encodeURIComponent(communityName)}` : '/communities'
+        );
       } else {
         router.push('/communities');
       }
     }
-  }, [isRespondSuccess, respondData, router, action, communityId]);
+  }, [isRespondSuccess, respondData, router, action, communityName]);
 
   useEffect(() => {
     if (respondError) {
@@ -79,10 +83,14 @@ export default function RegisteredUsersInvitation({
     mutate({ invitationId, data: { action: accept } });
   };
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Invitation flow used hard-coded gray/green/red utilities.
+     Solution: Replace fixed colors with semantic tokens for surfaces, text, and actions.
+     Result: Invitation UI now adapts to active skins. */
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="flex max-w-md flex-col items-center space-y-4 rounded-lg bg-white p-6 shadow-lg">
-        {error && <div className="text-red-500">{error.response?.data.message}</div>}
+    <div className="flex min-h-screen items-center justify-center bg-common-background p-6">
+      <div className="flex max-w-md flex-col items-center space-y-4 rounded-lg bg-common-cardBackground p-6 text-text-primary shadow-lg">
+        {error && <div className="text-functional-red">{error.response?.data.message}</div>}
         {isPending && <CommunityInvitationSkeletonLoader />}
         {data && (
           <>
@@ -98,23 +106,29 @@ export default function RegisteredUsersInvitation({
             </div>
             <div className="flex flex-col items-center justify-center">
               <h2 className="text-lg font-semibold">{data?.data.name}</h2>
-              <div className="flex items-center text-sm text-gray-500">
+              <div className="flex items-center text-sm text-text-tertiary">
                 <Users className="mr-1 h-4 w-4" />
                 <span>{data.data.num_members} members</span>
               </div>
-              <p className="mt-2 text-gray-600">{data.data.description}</p>
+              <RenderParsedHTML
+                rawContent={data.data.description || ''}
+                supportMarkdown={true}
+                supportLatex={false}
+                containerClassName="mt-2 mb-0"
+                contentClassName="text-text-secondary"
+              />
             </div>
             <div className="flex space-x-4 self-end">
               <button
                 onClick={() => handleAccept('accept')}
-                className="rounded-lg bg-green-500 px-3 py-1 text-white hover:bg-green-600"
+                className="rounded-lg bg-functional-green px-3 py-1 text-primary-foreground hover:bg-functional-greenContrast"
                 disabled={isRespondPending}
               >
                 {isRespondPending && action === 'accept' ? 'Loading...' : 'Accept'}
               </button>
               <button
                 onClick={() => handleAccept('reject')}
-                className="rounded-lg bg-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-400"
+                className="rounded-lg bg-common-contrast px-3 py-1 text-text-secondary hover:bg-common-heavyContrast"
                 disabled={isRespondPending}
               >
                 {isRespondPending && action === 'reject' ? 'Loading...' : 'Reject'}
