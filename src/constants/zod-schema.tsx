@@ -139,8 +139,7 @@ export const urlSchema = z.string().superRefine((url, ctx) => {
       const subdomainParts = hostnameParts.slice(0, -1);
       if (
         subdomainParts.some(
-          (part) =>
-            !/^[a-z0-9-]+$/.test(part) || part.startsWith('-') || part.endsWith('-')
+          (part) => !/^[a-z0-9-]+$/.test(part) || part.startsWith('-') || part.endsWith('-')
         )
       ) {
         ctx.addIssue({
