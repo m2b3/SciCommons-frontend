@@ -111,39 +111,59 @@ export const urlSchema = z.string().superRefine((url, ctx) => {
       message: 'URL cannot contain spaces',
     });
   }
-  const domainMatch = url.match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/);
-  if (!domainMatch) {
-    ctx.addIssue({
-      code: 'custom',
-      message: "Invalid domain format (e.g., 'example.com')",
-    });
-  } else {
-    const [, , subdomain, tld] = domainMatch;
-    if (!/^[\da-z\.-]+$/.test(subdomain)) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Invalid characters in subdomain',
-      });
-    }
-    if (!/^[a-z\.]{2,6}$/.test(tld)) {
-      ctx.addIssue({
-        code: 'custom',
-        message: "Invalid TLD (e.g., '.com', '.org')",
-      });
-    }
-  }
-  /* Fixed by Codex on 2026-02-27
+  /* Fixed by Codex on 2026-03-01
      Who: Codex
-     What: Expand URL path validation to support query strings and hash fragments.
-     Why: Valid URLs like `https://example.com/path?x=1#section` were incorrectly rejected.
-     How: Keep strict scheme/domain checks, then allow optional `?query` and `#hash` segments in the final format regex. */
-  if (
-    !/^(https?:\/\/)?([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]*)*\/?(\?[^#\s]*)?(#[^\s]*)?$/.test(url)
-  ) {
+     What: Replaced backtracking-prone URL regex checks with URL parsing and deterministic hostname/path validation.
+     Why: CodeQL flagged the previous nested-quantifier regex as vulnerable to inefficient matching (ReDoS risk).
+     How: Parse once with the platform URL parser, validate hostname labels/TLD with linear checks, and keep explicit path validation without ambiguous regex structure. */
+  let parsedUrl: URL | null = null;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
     ctx.addIssue({
       code: 'custom',
-      message: 'Invalid path format in URL',
+      message: 'Invalid URL format',
     });
+  }
+
+  if (parsedUrl) {
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const hostnameParts = hostname.split('.');
+
+    if (hostnameParts.length < 2 || hostnameParts.some((part) => part.length === 0)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: "Invalid domain format (e.g., 'example.com')",
+      });
+    } else {
+      const subdomainParts = hostnameParts.slice(0, -1);
+      if (
+        subdomainParts.some(
+          (part) =>
+            !/^[a-z0-9-]+$/.test(part) || part.startsWith('-') || part.endsWith('-')
+        )
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Invalid characters in subdomain',
+        });
+      }
+
+      const tld = hostnameParts[hostnameParts.length - 1];
+      if (!/^[a-z]{2,6}$/.test(tld)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: "Invalid TLD (e.g., '.com', '.org')",
+        });
+      }
+    }
+
+    if (!/^\/[^\s]*$/.test(parsedUrl.pathname)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Invalid path format in URL',
+      });
+    }
   }
 });
 

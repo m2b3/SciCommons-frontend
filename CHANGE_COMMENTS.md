@@ -1,3 +1,15 @@
+## 2026-03-01 - URL Schema ReDoS Hardening for CodeQL `js/redos`
+
+Problem: Code scanning flagged `urlSchema` with `js/redos` because the URL path regex could trigger inefficient backtracking on crafted input.
+
+Root Cause: The previous URL validator used a complex, nested-quantifier regex (`([\/\w\.-]*)*`) over overlapping character classes, which can cause super-linear match time in backtracking regex engines.
+
+Solution: Replaced the final URL-format regex path check with deterministic parsing via `new URL(url)`, then validated hostname structure (domain parts, subdomain label characters, TLD length) and pathname using simple linear checks. Kept existing scheme and whitespace validations intact.
+
+Result: URL validation still supports query/hash URLs, rejects malformed domains, and removes the CodeQL-flagged ReDoS-prone regex pattern from `urlSchema`.
+
+Files Modified: `src/constants/zod-schema.tsx`, `src/tests/__tests__/zodSchema.test.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-02-28 - Upload Proxy Origin Handling Audit and Simplification
 
 Problem: Follow-up localhost-oriented upload fixes introduced extra proxy complexity (multi-context retries and backend-origin fallback), which increased maintenance burden and could create policy inconsistency against backend origin checks.

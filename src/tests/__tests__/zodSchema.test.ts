@@ -82,6 +82,11 @@ describe('urlSchema', () => {
   it('accepts valid URLs containing query strings and hash fragments', () => {
     expect(urlSchema.safeParse('https://example.com/path?x=1').success).toBe(true);
     expect(urlSchema.safeParse('https://example.com/path#section').success).toBe(true);
+    expect(urlSchema.safeParse('https://example.com/path?x=1#section').success).toBe(true);
+  });
+
+  it('rejects domains with invalid subdomain labels', () => {
+    expect(urlSchema.safeParse('https://-example.com/path').success).toBe(false);
   });
 });
 
