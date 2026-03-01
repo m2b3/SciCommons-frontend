@@ -247,13 +247,65 @@ export const emailSchema = z.string().superRefine((email, ctx) => {
 export const emailOrUsernameSchema = z
   .string({ error: 'Must be a string' })
   .min(1, { message: 'This field is required' })
-  /* Fixed by Codex on 2026-02-27
+  /* Fixed by Codex on 2026-03-01
      Who: Codex
-     What: Relax email TLD length limit in email-or-username validation.
-     Why: Modern valid emails with long TLDs (for example, `.technology`) were blocked on login/resend flows.
-     How: Keep existing username behavior but increase email TLD allowance from 2-4 to 2-63 characters. */
-  .regex(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,63}$|^[\w.]+$/, {
-    message: 'Enter a valid email or username (only letters, numbers, dots, underscores allowed)',
+     What: Replaced email-or-username regex with deterministic parsing/character checks.
+     Why: Proactively remove repeated-group regex risk patterns flagged in adjacent CodeQL ReDoS remediation work.
+     How: Branch on email vs username by '@', then validate parts with linear character checks and explicit domain/TLD constraints. */
+  .superRefine((input, ctx) => {
+    const invalidMessage =
+      'Enter a valid email or username (only letters, numbers, dots, underscores allowed)';
+
+    const isAlphaNumeric = (char: string) => /^[A-Za-z0-9]$/.test(char);
+    const isWordChar = (char: string) => char === '_' || isAlphaNumeric(char);
+    const hasOnlyAllowedChars = (value: string, checker: (char: string) => boolean) => {
+      if (!value) return false;
+      for (const char of value) {
+        if (!checker(char)) return false;
+      }
+      return true;
+    };
+
+    const atSymbolCount = [...input].filter((char) => char === '@').length;
+    if (atSymbolCount > 1) {
+      ctx.addIssue({ code: 'custom', message: invalidMessage });
+      return;
+    }
+
+    if (input.includes('@')) {
+      const [localPart = '', domainPart = ''] = input.split('@');
+      if (
+        !hasOnlyAllowedChars(localPart, (char) => isWordChar(char) || char === '-' || char === '.')
+      ) {
+        ctx.addIssue({ code: 'custom', message: invalidMessage });
+        return;
+      }
+
+      const domainLabels = domainPart.split('.');
+      if (domainLabels.length < 2 || domainLabels.some((label) => label.length === 0)) {
+        ctx.addIssue({ code: 'custom', message: invalidMessage });
+        return;
+      }
+
+      const tld = domainLabels[domainLabels.length - 1];
+      const subdomainLabels = domainLabels.slice(0, -1);
+
+      const isDomainLabelValid = (label: string) =>
+        hasOnlyAllowedChars(label, (char) => isWordChar(char) || char === '-');
+      if (!subdomainLabels.every(isDomainLabelValid)) {
+        ctx.addIssue({ code: 'custom', message: invalidMessage });
+        return;
+      }
+
+      if (!isDomainLabelValid(tld) || tld.length < 2 || tld.length > 63) {
+        ctx.addIssue({ code: 'custom', message: invalidMessage });
+      }
+      return;
+    }
+
+    if (!hasOnlyAllowedChars(input, (char) => isWordChar(char) || char === '.')) {
+      ctx.addIssue({ code: 'custom', message: invalidMessage });
+    }
   });
 
 export const usernameSchema = z

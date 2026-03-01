@@ -1,3 +1,15 @@
+## 2026-03-01 - Email-or-Username Validator ReDoS-Resilient Refactor
+
+Problem: `emailOrUsernameSchema` still relied on a regex with repeated groups (`([\w-]+\.)+`) in a high-frequency auth validation path.
+
+Root Cause: The Zod validator used a single alternation regex for both email and username forms, which is concise but less transparent for worst-case regex complexity analysis.
+
+Solution: Replaced the regex with deterministic parser-style validation in `superRefine`: split email vs username by `@`, validate local/domain labels with linear character checks, and enforce explicit TLD length (`2-63`) without repeated-group regex matching.
+
+Result: Login/resend validation behavior remains aligned (dot usernames allowed, long-TLD emails allowed), while removing the repeated-group regex construct from this path.
+
+Files Modified: `src/constants/zod-schema.tsx`, `src/tests/__tests__/zodSchema.test.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-01 - URL Schema ReDoS Hardening for CodeQL `js/redos`
 
 Problem: Code scanning flagged `urlSchema` with `js/redos` because the URL path regex could trigger inefficient backtracking on crafted input.

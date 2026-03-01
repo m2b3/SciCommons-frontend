@@ -54,6 +54,16 @@ describe('emailOrUsernameSchema', () => {
   it('accepts emails with modern long TLDs', () => {
     expect(emailOrUsernameSchema.safeParse('john@domain.technology').success).toBe(true);
   });
+
+  it('rejects malformed email inputs that previously depended on regex backtracking', () => {
+    expect(emailOrUsernameSchema.safeParse('john@domain').success).toBe(false);
+    expect(emailOrUsernameSchema.safeParse('john@@domain.com').success).toBe(false);
+  });
+
+  it('keeps username-character restrictions for non-email values', () => {
+    expect(emailOrUsernameSchema.safeParse('john_doe').success).toBe(true);
+    expect(emailOrUsernameSchema.safeParse('john-doe').success).toBe(false);
+  });
 });
 
 describe('passwordSchema', () => {
