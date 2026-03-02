@@ -37,6 +37,31 @@ describe('authStore', () => {
     expect(useAuthStore.getState().accessToken).toBe('token-1');
   });
 
+  it('does not treat stale server-validation windows as hard expiry', () => {
+    /* Fixed by Codex on 2026-02-27
+       Who: Codex
+       What: Added regression coverage for 5-minute revalidation windows.
+       Why: `isTokenExpired()` must only represent hard token expiry.
+       How: Set a fresh token, advance clock beyond 5 minutes (but below token expiry),
+            and assert the session remains non-expired. */
+    const nowSpy = jest.spyOn(Date, 'now');
+    const now = 1_700_000_000_000;
+    nowSpy.mockReturnValue(now);
+
+    useAuthStore.getState().setAccessToken('token-4', {
+      id: 4,
+      username: 'test-user',
+      email: 'test@example.com',
+      first_name: 'Test',
+      last_name: 'User',
+    });
+
+    nowSpy.mockReturnValue(now + 6 * 60 * 1000);
+    expect(useAuthStore.getState().isTokenExpired()).toBe(false);
+
+    nowSpy.mockRestore();
+  });
+
   it('clears auth state when cookie expiry is invalid', async () => {
     /* Fixed by Codex on 2026-02-09
        Problem: initializeAuth now probes the server on invalid expiry, so the test needs a deterministic auth failure.

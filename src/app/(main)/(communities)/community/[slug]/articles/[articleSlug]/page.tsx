@@ -112,6 +112,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
             <DiscussionForum
               articleId={data?.data.id || 0}
               communityId={data?.data.community_article?.community.id}
+              communitySlug={params?.slug || ''}
               communityArticleId={data?.data.community_article?.id}
               showSubscribeButton={true}
               isAdmin={data?.data.community_article?.is_admin || false}

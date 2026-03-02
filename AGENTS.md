@@ -8,6 +8,7 @@ Notes for this repository:
 - If `git status` shows a file as modified but `git diff` is empty and the LF/CRLF warning appears, treat it as line-ending noise; do not loop trying to resolve it.
 - **NEVER redirect stderr to `Nul` or `nul`** - these are Windows reserved device names; use `NUL` (all caps) instead to avoid creating phantom untracked files that git cannot remove.
 - **Interpretation rule:** A question phrased like "can you do this" is informational only; do not take action unless the user says "do this".
+- **Final-response logging:** At the end of each operation, append the exact final assistant response text to `codexOutput.md` with the current date/time before returning that response to the user.
 
 ## Git Remote Management (CRITICAL)
 

@@ -14,6 +14,7 @@ import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { ForwardRefEditor } from '@/components/common/MarkdownEditor/ForwardRefEditor';
 import { Ratings } from '@/components/ui/ratings';
+import { reviewSubjectSchema } from '@/constants/zod-schema';
 import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -232,11 +233,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               type="text"
               placeholder="Enter the title of your review"
               register={register}
-              requiredMessage="Subject is required"
-              minLengthValue={10}
-              minLengthMessage="Title must be at least 10 characters"
-              maxLengthValue={100}
-              maxLengthMessage="Title must not exceed 100 characters"
+              schema={reviewSubjectSchema}
               info="Please provide a clear and concise title for your article."
               errors={errors}
               labelClassName="text-text-secondary"

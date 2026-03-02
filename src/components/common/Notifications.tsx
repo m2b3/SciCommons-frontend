@@ -2,9 +2,11 @@
 
 import React, { useEffect } from 'react';
 
+import Link from 'next/link';
+
 import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
 import { useAuthHeaders } from '@/hooks/useAuthHeaders';
-import { getSafeExternalUrl } from '@/lib/safeUrl';
+import { getSafeNavigableUrl } from '@/lib/safeUrl';
 import { useAuthStore } from '@/stores/authStore';
 
 interface NotificationsProps {
@@ -59,7 +61,12 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
           ))}
         {data &&
           data.data.map((notif) => {
-            const safeLink = getSafeExternalUrl(notif.link);
+            /* Fixed by Codex on 2026-02-25
+               Who: Codex
+               What: Normalize notification links into safe internal/external targets.
+               Why: Relative notification paths should navigate within the app instead of dead-linking to a wrong host.
+               How: Resolve with shared safe URL helper and branch to Next `Link` for internal paths. */
+            const safeLink = getSafeNavigableUrl(notif.link);
             return (
               <li
                 key={notif.id}
@@ -79,16 +86,24 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
                 </p>
                 {notif.content && <p className="text-text-tertiary res-text-xs">{notif.content}</p>}
                 <div className="mt-2 flex items-center justify-between">
-                  {safeLink && (
-                    <a
-                      href={safeLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-functional-green hover:text-functional-greenContrast"
-                    >
-                      View
-                    </a>
-                  )}
+                  {safeLink &&
+                    (safeLink.isExternal ? (
+                      <a
+                        href={safeLink.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-functional-green hover:text-functional-greenContrast"
+                      >
+                        View
+                      </a>
+                    ) : (
+                      <Link
+                        href={safeLink.href}
+                        className="text-functional-green hover:text-functional-greenContrast"
+                      >
+                        View
+                      </Link>
+                    ))}
                   {!notif.isRead && (
                     <button
                       className="rounded bg-functional-green px-2 py-1 text-primary-foreground res-text-xs hover:bg-functional-greenContrast"

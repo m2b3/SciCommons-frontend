@@ -54,9 +54,16 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <div className={`flex-shrink-0 rounded-full p-1.5 sm:p-2 ${iconColor}`}>
         <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
       </div>
-      <div className="flex-grow">
-        <Link href={href}>
-          <h4 className="line-clamp-2 text-wrap text-sm font-semibold text-text-primary hover:underline">
+      {/* Fixed by Codex on 2026-02-27
+         Who: Codex
+         What: Separated content width control from title link click-area.
+         Why: Long/unbroken titles could crowd the trailing role icon, and broad links were
+              harder to control for precise click targets.
+         How: Add a `min-w-0 flex-1` content wrapper, keep link `inline-block max-w-full`,
+              and allow robust token wrapping on the title. */}
+      <div className="min-w-0 flex-1">
+        <Link href={href} className="inline-block max-w-full">
+          <h4 className="line-clamp-2 text-wrap break-words text-sm font-semibold text-text-primary [overflow-wrap:anywhere] hover:underline">
             {title}
           </h4>
         </Link>

@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Bell, ChevronRight } from 'lucide-react';
 
@@ -62,8 +63,12 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
   onArticlesLoaded,
   scrollPositionRef,
 }) => {
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isAuthInitialized = useAuthStore((state) => state.isAuthInitialized);
   const accessToken = useAuthStore((state) => state.accessToken);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const hasRedirectedForEmptyGuestStateRef = useRef(false);
 
   // Subscribe to articlesWithNewEvents directly to trigger re-renders when new events arrive
   const articlesWithNewEvents = useSubscriptionUnreadStore((s) => s.articlesWithNewEvents);
@@ -189,6 +194,24 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
     return () => container.removeEventListener('scroll', handleScroll);
   }, [scrollPositionRef]);
 
+  /* Fixed by Codex on 2026-02-26
+     Problem: Logged-out users could land on discussions and see an empty state with no clear next action.
+     Root Cause: Discussions is intentionally public-routable, but subscriptions are auth-gated so zero items can render silently.
+     Solution: If auth bootstrap is complete and no discussion articles are available for a logged-out user, redirect to login.
+     Result: Empty guest states now route to authentication instead of appearing stale/broken. */
+  useEffect(() => {
+    if (!isAuthInitialized || subscriptionsLoading || isAuthenticated) {
+      return;
+    }
+
+    if (flattenedArticles.length > 0 || hasRedirectedForEmptyGuestStateRef.current) {
+      return;
+    }
+
+    hasRedirectedForEmptyGuestStateRef.current = true;
+    router.replace('/auth/login');
+  }, [flattenedArticles.length, isAuthInitialized, isAuthenticated, router, subscriptionsLoading]);
+
   // Handle article selection - mark as read immediately when user clicks
   const handleArticleSelect = (article: FlattenedArticle) => {
     // Mark article as read when user clicks on it (assume user will read everything)
@@ -211,6 +234,18 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
       <div className="mb-4">
         <h2 className="flex items-center gap-2 text-lg font-bold text-text-primary">Discussions</h2>
       </div>
+
+      {/* Fixed by Codex on 2026-02-26
+          Problem: Guests in discussions have no persistent indicator about private-community access.
+          Solution: Add a top informational banner for non-authenticated users.
+          Result: Users understand they can log in to unlock private communities/discussions. */}
+      {!isAuthenticated && (
+        <div className="mb-4 rounded-md border border-functional-blue/30 bg-functional-blue/10 p-3">
+          <p className="text-xs font-medium text-text-secondary">
+            Log in to access private communities and private discussion subscriptions.
+          </p>
+        </div>
+      )}
 
       {/* Subscriptions Loading State */}
       {subscriptionsLoading && (

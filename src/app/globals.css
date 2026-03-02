@@ -990,6 +990,78 @@ body {
   color: rgb(var(--Text-Primary)) !important;
 }
 
+/* Fixed by Codex on 2026-02-28
+   Who: Codex
+   What: Re-themed MDX editor surfaces (toolbar, dialogs, controls) to match SciCommons tokens.
+   Why: Default MDXEditor Radix colors looked off-brand against the site's card/contrast palette.
+   How: Override editor design tokens and key control containers via stable class patterns under
+        `.mdxeditor`, preserving behavior while aligning visuals with the existing UI system. */
+.mdxeditor[class*='_editorRoot_'] {
+  --basePageBg: rgb(var(--Common-Background)) !important;
+  --baseBase: rgb(var(--Common-CardBackground)) !important;
+  --baseBgSubtle: rgb(var(--Common-CardBackground)) !important;
+  --baseBg: rgb(var(--Common-Minimal)) !important;
+  --baseBgHover: rgb(var(--Common-Contrast)) !important;
+  --baseBgActive: rgb(var(--Common-Contrast)) !important;
+  --baseLine: rgb(var(--Common-Contrast)) !important;
+  --baseBorder: rgb(var(--Common-Contrast)) !important;
+  --baseBorderHover: rgb(var(--Common-HeavyContrast)) !important;
+  --baseText: rgb(var(--Text-Secondary)) !important;
+  --baseTextContrast: rgb(var(--Text-Primary)) !important;
+  --accentSolid: rgb(var(--Functional-Green-Green)) !important;
+  --accentSolidHover: rgb(var(--Functional-Green-Green)) !important;
+  --accentText: rgb(var(--Functional-Green-Green)) !important;
+  --accentTextContrast: rgb(var(--Common-Background)) !important;
+}
+
+.mdxeditor [class*='_toolbarRoot_'] {
+  border: 1px solid rgb(var(--Common-Contrast));
+  border-radius: 0.5rem;
+}
+
+.mdxeditor [class*='_toolbarButton_'],
+.mdxeditor [class*='_toolbarToggleItem_'],
+.mdxeditor [class*='_iconButton_'],
+.mdxeditor [class*='_actionButton_'] {
+  border-radius: 0.375rem;
+}
+
+.mdxeditor [class*='_toolbarButton_'][data-state='on'],
+.mdxeditor [class*='_toolbarToggleItem_'][data-state='on'],
+.mdxeditor [class*='_actionButton_'][data-state='on'] {
+  color: rgb(var(--Functional-Green-Green));
+  background-color: rgba(var(--Functional-Green-Green), 0.12);
+}
+
+.mdxeditor [class*='_toolbarNodeKindSelectTrigger_'],
+.mdxeditor [class*='_toolbarButtonSelectTrigger_'],
+.mdxeditor [class*='_selectTrigger_'],
+.mdxeditor [class*='_dialogInput_'],
+.mdxeditor [class*='_linkDialogInput_'] {
+  border: 1px solid rgb(var(--Common-Contrast));
+  background: rgb(var(--Common-Background));
+  color: rgb(var(--Text-Primary));
+}
+
+.mdxeditor [class*='_dialogContent_'],
+.mdxeditor [class*='_largeDialogContent_'],
+.mdxeditor [class*='_popoverContent_'],
+.mdxeditor [class*='_linkDialogPopoverContent_'],
+.mdxeditor [class*='_tableColumnEditorPopoverContent_'] {
+  border: 1px solid rgb(var(--Common-Contrast));
+  background: rgb(var(--Common-CardBackground));
+  color: rgb(var(--Text-Primary));
+}
+
+.mdxeditor [class*='_dialogTitle_'] {
+  color: rgb(var(--Text-Primary));
+}
+
+.mdxeditor img {
+  border: 1px solid rgb(var(--Common-Contrast));
+  border-radius: 0.5rem;
+}
+
 /* width */
 .mdx-editor-toolbar::-webkit-scrollbar {
   height: 6px;

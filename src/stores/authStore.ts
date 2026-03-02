@@ -49,6 +49,16 @@ let lastServerValidation: number | null = null;
 let initializationPromise: Promise<void> | null = null;
 let isInitializing = false;
 
+/* Fixed by Codex on 2026-02-27
+   Who: Codex
+   What: Added a tiny development-only auth debug logger for QA.
+   Why: Make revalidation and expiry decisions observable without affecting production users.
+   How: Emit scoped console info only in browser development mode. */
+const logAuthDebug = (event: string, details?: Record<string, unknown>) => {
+  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'development') return;
+  console.info(`[AuthDebug] ${event}`, details ?? {});
+};
+
 const getCookieOptions = () => ({
   secure:
     typeof window === 'undefined'
@@ -266,8 +276,22 @@ export const useAuthStore = create<AuthState>()(
               expiresAt = getExpiresAtFromToken(token) ?? NaN;
             }
 
+            /* Fixed by Codex on 2026-02-27
+               Who: Codex
+               What: Split hard-expiry checks from periodic server revalidation.
+               Why: `withAuthRedirect` treats `isTokenExpired()` as a hard logout trigger.
+               How: Keep hard-expiry handling here, then run stale-session validation as a
+                    separate branch that only logs out on auth failures (401/403). */
+            const needsPeriodicServerValidation =
+              lastServerValidation !== null &&
+              Date.now() - lastServerValidation > SERVER_VALIDATION_INTERVAL_MS;
+
             // For invalid/expired local expiry, let server decide once.
             if (!Number.isFinite(expiresAt) || Date.now() >= expiresAt) {
+              logAuthDebug('hard_expiry_validation_started', {
+                hasFiniteExpiry: Number.isFinite(expiresAt),
+                hasToken: !!token,
+              });
               const session = await probeServerSession();
 
               // Fixed by Claude Sonnet 4.5 on 2026-02-08
@@ -275,9 +299,16 @@ export const useAuthStore = create<AuthState>()(
               if (!session.ok) {
                 // Network error - keep session for offline tolerance
                 if (session.isNetworkError) {
+                  logAuthDebug('hard_expiry_validation_network_error', {
+                    action: 'keep_session_with_fallback_ttl',
+                  });
                   expiresAt = Date.now() + SERVER_SESSION_FALLBACK_TTL_MS;
                   // Continue with existing token, don't logout
                 } else if (session.statusCode === 401 || session.statusCode === 403) {
+                  logAuthDebug('hard_expiry_validation_auth_failure', {
+                    statusCode: session.statusCode ?? null,
+                    action: 'logout',
+                  });
                   // Auth failure - clear session
                   clearCookies();
                   set({
@@ -290,12 +321,54 @@ export const useAuthStore = create<AuthState>()(
                   return;
                 } else {
                   // Other server error - keep session but extend expiry minimally
+                  logAuthDebug('hard_expiry_validation_server_error', {
+                    statusCode: session.statusCode ?? null,
+                    action: 'keep_session_with_fallback_ttl',
+                  });
                   expiresAt = Date.now() + SERVER_SESSION_FALLBACK_TTL_MS;
                 }
               } else {
+                logAuthDebug('hard_expiry_validation_success', {
+                  action: 'refresh_local_expiry',
+                });
                 // Session is valid
                 expiresAt = Date.now() + SERVER_SESSION_FALLBACK_TTL_MS;
                 Cookies.set('expiresAt', String(expiresAt), getCookieOptions());
+                user = session.user ?? user ?? null;
+              }
+            } else if (needsPeriodicServerValidation) {
+              logAuthDebug('periodic_revalidation_started', {
+                lastServerValidation,
+                intervalMs: SERVER_VALIDATION_INTERVAL_MS,
+              });
+              const session = await probeServerSession();
+
+              if (!session.ok) {
+                // Only hard-auth failures should force logout in periodic revalidation.
+                if (session.statusCode === 401 || session.statusCode === 403) {
+                  logAuthDebug('periodic_revalidation_auth_failure', {
+                    statusCode: session.statusCode ?? null,
+                    action: 'logout',
+                  });
+                  clearCookies();
+                  set({
+                    isAuthenticated: false,
+                    isAuthInitialized: true,
+                    accessToken: null,
+                    expiresAt: null,
+                    user: null,
+                  });
+                  return;
+                }
+                logAuthDebug('periodic_revalidation_non_auth_failure', {
+                  statusCode: session.statusCode ?? null,
+                  isNetworkError: !!session.isNetworkError,
+                  action: 'keep_session',
+                });
+              } else {
+                logAuthDebug('periodic_revalidation_success', {
+                  action: 'keep_session_and_refresh_user_if_available',
+                });
                 user = session.user ?? user ?? null;
               }
             } else if (!user) {
@@ -325,22 +398,14 @@ export const useAuthStore = create<AuthState>()(
       },
       isTokenExpired: () => {
         const { expiresAt } = get();
-        const now = Date.now();
 
-        // Fixed by Claude Sonnet 4.5 on 2026-02-08
-        // Issue 3: Check if server validation is needed (every 5 minutes)
-        // This triggers revalidation flow without immediate logout
-        if (lastServerValidation !== null) {
-          const timeSinceValidation = now - lastServerValidation;
-          if (timeSinceValidation > SERVER_VALIDATION_INTERVAL_MS) {
-            // Signal that revalidation is needed
-            // The calling code should trigger probeServerSession()
-            return true;
-          }
-        }
-
-        // Also check client-side expiry as a secondary check
-        return expiresAt ? now >= expiresAt : true;
+        /* Fixed by Codex on 2026-02-27
+           Who: Codex
+           What: Restrict `isTokenExpired()` to hard-expiry only.
+           Why: Returning `true` for revalidation windows caused false session-expired logouts.
+           How: Move periodic server revalidation into `initializeAuth` and keep this predicate
+                strictly tied to cookie/JWT expiry. */
+        return expiresAt ? Date.now() >= expiresAt : true;
       },
       getUser: () => get().user,
     }),

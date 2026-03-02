@@ -22,6 +22,7 @@ const Editor = dynamic(() => import('./InitializedMDXEditor'), {
 
 export interface ForwardRefEditorProps extends MDXEditorProps {
   hideToolbar?: boolean;
+  mentionCandidates?: string[];
 }
 
 // This is what is imported by other components. Pre-initialized with plugins, and ready

@@ -13,4 +13,5 @@ export const MyappFlagsApiGetFlagsEntityType = {
   discussion: 'discussion',
   comment: 'comment',
   notification: 'notification',
+  review: 'review',
 } as const;

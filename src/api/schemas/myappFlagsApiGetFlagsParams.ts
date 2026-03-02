@@ -13,9 +13,9 @@ export type MyappFlagsApiGetFlagsParams = {
 Keep in sync with UserFlag.VALID_FLAG_TYPES in articles/models.py
 
 - unread: Entity has not been read by the user
+- pinned: Entity is pinned by the user
 
 Future flags (add here and in UserFlag.VALID_FLAG_TYPES when implemented):
-- pinned: Entity is pinned by the user
 - starred: Entity is starred/favorited by the user
 - muted: Entity notifications are muted by the user
  */
@@ -27,10 +27,10 @@ Keep in sync with UserFlag.VALID_ENTITY_TYPES in articles/models.py
 - discussion: A discussion thread on an article
 - comment: A comment or reply within a discussion
 - notification: A user notification
+- review: A review on an article
 
 Future entity types (add here and in UserFlag.VALID_ENTITY_TYPES when implemented):
 - article: An article
-- review: A review on an article
  */
 entity_type: MyappFlagsApiGetFlagsEntityType;
 entity_ids: string;

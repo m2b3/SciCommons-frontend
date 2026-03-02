@@ -11,4 +11,5 @@ export type MyappFlagsApiGetFlagsFlagType = typeof MyappFlagsApiGetFlagsFlagType
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MyappFlagsApiGetFlagsFlagType = {
   unread: 'unread',
+  pinned: 'pinned',
 } as const;

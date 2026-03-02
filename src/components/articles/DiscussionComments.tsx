@@ -16,6 +16,7 @@ import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
 import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { convertToDiscussionCommentData } from '@/lib/converToCommentData';
+import { captureMentionNotification } from '@/lib/mentionNotifications';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -25,6 +26,13 @@ import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
 
 interface DiscussionCommentsProps {
   discussionId: number;
+  targetCommentId?: number | null;
+  onTargetCommentHandled?: () => void;
+  mentionCandidates?: string[];
+  mentionContext?: {
+    articleId: number;
+    communityId?: number | null;
+  };
   /** Article context for tracking read state */
   articleContext?: {
     communityId: number;
@@ -34,6 +42,10 @@ interface DiscussionCommentsProps {
 
 const DiscussionComments: React.FC<DiscussionCommentsProps> = ({
   discussionId,
+  targetCommentId = null,
+  onTargetCommentHandled,
+  mentionCandidates = [],
+  mentionContext,
   articleContext,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -135,6 +147,37 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({
   const hasComments = comments.length > 0;
   const depthSelectId = `discussion-${discussionId}-depth-select`;
 
+  /* Fixed by Codex on 2026-02-25
+     Who: Codex
+     What: Scan fetched discussion comment trees for `@username` mentions.
+     Why: Mention notifications should be captured from initial backend comment payloads, not just realtime events.
+     How: Recursively walk top-level comments and replies, then register matching mentions once in the shared store. */
+  useEffect(() => {
+    if (!mentionContext?.articleId) return;
+    if (!Array.isArray(data?.data) || data.data.length === 0) return;
+
+    const scanCommentTree = (comment: DiscussionCommentOut): void => {
+      if (comment.id !== undefined) {
+        captureMentionNotification({
+          sourceType: 'comment',
+          sourceId: Number(comment.id),
+          discussionId,
+          articleId: mentionContext.articleId,
+          communityId: mentionContext.communityId ?? null,
+          content: comment.content,
+          authorUsername: comment.author?.username,
+          createdAt: comment.created_at,
+        });
+      }
+
+      if (Array.isArray(comment.replies) && comment.replies.length > 0) {
+        comment.replies.forEach((reply) => scanCommentTree(reply));
+      }
+    };
+
+    data.data.forEach((comment) => scanCommentTree(comment));
+  }, [data?.data, discussionId, mentionContext?.articleId, mentionContext?.communityId]);
+
   return (
     <div className="mt-2 flex flex-col">
       {/* Fixed by Codex on 2026-02-17
@@ -211,6 +254,7 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({
           placeholder="Write a new comment..."
           buttonText="Post Comment"
           isPending={isCreateCommentPending}
+          mentionCandidates={mentionCandidates}
         />
       )}
       {isPending && (
@@ -240,6 +284,14 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({
             onDeleteComment={deleteCommentbyId}
             contentType={ContentTypeEnum.articlesdiscussioncomment}
             articleContext={articleContext}
+            mentionCandidates={mentionCandidates}
+            /* Fixed by Codex on 2026-02-26
+               Who: Codex
+               What: Threaded comment-level deep-link target into recursive comment rendering.
+               Why: Mention notifications for replies should auto-open and scroll to the exact comment.
+               How: Pass the target comment id and a one-shot handled callback to shared comment renderer. */
+            targetCommentId={targetCommentId}
+            onTargetCommentHandled={onTargetCommentHandled}
           />
         </div>
       )}

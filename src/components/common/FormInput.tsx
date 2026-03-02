@@ -10,6 +10,7 @@ import {
   UseFormRegister,
   useWatch,
 } from 'react-hook-form';
+import { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 
@@ -21,12 +22,6 @@ interface InputProps<TFieldValues extends FieldValues> {
   type: string;
   placeholder?: string;
   requiredMessage?: string;
-  patternMessage?: string;
-  patternValue?: RegExp;
-  minLengthValue?: number;
-  minLengthMessage?: string;
-  maxLengthValue?: number;
-  maxLengthMessage?: string;
   name: keyof TFieldValues;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
@@ -45,6 +40,8 @@ interface InputProps<TFieldValues extends FieldValues> {
   isSuccess?: boolean;
   validateFn?: (value: string) => true | string;
   autoFocus?: boolean;
+  schema?: z.ZodTypeAny;
+  mentionCandidates?: string[];
 }
 
 // Wrapper component that uses useWatch - only rendered when control is provided
@@ -74,12 +71,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   placeholder,
   register,
   requiredMessage,
-  patternMessage,
-  patternValue,
-  minLengthValue,
-  minLengthMessage,
-  maxLengthValue,
-  maxLengthMessage,
   errors,
   control,
   isSubmitting = false,
@@ -96,6 +87,8 @@ const FormInput = <TFieldValues extends FieldValues>({
   isSuccess = false,
   validateFn,
   autoFocus = false,
+  schema,
+  mentionCandidates = [],
 }: InputProps<TFieldValues>): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const error = errors[name];
@@ -120,17 +113,26 @@ const FormInput = <TFieldValues extends FieldValues>({
   // Get the registered field with validation rules
   const registeredField = register(name as Path<TFieldValues>, {
     required: requiredMessage ? { value: true, message: requiredMessage } : undefined,
-    pattern:
-      patternValue && patternMessage ? { value: patternValue, message: patternMessage } : undefined,
-    minLength:
-      minLengthValue && minLengthMessage
-        ? { value: minLengthValue, message: minLengthMessage }
-        : undefined,
-    maxLength:
-      maxLengthValue && maxLengthMessage
-        ? { value: maxLengthValue, message: maxLengthMessage }
-        : undefined,
-    validate: validateFn,
+    validate: (value) => {
+      /* Fixed by Codex on 2026-02-27
+         Who: Codex
+         What: Chain custom and schema validators instead of returning from the first one.
+         Why: Fields that need both rules (for example, year format + start/end ordering) were skipping schema checks.
+         How: Run custom validation first, and only continue to schema validation when custom validation passes. */
+      if (validateFn) {
+        const customValidationResult = validateFn(value);
+        if (customValidationResult !== true) {
+          return customValidationResult;
+        }
+      }
+      if (schema) {
+        const result = schema.safeParse(value);
+        if (!result.success) {
+          return result.error.issues[0]?.message ?? 'Invalid input';
+        }
+      }
+      return true;
+    },
   });
 
   // Create a wrapper for onChange that updates both form and markdown state
@@ -189,7 +191,7 @@ const FormInput = <TFieldValues extends FieldValues>({
     ...registeredField,
     onChange: handleChange,
     className: cn(
-      'mt-1 block w-full px-3 py-2 ring-1 ring-common-contrast rounded-md shadow-sm focus:outline-none focus:ring-functional-green res-text-sm focus:ring-1 placeholder:text-text-tertiary text-text-primary bg-common-background',
+      'mt-1 block w-full px-3 py-2 ring-1 ring-common-contrast rounded-md shadow-sm focus:outline-none focus:ring-functional-green res-text-sm focus:ring-1 placeholder:text-text-tertiary text-text-primary bg-common-background break-words [overflow-wrap:anywhere] min-w-0',
       inputClassName,
       error && !readOnly && !isSubmitting ? 'border-functional-red' : 'border-common-minimal',
       readOnly ? 'bg-common-cardBackground md:bg-common-minimal focus:ring-common-contrast' : '',
@@ -245,6 +247,7 @@ const FormInput = <TFieldValues extends FieldValues>({
                 hideToolbar
                 placeholder={placeholder || commonProps.placeholder}
                 readOnly={readOnly}
+                mentionCandidates={mentionCandidates}
               />
             ) : (
               <textarea {...commonProps} rows={4} onKeyDown={handleTextareaKeyDown} />

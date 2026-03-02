@@ -62,6 +62,9 @@ export interface CommentProps extends CommentData {
   maxDepth: number;
   isAllCollapsed: boolean;
   autoExpandOnUnread?: boolean;
+  mentionCandidates?: string[];
+  targetCommentId?: number | null;
+  onTargetCommentHandled?: () => void;
   onAddReply: (parentId: number, content: string, rating?: number) => void;
   onUpdateComment: (id: number, content: string, rating?: number) => void;
   onDeleteComment: (id: number) => void;
@@ -87,6 +90,9 @@ const Comment: React.FC<CommentProps> = ({
   maxDepth,
   isAllCollapsed,
   autoExpandOnUnread = false,
+  mentionCandidates = [],
+  targetCommentId = null,
+  onTargetCommentHandled,
   is_author,
   is_deleted,
   rating,
@@ -141,6 +147,8 @@ const Comment: React.FC<CommentProps> = ({
   const commentRef = useRef<HTMLDivElement>(null);
   const wasUnreadInSubtreeRef = useRef(false);
   const hasInitializedUnreadAutoExpandRef = useRef(false);
+  const hasAppliedTargetAutoExpandRef = useRef(false);
+  const hasHandledTargetFocusRef = useRef(false);
   const wasAllCollapsedRef = useRef(isAllCollapsed);
   const isEphemeralUnread = useEphemeralUnreadStore((s) => s.isItemUnread);
 
@@ -175,6 +183,22 @@ const Comment: React.FC<CommentProps> = ({
     };
     return hasUnreadBranch({ id, flags, replies }, depth);
   }, [id, flags, replies, depth, isEphemeralUnread]);
+  const hasTargetInSubtree = useMemo(() => {
+    if (targetCommentId === null) return false;
+
+    const hasTargetBranch = (comment: Pick<CommentData, 'id' | 'replies'>): boolean => {
+      if (comment.id === targetCommentId) return true;
+      return comment.replies?.some((reply) => hasTargetBranch(reply)) ?? false;
+    };
+
+    return hasTargetBranch({ id, replies });
+  }, [id, replies, targetCommentId]);
+  const isTargetComment = targetCommentId !== null && id === targetCommentId;
+
+  useEffect(() => {
+    hasAppliedTargetAutoExpandRef.current = false;
+    hasHandledTargetFocusRef.current = false;
+  }, [targetCommentId]);
 
   useEffect(() => {
     /* Fixed by Codex on 2026-02-16
@@ -229,6 +253,45 @@ const Comment: React.FC<CommentProps> = ({
     wasUnreadInSubtreeRef.current = hasUnreadInSubtree;
     wasAllCollapsedRef.current = isAllCollapsed;
   }, [autoExpandOnUnread, isAllCollapsed, hasUnreadInSubtree]);
+
+  useEffect(() => {
+    /* Fixed by Codex on 2026-02-26
+       Who: Codex
+       What: Auto-expanded only the branch containing a deep-linked target comment.
+       Why: Mention links with `commentId` should land users at the exact reply even when ancestors start collapsed.
+       How: Detect whether this node subtree contains the target id and open it once without overriding later manual toggles. */
+    if (targetCommentId === null || isAllCollapsed) return;
+    if (!hasTargetInSubtree) return;
+    if (hasAppliedTargetAutoExpandRef.current) return;
+
+    setIsCollapsed(false);
+    hasAppliedTargetAutoExpandRef.current = true;
+  }, [hasTargetInSubtree, isAllCollapsed, targetCommentId]);
+
+  useEffect(() => {
+    /* Fixed by Codex on 2026-02-26
+       Who: Codex
+       What: Added one-shot focus/scroll behavior for deep-linked target comments.
+       Why: Users should be brought directly to the mentioned comment without scanning long threads manually.
+       How: Scroll the target comment into view once when rendered, add temporary highlight, then clear target state via callback. */
+    if (!isTargetComment || targetCommentId === null) return;
+    if (hasHandledTargetFocusRef.current) return;
+
+    hasHandledTargetFocusRef.current = true;
+    setHighlight(true);
+
+    const timeoutId = window.setTimeout(() => {
+      commentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      onTargetCommentHandled?.();
+    }, 75);
+
+    const resetHighlightTimeoutId = window.setTimeout(() => setHighlight(false), 3000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.clearTimeout(resetHighlightTimeoutId);
+    };
+  }, [isTargetComment, onTargetCommentHandled, targetCommentId]);
 
   useEffect(() => {
     if (isNew) {
@@ -353,6 +416,7 @@ const Comment: React.FC<CommentProps> = ({
               initialContent={content}
               initialRating={rating}
               isReview={isReview}
+              mentionCandidates={mentionCandidates}
             />
           </div>
         ) : (
@@ -483,6 +547,7 @@ const Comment: React.FC<CommentProps> = ({
               buttonText="Post Reply"
               isReview={isReview}
               isReply
+              mentionCandidates={mentionCandidates}
             />
           </div>
         )}
@@ -494,6 +559,9 @@ const Comment: React.FC<CommentProps> = ({
               maxDepth={maxDepth}
               isAllCollapsed={isAllCollapsed}
               autoExpandOnUnread={autoExpandOnUnread}
+              mentionCandidates={mentionCandidates}
+              targetCommentId={targetCommentId}
+              onTargetCommentHandled={onTargetCommentHandled}
               onAddReply={onAddReply}
               onUpdateComment={onUpdateComment}
               onDeleteComment={onDeleteComment}

@@ -184,6 +184,7 @@ const ArticlePreviewSection = ({
                   <DiscussionForum
                     articleId={article.id}
                     communityId={communityId}
+                    communitySlug={article.community_article?.community.name}
                     communityArticleId={article.community_article?.id}
                     showSubscribeButton={false}
                     isAdmin={false}

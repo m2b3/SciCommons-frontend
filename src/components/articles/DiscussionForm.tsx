@@ -19,6 +19,7 @@ interface DiscussionFormProps {
   setShowForm: (showForm: boolean) => void;
   articleId: number;
   communityId?: number | null;
+  mentionCandidates?: string[];
   refetchDiscussions: () => void;
 }
 
@@ -26,6 +27,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
   setShowForm,
   articleId,
   communityId,
+  mentionCandidates = [],
   refetchDiscussions,
 }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -95,6 +97,7 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
         textArea={true}
         isSuccess={isSuccess}
         supportMarkdown={true}
+        mentionCandidates={mentionCandidates}
       />
       <Button type="submit" variant={'blue'} loading={isPending} showLoadingSpinner>
         <ButtonTitle>Submit</ButtonTitle>

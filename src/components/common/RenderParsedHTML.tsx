@@ -214,16 +214,20 @@ const RenderParsedHTML = ({
   }, [rawContent]);
 
   return (
-    <div className={cn('relative mb-10 sm:mb-0', containerClassName)}>
+    <div className={cn('relative mb-10 w-full min-w-0 sm:mb-0', containerClassName)}>
       <div
         className={cn(
-          'overflow-hidden transition-all duration-300 ease-in-out',
+          'w-full min-w-0 overflow-hidden transition-all duration-300 ease-in-out',
           ENABLE_SHOW_MORE && isShrinked && !isExpanded && isOverflowing && 'h-fit max-h-[100px]'
         )}
       >
         <div
           ref={contentRef}
-          className={cn(markdownStyles, contentClassName)}
+          className={cn(
+            markdownStyles,
+            'w-full min-w-0 break-words [overflow-wrap:anywhere]',
+            contentClassName
+          )}
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>

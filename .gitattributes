@@ -1,3 +1,17 @@
   # Mark as generated for GitHub UI
     src/api/schemas/*.ts linguist-generated=true
     src/api/*/*.ts linguist-generated=true
+
+  * text=auto
+  *.ts text eol=lf
+  *.tsx text eol=lf
+  *.js text eol=lf
+  *.jsx text eol=lf
+  *.json text eol=lf
+  *.md text eol=lf
+  *.css text eol=lf
+  *.yml text eol=lf
+  *.yaml text eol=lf
+  *.bat text eol=crlf
+  *.cmd text eol=crlf
+  *.ps1 text eol=crlf

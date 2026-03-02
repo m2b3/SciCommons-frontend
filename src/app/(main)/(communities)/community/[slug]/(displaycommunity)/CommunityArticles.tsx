@@ -41,6 +41,7 @@ const CommunityArticlesInner: React.FC<CommunityArticlesProps> = ({
   const [selectedPreviewArticle, setSelectedPreviewArticle] = useState<ArticlesListOut | null>(
     null
   );
+  const lastRestoredArticleIdRef = React.useRef<number | null>(null);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
   const requestedArticleId = React.useMemo(() => {
     const articleIdParam = searchParams?.get('articleId');
@@ -72,12 +73,17 @@ const CommunityArticlesInner: React.FC<CommunityArticlesProps> = ({
     (article: ArticlesListOut | null) => {
       setSelectedPreviewArticle(article);
       if (article && pathname) {
-        const params = new URLSearchParams(searchParams?.toString() || '');
+        /* Fixed by Codex on 2026-02-25
+           Who: Codex
+           What: Read current query params from window when syncing preview selection.
+           Why: Hook-captured searchParams snapshots can lag across rapid URL updates and desync preview restoration.
+           How: Build URLSearchParams from location.search at click-time, then update articleId via router.replace. */
+        const params = new URLSearchParams(window.location.search);
         params.set('articleId', article.id.toString());
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
       }
     },
-    [router, pathname, searchParams]
+    [router, pathname]
   );
 
   useEffect(() => {
@@ -120,28 +126,29 @@ const CommunityArticlesInner: React.FC<CommunityArticlesProps> = ({
 
   useEffect(() => {
     if (!requestedArticleId || articles.length === 0) return;
+    if (lastRestoredArticleIdRef.current === requestedArticleId) return;
+
     const articleToRestore = articles.find((article) => article.id === requestedArticleId);
     if (!articleToRestore) return;
-    if (selectedPreviewArticle?.id === requestedArticleId) return;
 
-    /* Fixed by Codex on 2026-02-19
-       Problem: Community URL articleId deep-link always previewed the first list item.
-       Root cause: Keyboard navigation auto-selected the first article before URL param restoration.
-       Solution: Restore preview selection from query param once list data is available.
-       Result: /community/{slug}?articleId={id} now opens the requested article in preview. */
-    handleArticleSelect(articleToRestore);
-  }, [requestedArticleId, articles, selectedPreviewArticle?.id, handleArticleSelect]);
+    /* Fixed by Codex on 2026-02-25
+       Who: Codex
+       What: Guarded URL-driven preview restoration from overriding manual selections.
+       Why: Re-running restoration on every selection change could force the panel back to the first/deep-linked article.
+       How: Restore only when requested articleId changes and apply selection state directly without triggering another replace. */
+    setSelectedPreviewArticle(articleToRestore);
+    lastRestoredArticleIdRef.current = requestedArticleId;
+  }, [requestedArticleId, articles]);
 
   const handleSearch = useCallback(
     (term: string) => {
       setSearch(term);
       setPage(1);
       setArticles([]);
+      lastRestoredArticleIdRef.current = null;
       handleArticleSelect(null);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-    // handleArticleSelect is stable useCallback, setState functions are stable - omitting to prevent unnecessary re-renders
+    [handleArticleSelect]
   );
 
   const handleLoadMore = useCallback((newPage: number) => {
@@ -205,9 +212,7 @@ const CommunityArticlesInner: React.FC<CommunityArticlesProps> = ({
         />
       </div>
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [viewType, selectedPreviewArticle]
-    // handleArticleSelect is stable useCallback - omitting to prevent unnecessary re-renders
+    [viewType, selectedPreviewArticle, handleArticleSelect]
   );
 
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
@@ -281,6 +286,7 @@ const CommunityArticlesInner: React.FC<CommunityArticlesProps> = ({
               <div className="h-[calc(100vh-90px)] overflow-y-auto rounded-xl border border-common-minimal/50 bg-common-cardBackground/50 p-4">
                 {selectedPreviewArticle ? (
                   <ArticleContentView
+                    key={selectedPreviewArticle.id}
                     articleSlug={selectedPreviewArticle.slug}
                     articleId={selectedPreviewArticle.id}
                     communityId={communityId}

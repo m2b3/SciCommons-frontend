@@ -12,10 +12,10 @@ Keep in sync with UserFlag.VALID_ENTITY_TYPES in articles/models.py
 - discussion: A discussion thread on an article
 - comment: A comment or reply within a discussion
 - notification: A user notification
+- review: A review on an article
 
 Future entity types (add here and in UserFlag.VALID_ENTITY_TYPES when implemented):
 - article: An article
-- review: A review on an article
  */
 export type EntityType = typeof EntityType[keyof typeof EntityType];
 
@@ -25,4 +25,5 @@ export const EntityType = {
   discussion: 'discussion',
   comment: 'comment',
   notification: 'notification',
+  review: 'review',
 } as const;

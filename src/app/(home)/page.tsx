@@ -132,65 +132,108 @@ const Home = () => {
           </div>
           */}
           <div
-            className="fade-up mt-12 flex w-full flex-col items-center justify-center gap-6 sm:flex-row sm:gap-8"
+            className="fade-up mt-12 flex w-full flex-col items-center justify-center gap-6"
             style={{ animationDelay: '380ms' }}
           >
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
               Our Supporters
             </p>
-            <div className="flex flex-col items-center justify-center gap-8 sm:flex-row">
-              <Image
-                width={160}
-                height={40}
-                src="/images/KCDHA-White.png"
-                alt="KCDHA"
-                className="hidden dark:block"
-              />
-              <Image
-                width={160}
-                height={40}
-                src="/images/KCDHA-Black.png"
-                alt="KCDHA"
-                className="block dark:hidden"
-              />
+            {/* Fixed by Codex on 2026-02-25
+                Who: Codex
+                What: Added INCF to the home supporters strip and switched desktop logo layout to two rows.
+                Why: The single-row supporter strip became visually long after adding another supporter.
+                How: Converted the logo container to a responsive grid (1 column mobile, 2 columns on sm+) and appended the INCF logo asset. */}
+            <div className="grid w-full max-w-3xl grid-cols-1 items-center justify-items-center gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-6">
+              {/* Fixed by Codex on 2026-02-25
+                  Who: Codex
+                  What: Added outbound supporter links to each home-page supporter logo.
+                  Why: Supporter logos should navigate to the corresponding supporter websites.
+                  How: Wrapped each logo pair in an external Link with target/rel safeguards. */}
+              <Link
+                href="https://www.ashoka.edu.in/page/koita-centre-for-digital-health-at-ashoka/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Koita Centre for Digital Health at Ashoka"
+                className="inline-flex items-center justify-center"
+              >
+                <Image
+                  width={160}
+                  height={40}
+                  src="/images/KCDHA-White.png"
+                  alt="KCDHA"
+                  className="hidden dark:block"
+                />
+                <Image
+                  width={160}
+                  height={40}
+                  src="/images/KCDHA-Black.png"
+                  alt="KCDHA"
+                  className="block dark:hidden"
+                />
+              </Link>
               {/* Fixed by Codex on 2026-02-18
                   Who: Codex
                   What: Added DRAC as a new supporter logo in the home hero supporters strip.
                   Why: User provided light/dark DRAC assets and requested it be listed with existing supporters.
                   How: Rendered theme-specific DRAC images with dark-mode class toggles to match current supporter behavior. */}
-              <Image
-                width={316}
-                height={40}
-                src="/images/DRAC_dark.png"
-                alt="DRAC"
-                className="hidden dark:block"
-              />
-              <Image
-                width={316}
-                height={40}
-                src="/images/DRAC.png"
-                alt="DRAC"
-                className="block dark:hidden"
-              />
+              <Link
+                href="https://www.alliancecan.ca/en"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Digital Research Alliance of Canada"
+                className="inline-flex items-center justify-center"
+              >
+                <Image
+                  width={316}
+                  height={40}
+                  src="/images/DRAC_dark.png"
+                  alt="DRAC"
+                  className="hidden dark:block"
+                />
+                <Image
+                  width={316}
+                  height={40}
+                  src="/images/DRAC.png"
+                  alt="DRAC"
+                  className="block dark:hidden"
+                />
+              </Link>
               {/* Fixed by Codex on 2026-02-18
                   Who: Codex
                   What: Nudged the GSoC logo slightly upward in desktop layout.
                   Why: Its artwork bounding box makes it render visually lower than the adjacent supporter logos.
                   How: Applied a small breakpoint-scoped negative Y translation to both light/dark variants. */}
-              <Image
-                width={280}
-                height={40}
-                src="/images/GSoC-White.png"
-                alt="GSoC"
-                className="hidden dark:block sm:-translate-y-px"
-              />
-              <Image
-                width={280}
-                height={40}
-                src="/images/GSoC-Black.png"
-                alt="GSoC"
-                className="block dark:hidden sm:-translate-y-px"
-              />
+              <Link
+                href="https://summerofcode.withgoogle.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Google Summer of Code"
+                className="inline-flex items-center justify-center"
+              >
+                <Image
+                  width={280}
+                  height={40}
+                  src="/images/GSoC-White.png"
+                  alt="GSoC"
+                  className="hidden dark:block sm:-translate-y-px"
+                />
+                <Image
+                  width={280}
+                  height={40}
+                  src="/images/GSoC-Black.png"
+                  alt="GSoC"
+                  className="block dark:hidden sm:-translate-y-px"
+                />
+              </Link>
+              <Link
+                href="https://www.incf.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit International Neuroinformatics Coordinating Facility"
+                className="inline-flex items-center justify-center"
+              >
+                <Image width={74} height={40} src="/images/INCF.png" alt="INCF" />
+              </Link>
             </div>
           </div>
         </div>

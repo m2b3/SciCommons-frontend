@@ -3,6 +3,12 @@ import React from 'react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import {
+  optionalGithubUrlSchema,
+  optionalLinkedInUrlSchema,
+  optionalScholarUrlSchema,
+  optionalUrlSchema,
+} from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -21,53 +27,46 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
         These are the professional profiles you have provided. We have verified them to ensure the
         legitimacy of your account.
       </p>
+      {/* Fixed by Codex on 2026-02-27
+          Who: Codex
+          What: Use optional URL schemas for profile links.
+          Why: Personal links are optional fields and blank values should not block profile saves.
+          How: Swap strict URL validators with optional wrappers that allow empty inputs but keep strict checks for non-empty values. */}
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormInput
           label="Home Page URL"
-          placeholder="https://example.com"
           name="homePage"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/}
-          patternMessage="Invalid URL format"
-          // requiredMessage="Home page URL is required"
+          schema={optionalUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
           label="LinkedIn URL"
-          placeholder="https://linkedin.com/in/username"
           name="linkedIn"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/}
-          patternMessage="Invalid LinkedIn URL"
-          // requiredMessage="LinkedIn URL is required"
+          schema={optionalLinkedInUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
           label="Github URL"
-          placeholder="https://github.com/username"
           name="github"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/github\.com\/.*$/}
-          patternMessage="Invalid GitHub URL"
-          // requiredMessage="GitHub URL is required"
+          schema={optionalGithubUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
           label="GoogleScholar URL"
-          placeholder="https://scholar.google.com/citations?user=..."
           name="googleScholar"
           type="url"
           register={register}
           errors={errors}
-          patternValue={/^https:\/\/scholar\.google\.com\/.*$/}
-          patternMessage="Invalid Google Scholar URL"
-          // requiredMessage="Google Scholar URL is required"
+          schema={optionalScholarUrlSchema}
           readOnly={!editMode}
         />
       </div>

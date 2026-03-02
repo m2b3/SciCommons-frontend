@@ -35,6 +35,15 @@ yarn build
 yarn start
 ```
 
+For Windows, I make sure to install nvm-windows and do:
+
+```
+nvm install 20.19.0
+nvm use 20.19.0
+
+first, to match the Docker version. YMMV.
+```
+
 # Running app in docker container -- (preferred test before pushing for alignment with deployment)
 
 ```bash

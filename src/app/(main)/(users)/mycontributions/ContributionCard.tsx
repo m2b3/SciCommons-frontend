@@ -20,10 +20,17 @@ const ContributionCard: React.FC<ContributionCardProps> = ({
     <div className="h-5 w-5 text-functional-blue">
       <Icon />
     </div>
-    <div className="w-full">
-      <div className="flex items-start justify-between sm:flex-col">
-        <h3 className="text-base font-semibold text-text-primary">{title}</h3>
-        <p className="text-2xl font-bold text-functional-blue">{count}</p>
+    {/* Fixed by Codex on 2026-02-27
+       Who: Codex
+       What: Hardened contribution-card header against long title crowding.
+       Why: Long titles could press into the trailing count column on tighter widths.
+       How: Make the header row `min-w-0` with a flexible wrapping title and a shrink-protected count. */}
+    <div className="w-full min-w-0">
+      <div className="flex min-w-0 items-start justify-between gap-2 sm:flex-col">
+        <h3 className="min-w-0 flex-1 break-words text-base font-semibold text-text-primary [overflow-wrap:anywhere]">
+          {title}
+        </h3>
+        <p className="shrink-0 text-2xl font-bold text-functional-blue">{count}</p>
       </div>
       <p className="mt-1 text-xs text-text-tertiary">{description}</p>
     </div>

@@ -10,9 +10,9 @@
 Keep in sync with UserFlag.VALID_FLAG_TYPES in articles/models.py
 
 - unread: Entity has not been read by the user
+- pinned: Entity is pinned by the user
 
 Future flags (add here and in UserFlag.VALID_FLAG_TYPES when implemented):
-- pinned: Entity is pinned by the user
 - starred: Entity is starred/favorited by the user
 - muted: Entity notifications are muted by the user
  */
@@ -22,4 +22,5 @@ export type FlagType = typeof FlagType[keyof typeof FlagType];
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FlagType = {
   unread: 'unread',
+  pinned: 'pinned',
 } as const;

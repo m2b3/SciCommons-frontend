@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 
 interface Tab {
-  title: string;
+  id?: string;
+  title: ReactNode;
   // Performance: Support both static content and lazy-loaded content functions
   // Functions prevent unnecessary component rendering until tab is active
   content: ReactNode | (() => ReactNode);
@@ -14,6 +15,7 @@ interface TabNavigationProps {
   lazyLoad?: boolean;
   initialActiveTab?: number;
   resetKey?: string | number;
+  onActiveTabChange?: (activeTabIndex: number) => void;
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({
@@ -21,6 +23,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
   lazyLoad = true,
   initialActiveTab = 0,
   resetKey,
+  onActiveTabChange,
 }) => {
   /* Fixed by Codex on 2026-02-15
      Who: Codex
@@ -41,6 +44,15 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
       setLoadedTabs(new Set([safeInitialTab]));
     }
   }, [lazyLoad, resetKey, safeInitialTab]);
+
+  /* Fixed by Codex on 2026-02-26
+     Who: Codex
+     What: Added optional active-tab change callback.
+     Why: Parent pages with "New" badge logic need to react when a tab becomes active.
+     How: Emit the current active index whenever tab state changes. */
+  useEffect(() => {
+    onActiveTabChange?.(activeTab);
+  }, [activeTab, onActiveTabChange]);
 
   // Update the underline position when active tab changes
   useEffect(() => {
@@ -84,7 +96,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         <div className="flex space-x-2 border-b border-common-contrast">
           {tabs.map((tab, index) => (
             <button
-              key={tab.title}
+              key={tab.id ?? index}
               ref={(el) => {
                 tabRefs.current[index] = el;
               }}
@@ -95,7 +107,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
               }`}
               onClick={() => handleTabClick(index)}
             >
-              <span>{tab.title}</span>
+              {tab.title}
             </button>
           ))}
         </div>
@@ -109,7 +121,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             This preserves React component state when switching between tabs
             Only loaded tabs will have content rendered (see renderTabContent) */}
         {tabs.map((tab, index) => (
-          <div key={tab.title} className={activeTab === index ? 'block' : 'hidden'}>
+          <div key={tab.id ?? index} className={activeTab === index ? 'block' : 'hidden'}>
             {renderTabContent(tab, index)}
           </div>
         ))}

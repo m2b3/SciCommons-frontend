@@ -15,6 +15,7 @@ import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
+import { communityDescriptionSchema, communityNameSchema } from '@/constants/zod-schema';
 import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -154,9 +155,7 @@ const CreateCommunity: React.FC = () => {
             type="text"
             placeholder="Enter your community name"
             register={register}
-            requiredMessage="Title is required"
-            maxLengthValue={100}
-            maxLengthMessage="Name must not exceed 100 characters"
+            schema={communityNameSchema}
             info="Your community's name should be unique and descriptive."
             errors={errors}
           />
@@ -169,11 +168,7 @@ const CreateCommunity: React.FC = () => {
             placeholder="Briefly describe your community"
             register={register}
             control={control}
-            requiredMessage="Description is required"
-            minLengthValue={1}
-            maxLengthValue={500}
-            minLengthMessage="Description must be at least 1 character"
-            maxLengthMessage="Description must not exceed 500 characters"
+            schema={communityDescriptionSchema}
             info="Provide a brief description of your community."
             errors={errors}
             supportMarkdown={true}

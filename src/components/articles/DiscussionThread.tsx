@@ -45,6 +45,8 @@ import DiscussionComments from './DiscussionComments';
 interface DiscussionThreadProps {
   discussionId: number;
   setDiscussionId: (discussionId: React.SetStateAction<number | null>) => void;
+  initialCommentId?: number | null;
+  mentionCandidates?: string[];
   refetchDiscussions?: () => void;
 }
 
@@ -56,12 +58,15 @@ interface DiscussionEditFormValues {
 const DiscussionThread: React.FC<DiscussionThreadProps> = ({
   discussionId,
   setDiscussionId,
+  initialCommentId = null,
+  mentionCandidates = [],
   refetchDiscussions,
 }) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
   const formRef = React.useRef<HTMLFormElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [targetCommentId, setTargetCommentId] = useState<number | null>(initialCommentId);
 
   /* Fixed by Codex on 2026-02-15
      Who: Codex
@@ -80,6 +85,15 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({
       content: '',
     },
   });
+
+  useEffect(() => {
+    /* Fixed by Codex on 2026-02-26
+       Who: Codex
+       What: Track comment-level deep-link target inside the active discussion thread.
+       Why: Mention-driven `commentId` should only influence initial thread navigation, not manual thread browsing.
+       How: Re-seed local target id when discussion or incoming deep-link comment changes. */
+    setTargetCommentId(initialCommentId ?? null);
+  }, [discussionId, initialCommentId]);
 
   useEffect(() => {
     const store = useRealtimeContextStore.getState();
@@ -276,6 +290,7 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({
                         errors={errors}
                         textArea
                         supportMarkdown
+                        mentionCandidates={mentionCandidates}
                       />
                       <div className="flex flex-wrap items-center gap-2">
                         <Button
@@ -378,7 +393,13 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({
             </div>
           </div>
           <h3 className="mb-2 font-bold res-text-base">Comments</h3>
-          <DiscussionComments discussionId={discussionId} />
+          <DiscussionComments
+            discussionId={discussionId}
+            mentionContext={{ articleId: discussion.article_id }}
+            targetCommentId={targetCommentId}
+            onTargetCommentHandled={() => setTargetCommentId(null)}
+            mentionCandidates={mentionCandidates}
+          />
         </div>
       </>
     )

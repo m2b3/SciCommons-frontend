@@ -8,6 +8,7 @@ import {
   myappRealtimeApiHeartbeat,
   myappRealtimeApiRegisterQueue,
 } from '../api/real-time/real-time';
+import { captureMentionNotification } from '../lib/mentionNotifications';
 import { useAuthStore } from '../stores/authStore';
 import { useEphemeralUnreadStore } from '../stores/ephemeralUnreadStore';
 import { startSyncTimer, stopSyncTimer } from '../stores/readItemsStore';
@@ -614,6 +615,23 @@ export function useRealtime() {
             });
           }
 
+          if (
+            (event.type === 'new_discussion' || event.type === 'updated_discussion') &&
+            event.data.discussion?.id !== undefined &&
+            typeof event.data.discussion.content === 'string'
+          ) {
+            captureMentionNotification({
+              sourceType: 'discussion',
+              sourceId: Number(event.data.discussion.id),
+              discussionId: Number(event.data.discussion.id),
+              articleId,
+              communityId,
+              content: event.data.discussion.content,
+              authorUsername: event.data.discussion.user?.username,
+              createdAt: event.timestamp,
+            });
+          }
+
           // Show notification and mark subscription as having new event
           if (event.type === 'new_discussion' && event.data.discussion) {
             // Mark subscription as having new unread event (for sidebar)
@@ -653,6 +671,24 @@ export function useRealtime() {
                   ),
               });
             }
+          }
+
+          if (
+            (event.type === 'new_comment' || event.type === 'updated_comment') &&
+            event.data.comment?.id !== undefined &&
+            event.data.discussion_id !== undefined &&
+            typeof event.data.comment.content === 'string'
+          ) {
+            captureMentionNotification({
+              sourceType: 'comment',
+              sourceId: Number(event.data.comment.id),
+              discussionId: Number(event.data.discussion_id),
+              articleId,
+              communityId,
+              content: event.data.comment.content,
+              authorUsername: event.data.comment.author?.username,
+              createdAt: event.timestamp,
+            });
           }
 
           // Show notification and mark subscription as having new event

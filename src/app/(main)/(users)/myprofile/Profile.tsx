@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -6,6 +8,7 @@ import { Edit, Pencil, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import { emailSchema, nameSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -14,25 +17,32 @@ interface ProfileProps {
   editMode: boolean;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   profilePicture: string;
+  isPending: boolean;
+  isActuallyDirty: boolean;
 }
 
-const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profilePicture }) => {
-  const { register } = useFormContext();
+const Profile: React.FC<ProfileProps> = ({
+  errors,
+  editMode,
+  setEditMode,
+  profilePicture,
+  isPending,
+  isActuallyDirty,
+}) => {
+  const { register } = useFormContext<IProfileForm>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const profileImageInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  const profilePictureRegister = register('profilePicture', {
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewImage(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+  const profilePictureRegister = register('profilePicture');
+
+  useEffect(() => {
+    if (!editMode) {
+      setPreviewImage(null);
+      if (profileImageInputRef.current) {
+        profileImageInputRef.current.value = '';
       }
-    },
-  });
+    }
+  }, [editMode]);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:flex-row md:p-6">
@@ -54,17 +64,24 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
             type="file"
             accept="image/*"
             className="hidden"
-            {...profilePictureRegister}
+            name={profilePictureRegister.name}
+            onBlur={profilePictureRegister.onBlur}
+            onChange={(e) => {
+              profilePictureRegister.onChange(e);
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setPreviewImage(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
             ref={(element) => {
               profilePictureRegister.ref(element);
               profileImageInputRef.current = element;
             }}
           />
-          {/* Fixed by Codex on 2026-02-24
-              Who: Codex
-              What: Scoped the profile image picker trigger to this component's file input ref.
-              Why: A global query selector can click the wrong input if duplicate field names exist.
-              How: Capture react-hook-form's ref and call `.click()` on the local input reference. */}
           {editMode && (
             <button
               type="button"
@@ -90,7 +107,12 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
                 setEditMode(true);
               }
             }}
-            className="ml-4 text-functional-blue hover:text-functional-blueContrast"
+            disabled={editMode && (!isActuallyDirty || isPending)}
+            className={`ml-4 ${
+              editMode && (!isActuallyDirty || isPending)
+                ? 'cursor-not-allowed text-text-tertiary opacity-50'
+                : 'text-functional-blue hover:text-functional-blueContrast'
+            }`}
             aria-label={editMode ? 'Save profile' : 'Edit profile'}
           >
             {editMode ? <Save size={18} /> : <Edit size={18} />}
@@ -113,7 +135,7 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
               type="text"
               register={register}
               errors={errors}
-              requiredMessage="First name is required"
+              schema={nameSchema}
               readOnly={!editMode}
             />
             <FormInput
@@ -122,7 +144,7 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
               type="text"
               register={register}
               errors={errors}
-              requiredMessage="Last name is required"
+              schema={nameSchema}
               readOnly={!editMode}
             />
           </div>
@@ -132,9 +154,7 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
             type="email"
             register={register}
             errors={errors}
-            requiredMessage="Email is required"
-            patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            patternMessage="Invalid email address"
+            schema={emailSchema}
             readOnly={true}
           />
           <FormInput

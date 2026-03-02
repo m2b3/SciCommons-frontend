@@ -32,6 +32,7 @@ export interface CommunityOut {
   is_moderator?: CommunityOutIsModerator;
   is_reviewer?: CommunityOutIsReviewer;
   join_request_status?: CommunityOutJoinRequestStatus;
+  members?: string[];
   name: string;
   num_articles: number;
   num_members: number;

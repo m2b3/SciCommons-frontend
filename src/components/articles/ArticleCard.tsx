@@ -138,35 +138,40 @@ const ArticleCard: FC<ArticleCardProps> = memo(
         )}
         <div className="flex w-full">
           <div className="w-full min-w-0 flex-grow gap-4">
-            {/* Fixed by Claude Sonnet 4.5 on 2026-02-08
-                Problem: Link extended full width even for short titles, making card hard to click
-                Solution: Link uses inline-block (not flex-1) to only be as wide as title text
-                Layout: flex container with justify-between pushes buttons to right, link stays minimal */}
-            <div className="flex w-full flex-row items-center justify-between gap-2">
-              <Link
-                href={
-                  forCommunity
-                    ? `/community/${encodedCommunityName}/articles/${article.slug}`
-                    : `/article/${article.slug}`
-                }
-                className="inline-block"
-              >
-                <RenderParsedHTML
-                  rawContent={article.title}
-                  supportLatex={true}
-                  supportMarkdown={false}
-                  contentClassName={cn(
-                    `text-wrap font-semibold text-text-primary text-sm sm:text-sm md:text-sm lg:text-sm hover:underline`,
-                    {
-                      'line-clamp-2 text-xs sm:text-xs md:text-xs lg:text-xs':
-                        compactType === 'minimal' || compactType === 'default',
-                      'underline underline-text-tertiary hover:text-functional-green':
-                        compactType === 'minimal',
-                    }
-                  )}
-                  containerClassName="mb-0"
-                />
-              </Link>
+            {/* Fixed by Codex on 2026-02-27
+                Who: Codex
+                What: Split title layout width control from link hit-area sizing.
+                Why: Long/unbroken titles could crowd action icons, and making the link flex-wide
+                     would reintroduce an oversized click target.
+                How: Keep a non-clickable `min-w-0 flex-1` wrapper for layout, keep link as
+                     `inline-block max-w-full`, and allow robust token wrapping in title text. */}
+            <div className="flex w-full min-w-0 flex-row items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <Link
+                  href={
+                    forCommunity
+                      ? `/community/${encodedCommunityName}/articles/${article.slug}`
+                      : `/article/${article.slug}`
+                  }
+                  className="inline-block max-w-full"
+                >
+                  <RenderParsedHTML
+                    rawContent={article.title}
+                    supportLatex={true}
+                    supportMarkdown={false}
+                    contentClassName={cn(
+                      `text-wrap break-words [overflow-wrap:anywhere] font-semibold text-text-primary text-sm sm:text-sm md:text-sm lg:text-sm hover:underline`,
+                      {
+                        'line-clamp-2 text-xs sm:text-xs md:text-xs lg:text-xs':
+                          compactType === 'minimal' || compactType === 'default',
+                        'underline underline-text-tertiary hover:text-functional-green':
+                          compactType === 'minimal',
+                      }
+                    )}
+                    containerClassName="mb-0"
+                  />
+                </Link>
+              </div>
               <div className="flex h-full flex-shrink-0 flex-col items-center justify-between gap-1">
                 <Button
                   variant="transparent"
