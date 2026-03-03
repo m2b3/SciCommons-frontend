@@ -1,5 +1,7 @@
-import React, { useState, useCallback } from 'react';
-import Cropper, { Point, Area } from 'react-easy-crop';
+import React, { useCallback, useState } from 'react';
+
+import Cropper, { Area, Point } from 'react-easy-crop';
+
 import { Button, ButtonTitle } from '@/components/ui/button';
 
 interface ImageCropperProps {
@@ -67,7 +69,12 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ image, onCropComplete, onCa
         />
       </div>
       <div className="mt-4 flex w-full max-w-md gap-4">
-        <Button onClick={onCancel} variant="outline" type="button" className="flex-1 border-common-contrast bg-common-cardBackground text-text-primary hover:bg-common-minimal transition-colors">
+        <Button
+          onClick={onCancel}
+          variant="outline"
+          type="button"
+          className="flex-1 border-common-contrast bg-common-cardBackground text-text-primary transition-colors hover:bg-common-minimal"
+        >
           <ButtonTitle>Cancel</ButtonTitle>
         </Button>
         <Button onClick={getCroppedImg} variant="blue" type="button" className="flex-1">

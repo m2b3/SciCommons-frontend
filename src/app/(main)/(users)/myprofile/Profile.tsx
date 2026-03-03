@@ -8,10 +8,10 @@ import { Edit, Pencil, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import ImageCropper from '@/components/common/ImageCropper';
 import { emailSchema, nameSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
-import ImageCropper from '@/components/common/ImageCropper';
 
 interface ProfileProps {
   errors: FieldErrors<IProfileForm>;
