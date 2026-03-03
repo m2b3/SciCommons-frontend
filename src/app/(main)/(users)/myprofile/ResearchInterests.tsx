@@ -49,11 +49,7 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
           />
         )}
       />
-      {firstError && (
-        <div className="mt-2 text-functional-red res-text-xs">
-          {firstError}
-        </div>
-      )}
+      {firstError && <div className="mt-2 text-functional-red res-text-xs">{firstError}</div>}
     </div>
   );
 };

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo } from 'react';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -11,12 +12,11 @@ import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiUpdateUser } from '@/api/users/users';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
+import { profileMasterSchema } from '@/constants/zod-schema';
 import { useCurrentUser, useInvalidateCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { profileMasterSchema } from '@/constants/zod-schema';
 
 import PersonalLinks from './PersonalLinks';
 import ProfessionalStatus from './ProfessionalStatus';

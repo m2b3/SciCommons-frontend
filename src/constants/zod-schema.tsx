@@ -172,20 +172,23 @@ export const urlSchema = z.string().superRefine((url, ctx) => {
    Why: The resolver migration needed specific URL error messages (no union fallback) while still treating blank/whitespace-only values as optional.
    How: Trim inputs first; treat blank strings as valid optional values; otherwise run the strict URL schema and forward its specific issues. */
 const optionalTrimmedStringSchema = (schema: z.ZodString) =>
-  z.string().transform((value) => value.trim()).superRefine((value, ctx) => {
-    if (value.length === 0) {
-      return;
-    }
-    const result = schema.safeParse(value);
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        ctx.addIssue({
-          code: 'custom',
-          message: issue.message,
-        });
+  z
+    .string()
+    .transform((value) => value.trim())
+    .superRefine((value, ctx) => {
+      if (value.length === 0) {
+        return;
       }
-    }
-  });
+      const result = schema.safeParse(value);
+      if (!result.success) {
+        for (const issue of result.error.issues) {
+          ctx.addIssue({
+            code: 'custom',
+            message: issue.message,
+          });
+        }
+      }
+    });
 
 export const optionalScholarUrlSchema = optionalTrimmedStringSchema(scholarUrlSchema);
 export const optionalGithubUrlSchema = optionalTrimmedStringSchema(githubUrlSchema);
@@ -387,46 +390,49 @@ export const bioSchema = z
   .max(500, { message: 'Bio must not exceed 500 characters' })
   .optional();
 
-export const professionalStatusSchema = z.object({
-  status: statusSchema,
-  startYear: z.string()
-    .regex(/^\d{4}$/, "Start year must be a 4-digit number (e.g., '2020')")
-    .refine((val) => {
-      const year = parseInt(val, 10);
-      return year >= 1950 && year <= new Date().getFullYear();
-    }, "Start year must be between 1950 and the current year"),
-  endYear: z.string().transform((value) => value.trim()),
-  isOngoing: z.boolean().optional().default(false),
-}).superRefine((data, ctx) => {
-  const currentYear = new Date().getFullYear();
+export const professionalStatusSchema = z
+  .object({
+    status: statusSchema,
+    startYear: z
+      .string()
+      .regex(/^\d{4}$/, "Start year must be a 4-digit number (e.g., '2020')")
+      .refine((val) => {
+        const year = parseInt(val, 10);
+        return year >= 1950 && year <= new Date().getFullYear();
+      }, 'Start year must be between 1950 and the current year'),
+    endYear: z.string().transform((value) => value.trim()),
+    isOngoing: z.boolean().optional().default(false),
+  })
+  .superRefine((data, ctx) => {
+    const currentYear = new Date().getFullYear();
 
-  if (!data.isOngoing) {
-    if (!data.endYear || !/^\d{4}$/.test(data.endYear)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['endYear'],
-        message: "Valid 4-digit end year is required",
-      });
-      return;
+    if (!data.isOngoing) {
+      if (!data.endYear || !/^\d{4}$/.test(data.endYear)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['endYear'],
+          message: 'Valid 4-digit end year is required',
+        });
+        return;
+      }
+      const start = parseInt(data.startYear, 10);
+      const end = parseInt(data.endYear, 10);
+      if (end > currentYear) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['endYear'],
+          message: 'End year cannot be in the future',
+        });
+      }
+      if (end < start) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['endYear'],
+          message: 'End year must be after start year',
+        });
+      }
     }
-    const start = parseInt(data.startYear, 10);
-    const end = parseInt(data.endYear, 10);
-    if (end > currentYear) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['endYear'],
-        message: "End year cannot be in the future",
-      });
-    }
-    if (end < start) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['endYear'],
-        message: "End year must be after start year",
-      });
-    }
-  }
-});
+  });
 
 export const profileMasterSchema = z.object({
   /* Fixed by Codex on 2026-03-03
@@ -438,7 +444,7 @@ export const profileMasterSchema = z.object({
   firstName: nameSchema,
   lastName: nameSchema,
   email: emailSchema,
-  bio: z.string().max(500, "Bio must not exceed 500 characters"),
+  bio: z.string().max(500, 'Bio must not exceed 500 characters'),
   homePage: optionalUrlSchema,
   linkedIn: optionalLinkedInUrlSchema,
   github: optionalGithubUrlSchema,

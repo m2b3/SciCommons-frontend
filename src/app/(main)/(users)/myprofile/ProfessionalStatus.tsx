@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Plus, Trash2 } from 'lucide-react';
-import { FieldErrors, useFieldArray, useFormContext, get } from 'react-hook-form';
+import { FieldErrors, get, useFieldArray, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
