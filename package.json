@@ -27,6 +27,7 @@
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.7",
     "@headlessui/tailwindcss": "^0.2.1",
+    "@hookform/resolvers": "^5.2.2",
     "@mdxeditor/editor": "^3.32.3",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-checkbox": "^1.1.4",
@@ -86,7 +87,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-easy-crop": "^5.5.6",
-    "react-hook-form": "^7.51.5",
+    "react-hook-form": "^7.55.0",
     "react-loader-spinner": "^6.1.6",
     "react-quill": "^2.0.0",
     "react-resizable-panels": "^3.0.5",

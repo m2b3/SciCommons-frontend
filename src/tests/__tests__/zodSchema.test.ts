@@ -4,6 +4,7 @@ import {
   nameSchema,
   optionalUrlSchema,
   passwordSchema,
+  professionalStatusSchema,
   statusSchema,
   urlSchema,
 } from '@/constants/zod-schema';
@@ -86,6 +87,14 @@ describe('optionalUrlSchema', () => {
       expect(result.data).toBe('');
     }
   });
+
+  it('returns URL-specific errors instead of union fallback errors for non-empty invalid values', () => {
+    const result = optionalUrlSchema.safeParse('https://');
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).not.toBe('Invalid input');
+    }
+  });
 });
 
 describe('urlSchema', () => {
@@ -104,5 +113,19 @@ describe('statusSchema', () => {
   it('rejects whitespace-only status values', () => {
     expect(statusSchema.safeParse('   ').success).toBe(false);
     expect(statusSchema.safeParse('Researcher').success).toBe(true);
+  });
+});
+
+describe('professionalStatusSchema', () => {
+  it('keeps the status max-length constraint while validating years', () => {
+    const longStatus = 'a'.repeat(51);
+    expect(
+      professionalStatusSchema.safeParse({
+        status: longStatus,
+        startYear: '2020',
+        endYear: '2022',
+        isOngoing: false,
+      }).success
+    ).toBe(false);
   });
 });

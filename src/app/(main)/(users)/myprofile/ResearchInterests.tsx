@@ -1,17 +1,32 @@
 import React from 'react';
 
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, get, useFormContext } from 'react-hook-form';
 
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
-import { Option } from '@/components/ui/multiple-selector';
-import { researchInterestItemSchema } from '@/constants/zod-schema';
+
+import { IProfileForm } from './page';
 
 interface ResearchInterestsProps {
   editMode: boolean;
 }
 
 const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<IProfileForm>();
+  /* Fixed by Codex on 2026-03-03
+     Who: Codex
+     What: Remove `any` casting in research-interest nested error lookup.
+     Why: The previous cast triggered lint warnings and weakened safety around array error shape handling.
+     How: Read nested array errors as `unknown`, narrow with `Array.isArray`, then extract the first label message safely. */
+  const researchErrorList = get(errors, 'researchInterests') as unknown;
+  const firstError = Array.isArray(researchErrorList)
+    ? researchErrorList.find(
+        (err): err is { label?: { message?: string } } =>
+          typeof err === 'object' && err !== null && 'label' in err
+      )?.label?.message
+    : undefined;
 
   return (
     <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
@@ -22,19 +37,6 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
       <Controller
         name="researchInterests"
         control={control}
-        rules={{
-          validate: (value: Option[]) => {
-            if (!value || value.length === 0) return true;
-
-            for (const item of value) {
-              const result = researchInterestItemSchema.safeParse(item.label);
-              if (!result.success) {
-                return result.error.issues[0]?.message ?? 'Invalid research interest';
-              }
-            }
-            return true;
-          },
-        }}
         render={({ field, fieldState }) => (
           <MultiLabelSelector
             disabled={!editMode}
@@ -47,6 +49,11 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
           />
         )}
       />
+      {firstError && (
+        <div className="mt-2 text-functional-red res-text-xs">
+          {firstError}
+        </div>
+      )}
     </div>
   );
 };
