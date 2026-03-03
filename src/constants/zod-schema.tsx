@@ -171,12 +171,24 @@ export const urlSchema = z.string().superRefine((url, ctx) => {
    What: Add optional URL schema variants for profile link inputs.
    Why: Profile links are optional and should allow blank values without failing URL validation.
    How: Union strict URL validators with a trimmed-empty string schema so blank values pass while non-empty values stay strict. */
-const optionalEmptyStringSchema = z.string().trim().length(0);
+const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);
 
-export const optionalScholarUrlSchema = z.union([optionalEmptyStringSchema, scholarUrlSchema]);
-export const optionalGithubUrlSchema = z.union([optionalEmptyStringSchema, githubUrlSchema]);
-export const optionalLinkedInUrlSchema = z.union([optionalEmptyStringSchema, linkedInUrlSchema]);
-export const optionalUrlSchema = z.union([optionalEmptyStringSchema, urlSchema]);
+export const optionalScholarUrlSchema = z.preprocess(
+  emptyStringToUndefined,
+  scholarUrlSchema.optional()
+);
+export const optionalGithubUrlSchema = z.preprocess(
+  emptyStringToUndefined,
+  githubUrlSchema.optional()
+);
+export const optionalLinkedInUrlSchema = z.preprocess(
+  emptyStringToUndefined,
+  linkedInUrlSchema.optional()
+);
+export const optionalUrlSchema = z.preprocess(
+  emptyStringToUndefined,
+  urlSchema.optional()
+);
 
 export const passwordSchema = z
   .string({ error: 'Password must be a string' })
@@ -367,3 +379,69 @@ export const reviewSubjectSchema = z
   .min(1, { message: 'Subject is required' })
   .min(10, { message: 'Subject must be at least 10 characters' })
   .max(100, { message: 'Subject must not exceed 100 characters' });
+
+export const bioSchema = z
+  .string({ error: 'Bio must be a string' })
+  .max(500, { message: 'Bio must not exceed 500 characters' })
+  .optional();
+
+export const professionalStatusSchema = z.object({
+  status: z.string().trim().min(1, 'Status is required'),
+  startYear: z.string()
+    .regex(/^\d{4}$/, "Start year must be a 4-digit number (e.g., '2020')")
+    .refine((val) => {
+      const year = parseInt(val, 10);
+      return year >= 1950 && year <= new Date().getFullYear();
+    }, "Start year must be between 1950 and the current year"),
+  endYear: z.string().optional(),
+  isOngoing: z.boolean().optional().default(false),
+}).superRefine((data, ctx) => {
+  const currentYear = new Date().getFullYear();
+
+  if (!data.isOngoing) {
+    if (!data.endYear || !/^\d{4}$/.test(data.endYear)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['endYear'],
+        message: "Valid 4-digit end year is required",
+      });
+      return;
+    }
+    const start = parseInt(data.startYear, 10);
+    const end = parseInt(data.endYear, 10);
+    if (end > currentYear) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['endYear'],
+        message: "End year cannot be in the future",
+      });
+    }
+    if (end < start) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['endYear'],
+        message: "End year must be after start year",
+      });
+    }
+  }
+});
+
+export const profileMasterSchema = z.object({
+  username: usernameSchema,
+  firstName: nameSchema,
+  lastName: nameSchema,
+  email: emailSchema,
+  bio: z.string().max(500, "Bio must not exceed 500 characters").optional(),
+  homePage: z.preprocess((val) => (val === '' ? undefined : val), optionalUrlSchema),
+  linkedIn: z.preprocess((val) => (val === '' ? undefined : val), optionalLinkedInUrlSchema),
+  github: z.preprocess((val) => (val === '' ? undefined : val), optionalGithubUrlSchema),
+  googleScholar: z.preprocess((val) => (val === '' ? undefined : val), optionalScholarUrlSchema),
+  professionalStatuses: z.array(professionalStatusSchema),
+  researchInterests: z.array(
+    z.object({
+      label: researchInterestItemSchema,
+      value: z.string(),
+    })
+  ).default([]),
+  profilePicture: z.any().optional(),
+});

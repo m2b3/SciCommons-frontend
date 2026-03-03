@@ -15,6 +15,8 @@ import { useCurrentUser, useInvalidateCurrentUser } from '@/hooks/useCurrentUser
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { profileMasterSchema } from '@/constants/zod-schema';
 
 import PersonalLinks from './PersonalLinks';
 import ProfessionalStatus from './ProfessionalStatus';
@@ -53,6 +55,7 @@ const Home: React.FC = () => {
   const { invalidateUser } = useInvalidateCurrentUser();
 
   const methods = useForm<IProfileForm>({
+    resolver: zodResolver(profileMasterSchema),
     defaultValues: {
       professionalStatuses: [],
     },
@@ -97,16 +100,16 @@ const Home: React.FC = () => {
        Why: Validation allowed whitespace-only optional links and untrimmed status text, which could be sent as raw spaces.
        How: Trim link/status/year strings once at submit-time and use normalized values for validation + API payload. */
     const normalizedLinks = {
-      homePage: formData.homePage.trim(),
-      linkedIn: formData.linkedIn.trim(),
-      github: formData.github.trim(),
-      googleScholar: formData.googleScholar.trim(),
+      homePage: formData.homePage?.trim() || '',
+      linkedIn: formData.linkedIn?.trim() || '',
+      github: formData.github?.trim() || '',
+      googleScholar: formData.googleScholar?.trim() || '',
     };
     const normalizedStatuses = formData.professionalStatuses.map((status) => ({
       ...status,
-      status: status.status.trim(),
-      startYear: status.startYear.trim(),
-      endYear: status.endYear.trim(),
+      status: status.status?.trim() || '',
+      startYear: status.startYear?.trim() || '',
+      endYear: status.endYear?.trim() || '',
     }));
 
     const dataToSend = {
@@ -130,27 +133,6 @@ const Home: React.FC = () => {
        What: Harden submit-time year validation for professional statuses.
        Why: Non-numeric or malformed year strings could pass the previous Number/parse checks.
        How: Enforce 4-digit year format for start/end and keep range/order checks against the current year. */
-    const invalidYear = normalizedStatuses.some((s) => {
-      const currentYear = new Date().getFullYear();
-
-      if (!/^\d{4}$/.test(s.startYear)) return true;
-      const start = Number(s.startYear);
-      if (start < 1950 || start > currentYear) return true;
-
-      if (!s.isOngoing) {
-        if (!/^\d{4}$/.test(s.endYear)) return true;
-        const end = Number(s.endYear);
-        if (end < start) return true;
-        if (end > currentYear) return true;
-      }
-
-      return false;
-    });
-
-    if (invalidYear) {
-      toast.error('Enter valid years: use 4-digit years between 1950 and the current year.');
-      return;
-    }
 
     mutate({
       data: {

@@ -3,15 +3,15 @@ import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
-import { Option } from '@/components/ui/multiple-selector';
-import { researchInterestItemSchema } from '@/constants/zod-schema';
 
 interface ResearchInterestsProps {
   editMode: boolean;
 }
 
 const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
-  const { control } = useFormContext();
+  const { control, formState: { errors } } = useFormContext();
+  const researchErrors = errors.researchInterests as unknown as any[];
+  const firstError = researchErrors?.find?.((err) => err?.label?.message)?.label?.message;
 
   return (
     <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
@@ -22,19 +22,6 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
       <Controller
         name="researchInterests"
         control={control}
-        rules={{
-          validate: (value: Option[]) => {
-            if (!value || value.length === 0) return true;
-
-            for (const item of value) {
-              const result = researchInterestItemSchema.safeParse(item.label);
-              if (!result.success) {
-                return result.error.issues[0]?.message ?? 'Invalid research interest';
-              }
-            }
-            return true;
-          },
-        }}
         render={({ field, fieldState }) => (
           <MultiLabelSelector
             disabled={!editMode}
@@ -47,6 +34,11 @@ const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
           />
         )}
       />
+      {firstError && (
+        <div className="mt-2 text-functional-red res-text-xs">
+          {firstError}
+        </div>
+      )}
     </div>
   );
 };
