@@ -35,11 +35,21 @@ const Profile: React.FC<ProfileProps> = ({
   const [rawImage, setRawImage] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const profileImageInputRef = React.useRef<HTMLInputElement | null>(null);
+  const previewObjectUrlRef = React.useRef<string | null>(null);
 
   const profilePictureRegister = register('profilePicture');
 
+  /* Fixed by Codex on 2026-03-03
+     Who: Codex
+     What: Added object URL lifecycle cleanup for cropped profile previews.
+     Why: Repeated crop attempts created new blob URLs without revoking old ones, leaking browser memory.
+     How: Track the active preview object URL in a ref and revoke it when replacing preview, leaving edit mode, and on unmount. */
   useEffect(() => {
     if (!editMode) {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
       setPreviewImage(null);
       setRawImage(null);
       setShowCropper(false);
@@ -48,6 +58,15 @@ const Profile: React.FC<ProfileProps> = ({
       }
     }
   }, [editMode]);
+
+  useEffect(() => {
+    return () => {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
+    };
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,7 +93,12 @@ const Profile: React.FC<ProfileProps> = ({
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(croppedFile);
             setValue('profilePicture', dataTransfer.files, { shouldDirty: true });
-            setPreviewImage(URL.createObjectURL(croppedFile));
+            if (previewObjectUrlRef.current) {
+              URL.revokeObjectURL(previewObjectUrlRef.current);
+            }
+            const nextPreviewObjectUrl = URL.createObjectURL(croppedFile);
+            previewObjectUrlRef.current = nextPreviewObjectUrl;
+            setPreviewImage(nextPreviewObjectUrl);
             setShowCropper(false);
           }}
         />

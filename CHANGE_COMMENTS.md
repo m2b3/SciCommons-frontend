@@ -1,3 +1,15 @@
+## 2026-03-03 - Profile Crop Preview Object URL Cleanup
+
+Problem: Profile image crop previews used `URL.createObjectURL` without revoking prior object URLs, which could leak browser memory when users cropped repeatedly.
+
+Root Cause: The preview URL was replaced directly in component state on each crop completion, but there was no tracked URL lifecycle cleanup on replace/edit-exit/unmount.
+
+Solution: Added object URL lifecycle management in profile editing: store the active blob URL in a ref, revoke it before creating a new preview URL, revoke it when edit mode closes, and revoke on component unmount.
+
+Result: Repeated crop attempts no longer accumulate stale blob URLs, reducing memory growth during profile editing sessions.
+
+Files Modified: `src/app/(main)/(users)/myprofile/Profile.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-01 - Email-or-Username Validator ReDoS-Resilient Refactor
 
 Problem: `emailOrUsernameSchema` still relied on a regex with repeated groups (`([\w-]+\.)+`) in a high-frequency auth validation path.
