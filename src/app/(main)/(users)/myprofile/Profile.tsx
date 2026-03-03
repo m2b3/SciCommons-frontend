@@ -155,8 +155,10 @@ const Profile: React.FC<ProfileProps> = ({
             }}
             disabled={editMode && (!isActuallyDirty || isPending)}
             className={`ml-4 ${
-              editMode && (!isActuallyDirty || isPending)
-                ? 'cursor-not-allowed text-text-tertiary opacity-50'
+              editMode
+                ? isActuallyDirty && !isPending
+                  ? 'text-functional-green hover:text-functional-greenContrast'
+                  : 'cursor-not-allowed text-text-tertiary opacity-50'
                 : 'text-functional-blue hover:text-functional-blueContrast'
             }`}
             aria-label={editMode ? 'Save profile' : 'Edit profile'}
