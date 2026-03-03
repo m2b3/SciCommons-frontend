@@ -166,29 +166,31 @@ export const urlSchema = z.string().superRefine((url, ctx) => {
   }
 });
 
-/* Fixed by Codex on 2026-02-27
+/* Fixed by Codex on 2026-03-03
    Who: Codex
-   What: Add optional URL schema variants for profile link inputs.
-   Why: Profile links are optional and should allow blank values without failing URL validation.
-   How: Union strict URL validators with a trimmed-empty string schema so blank values pass while non-empty values stay strict. */
-const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);
+   What: Normalize optional profile-link inputs before URL validation.
+   Why: The resolver migration needed specific URL error messages (no union fallback) while still treating blank/whitespace-only values as optional.
+   How: Trim inputs first; treat blank strings as valid optional values; otherwise run the strict URL schema and forward its specific issues. */
+const optionalTrimmedStringSchema = (schema: z.ZodString) =>
+  z.string().transform((value) => value.trim()).superRefine((value, ctx) => {
+    if (value.length === 0) {
+      return;
+    }
+    const result = schema.safeParse(value);
+    if (!result.success) {
+      for (const issue of result.error.issues) {
+        ctx.addIssue({
+          code: 'custom',
+          message: issue.message,
+        });
+      }
+    }
+  });
 
-export const optionalScholarUrlSchema = z.preprocess(
-  emptyStringToUndefined,
-  scholarUrlSchema.optional()
-);
-export const optionalGithubUrlSchema = z.preprocess(
-  emptyStringToUndefined,
-  githubUrlSchema.optional()
-);
-export const optionalLinkedInUrlSchema = z.preprocess(
-  emptyStringToUndefined,
-  linkedInUrlSchema.optional()
-);
-export const optionalUrlSchema = z.preprocess(
-  emptyStringToUndefined,
-  urlSchema.optional()
-);
+export const optionalScholarUrlSchema = optionalTrimmedStringSchema(scholarUrlSchema);
+export const optionalGithubUrlSchema = optionalTrimmedStringSchema(githubUrlSchema);
+export const optionalLinkedInUrlSchema = optionalTrimmedStringSchema(linkedInUrlSchema);
+export const optionalUrlSchema = optionalTrimmedStringSchema(urlSchema);
 
 export const passwordSchema = z
   .string({ error: 'Password must be a string' })
@@ -386,14 +388,14 @@ export const bioSchema = z
   .optional();
 
 export const professionalStatusSchema = z.object({
-  status: z.string().trim().min(1, 'Status is required'),
+  status: statusSchema,
   startYear: z.string()
     .regex(/^\d{4}$/, "Start year must be a 4-digit number (e.g., '2020')")
     .refine((val) => {
       const year = parseInt(val, 10);
       return year >= 1950 && year <= new Date().getFullYear();
     }, "Start year must be between 1950 and the current year"),
-  endYear: z.string().optional(),
+  endYear: z.string().transform((value) => value.trim()),
   isOngoing: z.boolean().optional().default(false),
 }).superRefine((data, ctx) => {
   const currentYear = new Date().getFullYear();
@@ -427,21 +429,26 @@ export const professionalStatusSchema = z.object({
 });
 
 export const profileMasterSchema = z.object({
-  username: usernameSchema,
+  /* Fixed by Codex on 2026-03-03
+     Who: Codex
+     What: Keep read-only username validation aligned with existing profile UX.
+     Why: Applying full signup username constraints here can block profile saves for immutable legacy usernames.
+     How: Require non-empty username in profile form while leaving strict format rules to signup/update-username flows. */
+  username: z.string().min(1, { message: 'Username is required' }),
   firstName: nameSchema,
   lastName: nameSchema,
   email: emailSchema,
-  bio: z.string().max(500, "Bio must not exceed 500 characters").optional(),
-  homePage: z.preprocess((val) => (val === '' ? undefined : val), optionalUrlSchema),
-  linkedIn: z.preprocess((val) => (val === '' ? undefined : val), optionalLinkedInUrlSchema),
-  github: z.preprocess((val) => (val === '' ? undefined : val), optionalGithubUrlSchema),
-  googleScholar: z.preprocess((val) => (val === '' ? undefined : val), optionalScholarUrlSchema),
+  bio: z.string().max(500, "Bio must not exceed 500 characters"),
+  homePage: optionalUrlSchema,
+  linkedIn: optionalLinkedInUrlSchema,
+  github: optionalGithubUrlSchema,
+  googleScholar: optionalScholarUrlSchema,
   professionalStatuses: z.array(professionalStatusSchema),
   researchInterests: z.array(
     z.object({
       label: researchInterestItemSchema,
       value: z.string(),
     })
-  ).default([]),
+  ),
   profilePicture: z.any().optional(),
 });

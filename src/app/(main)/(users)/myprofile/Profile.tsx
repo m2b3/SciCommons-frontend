@@ -9,7 +9,6 @@ import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
 import ImageCropper from '@/components/common/ImageCropper';
-import { emailSchema, nameSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -166,6 +165,11 @@ const Profile: React.FC<ProfileProps> = ({
           </button>
         </h2>
         <div className="space-y-4">
+          {/* Fixed by Codex on 2026-03-03
+             Who: Codex
+             What: Remove local schema props from profile inputs.
+             Why: The profile page now uses `zodResolver(profileMasterSchema)` as the single validation source.
+             How: Keep component-level inputs declarative and let centralized resolver rules handle validation/errors. */}
           <FormInput
             label="Username"
             name="username"
@@ -182,7 +186,6 @@ const Profile: React.FC<ProfileProps> = ({
               type="text"
               register={register}
               errors={errors}
-              schema={nameSchema}
               readOnly={!editMode}
             />
             <FormInput
@@ -191,7 +194,6 @@ const Profile: React.FC<ProfileProps> = ({
               type="text"
               register={register}
               errors={errors}
-              schema={nameSchema}
               readOnly={!editMode}
             />
           </div>
@@ -201,7 +203,6 @@ const Profile: React.FC<ProfileProps> = ({
             type="email"
             register={register}
             errors={errors}
-            schema={emailSchema}
             readOnly={true}
           />
           <FormInput

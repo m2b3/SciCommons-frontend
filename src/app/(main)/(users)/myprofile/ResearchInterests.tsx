@@ -1,17 +1,32 @@
 import React from 'react';
 
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, get, useFormContext } from 'react-hook-form';
 
 import MultiLabelSelector from '@/components/common/MultiLabelSelector';
+
+import { IProfileForm } from './page';
 
 interface ResearchInterestsProps {
   editMode: boolean;
 }
 
 const ResearchInterests: React.FC<ResearchInterestsProps> = ({ editMode }) => {
-  const { control, formState: { errors } } = useFormContext();
-  const researchErrors = errors.researchInterests as unknown as any[];
-  const firstError = researchErrors?.find?.((err) => err?.label?.message)?.label?.message;
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<IProfileForm>();
+  /* Fixed by Codex on 2026-03-03
+     Who: Codex
+     What: Remove `any` casting in research-interest nested error lookup.
+     Why: The previous cast triggered lint warnings and weakened safety around array error shape handling.
+     How: Read nested array errors as `unknown`, narrow with `Array.isArray`, then extract the first label message safely. */
+  const researchErrorList = get(errors, 'researchInterests') as unknown;
+  const firstError = Array.isArray(researchErrorList)
+    ? researchErrorList.find(
+        (err): err is { label?: { message?: string } } =>
+          typeof err === 'object' && err !== null && 'label' in err
+      )?.label?.message
+    : undefined;
 
   return (
     <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:p-6">
