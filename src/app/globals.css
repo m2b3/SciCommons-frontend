@@ -21,6 +21,7 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', 'Noto Sans', system-ui,
     'Helvetica Neue', Arial, sans-serif;
+  --Text-Tertiary: 71, 85, 105; 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -221,7 +222,7 @@ body {
        What: Increase light-mode tertiary text contrast.
        Why: Tertiary copy fell below WCAG AA on white surfaces.
        How: Darkened the tertiary token to a higher-contrast slate tone. */
-    --Text-Tertiary: 100, 116, 139;
+    --Text-Tertiary: 71, 85, 105; 
 
     /* Loading */
     --loading: #f2f2f2;
@@ -387,7 +388,12 @@ body {
     --Functional-Green-GreenLight: 142, 220, 202;
     --Functional-Green-Greencontrast: 12, 88, 76;
 
-    --Functional-Blue-Blue: 56, 116, 190;
+    /* Fixed by Abhishek2634 on 2026-03-02
+       Who: Abhishek2634
+       What: Darkened sage-skin primary blue for WCAG AA compliance.
+       Why: The previous value (56, 116, 190) failed contrast checks (4.19:1) on light surfaces.
+       How: Shifted the token to a deeper navy tone (45, 95, 165) to pass the 4.5:1 threshold. */
+    --Functional-Blue-Blue: 45, 95, 165;
     --Functional-Blue-BlueLight: 133, 182, 226;
     --Functional-Blue-Bluecontrast: 41, 93, 160;
 
@@ -420,7 +426,12 @@ body {
 
     --Text-Primary: 18, 30, 26;
     --Text-Secondary: 74, 92, 86;
-    --Text-Tertiary: 103, 120, 112;
+    /* Fixed by Abhishek2634 on 2026-03-02
+       Who: Abhishek2634
+       What: Darkened sage-skin tertiary text contrast for WCAG AA compliance.
+       Why: The previous value (103, 120, 112) failed contrast checks (4.36:1) on the sage background.
+       How: Shifted the token to a darker sage-slate tone (75, 85, 99) to pass the 4.5:1 threshold. */
+    --Text-Tertiary: 75, 85, 99;
 
     --loading: #eef2ef;
 

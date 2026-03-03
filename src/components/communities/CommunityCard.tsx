@@ -239,7 +239,7 @@ const CommunityCard: FC<CommunityCardProps> = ({
                How: Replace emerald/indigo/red utilities with functional tokens. */
             'border-functional-green bg-functional-green/10 text-functional-green':
               community.type === 'public',
-            'border-functional-blue bg-functional-blue/10 text-functional-blue':
+            'border-functional-blue bg-functional-blue/10 text-functional-blue-contrast':
               community.type === 'private',
             'border-functional-red bg-functional-red/10 text-functional-red':
               community.type === 'hidden',
