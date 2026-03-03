@@ -244,7 +244,7 @@ const Home: React.FC = () => {
                   reset();
                   setEditMode(false);
                 }}
-                className="w-full border border-common-contrast bg-common-cardBackground text-text-primary hover:bg-common-minimal"
+                className="w-full border border-common-contrast bg-common-cardBackground text-text-primary hover:bg-common-minimal transition-colors"
               >
                 <ButtonTitle>Cancel</ButtonTitle>
               </Button>

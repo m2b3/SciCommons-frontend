@@ -11,6 +11,7 @@ import FormInput from '@/components/common/FormInput';
 import { emailSchema, nameSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
+import ImageCropper from '@/components/common/ImageCropper';
 
 interface ProfileProps {
   errors: FieldErrors<IProfileForm>;
@@ -29,8 +30,10 @@ const Profile: React.FC<ProfileProps> = ({
   isPending,
   isActuallyDirty,
 }) => {
-  const { register } = useFormContext<IProfileForm>();
+  const { register, setValue } = useFormContext<IProfileForm>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [rawImage, setRawImage] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
   const profileImageInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const profilePictureRegister = register('profilePicture');
@@ -38,14 +41,44 @@ const Profile: React.FC<ProfileProps> = ({
   useEffect(() => {
     if (!editMode) {
       setPreviewImage(null);
+      setRawImage(null);
+      setShowCropper(false);
       if (profileImageInputRef.current) {
         profileImageInputRef.current.value = '';
       }
     }
   }, [editMode]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setRawImage(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-4xl flex-col rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:flex-row md:p-6">
+      {showCropper && rawImage && (
+        <ImageCropper
+          image={rawImage}
+          onCancel={() => {
+            setShowCropper(false);
+            if (profileImageInputRef.current) profileImageInputRef.current.value = '';
+          }}
+          onCropComplete={(croppedFile) => {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            setValue('profilePicture', dataTransfer.files, { shouldDirty: true });
+            setPreviewImage(URL.createObjectURL(croppedFile));
+            setShowCropper(false);
+          }}
+        />
+      )}
       <div className="mx-auto mb-6 flex items-start justify-center md:mb-0 md:mr-6 md:w-1/3">
         <div className="relative h-40 w-40 shrink-0">
           <div className="h-full w-full overflow-hidden rounded-full border-2 border-common-minimal bg-common-minimal">
@@ -66,17 +99,7 @@ const Profile: React.FC<ProfileProps> = ({
             className="hidden"
             name={profilePictureRegister.name}
             onBlur={profilePictureRegister.onBlur}
-            onChange={(e) => {
-              profilePictureRegister.onChange(e);
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setPreviewImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
+            onChange={handleFileChange}
             ref={(element) => {
               profilePictureRegister.ref(element);
               profileImageInputRef.current = element;
