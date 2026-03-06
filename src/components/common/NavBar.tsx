@@ -156,12 +156,12 @@ const NavBar: React.FC = () => {
     { href: '/discussions', label: 'Discussions', altHref: '/discussion' },
     ...(isAuthenticated
       ? [
-          {
-            href: '/mycontributions?tab=bookmarks',
-            label: 'Bookmarks',
-            altHref: '/mycontributions',
-          },
-        ]
+        {
+          href: '/mycontributions?tab=bookmarks',
+          label: 'Bookmarks',
+          altHref: '/mycontributions',
+        },
+      ]
       : []),
     { href: '/help', label: 'Help', bold: true },
     // { href: '/posts', label: 'Posts' },
@@ -192,16 +192,18 @@ const NavBar: React.FC = () => {
               What: Convert the back icon into a real button.
               Why: Icon-only divs are not keyboard accessible or announced by screen readers.
               How: Wrap the icon in a button with an aria-label and click handler. */}
-          <button
-            type="button"
-            aria-label="Go back"
-            className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            <MoveLeft className="size-5" strokeWidth={1.5} />
-          </button>
+          {pathname !== "/" && (
+            <button
+              type="button"
+              aria-label="Go back"
+              className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              <MoveLeft className="size-5" strokeWidth={1.5} />
+            </button>
+          )}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
               <Image
