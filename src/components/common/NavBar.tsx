@@ -156,12 +156,12 @@ const NavBar: React.FC = () => {
     { href: '/discussions', label: 'Discussions', altHref: '/discussion' },
     ...(isAuthenticated
       ? [
-        {
-          href: '/mycontributions?tab=bookmarks',
-          label: 'Bookmarks',
-          altHref: '/mycontributions',
-        },
-      ]
+          {
+            href: '/mycontributions?tab=bookmarks',
+            label: 'Bookmarks',
+            altHref: '/mycontributions',
+          },
+        ]
       : []),
     { href: '/help', label: 'Help', bold: true },
     // { href: '/posts', label: 'Posts' },
