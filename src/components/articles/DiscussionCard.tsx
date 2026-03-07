@@ -15,7 +15,7 @@ import {
 import { DiscussionOut, EntityType } from '@/api/schemas';
 import { useMarkAsReadOnView } from '@/hooks/useMarkAsReadOnView';
 import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
-import { hasUnreadFlag } from '@/hooks/useUnreadFlags';
+import { hasUnreadCommentFlag, hasUnreadFlag } from '@/hooks/useUnreadFlags';
 import { decodeHtmlEntities } from '@/lib/htmlEntities';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
@@ -96,6 +96,11 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
   // Check if this discussion has the unread flag from API response
   const hasUnread = hasUnreadFlag(discussion.flags);
+  /* Added by Claude on 2026-03-07
+     What: Check for unread_comment flag indicating new comments in a previously-read discussion
+     Why: When user was away and new comments were added, backend sets this flag to show NEW tag
+          even though the discussion itself was already read by the user */
+  const hasUnreadComment = hasUnreadCommentFlag(discussion.flags);
   /* Fixed by Codex on 2026-02-19
      Who: Codex
      What: Decode backend-escaped discussion text for card rendering and edit defaults.
@@ -110,11 +115,15 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
     [discussion.content]
   );
 
-  // Use the mark as read hook - tracks read state locally and syncs with backend
+  /* Updated by Claude on 2026-03-07
+     What: Pass hasUnreadCommentFlag to the hook
+     Why: The unread_comment flag should trigger NEW tag display and auto-expand comments
+          even if the discussion is already in the local readItems store */
   const { showNewTag } = useMarkAsReadOnView(cardRef, {
     entityId: Number(discussion.id),
     entityType: 'discussion',
     hasUnreadFlag: hasUnread,
+    hasUnreadCommentFlag: hasUnreadComment,
     articleContext: communityId && articleId ? { communityId, articleId } : undefined,
   });
 

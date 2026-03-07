@@ -3,12 +3,6 @@ import React from 'react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
-import {
-  optionalGithubUrlSchema,
-  optionalLinkedInUrlSchema,
-  optionalScholarUrlSchema,
-  optionalUrlSchema,
-} from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -32,6 +26,11 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           What: Use optional URL schemas for profile links.
           Why: Personal links are optional fields and blank values should not block profile saves.
           How: Swap strict URL validators with optional wrappers that allow empty inputs but keep strict checks for non-empty values. */}
+      {/* Fixed by Codex on 2026-03-03
+          Who: Codex
+          What: Remove per-field URL schema wiring from the view component.
+          Why: Validation is now centralized in `profileMasterSchema` via `zodResolver`, and keeping both paths risks drift.
+          How: Keep `FormInput` focused on rendering/registering while resolver owns URL validation behavior and messages. */}
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormInput
           label="Home Page URL"
@@ -39,7 +38,6 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          schema={optionalUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
@@ -48,7 +46,6 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          schema={optionalLinkedInUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
@@ -57,7 +54,6 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          schema={optionalGithubUrlSchema}
           readOnly={!editMode}
         />
         <FormInput
@@ -66,7 +62,6 @@ const PersonalLinks: React.FC<PersonalLinksProps> = ({ errors, editMode }) => {
           type="url"
           register={register}
           errors={errors}
-          schema={optionalScholarUrlSchema}
           readOnly={!editMode}
         />
       </div>

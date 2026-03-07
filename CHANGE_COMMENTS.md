@@ -1,3 +1,27 @@
+## 2026-03-03 - Profile Validation Consolidation Follow-up (Regression Fixes)
+
+Problem: The profile Zod-resolver refactor improved architecture but introduced behavioral regressions and consistency issues (optional URL whitespace handling mismatch, dropped status max-length guard, mixed validation sources, and lint/type-safety drift).
+
+Root Cause: Centralization changes were applied partially across form components and schemas, leaving duplicated validation paths and one simplified preprocess rule that did not preserve prior whitespace-empty semantics.
+
+Solution: Updated optional URL preprocess to treat whitespace-only values as optional while keeping URL-specific errors, restored professional status max-length validation via shared `statusSchema`, aligned read-only username validation with profile UX safety, removed per-field profile/personal-links schema wiring in favor of resolver-owned validation, and replaced `any`-based nested error extraction with typed narrowing.
+
+Result: Validation remains centralized and predictable, previously reported nested-array improvements are preserved, optional links behave consistently, status limits are enforced again, and lint/type quality is improved without re-fragmenting logic.
+
+Files Modified: `src/constants/zod-schema.tsx`, `src/app/(main)/(users)/myprofile/PersonalLinks.tsx`, `src/app/(main)/(users)/myprofile/Profile.tsx`, `src/app/(main)/(users)/myprofile/ResearchInterests.tsx`, `src/tests/__tests__/zodSchema.test.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-03 - Profile Crop Preview Object URL Cleanup
+
+Problem: Profile image crop previews used `URL.createObjectURL` without revoking prior object URLs, which could leak browser memory when users cropped repeatedly.
+
+Root Cause: The preview URL was replaced directly in component state on each crop completion, but there was no tracked URL lifecycle cleanup on replace/edit-exit/unmount.
+
+Solution: Added object URL lifecycle management in profile editing: store the active blob URL in a ref, revoke it before creating a new preview URL, revoke it when edit mode closes, and revoke on component unmount.
+
+Result: Repeated crop attempts no longer accumulate stale blob URLs, reducing memory growth during profile editing sessions.
+
+Files Modified: `src/app/(main)/(users)/myprofile/Profile.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-01 - Email-or-Username Validator ReDoS-Resilient Refactor
 
 Problem: `emailOrUsernameSchema` still relied on a regex with repeated groups (`([\w-]+\.)+`) in a high-frequency auth validation path.

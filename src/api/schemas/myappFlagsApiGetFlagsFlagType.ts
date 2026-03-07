@@ -12,4 +12,5 @@ export type MyappFlagsApiGetFlagsFlagType = typeof MyappFlagsApiGetFlagsFlagType
 export const MyappFlagsApiGetFlagsFlagType = {
   unread: 'unread',
   pinned: 'pinned',
+  unread_comment: 'unread_comment',
 } as const;

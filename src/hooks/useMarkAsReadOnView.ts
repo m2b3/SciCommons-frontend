@@ -13,6 +13,11 @@ interface UseMarkAsReadOnViewOptions {
   entityType: 'discussion' | 'comment' | 'reply';
   /** Whether the item has the unread flag from API */
   hasUnreadFlag: boolean;
+  /* Added by Claude on 2026-03-07
+     What: New optional prop for unread_comment flag
+     Why: Discussions with new comments (added while user was away) should show NEW tag
+          even if the discussion itself was previously read - this flag bypasses readItems check */
+  hasUnreadCommentFlag?: boolean;
   /** Article context for tracking which article this item belongs to */
   articleContext?: {
     communityId: number;
@@ -47,7 +52,14 @@ export function useMarkAsReadOnView(
   ref: RefObject<HTMLElement | null>,
   options: UseMarkAsReadOnViewOptions
 ): UseMarkAsReadOnViewReturn {
-  const { entityId, entityType, hasUnreadFlag, articleContext, visibilityDelay = 2000 } = options;
+  const {
+    entityId,
+    entityType,
+    hasUnreadFlag,
+    hasUnreadCommentFlag = false,
+    articleContext,
+    visibilityDelay = 2000,
+  } = options;
 
   const markItemRead = useReadItemsStore((s) => s.markItemRead);
   const isItemRead = useReadItemsStore((s) => s.isItemRead);
@@ -78,9 +90,15 @@ export function useMarkAsReadOnView(
           while comment/reply behavior should remain unchanged.
      How: For `discussion`, let realtime unread bypass historical read state; for other entities keep the original gate. */
   const isUnreadByApi = hasUnreadFlag && !isAlreadyRead;
+  /* Added by Claude on 2026-03-07
+     What: unread_comment flag bypasses the readItems check entirely
+     Why: When user was away and new comments were added to a previously-read discussion,
+          backend sets unread_comment flag. This should show NEW tag regardless of local read state
+          because it represents new activity since the user last read the discussion. */
+  const isUnreadByNewComment = hasUnreadCommentFlag === true;
   const isUnreadByRealtime =
     entityType === 'discussion' ? isEphemeralUnread : isEphemeralUnread && !isAlreadyRead;
-  const isUnread = isUnreadByApi || isUnreadByRealtime;
+  const isUnread = isUnreadByApi || isUnreadByNewComment || isUnreadByRealtime;
 
   // State for NEW tag visibility
   const [showNewTag, setShowNewTag] = useState(isUnread);
@@ -123,8 +141,15 @@ export function useMarkAsReadOnView(
               hasProcessedRef.current = true;
 
               // Mark as read in local storage (immediate)
+              /* Updated by Claude on 2026-03-07
+                 What: Include hasUnreadCommentFlag in the check for realtime-only unread
+                 Why: When unread_comment flag is set, we should mark as read and clear flags
+                      (unlike realtime-only which is ephemeral and shouldn't clear article badges) */
               const isRealtimeOnlyDiscussionUnread =
-                entityType === 'discussion' && isEphemeralUnread && !hasUnreadFlag;
+                entityType === 'discussion' &&
+                isEphemeralUnread &&
+                !hasUnreadFlag &&
+                !hasUnreadCommentFlag;
 
               /* Fixed by Codex on 2026-02-17
                  Who: Codex
@@ -184,6 +209,7 @@ export function useMarkAsReadOnView(
     clearEphemeralUnread,
     isEphemeralUnread,
     hasUnreadFlag,
+    hasUnreadCommentFlag,
   ]);
 
   // Cleanup on unmount

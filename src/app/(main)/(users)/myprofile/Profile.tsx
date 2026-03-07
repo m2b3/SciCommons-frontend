@@ -8,7 +8,7 @@ import { Edit, Pencil, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
-import { emailSchema, nameSchema } from '@/constants/zod-schema';
+import ImageCropper from '@/components/common/ImageCropper';
 
 import { IProfileForm } from './page';
 
@@ -29,23 +29,79 @@ const Profile: React.FC<ProfileProps> = ({
   isPending,
   isActuallyDirty,
 }) => {
-  const { register } = useFormContext<IProfileForm>();
+  const { register, setValue } = useFormContext<IProfileForm>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [rawImage, setRawImage] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
   const profileImageInputRef = React.useRef<HTMLInputElement | null>(null);
+  const previewObjectUrlRef = React.useRef<string | null>(null);
 
   const profilePictureRegister = register('profilePicture');
 
+  /* Fixed by Codex on 2026-03-03
+     Who: Codex
+     What: Added object URL lifecycle cleanup for cropped profile previews.
+     Why: Repeated crop attempts created new blob URLs without revoking old ones, leaking browser memory.
+     How: Track the active preview object URL in a ref and revoke it when replacing preview, leaving edit mode, and on unmount. */
   useEffect(() => {
     if (!editMode) {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
       setPreviewImage(null);
+      setRawImage(null);
+      setShowCropper(false);
       if (profileImageInputRef.current) {
         profileImageInputRef.current.value = '';
       }
     }
   }, [editMode]);
 
+  useEffect(() => {
+    return () => {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setRawImage(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-4xl flex-col rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:flex-row md:p-6">
+      {showCropper && rawImage && (
+        <ImageCropper
+          image={rawImage}
+          onCancel={() => {
+            setShowCropper(false);
+            if (profileImageInputRef.current) profileImageInputRef.current.value = '';
+          }}
+          onCropComplete={(croppedFile) => {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            setValue('profilePicture', dataTransfer.files, { shouldDirty: true });
+            if (previewObjectUrlRef.current) {
+              URL.revokeObjectURL(previewObjectUrlRef.current);
+            }
+            const nextPreviewObjectUrl = URL.createObjectURL(croppedFile);
+            previewObjectUrlRef.current = nextPreviewObjectUrl;
+            setPreviewImage(nextPreviewObjectUrl);
+            setShowCropper(false);
+          }}
+        />
+      )}
       <div className="mx-auto mb-6 flex items-start justify-center md:mb-0 md:mr-6 md:w-1/3">
         <div className="relative h-40 w-40 shrink-0">
           <div className="h-full w-full overflow-hidden rounded-full border-2 border-common-minimal bg-common-minimal">
@@ -66,17 +122,7 @@ const Profile: React.FC<ProfileProps> = ({
             className="hidden"
             name={profilePictureRegister.name}
             onBlur={profilePictureRegister.onBlur}
-            onChange={(e) => {
-              profilePictureRegister.onChange(e);
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setPreviewImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
+            onChange={handleFileChange}
             ref={(element) => {
               profilePictureRegister.ref(element);
               profileImageInputRef.current = element;
@@ -109,8 +155,10 @@ const Profile: React.FC<ProfileProps> = ({
             }}
             disabled={editMode && (!isActuallyDirty || isPending)}
             className={`ml-4 ${
-              editMode && (!isActuallyDirty || isPending)
-                ? 'cursor-not-allowed text-text-tertiary opacity-50'
+              editMode
+                ? isActuallyDirty && !isPending
+                  ? 'text-functional-green hover:text-functional-greenContrast'
+                  : 'cursor-not-allowed text-text-tertiary opacity-50'
                 : 'text-functional-blue hover:text-functional-blueContrast'
             }`}
             aria-label={editMode ? 'Save profile' : 'Edit profile'}
@@ -119,6 +167,11 @@ const Profile: React.FC<ProfileProps> = ({
           </button>
         </h2>
         <div className="space-y-4">
+          {/* Fixed by Codex on 2026-03-03
+             Who: Codex
+             What: Remove local schema props from profile inputs.
+             Why: The profile page now uses `zodResolver(profileMasterSchema)` as the single validation source.
+             How: Keep component-level inputs declarative and let centralized resolver rules handle validation/errors. */}
           <FormInput
             label="Username"
             name="username"
@@ -135,7 +188,6 @@ const Profile: React.FC<ProfileProps> = ({
               type="text"
               register={register}
               errors={errors}
-              schema={nameSchema}
               readOnly={!editMode}
             />
             <FormInput
@@ -144,7 +196,6 @@ const Profile: React.FC<ProfileProps> = ({
               type="text"
               register={register}
               errors={errors}
-              schema={nameSchema}
               readOnly={!editMode}
             />
           </div>
@@ -154,7 +205,6 @@ const Profile: React.FC<ProfileProps> = ({
             type="email"
             register={register}
             errors={errors}
-            schema={emailSchema}
             readOnly={true}
           />
           <FormInput

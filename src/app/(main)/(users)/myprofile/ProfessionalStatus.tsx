@@ -1,11 +1,10 @@
 import React from 'react';
 
 import { Plus, Trash2 } from 'lucide-react';
-import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
+import { FieldErrors, get, useFieldArray, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
-import { statusSchema, yearSchema } from '@/constants/zod-schema';
 
 import { IProfileForm } from './page';
 
@@ -35,10 +34,11 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
         const statusFieldName = `professionalStatuses.${index}.status` as keyof IProfileForm;
         const startYearFieldName = `professionalStatuses.${index}.startYear` as keyof IProfileForm;
         const endYearFieldName = `professionalStatuses.${index}.endYear` as keyof IProfileForm;
+        const startYearError = get(errors, startYearFieldName);
+        const endYearError = get(errors, endYearFieldName);
+        const statusError = get(errors, statusFieldName);
 
         const watchedOngoing = watch(`professionalStatuses.${index}.isOngoing`);
-        const startYearValue = watch(`professionalStatuses.${index}.startYear`);
-
         const isOngoing = watchedOngoing;
 
         return (
@@ -51,7 +51,6 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                   type="text"
                   register={register}
                   errors={errors}
-                  schema={statusSchema}
                   readOnly={!editMode}
                 />
               </div>
@@ -63,7 +62,6 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                   type="text"
                   register={register}
                   errors={errors}
-                  schema={yearSchema}
                   readOnly={!editMode}
                 />
               </div>
@@ -76,18 +74,7 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                     type="text"
                     register={register}
                     errors={errors}
-                    schema={yearSchema}
                     readOnly={!editMode}
-                    validateFn={(value: string) => {
-                      if (isOngoing) return true;
-                      if (!value) return 'End year is required';
-                      const start = parseInt(startYearValue, 10);
-                      const end = parseInt(value, 10);
-                      if (!isNaN(start) && !isNaN(end) && end < start) {
-                        return 'End year must be after start year';
-                      }
-                      return true;
-                    }}
                   />
                 ) : (
                   <div className="flex flex-col">
@@ -127,6 +114,11 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
                 </Button>
               )}
             </div>
+            {(startYearError || endYearError || statusError) && (
+              <div className="mt-2 text-functional-red res-text-xs">
+                {statusError?.message || startYearError?.message || endYearError?.message}
+              </div>
+            )}
           </div>
         );
       })}
