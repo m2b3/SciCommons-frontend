@@ -15,7 +15,7 @@ export interface DiscussionOut {
   content: string;
   created_at: string;
   deleted_at?: DiscussionOutDeletedAt;
-  /** List of flags set for this entity for the current user (e.g., ['unread']). Empty for unauthenticated users. */
+  /** List of flags for the current user. 'unread' = discussion itself is unread, 'unread_comment' = has unread comments/replies. Empty for unauthenticated users. */
   flags?: FlagType[];
   id?: DiscussionOutId;
   is_author?: boolean;

@@ -235,9 +235,13 @@ export async function syncReadItemsWithBackend(accessToken: string | null) {
       {} as Record<EntityType, number[]>
     );
 
-    // Make batch API calls for each entity type
+    /* Updated by Claude on 2026-03-07
+       What: Clear both 'unread' and 'unread_comment' flags when syncing
+       Why: When user views a discussion with new comments (unread_comment flag),
+            we need to clear both flags so the NEW tag doesn't reappear */
     const promises = Object.entries(groupedByType).map(async ([entityType, entityIds]) => {
       try {
+        // Clear the 'unread' flag
         await myappFlagsApiRemoveFlags(
           {
             entity_ids: entityIds,
@@ -248,6 +252,22 @@ export async function syncReadItemsWithBackend(accessToken: string | null) {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
         );
+
+        // Also clear the 'unread_comment' flag for discussions
+        // This handles the case where user viewed a discussion with new comments
+        if (entityType === EntityType.discussion) {
+          await myappFlagsApiRemoveFlags(
+            {
+              entity_ids: entityIds,
+              entity_type: entityType as EntityType,
+              flag_type: FlagType.unread_comment,
+            },
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            }
+          );
+        }
+
         return { success: true, entityType, entityIds };
       } catch (error) {
         console.error(`Failed to sync read flags for ${entityType}:`, error);

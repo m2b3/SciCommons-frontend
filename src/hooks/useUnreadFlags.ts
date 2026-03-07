@@ -15,6 +15,15 @@ export function hasUnreadFlag(flags?: FlagType[]): boolean {
   return flags?.includes(FlagType.unread) ?? false;
 }
 
+/* Added by Claude on 2026-03-07
+   What: Helper to check for unread_comment flag
+   Why: Discussions with new comments (added while user was away) need to show NEW tag
+        even if the discussion itself was previously read
+   How: Check for the unread_comment flag which backend sets when new comments exist */
+export function hasUnreadCommentFlag(flags?: FlagType[]): boolean {
+  return flags?.includes(FlagType.unread_comment) ?? false;
+}
+
 /**
  * Map entity type string to EntityType enum
  */
