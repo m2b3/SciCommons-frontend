@@ -12,6 +12,8 @@ Files Modified: `src/hooks/useTabTitleNotification.ts`, `src/app/(main)/(users)/
 
 Follow-up (same day): Removed `useSearchParams` from `useTabTitleNotification` after build/export failures (`missing-suspense-with-csr-bailout`) showed that the globally mounted navbar hook forced Suspense requirements across prerendered routes. Kept route-title sync keyed to `usePathname` + unread count so static prerender pages continue to build while preserving route-level tab-title updates.
 
+Follow-up (same day): Hardened slug fallback formatting in `pageTitle` by decoding URL-encoded route params before humanization (for example `GSoC%202026` -> `GSoC 2026`) and added regression tests for encoded slugs (`%20` and `+`).
+
 ## 2026-03-08 - Community Admin Route Title Coverage (Invite/Roles/Requests/Dashboard/Submissions)
 
 Problem: Community admin subsections still had incomplete tab-title coverage after the first create/edit title pass.

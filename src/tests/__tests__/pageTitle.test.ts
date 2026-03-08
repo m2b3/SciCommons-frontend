@@ -27,4 +27,9 @@ describe('pageTitle helpers', () => {
   it('humanizes slug values for metadata fallback use', () => {
     expect(humanizeSlug('community-driven-science_2026')).toBe('Community Driven Science 2026');
   });
+
+  it('decodes URL-encoded slug segments before humanizing', () => {
+    expect(humanizeSlug('GSoC%202026')).toBe('GSoC 2026');
+    expect(humanizeSlug('machine+learning')).toBe('Machine Learning');
+  });
 });

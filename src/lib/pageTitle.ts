@@ -3,6 +3,29 @@ const DEFAULT_DYNAMIC_TITLE_MAX_LENGTH = 55;
 
 const normalizeWhitespace = (value: string): string => value.replace(/\s+/g, ' ').trim();
 
+const decodeSlugValue = (value: string): string => {
+  let decodedValue = value.replace(/\+/g, ' ');
+
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Added defensive slug decoding for title fallback formatting.
+     Why: Route params can arrive URL-encoded (for example `GSoC%202026`) and were leaking encoding into browser-tab titles.
+     How: Attempt URI decoding up to two passes, while safely preserving the original value when malformed percent sequences are present. */
+  for (let decodePass = 0; decodePass < 2; decodePass += 1) {
+    try {
+      const nextValue = decodeURIComponent(decodedValue);
+      if (nextValue === decodedValue) {
+        break;
+      }
+      decodedValue = nextValue;
+    } catch {
+      break;
+    }
+  }
+
+  return decodedValue;
+};
+
 /* Fixed by Codex on 2026-03-08
    Who: Codex
    What: Added shared page-title helpers for route metadata and client-side title updates.
@@ -30,7 +53,8 @@ export const truncateTitleSegment = (
 };
 
 export const humanizeSlug = (slug: string): string => {
-  const normalizedSlug = normalizeWhitespace(slug.replace(/[-_]+/g, ' '));
+  const decodedSlug = decodeSlugValue(slug);
+  const normalizedSlug = normalizeWhitespace(decodedSlug.replace(/[-_]+/g, ' '));
   if (!normalizedSlug) return '';
 
   return normalizedSlug.replace(/\b\w/g, (letter) => letter.toUpperCase());
