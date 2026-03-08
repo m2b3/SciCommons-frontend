@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   title: buildSciCommonsTitle('Discussions'),
 };
 
-export default function DiscussionsLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function DiscussionsLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return children;
 }

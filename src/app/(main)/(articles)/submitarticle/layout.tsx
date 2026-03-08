@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   title: buildSciCommonsTitle('Submit Article'),
 };
 
-export default function SubmitArticleLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function SubmitArticleLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return children;
 }

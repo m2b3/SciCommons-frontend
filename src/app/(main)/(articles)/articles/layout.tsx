@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   title: buildSciCommonsTitle('Articles'),
 };
 
-export default function ArticlesLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function ArticlesLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return children;
 }

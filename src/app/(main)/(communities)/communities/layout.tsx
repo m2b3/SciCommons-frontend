@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   title: buildSciCommonsTitle('Communities'),
 };
 
-export default function CommunitiesLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function CommunitiesLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return children;
 }

@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   title: buildSciCommonsTitle('Create Post'),
 };
 
-export default function CreatePostLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function CreatePostLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return children;
 }
