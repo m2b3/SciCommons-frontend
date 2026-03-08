@@ -1,3 +1,39 @@
+## 2026-03-08 - Community Admin Route Title Coverage (Invite/Roles/Requests/Dashboard/Submissions)
+
+Problem: Community admin subsections still had incomplete tab-title coverage after the first create/edit title pass.
+
+Root Cause: Admin route folders under `community/[slug]/(admin)` lacked route-segment metadata layouts, so pages inherited broader parent titles.
+
+Solution: Added dedicated metadata layouts for each remaining admin section with explicit `<Section>: SciCommons` titles: `Community Dashboard`, `Community Invite`, `Community Roles`, `Community Requests`, and `Community Submissions`.
+
+Result: All community admin tabs now show route-specific browser titles, matching the same naming convention as the rest of the title standardization work.
+
+Files Modified: `src/app/(main)/(communities)/community/[slug]/(admin)/dashboard/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/invite/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/requests/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/roles/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/submissions/layout.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Create/Edit Route Tab Title Coverage
+
+Problem: After adding title patterns for list/detail routes, several create/edit flows still inherited generic or list-level browser tab titles.
+
+Root Cause: These routes are mostly client pages without direct metadata exports, and they lacked route-segment layouts that define explicit metadata titles.
+
+Solution: Added metadata layouts for key create/edit flows to keep naming consistent with the new `<Section>: SciCommons` convention. Covered submit/create routes (`Submit Article`, `Create Community`, `Create Post`, `Create Community Article`) and edit/settings routes (`Edit Article`, article-dashboard submit, `Community Settings`, user `Settings`, and `My Profile`).
+
+Result: Create and edit pages now open with clear, route-specific tab labels instead of falling back to `SciCommons` or unrelated parent titles.
+
+Files Modified: `src/app/(main)/(articles)/submitarticle/layout.tsx`, `src/app/(main)/(communities)/createcommunity/layout.tsx`, `src/app/(main)/(posts)/posts/createpost/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/createcommunityarticle/layout.tsx`, `src/app/(main)/(articles)/article/[slug]/(articledashboard)/settings/layout.tsx`, `src/app/(main)/(articles)/article/[slug]/(articledashboard)/submit/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/settings/layout.tsx`, `src/app/(main)/(users)/settings/layout.tsx`, `src/app/(main)/(users)/myprofile/layout.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Route-Specific Browser Tab Titles (Communities/Discussions/Articles/Posts)
+
+Problem: Many app routes used a generic browser tab title (`SciCommons`), so pages like community details, discussions, and content detail views did not expose contextual titles.
+
+Root Cause: Most route entries are client components without route metadata exports, and dynamic title formatting/truncation behavior was not centralized.
+
+Solution: Added a shared title utility (`src/lib/pageTitle.ts`) to standardize `<Segment>: SciCommons` formatting, slug fallback humanization, and word-aware truncation for long dynamic segments. Added route metadata layouts for Discussions, Communities, Articles, and Posts list pages; added fallback metadata for community and post detail route segments; and updated dynamic detail pages (article metadata, community detail, community article detail, post detail) to apply consistent title updates with truncation.
+
+Result: Browser tab titles now align with route context (for example, `Discussions: SciCommons`, `Communities: SciCommons`, `<Community Name>: SciCommons`, `<Article/Post Title>: SciCommons`) while preventing overly long tab labels.
+
+Files Modified: `src/lib/pageTitle.ts`, `src/app/(main)/discussions/layout.tsx`, `src/app/(main)/(communities)/communities/layout.tsx`, `src/app/(main)/(articles)/articles/layout.tsx`, `src/app/(main)/(posts)/posts/layout.tsx`, `src/app/(main)/(posts)/posts/[postId]/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/layout.tsx`, `src/app/(main)/(articles)/article/[slug]/(displayarticle)/page.tsx`, `src/app/(main)/(communities)/community/[slug]/(displaycommunity)/page.tsx`, `src/app/(main)/(communities)/community/[slug]/articles/[articleSlug]/page.tsx`, `src/app/(main)/(posts)/posts/[postId]/page.tsx`, `src/tests/__tests__/pageTitle.test.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-03 - Profile Validation Consolidation Follow-up (Regression Fixes)
 
 Problem: The profile Zod-resolver refactor improved architecture but introduced behavioral regressions and consistency issues (optional URL whitespace handling mismatch, dropped status max-length guard, mixed validation sources, and lint/type-safety drift).

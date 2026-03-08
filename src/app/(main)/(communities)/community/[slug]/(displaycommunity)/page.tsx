@@ -10,6 +10,7 @@ import EmptyState from '@/components/common/EmptyState';
 import CommunityBreadcrumb from '@/components/communities/CommunityBreadcrumb';
 import TabNavigation from '@/components/ui/tab-navigation';
 import useStore from '@/hooks/useStore';
+import { buildSciCommonsTitle, humanizeSlug } from '@/lib/pageTitle';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -38,6 +39,30 @@ const Community = ({ params }: { params: { slug: string } }) => {
   });
 
   const { data, error, isPending, refetch } = communityQuery;
+
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Updated community route tab-title behavior to reflect real community names.
+     Why: Product requires browser titles like "<Community Name>: SciCommons" instead of a generic default.
+     How: Keep a slug-based fallback from route metadata, then replace it client-side with API community name once loaded. */
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    if (data?.data?.name) {
+      document.title = buildSciCommonsTitle(data.data.name, {
+        fallbackSegment: 'Community',
+        truncate: true,
+      });
+      return;
+    }
+
+    if (!isPending) {
+      document.title = buildSciCommonsTitle(humanizeSlug(params.slug), {
+        fallbackSegment: 'Community',
+        truncate: true,
+      });
+    }
+  }, [data?.data?.name, isPending, params.slug]);
 
   // Don't show error toast - we render error state instead
   // This prevents double error messages (toast + error page)
