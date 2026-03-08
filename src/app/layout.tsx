@@ -95,7 +95,7 @@ export default function RootLayout({
             position="top-center"
             className="top-16"
             closeButton
-            duration={3000}
+            duration={2000}
             toastOptions={{
               classNames: {
                 toast: 'sc-toast',
