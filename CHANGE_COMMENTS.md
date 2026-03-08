@@ -1,3 +1,15 @@
+## 2026-03-08 - Communities Role Lookup Fan-out Removal (Use List Payload `role`)
+
+Problem: Community cards required extra client-side role fan-out calls (`admin`, `moderator`, `reviewer`, `member`) to render badges/sorting, causing unnecessary request overhead on page entry.
+
+Root Cause: Older client logic did not rely on per-item role data in list payloads, so it fetched role slices separately and merged IDs on the frontend.
+
+Solution: Refactored `communities/page.tsx` to use the generated `CommunityListOut.role` field directly for both `Communities` and `My Communities` tabs. Removed `useQueries` role fan-out flow and replaced it with normalized role mapping (`admin/moderator/reviewer/member`) for badge rendering, member-state detection, and deterministic sort tiers.
+
+Result: Entering communities views now avoids the 4 extra role queries while preserving card badges (`A/M/R/m`), non-member access indicators, and priority ordering.
+
+Files Modified: `src/app/(main)/(communities)/communities/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - Tab Title Navigation Consistency Fix (Unread Prefix + Bookmarks Query Titles)
 
 Problem: Route titles could appear stale when navigating between pages (for example Home/Communities) and `/mycontributions?tab=bookmarks` did not consistently show a bookmarks-specific title.
