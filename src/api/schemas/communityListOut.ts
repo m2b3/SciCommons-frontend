@@ -7,6 +7,7 @@
 import type { CommunityListOutCreatedAt } from './communityListOutCreatedAt';
 import type { CommunityListOutIsBookmarked } from './communityListOutIsBookmarked';
 import type { CommunityListOutOrg } from './communityListOutOrg';
+import type { CommunityListOutRole } from './communityListOutRole';
 import type { CommunityType } from './communityType';
 
 export interface CommunityListOut {
@@ -18,6 +19,7 @@ export interface CommunityListOut {
   num_members: number;
   num_published_articles: number;
   org?: CommunityListOutOrg;
+  role?: CommunityListOutRole;
   slug: string;
   type: CommunityType;
 }

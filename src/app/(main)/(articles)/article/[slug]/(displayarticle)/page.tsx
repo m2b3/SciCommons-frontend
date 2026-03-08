@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 
 import { articlesApiGetArticleMeta } from '@/api/articles/articles';
+import { buildSciCommonsTitle, humanizeSlug } from '@/lib/pageTitle';
 
 import ArticleDisplayPageClient from './ArticleDisplayPageClient';
 
@@ -9,9 +10,8 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  // Build sane defaults first
   const slug = params.slug;
-  const defaultTitle = slug.replace(/-/g, ' ');
+  const defaultTitle = humanizeSlug(slug);
   const canonical = `/article/${slug}`;
 
   try {
@@ -19,7 +19,10 @@ export async function generateMetadata({
     const article = res.data;
 
     return {
-      title: article.title,
+      title: buildSciCommonsTitle(article.title, {
+        fallbackSegment: 'Article',
+        truncate: true,
+      }),
       description: article.abstract,
       alternates: { canonical },
       openGraph: {
@@ -41,8 +44,11 @@ export async function generateMetadata({
   } catch (e) {
     // Fallback minimal meta when API fails or is private
     return {
-      title: defaultTitle,
-      description: `Read the article \"${defaultTitle}\" on SciCommons.`,
+      title: buildSciCommonsTitle(defaultTitle, {
+        fallbackSegment: 'Article',
+        truncate: true,
+      }),
+      description: `Read the article "${defaultTitle || 'Article'}" on SciCommons.`,
       alternates: { canonical },
       robots: { index: true, follow: true },
     };

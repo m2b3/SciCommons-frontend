@@ -17,6 +17,7 @@ import CommunityBreadcrumb from '@/components/communities/CommunityBreadcrumb';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { buildSciCommonsTitle } from '@/lib/pageTitle';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useArticlesViewStore } from '@/stores/articlesViewStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -62,6 +63,20 @@ const CommunityArticleDisplayPage: React.FC = () => {
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
     }
   );
+
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Added client-side article title updates for community article detail tabs.
+     Why: Community article tabs should follow the same "<Article Title>: SciCommons" pattern with short browser titles.
+     How: Set `document.title` from fetched article title and apply shared truncation fallback when content is still loading. */
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    document.title = buildSciCommonsTitle(data?.data?.title ?? 'Article', {
+      fallbackSegment: 'Article',
+      truncate: true,
+    });
+  }, [data?.data?.title]);
 
   useEffect(() => {
     if (error) {

@@ -99,6 +99,7 @@ export * from './communityListOutCreatedAt';
 export * from './communityListOutIsBookmarked';
 export * from './communityListOutOrg';
 export * from './communityListOutRequestedAt';
+export * from './communityListOutRole';
 export * from './communityOut';
 export * from './communityOutAbout';
 export * from './communityOutBannerPicUrl';
