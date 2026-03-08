@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+
 import { usePathname, useSearchParams } from 'next/navigation';
 
 import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';

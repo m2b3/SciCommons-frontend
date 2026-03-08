@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Metadata } from 'next';
 
 import { buildSciCommonsTitle } from '@/lib/pageTitle';
@@ -21,11 +22,7 @@ const getMyContributionsTitleSegment = (tab?: string): string => {
    What: Added tab-aware metadata titles for the My Contributions route.
    Why: `/mycontributions?tab=bookmarks` should surface `Bookmarks: SciCommons` instead of a generic title.
    How: Map supported `tab` query values to title segments and compose final titles through the shared helper. */
-export function generateMetadata({
-  searchParams,
-}: {
-  searchParams?: { tab?: string };
-}): Metadata {
+export function generateMetadata({ searchParams }: { searchParams?: { tab?: string } }): Metadata {
   return {
     title: buildSciCommonsTitle(getMyContributionsTitleSegment(searchParams?.tab)),
   };
