@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
+
+const UNREAD_COUNT_PREFIX_REGEX = /^\(\d+\+?\)\s*/;
 
 /**
  * Hook that updates the browser tab title to show unread notification count.
@@ -12,34 +15,55 @@ import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
  */
 export function useTabTitleNotification(): void {
   const newEventsCount = useSubscriptionUnreadStore((s) => s.getNewEventsCount());
-  const originalTitleRef = useRef<string>('');
-  const isInitializedRef = useRef(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams?.toString() ?? '';
+  const baseTitleRef = useRef<string>('');
+  const syncTimeoutRef = useRef<number | null>(null);
 
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Reworked tab-title sync to follow route metadata instead of pinning first-load titles.
+     Why: Navigation between pages (for example Home -> Communities -> Home, and Bookmarks tabs) could keep stale titles.
+     How: On unread-count/path/query changes, refresh the base title from current document metadata, then apply the unread prefix without forcing stale cleanup titles. */
   useEffect(() => {
-    // Only run on client side
     if (typeof document === 'undefined') return;
 
-    // Capture the original title on first run (strip any existing count prefix)
-    if (!isInitializedRef.current) {
-      originalTitleRef.current = document.title.replace(/^\(\d+\)\s*/, '');
-      isInitializedRef.current = true;
-    }
+    const syncTitle = () => {
+      const currentRouteTitle = document.title.replace(UNREAD_COUNT_PREFIX_REGEX, '').trim();
 
-    // Update title based on unread count
-    if (newEventsCount > 0) {
-      const countDisplay = newEventsCount > 99 ? '99+' : newEventsCount;
-      document.title = `(${countDisplay}) ${originalTitleRef.current}`;
-    } else {
-      document.title = originalTitleRef.current;
-    }
+      if (currentRouteTitle) {
+        baseTitleRef.current = currentRouteTitle;
+      }
 
-    // Cleanup: restore original title when component unmounts
-    return () => {
-      if (originalTitleRef.current) {
-        document.title = originalTitleRef.current;
+      if (!baseTitleRef.current) {
+        return;
+      }
+
+      if (newEventsCount > 0) {
+        const countDisplay = newEventsCount > 99 ? '99+' : newEventsCount;
+        document.title = `(${countDisplay}) ${baseTitleRef.current}`;
+      } else {
+        document.title = baseTitleRef.current;
       }
     };
-  }, [newEventsCount]);
+
+    if (syncTimeoutRef.current !== null) {
+      window.clearTimeout(syncTimeoutRef.current);
+    }
+
+    syncTimeoutRef.current = window.setTimeout(() => {
+      syncTitle();
+      syncTimeoutRef.current = null;
+    }, 0);
+
+    return () => {
+      if (syncTimeoutRef.current !== null) {
+        window.clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = null;
+      }
+    };
+  }, [newEventsCount, pathname, searchParamsKey]);
 }
 
 /**

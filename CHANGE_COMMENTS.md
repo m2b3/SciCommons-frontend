@@ -1,3 +1,15 @@
+## 2026-03-08 - Tab Title Navigation Consistency Fix (Unread Prefix + Bookmarks Query Titles)
+
+Problem: Route titles could appear stale when navigating between pages (for example Home/Communities) and `/mycontributions?tab=bookmarks` did not consistently show a bookmarks-specific title.
+
+Root Cause: `useTabTitleNotification` captured a one-time base title and could reapply stale values on later state updates; `mycontributions` lacked query-aware metadata title mapping.
+
+Solution: Refactored `useTabTitleNotification` to resync base titles from current route metadata on unread-count/path/query changes before applying the unread prefix. Added tab-aware `generateMetadata` to `mycontributions/page.tsx` so tabs like `bookmarks` map to route-specific titles through the shared title helper.
+
+Result: Browser top-bar titles now follow route changes more reliably, while unread-count prefix behavior remains intact and Bookmarks uses `Bookmarks: SciCommons`.
+
+Files Modified: `src/hooks/useTabTitleNotification.ts`, `src/app/(main)/(users)/mycontributions/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - Community Admin Route Title Coverage (Invite/Roles/Requests/Dashboard/Submissions)
 
 Problem: Community admin subsections still had incomplete tab-title coverage after the first create/edit title pass.
