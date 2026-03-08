@@ -48,14 +48,41 @@ const roleBadgeDefinitions: Record<
   reviewer: { code: 'R', label: 'Reviewer' },
 };
 
-const resolveCommunityRole = (role: CommunityListOut['role']): CommunityMembershipRole => {
+const resolveCommunityRoleFromString = (role: CommunityListOut['role']): CommunityMembershipRole => {
   const normalizedRole = role?.trim().toLowerCase();
   if (!normalizedRole) return null;
 
-  if (normalizedRole === 'admin' || normalizedRole === 'owner') return 'admin';
-  if (normalizedRole === 'moderator' || normalizedRole === 'mod') return 'moderator';
-  if (normalizedRole === 'reviewer') return 'reviewer';
-  if (normalizedRole === 'member') return 'member';
+  const roleTokens = normalizedRole.split(/[^a-z]+/).filter(Boolean);
+  if (roleTokens.length === 0) return null;
+
+  if (roleTokens.includes('owner') || roleTokens.includes('admin')) return 'admin';
+  if (roleTokens.includes('moderator') || roleTokens.includes('mod')) return 'moderator';
+  if (roleTokens.includes('reviewer') || roleTokens.includes('review')) return 'reviewer';
+  if (roleTokens.includes('member')) return 'member';
+
+  return null;
+};
+
+/* Fixed by Codex on 2026-03-08
+   Who: Codex
+   What: Restored card role/member markers across the role API transition.
+   Why: Some payloads provide role strings in varied token formats or only legacy boolean flags.
+   How: Parse tokenized role strings with broader matching and fall back to legacy `is_*` membership flags. */
+const resolveCommunityRole = (community: CommunityListOut): CommunityMembershipRole => {
+  const roleFromString = resolveCommunityRoleFromString(community.role);
+  if (roleFromString) return roleFromString;
+
+  const legacyMembershipFields = community as CommunityListOut & {
+    is_admin?: boolean;
+    is_moderator?: boolean;
+    is_reviewer?: boolean;
+    is_member?: boolean;
+  };
+
+  if (legacyMembershipFields.is_admin) return 'admin';
+  if (legacyMembershipFields.is_moderator) return 'moderator';
+  if (legacyMembershipFields.is_reviewer) return 'reviewer';
+  if (legacyMembershipFields.is_member) return 'member';
 
   return null;
 };
@@ -66,7 +93,7 @@ const resolveCommunityRole = (role: CommunityListOut['role']): CommunityMembersh
    Why: Backend now returns role per community item, so client no longer needs 4 extra role lookup calls.
    How: Normalize per-item roles, map admin/moderator/reviewer/member to ordered tiers, and keep type-based fallback for non-members. */
 const getCommunitySortTier = (community: CommunityListOut): number => {
-  const membershipRole = resolveCommunityRole(community.role);
+  const membershipRole = resolveCommunityRole(community);
 
   if (membershipRole === 'admin') return 0;
   if (membershipRole === 'moderator') return 1;
@@ -176,7 +203,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   }, [displayedItems]);
 
   const renderCommunity = useCallback((community: CommunityListOut) => {
-    const membershipRole = resolveCommunityRole(community.role);
+    const membershipRole = resolveCommunityRole(community);
     const roleBadges: CommunityRoleBadge[] =
       membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
     const isMemberOnly = membershipRole === 'member';
@@ -327,10 +354,9 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   );
 
   const renderCommunity = useCallback((community: CommunityListOut) => {
-    const membershipRole = resolveCommunityRole(community.role);
+    const membershipRole = resolveCommunityRole(community);
     const roleBadges: CommunityRoleBadge[] =
       membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
-
     return <CommunityCard community={community} roleBadges={roleBadges} />;
   }, []);
 

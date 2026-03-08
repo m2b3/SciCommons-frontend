@@ -1,3 +1,15 @@
+## 2026-03-08 - Communities Card Role Marker Regression Fix (Role Parsing + Legacy Fallback)
+
+Problem: Community cards stopped showing role markers (`A/M/R/m`) reliably after switching to list-payload role wiring, so users could not quickly see whether they were admin/moderator/reviewer/member.
+
+Root Cause: Role normalization only matched a narrow set of exact role strings and did not account for variant tokenized role payloads (for example underscored or prefixed names) or legacy boolean membership flags that can still appear in some responses.
+
+Solution: Updated `communities/page.tsx` to (1) parse role strings by tokens with broader role matching, and (2) fall back to legacy `is_admin` / `is_moderator` / `is_reviewer` / `is_member` flags when role strings are missing or unmatched.
+
+Result: Role/access markers are restored with pre-disappearance behavior: `Communities` shows `A/M/R/m` plus non-member access dots, while `My Communities` continues showing `A/M/R` role badges.
+
+Files Modified: `src/app/(main)/(communities)/communities/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - Communities Role Lookup Fan-out Removal (Use List Payload `role`)
 
 Problem: Community cards required extra client-side role fan-out calls (`admin`, `moderator`, `reviewer`, `member`) to render badges/sorting, causing unnecessary request overhead on page entry.
