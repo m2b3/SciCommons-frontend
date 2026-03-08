@@ -10,6 +10,8 @@ Result: Browser top-bar titles now follow route changes more reliably, while unr
 
 Files Modified: `src/hooks/useTabTitleNotification.ts`, `src/app/(main)/(users)/mycontributions/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
 
+Follow-up (same day): Removed `useSearchParams` from `useTabTitleNotification` after build/export failures (`missing-suspense-with-csr-bailout`) showed that the globally mounted navbar hook forced Suspense requirements across prerendered routes. Kept route-title sync keyed to `usePathname` + unread count so static prerender pages continue to build while preserving route-level tab-title updates.
+
 ## 2026-03-08 - Community Admin Route Title Coverage (Invite/Roles/Requests/Dashboard/Submissions)
 
 Problem: Community admin subsections still had incomplete tab-title coverage after the first create/edit title pass.

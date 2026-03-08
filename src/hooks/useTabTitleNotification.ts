@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
 
@@ -17,8 +17,6 @@ const UNREAD_COUNT_PREFIX_REGEX = /^\(\d+\+?\)\s*/;
 export function useTabTitleNotification(): void {
   const newEventsCount = useSubscriptionUnreadStore((s) => s.getNewEventsCount());
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const searchParamsKey = searchParams?.toString() ?? '';
   const baseTitleRef = useRef<string>('');
   const syncTimeoutRef = useRef<number | null>(null);
 
@@ -26,7 +24,12 @@ export function useTabTitleNotification(): void {
      Who: Codex
      What: Reworked tab-title sync to follow route metadata instead of pinning first-load titles.
      Why: Navigation between pages (for example Home -> Communities -> Home, and Bookmarks tabs) could keep stale titles.
-     How: On unread-count/path/query changes, refresh the base title from current document metadata, then apply the unread prefix without forcing stale cleanup titles. */
+     How: On unread-count and path changes, refresh the base title from current document metadata, then apply the unread prefix without forcing stale cleanup titles. */
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Removed `useSearchParams` dependency from the global navbar title hook.
+     Why: Using `useSearchParams` in this globally mounted hook forced Next.js Suspense boundaries for many prerendered routes and broke static export.
+     How: Keep title resync keyed to path + unread-count changes, which still tracks route transitions without CSR-bailout constraints. */
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
@@ -64,7 +67,7 @@ export function useTabTitleNotification(): void {
         syncTimeoutRef.current = null;
       }
     };
-  }, [newEventsCount, pathname, searchParamsKey]);
+  }, [newEventsCount, pathname]);
 }
 
 /**
