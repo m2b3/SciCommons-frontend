@@ -2,12 +2,11 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useQueries } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
 
 import { useCommunitiesApiListCommunities } from '@/api/communities/communities';
 import { CommunityListOut } from '@/api/schemas';
-import { useUsersApiListMyCommunities, usersApiListMyCommunities } from '@/api/users/users';
+import { useUsersApiListMyCommunities } from '@/api/users/users';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import CommunityCard, {
   CommunityAccessIndicator,
@@ -38,17 +37,45 @@ enum Tabs {
   MY_COMMUNITIES = 'My Communities',
 }
 
-type ElevatedRole = 'admin' | 'moderator' | 'reviewer';
-type MembershipRole = ElevatedRole | 'member';
+type CommunityMembershipRole = 'admin' | 'moderator' | 'reviewer' | 'member' | null;
 
-const roleBadgeDefinitions: Array<{ role: ElevatedRole; badge: CommunityRoleBadge }> = [
-  { role: 'admin', badge: { code: 'A', label: 'Admin' } },
-  { role: 'moderator', badge: { code: 'M', label: 'Moderator' } },
-  { role: 'reviewer', badge: { code: 'R', label: 'Reviewer' } },
-];
-const roleQueryOrder: MembershipRole[] = ['admin', 'moderator', 'reviewer', 'member'];
+const roleBadgeDefinitions: Record<
+  Exclude<CommunityMembershipRole, 'member' | null>,
+  CommunityRoleBadge
+> = {
+  admin: { code: 'A', label: 'Admin' },
+  moderator: { code: 'M', label: 'Moderator' },
+  reviewer: { code: 'R', label: 'Reviewer' },
+};
 
-const ROLE_QUERY_PAGE_SIZE = 50;
+const resolveCommunityRole = (role: CommunityListOut['role']): CommunityMembershipRole => {
+  const normalizedRole = role?.trim().toLowerCase();
+  if (!normalizedRole) return null;
+
+  if (normalizedRole === 'admin' || normalizedRole === 'owner') return 'admin';
+  if (normalizedRole === 'moderator' || normalizedRole === 'mod') return 'moderator';
+  if (normalizedRole === 'reviewer') return 'reviewer';
+  if (normalizedRole === 'member') return 'member';
+
+  return null;
+};
+
+/* Fixed by Codex on 2026-03-08
+   Who: Codex
+   What: Unified card role sorting around the new list API `role` field.
+   Why: Backend now returns role per community item, so client no longer needs 4 extra role lookup calls.
+   How: Normalize per-item roles, map admin/moderator/reviewer/member to ordered tiers, and keep type-based fallback for non-members. */
+const getCommunitySortTier = (community: CommunityListOut): number => {
+  const membershipRole = resolveCommunityRole(community.role);
+
+  if (membershipRole === 'admin') return 0;
+  if (membershipRole === 'moderator') return 1;
+  if (membershipRole === 'reviewer') return 2;
+  if (membershipRole === 'member') return 3;
+  if (community.type === 'public') return 4;
+  if (community.type === 'private') return 5;
+  return 6;
+};
 
 interface TabContentProps {
   search: string;
@@ -83,9 +110,6 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   const loadingType = LoadingType.PAGINATION;
 
   const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
-  const roleMembershipRequestConfig = accessToken
-    ? { headers: { Authorization: `Bearer ${accessToken}` } }
-    : undefined;
 
   const { data, isPending, error } = useCommunitiesApiListCommunities<CommunitiesResponse>(
     {
@@ -104,49 +128,6 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
     }
   );
 
-  /* Fixed by Codex on 2026-02-23
-     Who: Codex
-     What: Added role/membership status lookups for the Communities tab.
-     Why: Communities cards must show A/M/R badges, member-only "m", and non-member access dots.
-     How: Query paginated `/my-communities` role slices and merge ID sets into card-level status markers. */
-  const roleQueries = useQueries({
-    queries: roleQueryOrder.map((role) => ({
-      queryKey: ['my_communities_roles', role, search],
-      enabled: isActive && !!accessToken,
-      staleTime: FIVE_MINUTES_IN_MS,
-      refetchOnWindowFocus: true,
-      queryFn: async () => {
-        if (!accessToken) return [] as number[];
-
-        const roleCommunityIds: number[] = [];
-        let currentPage = 1;
-        let totalPages = 1;
-
-        do {
-          const response = await usersApiListMyCommunities(
-            {
-              role,
-              search,
-              page: currentPage,
-              per_page: ROLE_QUERY_PAGE_SIZE,
-            },
-            roleMembershipRequestConfig
-          );
-
-          roleCommunityIds.push(...response.data.items.map((community) => community.id));
-          totalPages = response.data.num_pages;
-          currentPage += 1;
-        } while (currentPage <= totalPages);
-
-        return roleCommunityIds;
-      },
-    })),
-  });
-
-  const [adminRoleQuery, moderatorRoleQuery, reviewerRoleQuery, memberRoleQuery] = roleQueries;
-  const isRoleMembershipReady =
-    !accessToken || roleQueries.every((query) => query.isSuccess || query.isError);
-
   useEffect(() => {
     if (error) {
       showErrorToast(error);
@@ -161,43 +142,6 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
       setTotalPages(data.data.num_pages);
     }
   }, [data, error, page, loadingType, setItems, appendItems]);
-
-  useEffect(() => {
-    if (adminRoleQuery.error) {
-      showErrorToast(adminRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-    if (moderatorRoleQuery.error) {
-      showErrorToast(moderatorRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-    if (reviewerRoleQuery.error) {
-      showErrorToast(reviewerRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-    if (memberRoleQuery.error) {
-      showErrorToast(memberRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-  }, [
-    adminRoleQuery.error,
-    moderatorRoleQuery.error,
-    reviewerRoleQuery.error,
-    memberRoleQuery.error,
-  ]);
-
-  const adminCommunityIds = useMemo(
-    () => new Set(adminRoleQuery.data ?? []),
-    [adminRoleQuery.data]
-  );
-  const moderatorCommunityIds = useMemo(
-    () => new Set(moderatorRoleQuery.data ?? []),
-    [moderatorRoleQuery.data]
-  );
-  const reviewerCommunityIds = useMemo(
-    () => new Set(reviewerRoleQuery.data ?? []),
-    [reviewerRoleQuery.data]
-  );
-  const memberCommunityIds = useMemo(
-    () => new Set(memberRoleQuery.data ?? []),
-    [memberRoleQuery.data]
-  );
 
   const handleSearch = useCallback(
     (term: string) => {
@@ -215,86 +159,51 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  /* Fixed by Codex on 2026-02-23
+  /* Fixed by Codex on 2026-03-08
      Who: Codex
-     What: Sorted Communities cards by membership priority for reading-order scanning.
-     Why: Product requirement calls for deterministic left-to-right, top-to-bottom role grouping.
-     How: Stable-sort filtered items into Admin, Moderator, Reviewer, Member, then non-members by type. */
+     What: Kept deterministic Communities sorting while removing role fan-out queries.
+     Why: The list API now includes each user's role per community item, so sorting can be done from one payload.
+     How: Stable-sort by per-item role tier, then preserve original list order within the same tier. */
   const sortedDisplayedItems = useMemo(() => {
-    if (!isRoleMembershipReady) {
-      return displayedItems;
-    }
-
-    const getSortTier = (community: CommunityListOut) => {
-      if (adminCommunityIds.has(community.id)) return 0;
-      if (moderatorCommunityIds.has(community.id)) return 1;
-      if (reviewerCommunityIds.has(community.id)) return 2;
-      if (memberCommunityIds.has(community.id)) return 3;
-      if (community.type === 'public') return 4;
-      if (community.type === 'private') return 5;
-      return 6;
-    };
-
     return displayedItems
       .map((community, index) => ({ community, index }))
       .sort((left, right) => {
-        const tierDelta = getSortTier(left.community) - getSortTier(right.community);
+        const tierDelta =
+          getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
         return tierDelta !== 0 ? tierDelta : left.index - right.index;
       })
       .map(({ community }) => community);
-  }, [
-    displayedItems,
-    isRoleMembershipReady,
-    adminCommunityIds,
-    moderatorCommunityIds,
-    reviewerCommunityIds,
-    memberCommunityIds,
-  ]);
+  }, [displayedItems]);
 
-  const renderCommunity = useCallback(
-    (community: CommunityListOut) => {
-      const roleBadges = roleBadgeDefinitions
-        .filter(({ role }) => {
-          if (role === 'admin') return adminCommunityIds.has(community.id);
-          if (role === 'moderator') return moderatorCommunityIds.has(community.id);
-          return reviewerCommunityIds.has(community.id);
-        })
-        .map(({ badge }) => badge);
+  const renderCommunity = useCallback((community: CommunityListOut) => {
+    const membershipRole = resolveCommunityRole(community.role);
+    const roleBadges: CommunityRoleBadge[] =
+      membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
+    const isMemberOnly = membershipRole === 'member';
+    const hasAnyMembership = membershipRole !== null;
+    const accessIndicator: CommunityAccessIndicator | undefined = !hasAnyMembership
+      ? community.type === 'public'
+        ? {
+            tone: 'public',
+            label: 'Public community, not a member',
+          }
+        : community.type === 'private'
+          ? {
+              tone: 'private',
+              label: 'Private community, membership required',
+            }
+          : undefined
+      : undefined;
 
-      const isMemberOnly = memberCommunityIds.has(community.id) && roleBadges.length === 0;
-      const hasAnyMembership = roleBadges.length > 0 || isMemberOnly;
-      const accessIndicator: CommunityAccessIndicator | undefined =
-        isRoleMembershipReady && !hasAnyMembership
-          ? community.type === 'public'
-            ? {
-                tone: 'public',
-                label: 'Public community, not a member',
-              }
-            : community.type === 'private'
-              ? {
-                  tone: 'private',
-                  label: 'Private community, membership required',
-                }
-              : undefined
-          : undefined;
-
-      return (
-        <CommunityCard
-          community={community}
-          roleBadges={roleBadges}
-          showMemberBadge={isMemberOnly}
-          accessIndicator={accessIndicator}
-        />
-      );
-    },
-    [
-      adminCommunityIds,
-      moderatorCommunityIds,
-      reviewerCommunityIds,
-      memberCommunityIds,
-      isRoleMembershipReady,
-    ]
-  );
+    return (
+      <CommunityCard
+        community={community}
+        roleBadges={roleBadges}
+        showMemberBadge={isMemberOnly}
+        accessIndicator={accessIndicator}
+      />
+    );
+  }, []);
 
   const renderSkeleton = useCallback(() => <CommunityCardSkeleton />, []);
 
@@ -375,47 +284,6 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     }
   );
 
-  /* Fixed by Codex on 2026-02-23
-     Who: Codex
-     What: Added paginated role map queries (admin/moderator/reviewer/member) for My Communities.
-     Why: Role badges and ordering both need accurate role sets across all pages, not just page 1.
-     How: For each role, iterate through all `/my-communities?role=...` pages and build ID sets. */
-  const roleQueries = useQueries({
-    queries: roleQueryOrder.map((role) => ({
-      queryKey: ['my_communities_roles', role, search],
-      enabled: isActive && !!accessToken,
-      staleTime: FIVE_MINUTES_IN_MS,
-      refetchOnWindowFocus: true,
-      queryFn: async () => {
-        if (!accessToken) return [] as number[];
-
-        const roleCommunityIds: number[] = [];
-        let currentPage = 1;
-        let totalPages = 1;
-
-        do {
-          const response = await usersApiListMyCommunities(
-            {
-              role,
-              search,
-              page: currentPage,
-              per_page: ROLE_QUERY_PAGE_SIZE,
-            },
-            myCommunitiesRequestConfig
-          );
-
-          roleCommunityIds.push(...response.data.items.map((community) => community.id));
-          totalPages = response.data.num_pages;
-          currentPage += 1;
-        } while (currentPage <= totalPages);
-
-        return roleCommunityIds;
-      },
-    })),
-  });
-
-  const [adminRoleQuery, moderatorRoleQuery, reviewerRoleQuery, memberRoleQuery] = roleQueries;
-
   useEffect(() => {
     if (error) {
       showErrorToast(error);
@@ -431,68 +299,16 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     }
   }, [data, error, page, loadingType, setItems, appendItems]);
 
-  useEffect(() => {
-    if (adminRoleQuery.error) {
-      showErrorToast(adminRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-    if (moderatorRoleQuery.error) {
-      showErrorToast(moderatorRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-    if (reviewerRoleQuery.error) {
-      showErrorToast(reviewerRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-    if (memberRoleQuery.error) {
-      showErrorToast(memberRoleQuery.error as Parameters<typeof showErrorToast>[0]);
-    }
-  }, [
-    adminRoleQuery.error,
-    moderatorRoleQuery.error,
-    reviewerRoleQuery.error,
-    memberRoleQuery.error,
-  ]);
-
-  const adminCommunityIds = useMemo(
-    () => new Set(adminRoleQuery.data ?? []),
-    [adminRoleQuery.data]
-  );
-  const moderatorCommunityIds = useMemo(
-    () => new Set(moderatorRoleQuery.data ?? []),
-    [moderatorRoleQuery.data]
-  );
-  const reviewerCommunityIds = useMemo(
-    () => new Set(reviewerRoleQuery.data ?? []),
-    [reviewerRoleQuery.data]
-  );
-  const memberCommunityIds = useMemo(
-    () => new Set(memberRoleQuery.data ?? []),
-    [memberRoleQuery.data]
-  );
-
   const sortedDisplayedItems = useMemo(() => {
-    const getSortTier = (community: CommunityListOut) => {
-      if (adminCommunityIds.has(community.id)) return 0;
-      if (moderatorCommunityIds.has(community.id)) return 1;
-      if (reviewerCommunityIds.has(community.id)) return 2;
-      if (memberCommunityIds.has(community.id)) return 3;
-      if (community.type === 'public') return 4;
-      if (community.type === 'private') return 5;
-      return 6;
-    };
-
     return displayedItems
       .map((community, index) => ({ community, index }))
       .sort((left, right) => {
-        const tierDelta = getSortTier(left.community) - getSortTier(right.community);
+        const tierDelta =
+          getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
         return tierDelta !== 0 ? tierDelta : left.index - right.index;
       })
       .map(({ community }) => community);
-  }, [
-    displayedItems,
-    adminCommunityIds,
-    moderatorCommunityIds,
-    reviewerCommunityIds,
-    memberCommunityIds,
-  ]);
+  }, [displayedItems]);
 
   const handleSearch = useCallback(
     (term: string) => {
@@ -510,20 +326,13 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderCommunity = useCallback(
-    (community: CommunityListOut) => {
-      const roleBadges = roleBadgeDefinitions
-        .filter(({ role }) => {
-          if (role === 'admin') return adminCommunityIds.has(community.id);
-          if (role === 'moderator') return moderatorCommunityIds.has(community.id);
-          return reviewerCommunityIds.has(community.id);
-        })
-        .map(({ badge }) => badge);
+  const renderCommunity = useCallback((community: CommunityListOut) => {
+    const membershipRole = resolveCommunityRole(community.role);
+    const roleBadges: CommunityRoleBadge[] =
+      membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
 
-      return <CommunityCard community={community} roleBadges={roleBadges} />;
-    },
-    [adminCommunityIds, moderatorCommunityIds, reviewerCommunityIds]
-  );
+    return <CommunityCard community={community} roleBadges={roleBadges} />;
+  }, []);
 
   const renderSkeleton = useCallback(() => <CommunityCardSkeleton />, []);
 

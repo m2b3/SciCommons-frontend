@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Image from 'next/image';
 
@@ -21,6 +21,7 @@ import TruncateText from '@/components/common/TruncateText';
 import Hashtag from '@/components/posts/Hashtag';
 import PostHighlightCard, { PostHighlightCardSkeleton } from '@/components/posts/PostHighlightCard';
 import useIdenticon from '@/hooks/useIdenticons';
+import { buildSciCommonsTitle } from '@/lib/pageTitle';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import { Reaction } from '@/types';
@@ -34,6 +35,20 @@ const PostDetailPage = ({ params }: { params: { postId: number } }) => {
   const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
   const { data, isLoading } = usePostsApiGetPost(params.postId);
   const imageData = useIdenticon(40);
+
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Added dynamic browser-tab titles for post detail routes.
+     Why: Product wants post pages to follow "<Post Title>: SciCommons" while truncating overly long titles.
+     How: Update `document.title` when post data resolves and reuse the shared title utility for fallback + truncation. */
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    document.title = buildSciCommonsTitle(data?.data?.title ?? 'Post', {
+      fallbackSegment: 'Post',
+      truncate: true,
+    });
+  }, [data?.data?.title]);
 
   const { data: reactions, refetch: refetchLikes } = useUsersCommonApiGetReactionCount(
     'posts.post',
