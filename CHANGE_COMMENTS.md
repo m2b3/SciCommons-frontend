@@ -1,3 +1,15 @@
+## 2026-03-08 - MDX Editor Ctrl/Cmd+Enter Submit Restoration
+
+Problem: `Ctrl/Cmd+Enter` stopped submitting forms from markdown editor fields, even though keyboard submit worked in plain textarea flows.
+
+Root Cause: `useSubmitOnCtrlEnter` was intentionally updated to skip already-handled key events (`defaultPrevented`) to avoid duplicate submissions, but the MDX editor path did not have its own local modifier+enter submit handler.
+
+Solution: Added MDX-local `Ctrl/Cmd+Enter` handling in `InitializedMDXEditor` that submits the nearest parent form with `requestSubmit()` after preventing default editor behavior.
+
+Result: Markdown editor forms regain keyboard submit behavior without reintroducing global double-submit risk in other textarea/form flows.
+
+Files Modified: `src/components/common/MarkdownEditor/InitializedMDXEditor.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - Communities Card Role Marker Regression Fix (Role Parsing + Legacy Fallback)
 
 Problem: Community cards stopped showing role markers (`A/M/R/m`) reliably after switching to list-payload role wiring, so users could not quickly see whether they were admin/moderator/reviewer/member.

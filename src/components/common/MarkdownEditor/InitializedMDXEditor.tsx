@@ -478,6 +478,25 @@ export default function InitializedMDXEditor({
         '[contenteditable="true"]'
       ) as HTMLElement | null;
       if (!contentEditable || !contentEditable.contains(event.target as Node)) return;
+
+      /* Fixed by Codex on 2026-03-08
+         Who: Codex
+         What: Restored Ctrl/Cmd+Enter form submission for MDX editor surfaces.
+         Why: The shared submit hook now ignores defaultPrevented events, and rich-text editors can
+              consume modifier+Enter without submitting the form.
+         How: Intercept modifier+Enter within the editor and submit the nearest parent form via
+              requestSubmit after preventing the default editor key behavior. */
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !props.readOnly) {
+        const parentForm =
+          (event.target as HTMLElement | null)?.closest('form') ?? editorRoot?.closest('form');
+        if (!parentForm) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        parentForm.requestSubmit();
+        return;
+      }
+
       if (!isMentionMenuOpen || filteredMentionCandidates.length === 0) return;
 
       if (event.key === 'ArrowDown') {
@@ -515,6 +534,7 @@ export default function InitializedMDXEditor({
       handleSelectMention,
       highlightedMentionIndex,
       isMentionMenuOpen,
+      props.readOnly,
     ]
   );
 
