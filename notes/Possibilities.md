@@ -1,0 +1,12 @@
+# Possibility list
+
+- A Zotero-like extension, and making use of the possibilities of such an extension for additional features and local storage. Zotero's technology is outdated now, but it has many powerful components that could be cool to have.
+- Setting up a PlayWright-based suite for automated testing of the web-site; also increasing code test-coverage.
+  - Once we have a Playwright suite, we can get an open-source account on BrowserStack. (also testing markdown with this comment; found an issue with src/components/common/RenderParsedHTML.tsx and fixed it in my in-progress branch so that local routes are resolved with https and not as relative links).
+- BrowserUse is another option.
+- Creating the possibility of skins for personalizing the look and feel of the front-end.
+- Implementing a preprint-server viewer, much like AlphaXiv, and including several of those features. Would work across multiple pre-print servers -- anythign that has an API really. OpenReview as well. Idea is to take in a DOI or a preprint-server url and display the article, and add the possibility for commenting and reviewing. Once an article receives a comment/review, it is stored in our datbase as well. So when user inputs (in some way) an article ID that is new and not already in the database, then there are no comments/reviews/discussions to display since our store related to that article is currently empty.
+- Ambitious - but setting up a review/moderate pipeline for articles. Look at similar open-source ventures like Kotahi publisher (there are others).
+- For those who have some experience with setting up and fine-tuning open-weight LLM/NLP models for various AI-enhanced scientific literature processes, there is no shortage of ideas.
+- Having the front page be a feed, and allowing users to publish blogs or link to blogs elsewhere. Feed can also contain activity from Mastodon/Bluesky (these have APIs, I think) and perhaps also X (no API). Finally, Feed can also potentially have TOC alerts from publishers.. these are often provided as RSS, and Zotero handles them, and user can upload a RSS source file that can be checked and added to the feed. Blog updates from users being followed can also come here. Important site notifications as well. Each in a different color.
+- Accesibility ! Make the site accessible as per standards. As an initial first pass -- https://docs.google.com/document/d/1M2k3qHt9wAsjPQBDxncO9h63H9VdktcxKubJIG8tBBo/edit?usp=sharing

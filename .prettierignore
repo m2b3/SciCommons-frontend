@@ -1,0 +1,14 @@
+# Prettier ignore file
+# These files have formatting issues that prettier can't fix
+
+# ReactQuill components (todo: remove these components later)
+**/ReactQuill.tsx
+
+# Documentation files with custom formatting
+CHANGE_COMMENTS.md
+logoutNotes.md
+logoutNotes2.md
+logoutNotes3.md
+
+# Auto-generated API files from Orval (DO NOT format - regenerated from backend spec)
+src/api/

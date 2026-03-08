@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { UsersCommonApiCheckPermissionParams } from '@/api/schemas';
 import { useUsersCommonApiCheckPermission } from '@/api/users-common-api/users-common-api';
 import Loader from '@/components/common/Loader';
+import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -25,7 +26,8 @@ export function withAuth<P extends WithAuthProps>(
 ) {
   const WithAuthComponent: React.FC<P> = (props) => {
     const router = useRouter();
-    const { isAuthenticated, accessToken, initializeAuth } = useAuthStore();
+    const { isAuthenticated, initializeAuth } = useAuthStore();
+    const authHeaders = useAuthHeaders();
     const [isInitializing, setIsInitializing] = useState(true);
 
     const resourceId = getResourceId ? getResourceId(props) : undefined;
@@ -50,13 +52,9 @@ export function withAuth<P extends WithAuthProps>(
       isError,
     } = useUsersCommonApiCheckPermission(params, {
       query: {
-        enabled: !isInitializing && isAuthenticated && !!accessToken && !!dashboardType,
+        enabled: !isInitializing && isAuthenticated && !!dashboardType,
       },
-      request: {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
+      request: authHeaders,
     });
 
     useEffect(() => {
@@ -64,7 +62,7 @@ export function withAuth<P extends WithAuthProps>(
         return;
       }
 
-      if (!isAuthenticated || !accessToken) {
+      if (!isAuthenticated) {
         toast.error('You need to be logged in to view this resource');
         router.replace('/auth/login');
       } else if (!isLoading && !isError && permissionData !== undefined) {
@@ -84,7 +82,6 @@ export function withAuth<P extends WithAuthProps>(
     }, [
       isInitializing,
       isAuthenticated,
-      accessToken,
       isLoading,
       isError,
       permissionData,
@@ -97,7 +94,7 @@ export function withAuth<P extends WithAuthProps>(
       return <Loader />;
     }
 
-    if (!isAuthenticated || !accessToken) {
+    if (!isAuthenticated) {
       return null;
     }
 

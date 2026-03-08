@@ -4,7 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,11 +15,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
-import { customInstance } from '.././custom-instance';
-import type { ErrorType } from '.././custom-instance';
+  UseQueryResult
+} from '@tanstack/react-query'
 import type {
   ArticlesListOut,
   CommunitiesArticlesApiGetMyArticlesParams,
@@ -24,684 +24,557 @@ import type {
   CommunitiesArticlesApiToggleArticlePseudonymousParams,
   CommunityArticlePseudonymousOut,
   Message,
-  PaginatedArticlesListResponse,
-} from '.././schemas';
+  PaginatedArticlesListResponse
+} from '.././schemas'
+import { customInstance } from '.././custom-instance';
+import type { ErrorType } from '.././custom-instance';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * @summary Submit Article
  */
 export const communitiesArticlesApiSubmitArticle = (
-  communityName: string,
-  articleSlug: string,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    {
-      url: `/api/communities/communities/${communityName}/submit-article/${articleSlug}`,
-      method: 'POST',
+    communityName: string,
+    articleSlug: string,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/communities/${communityName}/submit-article/${articleSlug}`, method: 'POST'
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiSubmitArticleMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>,
-    TError,
-    { communityName: string; articleSlug: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>,
-  TError,
-  { communityName: string; articleSlug: string },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>,
-    { communityName: string; articleSlug: string }
-  > = (props) => {
-    const { communityName, articleSlug } = props ?? {};
+export const getCommunitiesArticlesApiSubmitArticleMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>, TError,{communityName: string;articleSlug: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>, TError,{communityName: string;articleSlug: string}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesArticlesApiSubmitArticle(communityName, articleSlug, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesArticlesApiSubmitArticleMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>, {communityName: string;articleSlug: string}> = (props) => {
+          const {communityName,articleSlug} = props ?? {};
 
-export type CommunitiesArticlesApiSubmitArticleMutationError = ErrorType<Message>;
+          return  communitiesArticlesApiSubmitArticle(communityName,articleSlug,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesArticlesApiSubmitArticleMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>>
+    
+    export type CommunitiesArticlesApiSubmitArticleMutationError = ErrorType<Message>
+
+    /**
  * @summary Submit Article
  */
-export const useCommunitiesArticlesApiSubmitArticle = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>,
-    TError,
-    { communityName: string; articleSlug: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>,
-  TError,
-  { communityName: string; articleSlug: string },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesArticlesApiSubmitArticleMutationOptions(options);
+export const useCommunitiesArticlesApiSubmitArticle = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>, TError,{communityName: string;articleSlug: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesArticlesApiSubmitArticle>>,
+        TError,
+        {communityName: string;articleSlug: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesArticlesApiSubmitArticleMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Get My Articles
  */
 export const communitiesArticlesApiGetMyArticles = (
-  params?: CommunitiesArticlesApiGetMyArticlesParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    params?: CommunitiesArticlesApiGetMyArticlesParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedArticlesListResponse>(
-    { url: `/api/communities/articles/my-articles/`, method: 'GET', params, signal },
-    options
-  );
-};
+      
+      
+      return customInstance<PaginatedArticlesListResponse>(
+      {url: `/api/communities/articles/my-articles/`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiGetMyArticlesQueryKey = (
-  params?: CommunitiesArticlesApiGetMyArticlesParams
+export const getCommunitiesArticlesApiGetMyArticlesQueryKey = (params?: CommunitiesArticlesApiGetMyArticlesParams,) => {
+    return [`/api/communities/articles/my-articles/`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getCommunitiesArticlesApiGetMyArticlesQueryOptions = <TData = Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>, TError = ErrorType<Message>>(params?: CommunitiesArticlesApiGetMyArticlesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/communities/articles/my-articles/`, ...(params ? [params] : [])] as const;
-};
 
-export const getCommunitiesArticlesApiGetMyArticlesQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>,
-  TError = ErrorType<Message>,
->(
-  params?: CommunitiesArticlesApiGetMyArticlesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getCommunitiesArticlesApiGetMyArticlesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesArticlesApiGetMyArticlesQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>> = ({
-    signal,
-  }) => communitiesArticlesApiGetMyArticles(params, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>> = ({ signal }) => communitiesArticlesApiGetMyArticles(params, requestOptions, signal);
 
-export type CommunitiesArticlesApiGetMyArticlesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>
->;
-export type CommunitiesArticlesApiGetMyArticlesQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesArticlesApiGetMyArticlesQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>>
+export type CommunitiesArticlesApiGetMyArticlesQueryError = ErrorType<Message>
 
 /**
  * @summary Get My Articles
  */
-export const useCommunitiesArticlesApiGetMyArticles = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>,
-  TError = ErrorType<Message>,
->(
-  params?: CommunitiesArticlesApiGetMyArticlesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesArticlesApiGetMyArticlesQueryOptions(params, options);
+export const useCommunitiesArticlesApiGetMyArticles = <TData = Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>, TError = ErrorType<Message>>(
+ params?: CommunitiesArticlesApiGetMyArticlesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiGetMyArticles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesArticlesApiGetMyArticlesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary List articles in a community
  */
 export const communitiesArticlesApiListCommunityArticlesByStatus = (
-  communityName: string,
-  params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    communityName: string,
+    params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedArticlesListResponse>(
-    {
-      url: `/api/communities/communities/${communityName}/articles/`,
-      method: 'GET',
-      params,
-      signal,
+      
+      
+      return customInstance<PaginatedArticlesListResponse>(
+      {url: `/api/communities/communities/${communityName}/articles/`, method: 'GET',
+        params, signal
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiListCommunityArticlesByStatusQueryKey = (
-  communityName: string,
-  params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams
+export const getCommunitiesArticlesApiListCommunityArticlesByStatusQueryKey = (communityName: string,
+    params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams,) => {
+    return [`/api/communities/communities/${communityName}/articles/`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getCommunitiesArticlesApiListCommunityArticlesByStatusQueryOptions = <TData = Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>, TError = ErrorType<Message>>(communityName: string,
+    params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [
-    `/api/communities/communities/${communityName}/articles/`,
-    ...(params ? [params] : []),
-  ] as const;
-};
 
-export const getCommunitiesArticlesApiListCommunityArticlesByStatusQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCommunitiesArticlesApiListCommunityArticlesByStatusQueryKey(communityName, params);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesArticlesApiListCommunityArticlesByStatusQueryKey(communityName,params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>
-  > = ({ signal }) =>
-    communitiesArticlesApiListCommunityArticlesByStatus(
-      communityName,
-      params,
-      requestOptions,
-      signal
-    );
+  
 
-  return { queryKey, queryFn, enabled: !!communityName, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>> = ({ signal }) => communitiesArticlesApiListCommunityArticlesByStatus(communityName,params, requestOptions, signal);
 
-export type CommunitiesArticlesApiListCommunityArticlesByStatusQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>
->;
-export type CommunitiesArticlesApiListCommunityArticlesByStatusQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesArticlesApiListCommunityArticlesByStatusQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>>
+export type CommunitiesArticlesApiListCommunityArticlesByStatusQueryError = ErrorType<Message>
 
 /**
  * @summary List articles in a community
  */
-export const useCommunitiesArticlesApiListCommunityArticlesByStatus = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>,
-  TError = ErrorType<Message>,
->(
-  communityName: string,
-  params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesArticlesApiListCommunityArticlesByStatusQueryOptions(
-    communityName,
-    params,
-    options
-  );
+export const useCommunitiesArticlesApiListCommunityArticlesByStatus = <TData = Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>, TError = ErrorType<Message>>(
+ communityName: string,
+    params?: CommunitiesArticlesApiListCommunityArticlesByStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiListCommunityArticlesByStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesArticlesApiListCommunityArticlesByStatusQueryOptions(communityName,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
+ * Manage article status in a community. Only community admins can perform these actions.
+
+Actions:
+- approve: Move article from SUBMITTED to UNDER_REVIEW (assigns reviewers/moderators)
+- reject: Move article from SUBMITTED/UNDER_REVIEW to REJECTED
+- publish: Move article from ACCEPTED/UNPUBLISHED to PUBLISHED (creates discussion subscriptions)
+- unpublish: Move article from PUBLISHED to UNPUBLISHED (deactivates discussion subscriptions)
+
+Note: To completely remove an article from a community, use the DELETE /{community_article_id}/remove/ endpoint.
  * @summary Manage Article
  */
 export const communitiesArticlesApiManageArticle = (
-  communityArticleId: number,
-  action: 'approve' | 'reject' | 'publish',
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/communities/${communityArticleId}/manage/${action}/`, method: 'POST' },
-    options
-  );
-};
+    communityArticleId: number,
+    action: 'approve' | 'reject' | 'publish' | 'unpublish',
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/${communityArticleId}/manage/${action}/`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiManageArticleMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
-    TError,
-    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
-  TError,
-  { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
-    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' }
-  > = (props) => {
-    const { communityArticleId, action } = props ?? {};
+export const getCommunitiesArticlesApiManageArticleMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>, TError,{communityArticleId: number;action: 'approve' | 'reject' | 'publish' | 'unpublish'}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>, TError,{communityArticleId: number;action: 'approve' | 'reject' | 'publish' | 'unpublish'}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesArticlesApiManageArticle(communityArticleId, action, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesArticlesApiManageArticleMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>, {communityArticleId: number;action: 'approve' | 'reject' | 'publish' | 'unpublish'}> = (props) => {
+          const {communityArticleId,action} = props ?? {};
 
-export type CommunitiesArticlesApiManageArticleMutationError = ErrorType<Message>;
+          return  communitiesArticlesApiManageArticle(communityArticleId,action,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesArticlesApiManageArticleMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>>
+    
+    export type CommunitiesArticlesApiManageArticleMutationError = ErrorType<Message>
+
+    /**
  * @summary Manage Article
  */
-export const useCommunitiesArticlesApiManageArticle = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
-    TError,
-    { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
-  TError,
-  { communityArticleId: number; action: 'approve' | 'reject' | 'publish' },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesArticlesApiManageArticleMutationOptions(options);
+export const useCommunitiesArticlesApiManageArticle = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>, TError,{communityArticleId: number;action: 'approve' | 'reject' | 'publish' | 'unpublish'}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesArticlesApiManageArticle>>,
+        TError,
+        {communityArticleId: number;action: 'approve' | 'reject' | 'publish' | 'unpublish'},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesArticlesApiManageArticleMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
+ * Remove an article from a community entirely by deleting the CommunityArticle record.
+This will CASCADE delete:
+- Reviews associated with this community_article
+- DiscussionSubscriptions for this community_article
+
+Note: The Article itself is NOT deleted, only its association with the community.
+ * @summary Remove Article From Community
+ */
+export const communitiesArticlesApiRemoveArticleFromCommunity = (
+    communityArticleId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/${communityArticleId}/remove/`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getCommunitiesArticlesApiRemoveArticleFromCommunityMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>, TError,{communityArticleId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>, TError,{communityArticleId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>, {communityArticleId: number}> = (props) => {
+          const {communityArticleId} = props ?? {};
+
+          return  communitiesArticlesApiRemoveArticleFromCommunity(communityArticleId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesArticlesApiRemoveArticleFromCommunityMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>>
+    
+    export type CommunitiesArticlesApiRemoveArticleFromCommunityMutationError = ErrorType<Message>
+
+    /**
+ * @summary Remove Article From Community
+ */
+export const useCommunitiesArticlesApiRemoveArticleFromCommunity = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>, TError,{communityArticleId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesArticlesApiRemoveArticleFromCommunity>>,
+        TError,
+        {communityArticleId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getCommunitiesArticlesApiRemoveArticleFromCommunityMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Get Assigned Articles
  */
 export const communitiesArticlesApiGetAssignedArticles = (
-  communityId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    communityId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<ArticlesListOut[]>(
-    { url: `/api/communities/${communityId}/assigned-articles/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<ArticlesListOut[]>(
+      {url: `/api/communities/${communityId}/assigned-articles/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiGetAssignedArticlesQueryKey = (communityId: number) => {
-  return [`/api/communities/${communityId}/assigned-articles/`] as const;
-};
+export const getCommunitiesArticlesApiGetAssignedArticlesQueryKey = (communityId: number,) => {
+    return [`/api/communities/${communityId}/assigned-articles/`] as const;
+    }
 
-export const getCommunitiesArticlesApiGetAssignedArticlesQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>,
-  TError = ErrorType<Message>,
->(
-  communityId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getCommunitiesArticlesApiGetAssignedArticlesQueryOptions = <TData = Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>, TError = ErrorType<Message>>(communityId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getCommunitiesArticlesApiGetAssignedArticlesQueryKey(communityId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>
-  > = ({ signal }) =>
-    communitiesArticlesApiGetAssignedArticles(communityId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesArticlesApiGetAssignedArticlesQueryKey(communityId);
 
-  return { queryKey, queryFn, enabled: !!communityId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type CommunitiesArticlesApiGetAssignedArticlesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>
->;
-export type CommunitiesArticlesApiGetAssignedArticlesQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>> = ({ signal }) => communitiesArticlesApiGetAssignedArticles(communityId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesArticlesApiGetAssignedArticlesQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>>
+export type CommunitiesArticlesApiGetAssignedArticlesQueryError = ErrorType<Message>
 
 /**
  * @summary Get Assigned Articles
  */
-export const useCommunitiesArticlesApiGetAssignedArticles = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>,
-  TError = ErrorType<Message>,
->(
-  communityId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesArticlesApiGetAssignedArticlesQueryOptions(
-    communityId,
-    options
-  );
+export const useCommunitiesArticlesApiGetAssignedArticles = <TData = Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>, TError = ErrorType<Message>>(
+ communityId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiGetAssignedArticles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesArticlesApiGetAssignedArticlesQueryOptions(communityId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Approve Article
  */
 export const communitiesArticlesApiApproveArticle = (
-  communityArticleId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/communities/${communityArticleId}/approve/`, method: 'POST' },
-    options
-  );
-};
+    communityArticleId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/${communityArticleId}/approve/`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiApproveArticleMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>,
-    TError,
-    { communityArticleId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>,
-  TError,
-  { communityArticleId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>,
-    { communityArticleId: number }
-  > = (props) => {
-    const { communityArticleId } = props ?? {};
+export const getCommunitiesArticlesApiApproveArticleMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>, TError,{communityArticleId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>, TError,{communityArticleId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesArticlesApiApproveArticle(communityArticleId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesArticlesApiApproveArticleMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>, {communityArticleId: number}> = (props) => {
+          const {communityArticleId} = props ?? {};
 
-export type CommunitiesArticlesApiApproveArticleMutationError = ErrorType<Message>;
+          return  communitiesArticlesApiApproveArticle(communityArticleId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesArticlesApiApproveArticleMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>>
+    
+    export type CommunitiesArticlesApiApproveArticleMutationError = ErrorType<Message>
+
+    /**
  * @summary Approve Article
  */
-export const useCommunitiesArticlesApiApproveArticle = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>,
-    TError,
-    { communityArticleId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>,
-  TError,
-  { communityArticleId: number },
-  TContext
-> => {
-  const mutationOptions = getCommunitiesArticlesApiApproveArticleMutationOptions(options);
+export const useCommunitiesArticlesApiApproveArticle = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>, TError,{communityArticleId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesArticlesApiApproveArticle>>,
+        TError,
+        {communityArticleId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getCommunitiesArticlesApiApproveArticleMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Is Article Pseudonymous
  */
 export const communitiesArticlesApiIsArticlePseudonymous = (
-  communityArticleId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    communityArticleId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<CommunityArticlePseudonymousOut>(
-    { url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<CommunityArticlePseudonymousOut>(
+      {url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiIsArticlePseudonymousQueryKey = (
-  communityArticleId: number
+export const getCommunitiesArticlesApiIsArticlePseudonymousQueryKey = (communityArticleId: number,) => {
+    return [`/api/communities/${communityArticleId}/pseudonymous/`] as const;
+    }
+
+    
+export const getCommunitiesArticlesApiIsArticlePseudonymousQueryOptions = <TData = Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>, TError = ErrorType<Message>>(communityArticleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/communities/${communityArticleId}/pseudonymous/`] as const;
-};
 
-export const getCommunitiesArticlesApiIsArticlePseudonymousQueryOptions = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
-  TError = ErrorType<Message>,
->(
-  communityArticleId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCommunitiesArticlesApiIsArticlePseudonymousQueryKey(communityArticleId);
+  const queryKey =  queryOptions?.queryKey ?? getCommunitiesArticlesApiIsArticlePseudonymousQueryKey(communityArticleId);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>
-  > = ({ signal }) =>
-    communitiesArticlesApiIsArticlePseudonymous(communityArticleId, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, enabled: !!communityArticleId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>> = ({ signal }) => communitiesArticlesApiIsArticlePseudonymous(communityArticleId, requestOptions, signal);
 
-export type CommunitiesArticlesApiIsArticlePseudonymousQueryResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>
->;
-export type CommunitiesArticlesApiIsArticlePseudonymousQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityArticleId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CommunitiesArticlesApiIsArticlePseudonymousQueryResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>>
+export type CommunitiesArticlesApiIsArticlePseudonymousQueryError = ErrorType<Message>
 
 /**
  * @summary Is Article Pseudonymous
  */
-export const useCommunitiesArticlesApiIsArticlePseudonymous = <
-  TData = Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
-  TError = ErrorType<Message>,
->(
-  communityArticleId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getCommunitiesArticlesApiIsArticlePseudonymousQueryOptions(
-    communityArticleId,
-    options
-  );
+export const useCommunitiesArticlesApiIsArticlePseudonymous = <TData = Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>, TError = ErrorType<Message>>(
+ communityArticleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof communitiesArticlesApiIsArticlePseudonymous>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getCommunitiesArticlesApiIsArticlePseudonymousQueryOptions(communityArticleId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Toggle Article Pseudonymous
  */
 export const communitiesArticlesApiToggleArticlePseudonymous = (
-  communityArticleId: number,
-  params: CommunitiesArticlesApiToggleArticlePseudonymousParams,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'POST', params },
-    options
-  );
-};
+    communityArticleId: number,
+    params: CommunitiesArticlesApiToggleArticlePseudonymousParams,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/communities/${communityArticleId}/pseudonymous/`, method: 'POST',
+        params
+    },
+      options);
+    }
+  
 
-export const getCommunitiesArticlesApiToggleArticlePseudonymousMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
-    TError,
-    { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
-  TError,
-  { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
-    { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams }
-  > = (props) => {
-    const { communityArticleId, params } = props ?? {};
+export const getCommunitiesArticlesApiToggleArticlePseudonymousMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>, TError,{communityArticleId: number;params: CommunitiesArticlesApiToggleArticlePseudonymousParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>, TError,{communityArticleId: number;params: CommunitiesArticlesApiToggleArticlePseudonymousParams}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return communitiesArticlesApiToggleArticlePseudonymous(
-      communityArticleId,
-      params,
-      requestOptions
-    );
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CommunitiesArticlesApiToggleArticlePseudonymousMutationResult = NonNullable<
-  Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>, {communityArticleId: number;params: CommunitiesArticlesApiToggleArticlePseudonymousParams}> = (props) => {
+          const {communityArticleId,params} = props ?? {};
 
-export type CommunitiesArticlesApiToggleArticlePseudonymousMutationError = ErrorType<Message>;
+          return  communitiesArticlesApiToggleArticlePseudonymous(communityArticleId,params,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommunitiesArticlesApiToggleArticlePseudonymousMutationResult = NonNullable<Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>>
+    
+    export type CommunitiesArticlesApiToggleArticlePseudonymousMutationError = ErrorType<Message>
+
+    /**
  * @summary Toggle Article Pseudonymous
  */
-export const useCommunitiesArticlesApiToggleArticlePseudonymous = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
-    TError,
-    { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
-  TError,
-  { communityArticleId: number; params: CommunitiesArticlesApiToggleArticlePseudonymousParams },
-  TContext
-> => {
-  const mutationOptions =
-    getCommunitiesArticlesApiToggleArticlePseudonymousMutationOptions(options);
+export const useCommunitiesArticlesApiToggleArticlePseudonymous = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>, TError,{communityArticleId: number;params: CommunitiesArticlesApiToggleArticlePseudonymousParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof communitiesArticlesApiToggleArticlePseudonymous>>,
+        TError,
+        {communityArticleId: number;params: CommunitiesArticlesApiToggleArticlePseudonymousParams},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
+      const mutationOptions = getCommunitiesArticlesApiToggleArticlePseudonymousMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

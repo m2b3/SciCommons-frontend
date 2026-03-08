@@ -33,7 +33,7 @@ const CommunityAbout: React.FC<CommunityAboutProps> = ({ about }) => {
   return (
     <div className="">
       {Object.keys(about).length === 0 && about.constructor === Object && (
-        <p className="py-4 text-center text-gray-500">
+        <p className="py-4 text-center text-text-tertiary">
           No about content available for this community
         </p>
       )}

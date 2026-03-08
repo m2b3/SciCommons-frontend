@@ -6,9 +6,10 @@
  */
 import type { ReviewOutCommunityArticle } from './reviewOutCommunityArticle';
 import type { ReviewOutDeletedAt } from './reviewOutDeletedAt';
+import type { FlagType } from './flagType';
 import type { ReviewOutId } from './reviewOutId';
-import type { ReviewVersionSchema } from './reviewVersionSchema';
 import type { UserStats } from './userStats';
+import type { ReviewVersionSchema } from './reviewVersionSchema';
 
 export interface ReviewOut {
   article_id: number;
@@ -18,6 +19,8 @@ export interface ReviewOut {
   content: string;
   created_at: string;
   deleted_at?: ReviewOutDeletedAt;
+  /** List of flags set for this review for the current user (e.g., ['pinned']). Empty for unauthenticated users. */
+  flags?: FlagType[];
   id?: ReviewOutId;
   is_approved?: boolean;
   is_author?: boolean;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -26,7 +26,12 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_MD}px)`);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleSheetClose = () => {
     const timeout = setTimeout(() => {
@@ -34,6 +39,11 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
     }, 500);
     return () => clearTimeout(timeout);
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return null;
+  }
 
   return isDesktop ? (
     <div className="fixed left-0 top-14 hidden h-screen overflow-y-auto border-r border-common-contrast bg-common-cardBackground p-4 text-text-primary md:block md:w-64">
@@ -52,12 +62,15 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
             className={cn(
               'flex items-center rounded-md px-4 py-2 text-sm',
               pathname === link.href
-                ? 'bg-common-invert text-text-primary'
-                : 'hover:bg-common-minimal'
+                ? 'bg-common-invert text-common-cardBackground'
+                : 'text-text-primary hover:bg-common-minimal'
             )}
           >
             {React.cloneElement(link.icon, {
-              className: pathname === link.href ? 'text-text-primary mr-3 size-4' : 'mr-3 size-4',
+              className: cn(
+                'mr-3 size-4',
+                pathname === link.href ? 'text-common-cardBackground' : 'text-text-primary'
+              ),
             })}
             {link.label}
           </Link>
@@ -93,15 +106,18 @@ const Sidebar: React.FC<SidebarProps> = ({ baseHref, links }) => {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'flex items-center rounded-md px-4 py-2',
+                  'flex items-center rounded-md px-4 py-2 text-sm',
                   pathname === link.href
-                    ? 'bg-common-invert text-text-primary'
-                    : 'hover:bg-common-minimal'
+                    ? 'bg-common-invert text-common-cardBackground'
+                    : 'text-text-primary hover:bg-common-minimal'
                 )}
                 onClick={handleSheetClose}
               >
                 {React.cloneElement(link.icon, {
-                  className: pathname === link.href ? 'text-text-primary mr-3' : 'mr-3',
+                  className: cn(
+                    'mr-3 size-4',
+                    pathname === link.href ? 'text-common-cardBackground' : 'text-text-primary'
+                  ),
                 })}
                 {link.label}
               </Link>

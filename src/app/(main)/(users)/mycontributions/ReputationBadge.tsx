@@ -16,6 +16,7 @@ const ReputationBadge: React.FC<ReputationBadgeProps> = ({ level, score }) => (
       src={'/images/assets/gradient.webp'}
       fill
       alt=""
+      aria-hidden="true"
       className="z-0 object-cover opacity-20 blur-lg invert dark:invert-0"
       quality={10}
     />
@@ -33,14 +34,14 @@ const ReputationBadge: React.FC<ReputationBadgeProps> = ({ level, score }) => (
 export default ReputationBadge;
 
 export const ReputationBadgeSkeleton: React.FC = () => (
-  <Skeleton className="mt-6 flex w-full flex-row items-center justify-between overflow-x-hidden rounded-xl border border-common-contrast bg-gradient-to-r from-purple-400/25 to-pink-500/25">
+  <Skeleton className="mt-6 flex w-full flex-row items-center justify-between overflow-x-hidden rounded-xl border border-common-contrast bg-common-cardBackground">
     <div>
-      <BlockSkeleton className="h-4 w-32 bg-white/30" />
-      <BlockSkeleton className="mt-1 h-6 w-24 bg-white/30" />
+      <BlockSkeleton className="h-4 w-32 bg-common-contrast/60" />
+      <BlockSkeleton className="mt-1 h-6 w-24 bg-common-contrast/60" />
     </div>
     <div>
-      <BlockSkeleton className="h-4 w-20 bg-white/30" />
-      <BlockSkeleton className="mt-1 h-8 w-16 bg-white/30" />
+      <BlockSkeleton className="h-4 w-20 bg-common-contrast/60" />
+      <BlockSkeleton className="mt-1 h-8 w-16 bg-common-contrast/60" />
     </div>
   </Skeleton>
 );

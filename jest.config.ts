@@ -1,5 +1,6 @@
-import type { Config } from 'jest';
 import nextJest from 'next/jest.js';
+
+import type { Config } from 'jest';
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
@@ -10,10 +11,15 @@ const createJestConfig = nextJest({
 const config: Config = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  moduleNameMapper: { // Handle Module Path Aliases
-    '^@/(.*)$': '<rootDir>/$1', 
-    '^next/router$': '<rootDir>/tests/__mocks__/router.ts',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^next/router$': '<rootDir>/src/tests/__mocks__/router.ts',
   },
+  /* Fixed by Codex on 2026-02-09
+     Problem: Jest haste map reported a naming collision due to .next/standalone/package.json
+     Solution: Ignore Next.js build output in module resolution
+     Result: Tests run without haste-map naming collisions */
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
   // Add more setup options before each test is run

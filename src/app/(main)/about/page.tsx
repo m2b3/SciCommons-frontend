@@ -1,154 +1,317 @@
+'use client';
+
 import React from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
-import { GithubIcon, LinkedinIcon, LucideIcon, TwitterIcon } from 'lucide-react';
+import { Globe, LinkedinIcon, LucideIcon, Target, TwitterIcon, Users, Zap } from 'lucide-react';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-const SocialLink = ({ href, icon: Icon }: { href?: string; icon: LucideIcon }) =>
+const SocialLink = ({
+  href,
+  icon: Icon,
+  label,
+}: {
+  href?: string;
+  icon: LucideIcon;
+  label: string;
+}) =>
   href ? (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-gray-400 transition-colors hover:text-gray-600"
+      className="transition-colors hover:text-functional-green"
+      aria-label={label}
     >
-      <Icon size={20} />
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Add aria-labels to icon-only social links.
+          Why: Screen readers need a text label for links that render only icons.
+          How: Pass an explicit label per social network and hide the icon. */}
+      <Icon size={20} aria-hidden="true" />
     </a>
   ) : null;
 
-const TeamMember = ({
+const ContributorCard = ({
   name,
   role,
   image,
-  github,
   linkedin,
   twitter,
 }: {
   name: string;
   role: string;
   image: string;
-  github?: string;
   linkedin?: string;
   twitter?: string;
 }) => (
-  <div className="flex flex-col items-center rounded-lg bg-white-primary p-4 shadow-md transition-transform hover:scale-105">
-    <Image
-      src={image}
-      alt={name}
-      className="mb-4 h-32 w-32 rounded-full object-cover"
-      width={150}
-      height={150}
-    />
-    <h3 className="mb-1 font-semibold res-text-base">{name}</h3>
-    <p className="mb-3 text-gray-600 res-text-xs">{role}</p>
-    <div className="flex space-x-3">
-      <SocialLink href={github} icon={GithubIcon} />
-      <SocialLink href={linkedin} icon={LinkedinIcon} />
-      <SocialLink href={twitter} icon={TwitterIcon} />
+  <div className="group flex w-64 flex-col items-center rounded-lg border border-common-minimal bg-common-cardBackground p-6 transition-all duration-300 hover:border-functional-green hover:shadow-lg hover:shadow-functional-green/20">
+    <div className="relative mb-4">
+      <Image
+        src={image}
+        alt={name}
+        className="h-24 w-24 rounded-full object-cover ring-2 ring-functional-green/30 transition-all group-hover:ring-functional-green"
+        width={100}
+        height={100}
+      />
+    </div>
+    <h3 className="break-words text-center font-semibold text-text-primary">{name}</h3>
+    <p className="mb-4 text-center text-xs text-text-secondary">{role}</p>
+    <div className="flex space-x-3 text-text-secondary">
+      <SocialLink href={linkedin} icon={LinkedinIcon} label="LinkedIn profile" />
+      <SocialLink href={twitter} icon={TwitterIcon} label="Twitter profile" />
     </div>
   </div>
 );
 
+const FeatureCard = ({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}) => (
+  <div className="rounded-lg border border-common-minimal bg-common-cardBackground p-6 transition-all duration-300 hover:border-functional-green hover:shadow-lg hover:shadow-functional-green/20">
+    <Icon className="mb-4 h-8 w-8 text-functional-green" />
+    <h3 className="mb-2 font-semibold text-text-primary">{title}</h3>
+    <p className="text-sm text-text-secondary">{description}</p>
+  </div>
+);
+
 const AboutPage = () => {
-  const teamMembers = [
+  const contributors = [
     {
-      name: 'Dinakar Chennupati',
-      role: 'Lead Developer',
-      image: '/api/placeholder/150/150',
-      github: 'https://github.com/dinakar17',
-      linkedin: 'https://www.linkedin.com/in/dinakarchennupati/',
-      twitter: 'https://x.com/DinakarChennup1',
+      name: 'Armaan Alam',
+      role: 'Full Stack Engineer',
+      image: 'https://cdn.scicommons.org/assets/armaan.jpeg',
+      linkedin: 'https://www.linkedin.com/in/armaanalam/',
     },
     {
-      name: 'Jyothi Swaroop Reddy',
-      role: 'UI/UX Designer',
-      image: '/api/placeholder/150/150',
-      github: 'https://github.com/janesmith',
-      linkedin: 'https://www.linkedin.com/in/janesmith',
+      name: 'Mohd Faisal Ansari',
+      role: 'Frontend Engineer',
+      image: 'https://cdn.scicommons.org/assets/faisal.jpg',
+      linkedin: 'https://www.linkedin.com/in/mohd-faisal-ansari-1b62b9225/',
+    },
+  ];
+
+  const otherContributors = [
+    { name: 'Jyothi Swaroop Bommareddy', role: 'GSoC 2023, original architect' },
+    { name: 'Dinakar Chennupati', role: 'GSoC 2024, front-end architect' },
+    { name: 'Raju Bugude', role: 'Volunteer contributor, site-testing' },
+  ];
+
+  const features = [
+    {
+      icon: Globe,
+      title: 'Open & Accessible',
+      description:
+        'Breaking down barriers to scientific knowledge. Free access to peer-reviewed research for everyone, everywhere.',
     },
     {
-      name: 'Armaan',
-      role: 'Backend Engineer',
-      image: '/api/placeholder/150/150',
-      github: 'https://github.com/alexjohnson',
-      twitter: 'https://twitter.com/alexjohnson',
+      icon: Users,
+      title: 'Community-Driven',
+      description:
+        'Powered by researchers. Transparent, collaborative peer review that puts the community in control.',
     },
     {
-      name: 'Maria Garcia',
-      role: 'Data Scientist',
-      image: '/api/placeholder/150/150',
-      linkedin: 'https://www.linkedin.com/in/mariagarcia',
+      icon: Zap,
+      title: 'Efficient & Fast',
+      description:
+        'Streamlined publishing process. Get your research reviewed and published faster than traditional journals.',
+    },
+    {
+      icon: Target,
+      title: 'Quality-Focused',
+      description:
+        'Rigorous peer review standards maintained while embracing transparency and openness in scientific discourse.',
     },
   ];
 
   return (
-    <div className="bg-gray-100">
-      <div className="container mx-auto min-h-screen bg-gray-100 px-4 py-8 res-text-base">
-        <h1 className="mb-8 text-center font-bold text-gray-800 res-heading-base">
-          About Our Project
-        </h1>
-
-        <Card className="mb-8 transition-shadow hover:shadow-lg">
-          <CardHeader className="bg-blue-600 text-white">
-            <CardTitle className="res-heading-base">Our Mission</CardTitle>
-          </CardHeader>
-          <CardContent className="mt-4">
-            <p className="mb-4">
-              We&rsquo;re on a mission to revolutionize the $10 billion research/science publishing
-              industry. Our goal? To create an open, accessible, and efficient platform for
-              scientific discourse that benefits the entire research community.
+    <div className="relative bg-common-background">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-br from-functional-green/5 via-functional-blue/5 to-transparent" />
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+          <div className="text-center">
+            <h1 className="mb-4 text-4xl font-bold text-text-primary sm:text-5xl md:text-6xl">
+              About <span className="text-functional-green">SciCommons</span>
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-text-secondary sm:text-xl">
+              Revolutionizing scientific publishing and peer review through community-driven
+              collaboration
             </p>
-            <p className="mb-4">
-              Traditional publishing models have long diverted substantial funds from crucial
-              research activities and erected barriers to accessing vital information. Our project
-              harnesses the power of modern internet-based social technology to address these
-              pressing issues head-on.
+            <p className="mx-auto max-w-3xl text-center text-sm text-text-secondary">
+              Be part of the change. Join our open platform to review, rate, and access research
+              freely. Improve research quality and accessibility with community-driven peer review.
             </p>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-8 transition-shadow hover:shadow-lg">
-          <CardHeader className="bg-green-600 text-white">
-            <CardTitle className="res-heading-base">What We&rsquo;ve Achieved</CardTitle>
-          </CardHeader>
-          <CardContent className="mt-4">
-            <p className="mb-4">
-              During last year&rsquo;s Google Summer of Code (GSoC) project, we successfully
-              developed an innovative open reviewing and quality-ranking web portal. This
-              cutting-edge platform is designed to:
-            </p>
-            <ul className="mb-4 list-inside list-disc space-y-2">
-              <li>Elevate the quality of research discourse</li>
-              <li>Streamline scientific communication processes</li>
-              <li>Dramatically improve access to groundbreaking research findings</li>
-            </ul>
-            <p>
-              Our solution provides rigorous, objective peer-review alongside a sophisticated
-              article rating and filtering mechanism. We&rsquo;ve maintained the high standards of
-              traditional journals while embracing an open, cost-effective approach that benefits
-              researchers worldwide.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* <Card className="mb-8 transition-shadow hover:shadow-lg">
-          <CardHeader className="bg-purple-600 text-white">
-            <CardTitle className="res-heading-base">Our Team</CardTitle>
-            <CardDescription className="text-gray-200 res-text-sm">
-              The brilliant minds behind this project
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="mt-4">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {teamMembers.map((member, index) => (
-                <TeamMember key={index} {...member} />
-              ))}
-            </div>
-          </CardContent>
-        </Card> */}
+          </div>
+        </div>
       </div>
+
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="rounded-xl border border-functional-green/20 bg-gradient-to-br from-functional-green/10 to-functional-blue/10 p-8 transition-all duration-300 hover:border-functional-green/50 hover:shadow-lg hover:shadow-functional-green/20">
+            <div className="mb-4 inline-block rounded-lg bg-functional-green/20 p-3">
+              <Target className="h-6 w-6 text-functional-green" />
+            </div>
+            <h2 className="mb-4 text-2xl font-bold text-text-primary">Our Mission</h2>
+            <div className="space-y-3 text-sm text-text-secondary">
+              <p>
+                The long-term goal of SciCommons is to become a portal for open reviewing,
+                commenting and community-sourced quality ranking of scholarly articles.
+              </p>
+              <p>
+                Currently, SciCommons functions as a private journal-club where you can set up
+                communities, invite colleagues, and discuss articles among yourselves with ratings.
+                Discussions are only open to community members. We&rsquo;re using this period to
+                test and debug the site, learn about user preferences and patterns, and work towards
+                our broader goal of a public portal.
+              </p>
+              <p>
+                We aim to eventually become at least a partial replacement for the current
+                scientific publication process. While there have been several previous attempts at
+                such portals, our approach differs in key ways. Learn more in this{' '}
+                <a
+                  href="https://www.frontiersin.org/research-topics/137/beyond-open-access-visions-for-open-evaluation-of-scientific-papers-by-post-publication-peer-review/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-functional-green hover:underline"
+                >
+                  research topic on open evaluation
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-functional-blue/20 bg-gradient-to-br from-functional-blue/10 to-functional-green/10 p-8 transition-all duration-300 hover:border-functional-blue/50 hover:shadow-lg hover:shadow-functional-blue/20">
+            <div className="mb-4 inline-block rounded-lg bg-functional-blue/20 p-3">
+              <Zap className="h-6 w-6 text-functional-blue" />
+            </div>
+            <h2 className="mb-4 text-2xl font-bold text-text-primary">
+              What We&rsquo;ve Built and How
+            </h2>
+            <ul className="space-y-3">
+              <li className="flex items-start">
+                <span className="mr-3 text-functional-green">✓</span>
+                <span className="text-text-secondary">
+                  Work on SciCommons has mostly progressed through Google Summer of Code projects
+                  (since 2023) via INCF.
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-3 text-functional-green">✓</span>
+                <span className="text-text-secondary">
+                  Rigorous, objective peer-review with sophisticated rating mechanisms
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-3 text-functional-green">✓</span>
+                <span className="text-text-secondary">
+                  Cost-effective platform maintaining journal-quality standards
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-3 text-functional-green">✓</span>
+                <span className="text-text-secondary">
+                  Multi-community review system for comprehensive feedback
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-3 text-functional-green">✓</span>
+                <span className="text-text-secondary">
+                  Since January 2025, the project is also generously supported by the Koita Center
+                  for Digital Health at Ashoka University.
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-text-primary sm:text-4xl">
+            Why Choose SciCommons?
+          </h2>
+          <p className="mx-auto max-w-2xl text-text-secondary">
+            We combine the rigor of traditional publishing with the openness and efficiency of
+            modern technology
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, index) => (
+            <FeatureCard key={index} {...feature} />
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-text-primary sm:text-4xl">Meet Our Team</h2>
+          <p className="mx-auto max-w-2xl text-text-secondary">
+            Talented individuals dedicated to transforming scientific publishing
+          </p>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-8">
+          {contributors.map((contributor, index) => (
+            <ContributorCard key={index} {...contributor} />
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <h3 className="mb-6 text-2xl font-bold text-text-primary">Previous Contributors</h3>
+          <div className="mx-auto max-w-2xl space-y-3">
+            {otherContributors.map((contributor, idx) => (
+              <p key={idx} className="text-text-secondary">
+                <span className="font-semibold text-text-primary">{contributor.name}</span>
+                <span className="text-sm"> ({contributor.role})</span>
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden rounded-xl border border-functional-green/20 bg-gradient-to-r from-functional-green/10 to-functional-blue/10">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="mb-4 text-3xl font-bold text-text-primary">
+              Join Us in Transforming Science
+            </h2>
+            <p className="mb-8 text-text-secondary">
+              Be part of a global community working to make scientific knowledge open, accessible,
+              and free for everyone.
+            </p>
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              {/* Fixed by Codex on 2026-02-16
+                  Who: Codex
+                  What: Hid the "Explore Articles" CTA in About.
+                  Why: Keep users from landing on /articles until IA is revisited.
+                  How: Commented out the /articles Link while preserving markup for later restore. */}
+              {/*
+              <Link
+                href="/articles"
+                className="rounded-lg bg-functional-green px-8 py-3 font-semibold text-primary-foreground transition-all hover:bg-functional-green/90 hover:shadow-lg hover:shadow-functional-green/30"
+              >
+                Explore Articles
+              </Link>
+              */}
+              <Link
+                href="/communities"
+                className="rounded-lg border border-functional-green bg-transparent px-8 py-3 font-semibold text-functional-green transition-all hover:bg-functional-green/10 hover:shadow-lg hover:shadow-functional-green/30"
+              >
+                Join Communities
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="h-8" />
     </div>
   );
 };

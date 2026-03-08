@@ -6,6 +6,6 @@
  */
 
 export type ArticlesApiGetArticleParams = {
-  community_name?: string | null;
-  community_id?: number | null;
+community_name?: string | null;
+community_id?: number | null;
 };

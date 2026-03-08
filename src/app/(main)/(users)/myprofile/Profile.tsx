@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -6,6 +8,7 @@ import { Edit, Pencil, Save } from 'lucide-react';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
+import ImageCropper from '@/components/common/ImageCropper';
 
 import { IProfileForm } from './page';
 
@@ -14,60 +17,132 @@ interface ProfileProps {
   editMode: boolean;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   profilePicture: string;
+  isPending: boolean;
+  isActuallyDirty: boolean;
 }
 
-const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profilePicture }) => {
-  const { register } = useFormContext();
+const Profile: React.FC<ProfileProps> = ({
+  errors,
+  editMode,
+  setEditMode,
+  profilePicture,
+  isPending,
+  isActuallyDirty,
+}) => {
+  const { register, setValue } = useFormContext<IProfileForm>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [rawImage, setRawImage] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const profileImageInputRef = React.useRef<HTMLInputElement | null>(null);
+  const previewObjectUrlRef = React.useRef<string | null>(null);
+
+  const profilePictureRegister = register('profilePicture');
+
+  /* Fixed by Codex on 2026-03-03
+     Who: Codex
+     What: Added object URL lifecycle cleanup for cropped profile previews.
+     Why: Repeated crop attempts created new blob URLs without revoking old ones, leaking browser memory.
+     How: Track the active preview object URL in a ref and revoke it when replacing preview, leaving edit mode, and on unmount. */
+  useEffect(() => {
+    if (!editMode) {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
+      setPreviewImage(null);
+      setRawImage(null);
+      setShowCropper(false);
+      if (profileImageInputRef.current) {
+        profileImageInputRef.current.value = '';
+      }
+    }
+  }, [editMode]);
+
+  useEffect(() => {
+    return () => {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setRawImage(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:flex-row md:p-6">
-      <div className="relative mx-auto mb-6 flex items-center justify-center md:mb-0 md:mr-6 md:w-1/3">
-        <div className="aspect-square h-40 w-40 shrink-0 overflow-hidden rounded-full border-2 border-common-minimal bg-common-minimal">
-          <Image
-            src={previewImage || profilePicture}
-            alt="Profile"
-            width={160}
-            height={160}
-            className="h-full w-full object-cover"
-            quality={85}
-            sizes="(max-width: 768px) 160px, 160px"
-            priority
-          />
-        </div>
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          {...register('profilePicture', {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setPreviewImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            },
-          })}
+      {showCropper && rawImage && (
+        <ImageCropper
+          image={rawImage}
+          onCancel={() => {
+            setShowCropper(false);
+            if (profileImageInputRef.current) profileImageInputRef.current.value = '';
+          }}
+          onCropComplete={(croppedFile) => {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            setValue('profilePicture', dataTransfer.files, { shouldDirty: true });
+            if (previewObjectUrlRef.current) {
+              URL.revokeObjectURL(previewObjectUrlRef.current);
+            }
+            const nextPreviewObjectUrl = URL.createObjectURL(croppedFile);
+            previewObjectUrlRef.current = nextPreviewObjectUrl;
+            setPreviewImage(nextPreviewObjectUrl);
+            setShowCropper(false);
+          }}
         />
-        {editMode && (
-          <button
-            type="button"
-            onClick={() => {
-              const fileInput = document.querySelector(
-                'input[name="profilePicture"]'
-              ) as HTMLInputElement;
-              if (fileInput) fileInput.click();
+      )}
+      <div className="mx-auto mb-6 flex items-start justify-center md:mb-0 md:mr-6 md:w-1/3">
+        <div className="relative h-40 w-40 shrink-0">
+          <div className="h-full w-full overflow-hidden rounded-full border-2 border-common-minimal bg-common-minimal">
+            <Image
+              src={previewImage || profilePicture}
+              alt="Profile"
+              width={160}
+              height={160}
+              className="h-full w-full object-cover"
+              quality={85}
+              sizes="(max-width: 768px) 160px, 160px"
+              priority
+            />
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            name={profilePictureRegister.name}
+            onBlur={profilePictureRegister.onBlur}
+            onChange={handleFileChange}
+            ref={(element) => {
+              profilePictureRegister.ref(element);
+              profileImageInputRef.current = element;
             }}
-            className="absolute bottom-1 right-1 rounded-full bg-functional-blue p-2 text-white transition-colors hover:bg-functional-blueContrast md:bottom-40 md:right-14"
-          >
-            <Pencil size={18} className="text-white" />
-          </button>
-        )}
+          />
+          {editMode && (
+            <button
+              type="button"
+              onClick={() => {
+                profileImageInputRef.current?.click();
+              }}
+              className="absolute bottom-1 right-1 rounded-full bg-functional-blue p-2 text-primary-foreground transition-colors hover:bg-functional-blueContrast"
+              aria-label="Change profile photo"
+            >
+              <Pencil size={18} className="text-primary-foreground" />
+            </button>
+          )}
+        </div>
       </div>
-      <div className="w-full md:w-2/3">
+      <div className="w-full min-w-0 md:w-2/3">
         <h2 className="mb-6 flex items-center font-bold res-text-xl">
           <span className="text-text-primary">Your Profile</span>
           <button
@@ -78,12 +153,25 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
                 setEditMode(true);
               }
             }}
-            className="ml-4 text-functional-blue hover:text-functional-blueContrast"
+            disabled={editMode && (!isActuallyDirty || isPending)}
+            className={`ml-4 ${
+              editMode
+                ? isActuallyDirty && !isPending
+                  ? 'text-functional-green hover:text-functional-greenContrast'
+                  : 'cursor-not-allowed text-text-tertiary opacity-50'
+                : 'text-functional-blue hover:text-functional-blueContrast'
+            }`}
+            aria-label={editMode ? 'Save profile' : 'Edit profile'}
           >
             {editMode ? <Save size={18} /> : <Edit size={18} />}
           </button>
         </h2>
         <div className="space-y-4">
+          {/* Fixed by Codex on 2026-03-03
+             Who: Codex
+             What: Remove local schema props from profile inputs.
+             Why: The profile page now uses `zodResolver(profileMasterSchema)` as the single validation source.
+             How: Keep component-level inputs declarative and let centralized resolver rules handle validation/errors. */}
           <FormInput
             label="Username"
             name="username"
@@ -100,7 +188,6 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
               type="text"
               register={register}
               errors={errors}
-              requiredMessage="First name is required"
               readOnly={!editMode}
             />
             <FormInput
@@ -109,7 +196,6 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
               type="text"
               register={register}
               errors={errors}
-              requiredMessage="Last name is required"
               readOnly={!editMode}
             />
           </div>
@@ -119,9 +205,6 @@ const Profile: React.FC<ProfileProps> = ({ errors, editMode, setEditMode, profil
             type="email"
             register={register}
             errors={errors}
-            requiredMessage="Email is required"
-            patternValue={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
-            patternMessage="Invalid email address"
             readOnly={true}
           />
           <FormInput

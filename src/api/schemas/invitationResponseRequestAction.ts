@@ -5,8 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type InvitationResponseRequestAction =
-  (typeof InvitationResponseRequestAction)[keyof typeof InvitationResponseRequestAction];
+export type InvitationResponseRequestAction = typeof InvitationResponseRequestAction[keyof typeof InvitationResponseRequestAction];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationResponseRequestAction = {

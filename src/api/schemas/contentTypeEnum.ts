@@ -5,11 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ContentTypeEnum = (typeof ContentTypeEnum)[keyof typeof ContentTypeEnum];
+export type ContentTypeEnum = typeof ContentTypeEnum[keyof typeof ContentTypeEnum];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ContentTypeEnum = {
   articlesarticle: 'articles.article',
+  communitiescommunity: 'communities.community',
   postspost: 'posts.post',
   postscomment: 'posts.comment',
   articlesreviewcomment: 'articles.reviewcomment',

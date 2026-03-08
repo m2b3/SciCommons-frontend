@@ -85,10 +85,16 @@ const PostListContent = () => {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-4xl font-bold text-primary">Posts</h1>
         <div className="flex items-center gap-4">
-          <Link href="/posts/createpost">
-            <button className="flex cursor-pointer items-center rounded-full bg-green-500 px-4 py-2 text-white hover:bg-green-600">
-              <span className="mr-2">+</span> New Post
-            </button>
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Remove nested button inside Link for the new post CTA.
+              Why: Nested interactive elements are invalid and reported by Axe.
+              How: Style the Link directly with the same visual treatment. */}
+          <Link
+            href="/posts/createpost"
+            className="flex items-center rounded-full bg-functional-green px-4 py-2 text-primary-foreground hover:bg-functional-greenContrast"
+          >
+            <span className="mr-2">+</span> New Post
           </Link>
         </div>
       </div>

@@ -7,9 +7,6 @@ import { Calendar, Clock, Eye, MessageCircle, MessageSquare, Star, ThumbsUp } fr
 
 import { ArticleOut } from '@/api/schemas';
 
-
-import { useAuthStore } from '@/stores/authStore';
-
 interface ArticleStatsProps {
   article: ArticleOut;
 }
@@ -17,8 +14,6 @@ interface ArticleStatsProps {
 const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
   dayjs.extend(relativeTime);
   dayjs.extend(advancedFormat);
-
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   // const { data, refetch } = useUsersCommonApiGetReactionCount(
   //   'articles.article',
@@ -110,41 +105,46 @@ export default ArticleStats;
 export const ArticleStatsSkeleton = () => {
   return (
     <div className="animate-pulse rounded-lg border p-4 shadow-sm">
-      <div className="mb-4 h-6 w-32 rounded bg-gray-200"></div>
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Tokenize article stats skeleton colors.
+          Why: Keep loading placeholders aligned with skins.
+          How: Replace gray utilities with common token shades. */}
+      <div className="mb-4 h-6 w-32 rounded bg-common-minimal"></div>
       <div className="space-y-4">
         <div className="flex space-x-4">
           <div className="flex items-center">
-            <ThumbsUp className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-16 rounded bg-gray-200"></div>
+            <ThumbsUp className="mr-2 h-5 w-5 text-common-contrast" />
+            <div className="h-4 w-16 rounded bg-common-minimal"></div>
           </div>
           <div className="flex items-center">
-            <Eye className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-16 rounded bg-gray-200"></div>
+            <Eye className="mr-2 h-5 w-5 text-common-contrast" />
+            <div className="h-4 w-16 rounded bg-common-minimal"></div>
           </div>
         </div>
         <div className="flex items-center">
-          <Star className="mr-2 h-5 w-5 text-gray-300" />
-          <div className="h-4 w-40 rounded bg-gray-200"></div>
+          <Star className="mr-2 h-5 w-5 text-common-contrast" />
+          <div className="h-4 w-40 rounded bg-common-minimal"></div>
         </div>
         <div className="flex space-x-4">
           <div className="flex items-center">
-            <MessageCircle className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-24 rounded bg-gray-200"></div>
+            <MessageCircle className="mr-2 h-5 w-5 text-common-contrast" />
+            <div className="h-4 w-24 rounded bg-common-minimal"></div>
           </div>
           <div className="flex items-center">
-            <MessageSquare className="mr-2 h-5 w-5 text-gray-300" />
-            <div className="h-4 w-24 rounded bg-gray-200"></div>
+            <MessageSquare className="mr-2 h-5 w-5 text-common-contrast" />
+            <div className="h-4 w-24 rounded bg-common-minimal"></div>
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Calendar className="h-5 w-5 flex-shrink-0 text-gray-300" />
-          <div className="h-4 w-20 rounded bg-gray-200"></div>
-          <div className="h-4 w-40 rounded bg-gray-200"></div>
+          <Calendar className="h-5 w-5 flex-shrink-0 text-common-contrast" />
+          <div className="h-4 w-20 rounded bg-common-minimal"></div>
+          <div className="h-4 w-40 rounded bg-common-minimal"></div>
         </div>
         <div className="flex items-center space-x-2">
-          <Clock className="h-5 w-5 flex-shrink-0 text-gray-300" />
-          <div className="h-4 w-20 rounded bg-gray-200"></div>
-          <div className="h-4 w-40 rounded bg-gray-200"></div>
+          <Clock className="h-5 w-5 flex-shrink-0 text-common-contrast" />
+          <div className="h-4 w-20 rounded bg-common-minimal"></div>
+          <div className="h-4 w-40 rounded bg-common-minimal"></div>
         </div>
       </div>
     </div>

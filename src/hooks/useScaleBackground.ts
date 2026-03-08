@@ -1,7 +1,7 @@
 import React from 'react';
 
 type DrawerDirection = 'top' | 'bottom' | 'left' | 'right' | null;
-type AnyFunction = (...args: any) => any;
+type AnyFunction = (...args: unknown[]) => unknown;
 
 export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
   const timeoutIdRef = React.useRef<number | null>(null);
@@ -110,5 +110,13 @@ export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
         }, TRANSITIONS.DURATION * 1000);
       };
     }
-  }, [isOpen, initialBackgroundColor]);
+  }, [
+    isOpen,
+    initialBackgroundColor,
+    side,
+    noBodyStyles,
+    setBackgroundColorOnScale,
+    TRANSITIONS.DURATION,
+    TRANSITIONS.EASE,
+  ]);
 };

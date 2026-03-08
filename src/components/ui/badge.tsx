@@ -10,8 +10,14 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          'border-transparent bg-functional-green dark:bg-functional-greenContrast text-white shadow hover:bg-functional-green/80',
-        secondary: 'border-transparent bg-functional-blue text-white hover:bg-functional-blue/80',
+          /* Fixed by Codex on 2026-02-15
+             Who: Codex
+             What: Replace badge foreground hard-coded white with tokenized foreground.
+             Why: Keep badge text contrast aligned with skin palettes.
+             How: Use primary-foreground for colored badge text. */
+          'border-transparent bg-functional-green dark:bg-functional-greenContrast text-primary-foreground shadow hover:bg-functional-green/80',
+        secondary:
+          'border-transparent bg-functional-blue text-primary-foreground hover:bg-functional-blue/80',
         destructive:
           'border-transparent bg-functional-red text-destructive-foreground shadow hover:bg-destructive/80',
         outline: 'text-foreground',

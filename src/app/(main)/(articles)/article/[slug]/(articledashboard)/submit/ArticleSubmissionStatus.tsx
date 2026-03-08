@@ -8,6 +8,7 @@ import clsx from 'clsx';
 
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
 import { StatusFilter } from '@/api/schemas';
+import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import useIdenticon from '@/hooks/useIdenticons';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -32,9 +33,15 @@ const ArticleSubmissionStatus = () => {
       showErrorToast(error);
     }
   }, [error]);
+  const communityName = data?.data.community_article?.community.name ?? '';
+  const encodedCommunityName = encodeURIComponent(communityName);
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Submission status panel used hard-coded grays and status colors.
+     Solution: Replace fixed utilities with semantic tokens for surfaces, text, and status pills.
+     Result: Status UI now reflects active skin palettes. */
   return (
-    <div className="my-4 rounded bg-white-secondary px-8 py-4 text-gray-900 shadow">
+    <div className="my-4 rounded bg-common-cardBackground px-8 py-4 text-text-primary shadow">
       <div className="mb-4 flex flex-col justify-center">
         <h1 className="font-bold res-text-xl">Article Submission Status</h1>
       </div>
@@ -53,24 +60,32 @@ const ArticleSubmissionStatus = () => {
             objectFit="cover"
           />
           <div className="ml-4">
-            <Link href={`/community/${data.data.community_article.community.name}`}>
+            <Link href={`/community/${encodedCommunityName}`}>
               <h3 className="cursor-pointer font-semibold res-text-base hover:underline">
                 {data.data.community_article.community.name}
               </h3>
             </Link>
-            <p className="text-gray-600 res-text-sm">
-              {data.data.community_article.community.description}
-            </p>
+            <RenderParsedHTML
+              rawContent={data.data.community_article.community.description || ''}
+              supportMarkdown={true}
+              supportLatex={false}
+              containerClassName="mb-0"
+              contentClassName="line-clamp-2 text-text-secondary res-text-sm"
+            />
           </div>
           <div className="ml-auto">
             <span
               className={clsx(
-                'rounded-full px-3 py-1 text-white res-text-xs',
-                data.data.community_article.status === StatusFilter.accepted && 'bg-green-500',
-                data.data.community_article.status === StatusFilter.submitted && 'bg-gray-400',
-                data.data.community_article.status === StatusFilter.under_review && 'bg-yellow-500',
-                data.data.community_article.status === StatusFilter.rejected && 'bg-red-500',
-                data.data.community_article.status === StatusFilter.published && 'bg-blue-500'
+                'rounded-full px-3 py-1 text-primary-foreground res-text-xs',
+                data.data.community_article.status === StatusFilter.accepted &&
+                  'bg-functional-green',
+                data.data.community_article.status === StatusFilter.submitted &&
+                  'bg-functional-gray',
+                data.data.community_article.status === StatusFilter.under_review &&
+                  'bg-functional-yellow',
+                data.data.community_article.status === StatusFilter.rejected && 'bg-functional-red',
+                data.data.community_article.status === StatusFilter.published &&
+                  'bg-functional-blue'
               )}
             >
               {data.data.community_article.status}
@@ -79,7 +94,7 @@ const ArticleSubmissionStatus = () => {
         </div>
       )}
       {data && !data.data.community_article && (
-        <p className="text-gray-600 res-text-base">
+        <p className="text-text-secondary res-text-base">
           Article is not submitted to any community yet.
         </p>
       )}

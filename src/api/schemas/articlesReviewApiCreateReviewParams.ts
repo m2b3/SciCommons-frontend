@@ -6,5 +6,5 @@
  */
 
 export type ArticlesReviewApiCreateReviewParams = {
-  community_id?: number | null;
+community_id?: number | null;
 };

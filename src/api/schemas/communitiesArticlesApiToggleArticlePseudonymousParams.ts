@@ -6,5 +6,5 @@
  */
 
 export type CommunitiesArticlesApiToggleArticlePseudonymousParams = {
-  pseudonymous: boolean;
+pseudonymous: boolean;
 };

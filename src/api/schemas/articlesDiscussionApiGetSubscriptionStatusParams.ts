@@ -6,6 +6,6 @@
  */
 
 export type ArticlesDiscussionApiGetSubscriptionStatusParams = {
-  community_article_id: number;
-  community_id: number;
+community_article_id: number;
+community_id: number;
 };

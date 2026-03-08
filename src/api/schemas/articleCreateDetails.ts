@@ -5,10 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ArticleCreateDetailsArticleLink } from './articleCreateDetailsArticleLink';
+import type { Tag } from './tag';
 import type { ArticleCreateDetailsCommunityName } from './articleCreateDetailsCommunityName';
 import type { ArticleCreateDetailsPdfLink } from './articleCreateDetailsPdfLink';
 import type { ArticleCreateDetailsSubmissionType } from './articleCreateDetailsSubmissionType';
-import type { Tag } from './tag';
 
 export interface ArticleCreateDetails {
   abstract: string;

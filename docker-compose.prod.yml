@@ -11,9 +11,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       # Mounts the host's time configuration to the container to sync the time.
 
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Mounts the Docker socket file to allow Traefik to interact with the container.
-
     labels:
       - 'traefik.enable=true'
       # Enables Traefik for this container.

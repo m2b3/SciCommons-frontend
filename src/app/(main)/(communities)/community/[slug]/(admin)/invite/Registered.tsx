@@ -79,6 +79,7 @@ const Registered = ({ communityId }: { communityId: number }) => {
           type="text"
           placeholder="Enter the note"
           register={register}
+          control={control}
           requiredMessage="Note is required"
           info="Provide a brief summary of your article's content."
           errors={errors}

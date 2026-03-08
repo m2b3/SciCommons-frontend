@@ -5,8 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CommunityArticleOutStatus =
-  (typeof CommunityArticleOutStatus)[keyof typeof CommunityArticleOutStatus];
+export type CommunityArticleOutStatus = typeof CommunityArticleOutStatus[keyof typeof CommunityArticleOutStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CommunityArticleOutStatus = {
@@ -16,4 +16,5 @@ export const CommunityArticleOutStatus = {
   accepted: 'accepted',
   rejected: 'rejected',
   published: 'published',
+  unpublished: 'unpublished',
 } as const;

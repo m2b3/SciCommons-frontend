@@ -461,7 +461,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 <>{loadingIndicator}</>
               ) : (
                 <>
-                  {/* {EmptyItem()} */}
+                  {EmptyItem()}
                   {CreatableItem()}
                   {!selectFirstItem && <CommandItem value="-" className="hidden" />}
                   {Object.entries(selectables).map(([key, dropdowns]) => (

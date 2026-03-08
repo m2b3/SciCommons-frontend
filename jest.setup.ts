@@ -12,7 +12,11 @@ class IntersectionObserver {
     this.options = options;
     this.root = options?.root || null;
     this.rootMargin = options?.rootMargin || '0px';
-    this.thresholds = options?.threshold ? (Array.isArray(options.threshold) ? options.threshold : [options.threshold]) : [0];
+    this.thresholds = options?.threshold
+      ? Array.isArray(options.threshold)
+        ? options.threshold
+        : [options.threshold]
+      : [0];
   }
 
   observe(target: Element) {

@@ -122,7 +122,7 @@ const CreatePostPage: React.FC = () => {
     return words.map((word, index) => {
       if (word.startsWith('#') && word.length > 1) {
         return (
-          <span key={index} className="hashtag mr-2 cursor-default text-blue-500">
+          <span key={index} className="hashtag mr-2 cursor-default text-functional-blue">
             {word}
           </span>
         );
@@ -145,43 +145,52 @@ const CreatePostPage: React.FC = () => {
     return hashtag;
   };
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Create post view used hard-coded gray/green/blue utilities.
+     Solution: Replace fixed colors with semantic tokens for inputs, surfaces, and actions.
+     Result: Post creation UI now adapts to active skin palettes. */
   return (
     <div className="grid min-h-screen grid-cols-1 text-dark-primary md:grid-cols-[1fr_260px] lg:grid-cols-[1fr_360px]">
       <div className="h-full w-full px-8">
-        <div className="mx-auto mt-10 h-fit w-full max-w-[720px] rounded-common-xl border border-gray-100 bg-gray-50 p-6 shadow-common">
-          <h1 className="mb-6 text-3xl font-semibold text-gray-700">Create a New Post</h1>
+        <div className="mx-auto mt-10 h-fit w-full max-w-[720px] rounded-common-xl border border-common-minimal bg-common-background p-6 shadow-common">
+          <h1 className="mb-6 text-3xl font-semibold text-text-primary">Create a New Post</h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="title" className="mb-1 block text-sm font-medium text-text-secondary">
                 Title
               </label>
               <input
                 id="title"
                 {...register('title', { required: 'Title is required' })}
-                className="w-full rounded-common-lg bg-white-secondary px-3 py-2 ring-1 ring-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-common-lg bg-common-cardBackground px-3 py-2 text-text-primary ring-1 ring-common-contrast focus:outline-none focus:ring-1 focus:ring-functional-green"
                 placeholder="Enter your post title"
               />
-              {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>}
+              {errors.title && (
+                <p className="mt-1 text-sm text-functional-red">{errors.title.message}</p>
+              )}
             </div>
             <div>
-              <label htmlFor="content" className="mb-1 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="content"
+                className="mb-1 block text-sm font-medium text-text-secondary"
+              >
                 Content
               </label>
               <textarea
                 id="content"
                 {...register('content', { required: 'Content is required' })}
                 rows={5}
-                className="w-full rounded-common-lg bg-white-primary px-3 py-2 ring-1 ring-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-common-lg bg-common-cardBackground px-3 py-2 text-text-primary ring-1 ring-common-contrast focus:outline-none focus:ring-1 focus:ring-functional-green"
                 placeholder="What's on your mind?"
                 value={postBody}
                 onChange={handleInputChange}
               />
               {errors.content && (
-                <p className="mt-1 text-sm text-red-600">{errors.content.message}</p>
+                <p className="mt-1 text-sm text-functional-red">{errors.content.message}</p>
               )}
             </div>
             <div className="mt-2 flex w-full flex-row flex-wrap">
-              <span className="text-sm text-gray-700">Hashtags used: </span>
+              <span className="text-sm text-text-secondary">Hashtags used: </span>
               <span className="flex w-full flex-wrap">{renderTextWithHashtags(postBody)}</span>
             </div>
             <div className="flex justify-end">
@@ -189,7 +198,7 @@ const CreatePostPage: React.FC = () => {
                 type="submit"
                 disabled={isPending}
                 className={clsx(
-                  'inline-flex items-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
+                  'inline-flex items-center rounded-md border border-transparent bg-functional-green px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-functional-greenContrast focus:outline-none focus:ring-2 focus:ring-functional-green focus:ring-offset-2',
                   { 'disabled:opacity-50': isPending }
                 )}
               >
@@ -200,30 +209,38 @@ const CreatePostPage: React.FC = () => {
           </form>
         </div>
       </div>
-      <div className="hidden h-screen w-full overflow-y-auto border-l border-gray-100 bg-gray-100 px-6 py-10 md:flex md:flex-col">
+      <div className="hidden h-screen w-full overflow-y-auto border-l border-common-minimal bg-common-background px-6 py-10 md:flex md:flex-col">
         {availableHashtags?.length > 0 && (
           <div className="flex w-full flex-col gap-4 border-b border-common-contrast pb-4">
             <h4 className="font-bold text-primary">Available Hashtags</h4>
             <div className="w-full rounded-common-lg">
               <ul
                 ref={hashtagDropdownRef}
-                className="max-h-60 w-full overflow-y-auto rounded-common-lg border border-common-minimal bg-white-primary"
+                className="max-h-60 w-full overflow-y-auto rounded-common-lg border border-common-minimal bg-common-cardBackground"
               >
+                {/* Fixed by Codex on 2026-02-15
+                    Who: Codex
+                    What: Convert hashtag suggestions to buttons.
+                    Why: Clickable list items/divs are not keyboard accessible.
+                    How: Use buttons inside list items with explicit labels. */}
                 {availableHashtags.map((hashtagObj, index) => (
-                  <li
-                    key={index}
-                    className="flex cursor-pointer items-center justify-between border-b border-common-minimal p-2 hover:bg-common-minimal/50"
-                    onClick={() => {
-                      const newPostBody =
-                        postBody + hashtagObj.hashtag.substring(currentWord.length);
-                      setPostBody(newPostBody);
-                      setValue('content', newPostBody);
-                      setAvailableHashtags([]);
-                    }}
-                  >
-                    <span className="text-sm text-text-primary">
-                      {highlightHashtag(hashtagObj.hashtag)}
-                    </span>
+                  <li key={index} className="border-b border-common-minimal">
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between p-2 text-left hover:bg-common-minimal/50"
+                      onClick={() => {
+                        const newPostBody =
+                          postBody + hashtagObj.hashtag.substring(currentWord.length);
+                        setPostBody(newPostBody);
+                        setValue('content', newPostBody);
+                        setAvailableHashtags([]);
+                      }}
+                      aria-label={`Insert hashtag ${hashtagObj.hashtag}`}
+                    >
+                      <span className="text-sm text-text-primary">
+                        {highlightHashtag(hashtagObj.hashtag)}
+                      </span>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -234,17 +251,19 @@ const CreatePostPage: React.FC = () => {
           <h4 className="font-bold text-primary">Popular Hashtags</h4>
           <div className="flex flex-wrap gap-2">
             {HashtagsList.map((hashtagObj, index) => (
-              <div
+              <button
                 key={index}
-                className="flex cursor-pointer flex-wrap items-center gap-1 rounded-full bg-gray-200 px-3 py-2"
+                type="button"
+                className="flex flex-wrap items-center gap-1 rounded-full bg-common-minimal px-3 py-2"
                 onClick={() => {
                   const newPostBody = `${postBody} ${hashtagObj.hashtag}`;
                   setPostBody(newPostBody);
                   setValue('content', newPostBody);
                 }}
+                aria-label={`Insert hashtag ${hashtagObj.hashtag}`}
               >
                 <span className="text-sm text-text-primary">{hashtagObj?.hashtag}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>

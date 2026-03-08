@@ -11,12 +11,7 @@ import { useCommunitiesArticlesApiSubmitArticle } from '@/api/community-articles
 import { ArticlesListOut, UserCommunitySchema } from '@/api/schemas';
 import { useUsersApiGetMyCommunities } from '@/api/users/users';
 import { Button, ButtonTitle } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FIVE_MINUTES_IN_MS } from '@/constants/common.constants';
@@ -26,6 +21,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 
+// NOTE(bsureshkrishna, 2026-02-07): New flow for publishing an article to a community
+// (select community + submit) added after baseline 5271498.
 interface PublishToCommunityModalProps {
   article: ArticlesListOut;
   open: boolean;
@@ -232,6 +229,10 @@ interface CommunityItemProps {
 }
 
 const CommunityItem: React.FC<CommunityItemProps> = ({ community, isSelected, onSelect }) => {
+  /* Fixed by Codex on 2026-02-15
+     Problem: Selected checkmark used a hard-coded white text color.
+     Solution: Use the semantic primary-foreground token for the check icon.
+     Result: Selected state adapts to skin foreground colors. */
   return (
     <button
       type="button"
@@ -278,7 +279,7 @@ const CommunityItem: React.FC<CommunityItemProps> = ({ community, isSelected, on
             : 'border-common-contrast bg-transparent'
         )}
       >
-        {isSelected && <Check className="h-3 w-3 text-white" />}
+        {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
       </div>
     </button>
   );

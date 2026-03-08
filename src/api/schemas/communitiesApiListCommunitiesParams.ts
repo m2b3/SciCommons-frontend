@@ -6,8 +6,8 @@
  */
 
 export type CommunitiesApiListCommunitiesParams = {
-  search?: string | null;
-  sort?: string | null;
-  page?: number;
-  per_page?: number;
+search?: string | null;
+sort?: string | null;
+page?: number;
+per_page?: number;
 };

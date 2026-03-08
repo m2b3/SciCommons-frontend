@@ -1,27 +1,25 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import { Pencil, X } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+
 import { toast } from 'sonner';
-import { useMediaQuery } from 'usehooks-ts';
 
 import { withAuth } from '@/HOCs/withAuth';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
-import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
-import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import EditArticleDetails, { EditArticleDetailsSkeleton } from './EditArticleDetails';
 
-type ActiveTab = 'Details' | 'FAQs';
-
 const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const searchParams = useSearchParams();
+  const communityName = searchParams?.get('community') ?? null;
+  const returnTo = searchParams?.get('returnTo') ?? null;
+  const returnPath = searchParams?.get('returnPath') ?? null;
   // const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
-  const [isEditEnabled, setIsEditEnabled] = useState(false);
-  const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   const { data, isPending, error } = useArticlesApiGetArticle(
     params?.slug || '',
@@ -55,20 +53,11 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
             <span className="text-functional-green"> Article </span>
             Details
           </h1>
-          <div
-            className={cn(
-              'aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast',
-              isDesktop ? 'absolute right-4 top-4' : ''
-            )}
-            onClick={() => setIsEditEnabled(!isEditEnabled)}
-          >
-            {!isEditEnabled ? (
-              <Pencil className="size-5 text-functional-blue" />
-            ) : (
-              <X className="size-5 text-text-secondary" />
-            )}
-          </div>
         </div>
+        {/* Fixed by Codex on 2026-02-09
+            Problem: Users had to click an extra edit icon after already choosing Edit Article.
+            Solution: Keep settings page in always-editable mode (no extra toggle).
+            Result: Fields are immediately editable on arrival. */}
         {isPending && <EditArticleDetailsSkeleton />}
         {data && (
           <EditArticleDetails
@@ -85,9 +74,10 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
             submissionType={data.data.submission_type}
             defaultImageURL={data.data.article_image_url || ''}
             articleId={Number(data.data.id)}
-            isEditEnabled={isEditEnabled}
-            setIsEditEnabled={setIsEditEnabled}
             articleSlug={params.slug}
+            communityName={communityName}
+            returnTo={returnTo}
+            returnPath={returnPath}
           />
         )}
       </div>

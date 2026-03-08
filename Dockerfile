@@ -26,11 +26,14 @@ WORKDIR /app
 # Declare ARG again here
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_REALTIME_URL
+ARG NEXT_PUBLIC_UI_SKIN
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
 RUN echo "NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL" >> .env
 RUN echo "NEXT_PUBLIC_REALTIME_URL=$NEXT_PUBLIC_REALTIME_URL" >> .env
+RUN echo "NEXT_PUBLIC_UI_SKIN=$NEXT_PUBLIC_UI_SKIN" >> .env
 RUN npm run build
 
 # 3. Production image, copy all the files and run next
@@ -53,8 +56,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 EXPOSE 3000
-
 ENV PORT=3000
-
 ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]
