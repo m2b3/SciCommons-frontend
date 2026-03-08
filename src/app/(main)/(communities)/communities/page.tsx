@@ -48,7 +48,9 @@ const roleBadgeDefinitions: Record<
   reviewer: { code: 'R', label: 'Reviewer' },
 };
 
-const resolveCommunityRoleFromString = (role: CommunityListOut['role']): CommunityMembershipRole => {
+const resolveCommunityRoleFromString = (
+  role: CommunityListOut['role']
+): CommunityMembershipRole => {
   const normalizedRole = role?.trim().toLowerCase();
   if (!normalizedRole) return null;
 
