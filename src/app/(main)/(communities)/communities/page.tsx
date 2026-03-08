@@ -168,45 +168,42 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
     return displayedItems
       .map((community, index) => ({ community, index }))
       .sort((left, right) => {
-        const tierDelta = getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
+        const tierDelta =
+          getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
         return tierDelta !== 0 ? tierDelta : left.index - right.index;
       })
       .map(({ community }) => community);
   }, [displayedItems]);
 
-  const renderCommunity = useCallback(
-    (community: CommunityListOut) => {
-      const membershipRole = resolveCommunityRole(community.role);
-      const roleBadges: CommunityRoleBadge[] =
-        membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
-      const isMemberOnly = membershipRole === 'member';
-      const hasAnyMembership = membershipRole !== null;
-      const accessIndicator: CommunityAccessIndicator | undefined =
-        !hasAnyMembership
-          ? community.type === 'public'
-            ? {
-                tone: 'public',
-                label: 'Public community, not a member',
-              }
-            : community.type === 'private'
-              ? {
-                  tone: 'private',
-                  label: 'Private community, membership required',
-                }
-              : undefined
-          : undefined;
+  const renderCommunity = useCallback((community: CommunityListOut) => {
+    const membershipRole = resolveCommunityRole(community.role);
+    const roleBadges: CommunityRoleBadge[] =
+      membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
+    const isMemberOnly = membershipRole === 'member';
+    const hasAnyMembership = membershipRole !== null;
+    const accessIndicator: CommunityAccessIndicator | undefined = !hasAnyMembership
+      ? community.type === 'public'
+        ? {
+            tone: 'public',
+            label: 'Public community, not a member',
+          }
+        : community.type === 'private'
+          ? {
+              tone: 'private',
+              label: 'Private community, membership required',
+            }
+          : undefined
+      : undefined;
 
-      return (
-        <CommunityCard
-          community={community}
-          roleBadges={roleBadges}
-          showMemberBadge={isMemberOnly}
-          accessIndicator={accessIndicator}
-        />
-      );
-    },
-    []
-  );
+    return (
+      <CommunityCard
+        community={community}
+        roleBadges={roleBadges}
+        showMemberBadge={isMemberOnly}
+        accessIndicator={accessIndicator}
+      />
+    );
+  }, []);
 
   const renderSkeleton = useCallback(() => <CommunityCardSkeleton />, []);
 
@@ -306,7 +303,8 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     return displayedItems
       .map((community, index) => ({ community, index }))
       .sort((left, right) => {
-        const tierDelta = getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
+        const tierDelta =
+          getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
         return tierDelta !== 0 ? tierDelta : left.index - right.index;
       })
       .map(({ community }) => community);
@@ -328,16 +326,13 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderCommunity = useCallback(
-    (community: CommunityListOut) => {
-      const membershipRole = resolveCommunityRole(community.role);
-      const roleBadges: CommunityRoleBadge[] =
-        membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
+  const renderCommunity = useCallback((community: CommunityListOut) => {
+    const membershipRole = resolveCommunityRole(community.role);
+    const roleBadges: CommunityRoleBadge[] =
+      membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
 
-      return <CommunityCard community={community} roleBadges={roleBadges} />;
-    },
-    []
-  );
+    return <CommunityCard community={community} roleBadges={roleBadges} />;
+  }, []);
 
   const renderSkeleton = useCallback(() => <CommunityCardSkeleton />, []);
 
