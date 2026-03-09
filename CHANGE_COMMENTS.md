@@ -1,3 +1,15 @@
+## 2026-03-09 - Remove Unused TipTap Stack
+
+Problem: TipTap packages and related editor files were still present even though the TipTap editor path is no longer used by the app.
+
+Root Cause: Legacy TipTap artifacts (dependencies, components, CSS placeholder styling, and docs tree references) remained after editor direction moved away from TipTap.
+
+Solution: Removed all `@tiptap/*` dependencies from `package.json` and corresponding lockfile entries from `yarn.lock`, deleted the unused `src/components/richtexteditor` TipTap files, removed the TipTap-specific CSS block in `src/app/globals.css`, and removed the obsolete `richtexteditor` folder listing from docs project structure.
+
+Result: The repository no longer includes TipTap dependency or source artifacts, reducing dependency footprint and eliminating dead editor code paths.
+
+Files Modified: `package.json`, `yarn.lock`, `src/components/richtexteditor/CommentEditor.tsx`, `src/components/richtexteditor/MenuBar.tsx`, `src/components/richtexteditor/TipTap.tsx`, `src/app/globals.css`, `src/pages/docs/project-structure.mdx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - Intermediary Update Boilerplate Suppression Rule
 
 Problem: Progress updates repeatedly included a boilerplate sentence about final-response logging, which made routine status messages noisy and repetitive.
