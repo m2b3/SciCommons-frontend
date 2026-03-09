@@ -9,7 +9,7 @@ const Loader = () => {
       <div className="w-24 md:w-32">
         <InfiniteSpinnerAnimation color="#16A34A" strokeWidth={12} />
       </div>
-      <div className={`mt-4 animate-pulse text-center text-sm font-semibold text-functional-greencontrast`}>
+      <div className={`mt-4 animate-pulse text-center text-sm font-semibold text-functional-greenContrast`}>
         SciCommons is performing some checks, please wait...
       </div>
     </div>
