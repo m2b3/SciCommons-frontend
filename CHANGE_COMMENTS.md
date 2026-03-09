@@ -1,3 +1,15 @@
+## 2026-03-08 - Intermediary Update Boilerplate Suppression Rule
+
+Problem: Progress updates repeatedly included a boilerplate sentence about final-response logging, which made routine status messages noisy and repetitive.
+
+Root Cause: Repository instructions required final-response logging but did not explicitly forbid repeating that requirement in interim commentary.
+
+Solution: Added a new `AGENTS.md` rule under repository notes instructing agents to avoid repeating boilerplate status lines about `codexOutput.md` logging and to keep intermediary updates task-specific.
+
+Result: Intermediary updates can stay concise and relevant while preserving the existing mandatory final-response logging behavior.
+
+Files Modified: `AGENTS.md`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - MDX Editor Ctrl/Cmd+Enter Submit Restoration
 
 Problem: `Ctrl/Cmd+Enter` stopped submitting forms from markdown editor fields, even though keyboard submit worked in plain textarea flows.

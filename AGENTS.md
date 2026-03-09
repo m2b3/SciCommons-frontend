@@ -9,6 +9,7 @@ Notes for this repository:
 - **NEVER redirect stderr to `Nul` or `nul`** - these are Windows reserved device names; use `NUL` (all caps) instead to avoid creating phantom untracked files that git cannot remove.
 - **Interpretation rule:** A question phrased like "can you do this" is informational only; do not take action unless the user says "do this".
 - **Final-response logging:** At the end of each operation, append the exact final assistant response text to `codexOutput.md` with the current date/time before returning that response to the user.
+- **Intermediary updates:** Do not repeat boilerplate status lines (for example, explaining that final text will be appended to `codexOutput.md`); keep progress updates short and specific to the active task.
 
 ## Git Remote Management (CRITICAL)
 
