@@ -1,3 +1,115 @@
+## 2026-03-09 - Remove Unused TipTap Stack
+
+Problem: TipTap packages and related editor files were still present even though the TipTap editor path is no longer used by the app.
+
+Root Cause: Legacy TipTap artifacts (dependencies, components, CSS placeholder styling, and docs tree references) remained after editor direction moved away from TipTap.
+
+Solution: Removed all `@tiptap/*` dependencies from `package.json` and corresponding lockfile entries from `yarn.lock`, deleted the unused `src/components/richtexteditor` TipTap files, removed the TipTap-specific CSS block in `src/app/globals.css`, and removed the obsolete `richtexteditor` folder listing from docs project structure.
+
+Result: The repository no longer includes TipTap dependency or source artifacts, reducing dependency footprint and eliminating dead editor code paths.
+
+Files Modified: `package.json`, `yarn.lock`, `src/components/richtexteditor/CommentEditor.tsx`, `src/components/richtexteditor/MenuBar.tsx`, `src/components/richtexteditor/TipTap.tsx`, `src/app/globals.css`, `src/pages/docs/project-structure.mdx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Intermediary Update Boilerplate Suppression Rule
+
+Problem: Progress updates repeatedly included a boilerplate sentence about final-response logging, which made routine status messages noisy and repetitive.
+
+Root Cause: Repository instructions required final-response logging but did not explicitly forbid repeating that requirement in interim commentary.
+
+Solution: Added a new `AGENTS.md` rule under repository notes instructing agents to avoid repeating boilerplate status lines about `codexOutput.md` logging and to keep intermediary updates task-specific.
+
+Result: Intermediary updates can stay concise and relevant while preserving the existing mandatory final-response logging behavior.
+
+Files Modified: `AGENTS.md`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - MDX Editor Ctrl/Cmd+Enter Submit Restoration
+
+Problem: `Ctrl/Cmd+Enter` stopped submitting forms from markdown editor fields, even though keyboard submit worked in plain textarea flows.
+
+Root Cause: `useSubmitOnCtrlEnter` was intentionally updated to skip already-handled key events (`defaultPrevented`) to avoid duplicate submissions, but the MDX editor path did not have its own local modifier+enter submit handler.
+
+Solution: Added MDX-local `Ctrl/Cmd+Enter` handling in `InitializedMDXEditor` that submits the nearest parent form with `requestSubmit()` after preventing default editor behavior.
+
+Result: Markdown editor forms regain keyboard submit behavior without reintroducing global double-submit risk in other textarea/form flows.
+
+Files Modified: `src/components/common/MarkdownEditor/InitializedMDXEditor.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Communities Card Role Marker Regression Fix (Role Parsing + Legacy Fallback)
+
+Problem: Community cards stopped showing role markers (`A/M/R/m`) reliably after switching to list-payload role wiring, so users could not quickly see whether they were admin/moderator/reviewer/member.
+
+Root Cause: Role normalization only matched a narrow set of exact role strings and did not account for variant tokenized role payloads (for example underscored or prefixed names) or legacy boolean membership flags that can still appear in some responses.
+
+Solution: Updated `communities/page.tsx` to (1) parse role strings by tokens with broader role matching, and (2) fall back to legacy `is_admin` / `is_moderator` / `is_reviewer` / `is_member` flags when role strings are missing or unmatched.
+
+Result: Role/access markers are restored with pre-disappearance behavior: `Communities` shows `A/M/R/m` plus non-member access dots, while `My Communities` continues showing `A/M/R` role badges.
+
+Files Modified: `src/app/(main)/(communities)/communities/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Communities Role Lookup Fan-out Removal (Use List Payload `role`)
+
+Problem: Community cards required extra client-side role fan-out calls (`admin`, `moderator`, `reviewer`, `member`) to render badges/sorting, causing unnecessary request overhead on page entry.
+
+Root Cause: Older client logic did not rely on per-item role data in list payloads, so it fetched role slices separately and merged IDs on the frontend.
+
+Solution: Refactored `communities/page.tsx` to use the generated `CommunityListOut.role` field directly for both `Communities` and `My Communities` tabs. Removed `useQueries` role fan-out flow and replaced it with normalized role mapping (`admin/moderator/reviewer/member`) for badge rendering, member-state detection, and deterministic sort tiers.
+
+Result: Entering communities views now avoids the 4 extra role queries while preserving card badges (`A/M/R/m`), non-member access indicators, and priority ordering.
+
+Files Modified: `src/app/(main)/(communities)/communities/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Tab Title Navigation Consistency Fix (Unread Prefix + Bookmarks Query Titles)
+
+Problem: Route titles could appear stale when navigating between pages (for example Home/Communities) and `/mycontributions?tab=bookmarks` did not consistently show a bookmarks-specific title.
+
+Root Cause: `useTabTitleNotification` captured a one-time base title and could reapply stale values on later state updates; `mycontributions` lacked query-aware metadata title mapping.
+
+Solution: Refactored `useTabTitleNotification` to resync base titles from current route metadata on unread-count/path/query changes before applying the unread prefix. Added tab-aware `generateMetadata` to `mycontributions/page.tsx` so tabs like `bookmarks` map to route-specific titles through the shared title helper.
+
+Result: Browser top-bar titles now follow route changes more reliably, while unread-count prefix behavior remains intact and Bookmarks uses `Bookmarks: SciCommons`.
+
+Files Modified: `src/hooks/useTabTitleNotification.ts`, `src/app/(main)/(users)/mycontributions/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+Follow-up (same day): Removed `useSearchParams` from `useTabTitleNotification` after build/export failures (`missing-suspense-with-csr-bailout`) showed that the globally mounted navbar hook forced Suspense requirements across prerendered routes. Kept route-title sync keyed to `usePathname` + unread count so static prerender pages continue to build while preserving route-level tab-title updates.
+
+Follow-up (same day): Hardened slug fallback formatting in `pageTitle` by decoding URL-encoded route params before humanization (for example `GSoC%202026` -> `GSoC 2026`) and added regression tests for encoded slugs (`%20` and `+`).
+
+## 2026-03-08 - Community Admin Route Title Coverage (Invite/Roles/Requests/Dashboard/Submissions)
+
+Problem: Community admin subsections still had incomplete tab-title coverage after the first create/edit title pass.
+
+Root Cause: Admin route folders under `community/[slug]/(admin)` lacked route-segment metadata layouts, so pages inherited broader parent titles.
+
+Solution: Added dedicated metadata layouts for each remaining admin section with explicit `<Section>: SciCommons` titles: `Community Dashboard`, `Community Invite`, `Community Roles`, `Community Requests`, and `Community Submissions`.
+
+Result: All community admin tabs now show route-specific browser titles, matching the same naming convention as the rest of the title standardization work.
+
+Files Modified: `src/app/(main)/(communities)/community/[slug]/(admin)/dashboard/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/invite/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/requests/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/roles/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/submissions/layout.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Create/Edit Route Tab Title Coverage
+
+Problem: After adding title patterns for list/detail routes, several create/edit flows still inherited generic or list-level browser tab titles.
+
+Root Cause: These routes are mostly client pages without direct metadata exports, and they lacked route-segment layouts that define explicit metadata titles.
+
+Solution: Added metadata layouts for key create/edit flows to keep naming consistent with the new `<Section>: SciCommons` convention. Covered submit/create routes (`Submit Article`, `Create Community`, `Create Post`, `Create Community Article`) and edit/settings routes (`Edit Article`, article-dashboard submit, `Community Settings`, user `Settings`, and `My Profile`).
+
+Result: Create and edit pages now open with clear, route-specific tab labels instead of falling back to `SciCommons` or unrelated parent titles.
+
+Files Modified: `src/app/(main)/(articles)/submitarticle/layout.tsx`, `src/app/(main)/(communities)/createcommunity/layout.tsx`, `src/app/(main)/(posts)/posts/createpost/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/createcommunityarticle/layout.tsx`, `src/app/(main)/(articles)/article/[slug]/(articledashboard)/settings/layout.tsx`, `src/app/(main)/(articles)/article/[slug]/(articledashboard)/submit/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/(admin)/settings/layout.tsx`, `src/app/(main)/(users)/settings/layout.tsx`, `src/app/(main)/(users)/myprofile/layout.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Route-Specific Browser Tab Titles (Communities/Discussions/Articles/Posts)
+
+Problem: Many app routes used a generic browser tab title (`SciCommons`), so pages like community details, discussions, and content detail views did not expose contextual titles.
+
+Root Cause: Most route entries are client components without route metadata exports, and dynamic title formatting/truncation behavior was not centralized.
+
+Solution: Added a shared title utility (`src/lib/pageTitle.ts`) to standardize `<Segment>: SciCommons` formatting, slug fallback humanization, and word-aware truncation for long dynamic segments. Added route metadata layouts for Discussions, Communities, Articles, and Posts list pages; added fallback metadata for community and post detail route segments; and updated dynamic detail pages (article metadata, community detail, community article detail, post detail) to apply consistent title updates with truncation.
+
+Result: Browser tab titles now align with route context (for example, `Discussions: SciCommons`, `Communities: SciCommons`, `<Community Name>: SciCommons`, `<Article/Post Title>: SciCommons`) while preventing overly long tab labels.
+
+Files Modified: `src/lib/pageTitle.ts`, `src/app/(main)/discussions/layout.tsx`, `src/app/(main)/(communities)/communities/layout.tsx`, `src/app/(main)/(articles)/articles/layout.tsx`, `src/app/(main)/(posts)/posts/layout.tsx`, `src/app/(main)/(posts)/posts/[postId]/layout.tsx`, `src/app/(main)/(communities)/community/[slug]/layout.tsx`, `src/app/(main)/(articles)/article/[slug]/(displayarticle)/page.tsx`, `src/app/(main)/(communities)/community/[slug]/(displaycommunity)/page.tsx`, `src/app/(main)/(communities)/community/[slug]/articles/[articleSlug]/page.tsx`, `src/app/(main)/(posts)/posts/[postId]/page.tsx`, `src/tests/__tests__/pageTitle.test.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-03 - Profile Validation Consolidation Follow-up (Regression Fixes)
 
 Problem: The profile Zod-resolver refactor improved architecture but introduced behavioral regressions and consistency issues (optional URL whitespace handling mismatch, dropped status max-length guard, mixed validation sources, and lint/type-safety drift).

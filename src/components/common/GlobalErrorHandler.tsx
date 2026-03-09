@@ -48,7 +48,7 @@ export function GlobalErrorHandler() {
 
       // Show toast notification
       toast.error(message, {
-        duration: 5000,
+        duration: 2000,
         description: 'Please try again or contact support if the problem persists.',
       });
 
