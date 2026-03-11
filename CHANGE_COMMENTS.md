@@ -1,3 +1,15 @@
+## 2026-03-11 - Community Article Draft Discard Persistence Fix
+
+Problem: Clicking `Discard draft` on the community article create page could still lead to a draft being restored on later visits.
+
+Root Cause: The discard flow called `reset(defaultFormValues)`, and `react-hook-form` watch callbacks persisted form state during reset-driven updates, recreating an empty draft immediately after clearing storage.
+
+Solution: Added a discard-specific autosave pause gate in `createcommunityarticle/page.tsx` so reset-triggered watch events are ignored after discard, and autosave resumes only after the next explicit field edit.
+
+Result: Discarding a community article draft now reliably removes persisted draft state instead of recreating it through reset side effects.
+
+Files Modified: `src/app/(main)/(communities)/community/[slug]/createcommunityarticle/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-09 - Remove Unused TipTap Stack
 
 Problem: TipTap packages and related editor files were still present even though the TipTap editor path is no longer used by the app.

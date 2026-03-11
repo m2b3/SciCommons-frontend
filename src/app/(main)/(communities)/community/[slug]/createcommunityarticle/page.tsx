@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { NextPage } from 'next';
 import { useParams, useRouter } from 'next/navigation';
@@ -42,6 +42,11 @@ const CommunityArticleForm: NextPage = () => {
   const communitySlug = params?.slug || '';
   const [isInitialized, setIsInitialized] = useState(false);
   const [hasSavedDraft, setHasSavedDraft] = useState(false);
+  /* Fixed by Codex GPT-5 on 2026-03-11
+     Problem: Discarding a draft called reset(), and react-hook-form watch callbacks immediately re-saved a new empty draft.
+     Solution: Pause autosave during reset-driven updates after discard and resume on the next explicit field change.
+     Result: Discard now removes persisted draft data instead of restoring an empty draft on revisit. */
+  const pauseDraftAutosaveUntilFieldEditRef = useRef(false);
 
   const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
     request: {
@@ -95,7 +100,14 @@ const CommunityArticleForm: NextPage = () => {
   // Save form data to local storage whenever it changes
   useEffect(() => {
     if (isInitialized) {
-      const subscription = watch((formData) => {
+      const subscription = watch((formData, { name }) => {
+        if (pauseDraftAutosaveUntilFieldEditRef.current) {
+          if (!name) {
+            return;
+          }
+          pauseDraftAutosaveUntilFieldEditRef.current = false;
+        }
+
         const normalizedAuthors = (formData.authors || []).filter(
           (author): author is SubmitArticleFormValues['authors'][number] =>
             Boolean(author?.value && author?.label)
@@ -151,6 +163,7 @@ const CommunityArticleForm: NextPage = () => {
   }, [articleData, reset, communitySlug, activeTab, isInitialized, getValues]);
 
   const handleDiscardDraft = () => {
+    pauseDraftAutosaveUntilFieldEditRef.current = true;
     clearCommunityArticleDraft(localStorage, communitySlug);
     setHasSavedDraft(false);
     setActiveTab('upload');
