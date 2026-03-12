@@ -1,3 +1,15 @@
+## 2026-03-12 - Discussion Thread Markdown Spacing Alignment
+
+Problem: After switching discussion thread content to the shared markdown renderer, mobile thread view showed extra vertical space before the actions/comments row.
+
+Root Cause: `DiscussionThread` used `RenderParsedHTML` without overriding its default wrapper spacing, so the component inherited the shared `mb-10 sm:mb-0` margin intended for expandable content surfaces.
+
+Solution: Added a local `containerClassName="mb-0"` override in `DiscussionThread` and documented the reason inline so thread view matches the spacing contract already used by discussion cards and summaries.
+
+Result: Thread view keeps the markdown-rendering fix while removing the unintended mobile gap, bringing layout behavior back in line with the rest of the discussion UI.
+
+Files Modified: `src/components/articles/DiscussionThread.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-11 - Community Article Draft Discard Persistence Fix
 
 Problem: Clicking `Discard draft` on the community article create page could still lead to a draft being restored on later visits.
