@@ -32,6 +32,7 @@ import { useRealtimeContextStore } from '@/stores/realtimeStore';
 import { Reaction } from '@/types';
 
 import FormInput from '../common/FormInput';
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import TruncateText from '../common/TruncateText';
 import { Button, ButtonTitle } from '../ui/button';
 import {
@@ -321,10 +322,12 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({
                         />
                       </div>
                       <div className="w-full min-w-0 break-words text-text-secondary [overflow-wrap:anywhere]">
-                        <TruncateText
-                          text={decodedContent}
-                          maxLines={3}
-                          textClassName="block w-full break-words [overflow-wrap:anywhere]"
+                        <RenderParsedHTML
+                          rawContent={decodedContent}
+                          supportMarkdown={true}
+                          supportLatex={true}
+                          isShrinked={false}
+                          contentClassName="text-sm break-words [overflow-wrap:anywhere]"
                         />
                       </div>
                     </>
