@@ -21,7 +21,7 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', 'Noto Sans', system-ui,
     'Helvetica Neue', Arial, sans-serif;
-  --Text-Tertiary: 71, 85, 105; 
+  --Text-Tertiary: 71, 85, 105;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -222,7 +222,7 @@ body {
        What: Increase light-mode tertiary text contrast.
        Why: Tertiary copy fell below WCAG AA on white surfaces.
        How: Darkened the tertiary token to a higher-contrast slate tone. */
-    --Text-Tertiary: 71, 85, 105; 
+    --Text-Tertiary: 71, 85, 105;
 
     /* Loading */
     --loading: #f2f2f2;

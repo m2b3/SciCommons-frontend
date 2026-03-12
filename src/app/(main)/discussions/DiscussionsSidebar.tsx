@@ -230,7 +230,13 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
   };
 
   return (
-    <div ref={scrollContainerRef} className="h-full overflow-y-auto p-4" tabIndex={0} role="region" aria-label="Discussions navigation">
+    <div
+      ref={scrollContainerRef}
+      className="h-full overflow-y-auto p-4"
+      tabIndex={0}
+      role="region"
+      aria-label="Discussions navigation"
+    >
       <div className="mb-4">
         <h2 className="flex items-center gap-2 text-lg font-bold text-text-primary">Discussions</h2>
       </div>

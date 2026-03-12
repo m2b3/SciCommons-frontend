@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
 
 const TEST_PAGES = [
   { name: 'Home', path: '/' },
@@ -16,13 +16,12 @@ test.describe('Global Accessibility Audit', () => {
     test(`Audit: ${pageInfo.name}`, async ({ page }) => {
       // 1. Navigate to the page
       await page.goto(pageInfo.path);
-      
+
       // 2. Wait for the initial DOM to be ready
       await page.waitForLoadState('domcontentloaded');
 
       await page.waitForSelector('h1, h2, main', { state: 'visible', timeout: 15000 });
 
-     
       await page.waitForTimeout(1000);
 
       const accessibilityScanResults = await new AxeBuilder({ page })
@@ -30,7 +29,9 @@ test.describe('Global Accessibility Audit', () => {
         .analyze();
 
       if (accessibilityScanResults.violations.length > 0) {
-        console.log(`\n [${pageInfo.name}] Found ${accessibilityScanResults.violations.length} violations:`);
+        console.log(
+          `\n [${pageInfo.name}] Found ${accessibilityScanResults.violations.length} violations:`
+        );
         accessibilityScanResults.violations.forEach((v, i) => {
           console.log(`${i + 1}. ${v.id.toUpperCase()} (${v.impact})`);
           console.log(`Element: ${v.nodes[0].html}`);

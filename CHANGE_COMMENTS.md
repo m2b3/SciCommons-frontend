@@ -1,3 +1,39 @@
+## 2026-03-12 - Disable Stored Playwright Workflow and Scope It to sureshDev PRs
+
+Problem: The Playwright GitHub Actions workflow was still active for pushes and PRs targeting `main`/`master`, even though the preferred workflow is manual local accessibility runs with the Actions file kept only for future use.
+
+Root Cause: `.github/workflows/playwright.yml` remained as an active workflow file and still used broad `push` plus `pull_request` triggers.
+
+Solution: Renamed the workflow to `.github/workflows/playwright.yml.disabled` so GitHub Actions ignores it, and updated the saved trigger to `pull_request` on `sureshDev` only for later re-enable.
+
+Result: No Playwright GitHub Actions workflow runs now, but the file remains in-repo and preconfigured for `sureshDev` PRs if re-enabled later.
+
+Files Modified: `.github/workflows/playwright.yml.disabled`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Remove Placeholder Playwright External-Site Spec
+
+Problem: Playwright test discovery still included the default sample spec, which depended on `https://playwright.dev/` instead of exercising SciCommons.
+
+Root Cause: The initial Playwright scaffold file, `src/tests/example.spec.ts`, was left in the repo after accessibility testing was added.
+
+Solution: Deleted the placeholder external-site Playwright sample so only project-relevant specs remain in the Playwright suite.
+
+Result: Manual Playwright runs no longer depend on a third-party site, which removes unnecessary flakiness and keeps the suite focused on SciCommons behavior.
+
+Files Modified: `src/tests/example.spec.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Manual Accessibility Script with Playwright-Managed App Startup
+
+Problem: Accessibility checks were intended to run only at deliberate moments, but Playwright depended on a separately started app server and could also discover Jest files from `src/tests`.
+
+Root Cause: `playwright.config.ts` had no `webServer` block and no Playwright-specific file match restriction, so manual runs required extra setup and the shared test directory created runner ambiguity.
+
+Solution: Added a dedicated manual script, `test:ally`, in `package.json` that targets the accessibility spec directly. Updated `playwright.config.ts` to start or reuse `yarn dev` only when Playwright is invoked, switched the base URL to `127.0.0.1`, and restricted Playwright discovery to `*.spec.ts(x)` files.
+
+Result: Accessibility testing stays opt-in via `yarn test:ally`, does not run during normal test/build/deploy flows, starts the app automatically when needed, and no longer risks picking up Jest `.test.*` files under the Playwright runner.
+
+Files Modified: `playwright.config.ts`, `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-09 - Remove Unused TipTap Stack
 
 Problem: TipTap packages and related editor files were still present even though the TipTap editor path is no longer used by the app.

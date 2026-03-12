@@ -236,14 +236,15 @@ const RegisterForm: React.FC = () => {
                 <span className="text-xs text-text-tertiary">Password strength:</span>
                 <div className="h-2 w-32 rounded bg-common-contrast">
                   <div
-                    className={`h-2 rounded transition-all duration-300 ${passwordStrength <= 2
+                    className={`h-2 rounded transition-all duration-300 ${
+                      passwordStrength <= 2
                         ? 'w-1/5 bg-functional-red'
                         : passwordStrength === 3
                           ? 'w-3/5 bg-functional-yellow'
                           : passwordStrength === 4
                             ? 'w-4/5 bg-functional-blue'
                             : 'w-full bg-functional-green'
-                      }`}
+                    }`}
                     style={{ width: `${(passwordStrength / passwordRequirements.length) * 100}%` }}
                   />
                 </div>
@@ -252,10 +253,11 @@ const RegisterForm: React.FC = () => {
                 {passwordRequirements.map((req, idx) => (
                   <li key={req.label} className="flex items-center gap-1">
                     <span
-                      className={`inline-block h-3 w-3 rounded-full border ${passwordStatus[idx]
+                      className={`inline-block h-3 w-3 rounded-full border ${
+                        passwordStatus[idx]
                           ? 'border-functional-green bg-functional-green'
                           : 'border-common-contrast bg-common-cardBackground'
-                        }`}
+                      }`}
                     />
                     {req.label}
                   </li>
@@ -286,7 +288,7 @@ const RegisterForm: React.FC = () => {
             Already have an account?{' '}
             <Link
               href="/auth/login"
-              className="text-functional-green underline underline-offset-4 decoration-functional-green/30 transition-colors hover:text-functional-greenContrast hover:decoration-functional-green"
+              className="text-functional-green underline decoration-functional-green/30 underline-offset-4 transition-colors hover:text-functional-greenContrast hover:decoration-functional-green"
             >
               Login
             </Link>

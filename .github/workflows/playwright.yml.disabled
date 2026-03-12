@@ -1,9 +1,14 @@
 name: Playwright Tests
+# Fixed by Codex on 2026-03-12
+# Problem: The Playwright GitHub Actions workflow was still active and targeted
+# main/master push and PR events, but the desired setup is to keep it disabled
+# for now while preserving a ready-to-use PR-only trigger for sureshDev.
+# Solution: Rename the workflow file so GitHub Actions ignores it, and change the
+# stored trigger to pull_request on sureshDev only.
+# Result: The workflow stays handy for future re-enable without running today.
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ sureshDev ]
 jobs:
   test:
     timeout-minutes: 60
