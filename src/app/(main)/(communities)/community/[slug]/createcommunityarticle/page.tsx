@@ -58,7 +58,7 @@ const CommunityArticleForm: NextPage = () => {
       onSuccess: (data) => {
         toast.success('Article has been successfully submitted', {
           duration: Infinity,
-          action: { label: 'Ok', onClick: () => { } },
+          action: { label: 'Ok', onClick: () => {} },
         });
         router.push(`/article/${data.data.slug}`);
         clearCommunityArticleDraft(localStorage, communitySlug);
