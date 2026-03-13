@@ -241,10 +241,6 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
         <h2 className="flex items-center gap-2 text-lg font-bold text-text-primary">Discussions</h2>
       </div>
 
-      {/* Fixed by Codex on 2026-02-26
-          Problem: Guests in discussions have no persistent indicator about private-community access.
-          Solution: Add a top informational banner for non-authenticated users.
-          Result: Users understand they can log in to unlock private communities/discussions. */}
       {!isAuthenticated && (
         <div className="mb-4 rounded-md border border-functional-blue/30 bg-functional-blue/10 p-3">
           <p className="text-xs font-medium text-text-secondary">
@@ -272,62 +268,59 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
 
       {/* Flattened Articles List */}
       {!subscriptionsLoading && flattenedArticles.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-4" role="list">
           {flattenedArticles.map((article) => (
-            <button
+            <div
               key={`${article.communityId}-${article.articleId}`}
-              onClick={() => handleArticleSelect(article)}
-              aria-pressed={selectedArticle?.id === article.articleId}
+              role="listitem"
               className={cn(
-                'relative flex w-full flex-col gap-1 text-left transition-colors',
-                'before:absolute before:-inset-x-2 before:-inset-y-1.5 before:rounded-sm before:transition-colors',
-                'hover:before:bg-common-minimal/50',
-                // Selected article styling
-                selectedArticle?.id === article.articleId &&
-                  'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10',
-                // Unread article styling - dark background when has unread events
+                'group relative flex w-full flex-col gap-1 rounded-sm p-2 transition-colors',
+                selectedArticle?.id === article.articleId
+                  ? 'bg-functional-green/10 border border-functional-green/30'
+                  : 'hover:bg-common-minimal/50',
                 article.hasUnreadEvent &&
-                  selectedArticle?.id !== article.articleId &&
-                  'before:bg-common-contrast/80'
+                selectedArticle?.id !== article.articleId &&
+                'bg-common-contrast/40'
               )}
             >
-              {/* Fixed by Codex on 2026-02-15
-                 Who: Codex
-                 What: Replace color-only unread dots with a labeled badge.
-                 Why: Color-only cues are harder to detect for common color-blind users.
-                 How: Render a small "New" pill that adds a text cue alongside color. */}
+              <button
+                type="button"
+                onClick={() => handleArticleSelect(article)}
+                aria-pressed={selectedArticle?.id === article.articleId}
+                aria-label={`Select discussion: ${article.articleTitle}`}
+                className="absolute inset-0 z-10 h-full w-full bg-transparent outline-none ring-functional-green focus-visible:ring-2"
+              />
+
               {article.hasUnreadEvent && (
-                <span className="absolute -right-2 top-0 z-20 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-functional-red">
-                  New
+                <span className="absolute -right-1 top-0 z-30 rounded-full border border-functional-red/50 bg-functional-red px-1.5 py-0.5 text-[8px] font-bold text-white">
+                  NEW
                 </span>
               )}
-              <div className="relative z-10 flex w-full flex-nowrap items-center">
-                {/* Fixed by Codex on 2026-02-15
-                   Problem: Community names with spaces or symbols broke sidebar links.
-                   Solution: Encode the community name in the href.
-                   Result: Sidebar community links navigate reliably. */}
+
+              <div className="relative z-20 flex w-full flex-nowrap items-center">
                 <Link
                   href={`/community/${encodeURIComponent(article.communityName)}`}
                   className={cn(
-                    'line-clamp-1 truncate text-[9px] font-semibold text-text-tertiary hover:text-functional-blueLight hover:underline',
+                    'line-clamp-1 truncate text-[9px] font-bold uppercase tracking-wider text-text-tertiary hover:text-functional-blueLight hover:underline',
                     selectedArticle?.id === article.articleId && 'text-text-secondary'
                   )}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {article.communityName}
                 </Link>
-                <ChevronRight size={12} className="flex-shrink-0 text-text-tertiary" />
+                <ChevronRight size={10} className="flex-shrink-0 text-text-tertiary" />
               </div>
+
               <p
                 className={cn(
-                  'relative z-10 line-clamp-2 text-xs font-medium text-text-secondary',
+                  'relative z-0 line-clamp-2 text-xs font-medium text-text-secondary',
                   selectedArticle?.id === article.articleId && 'text-text-primary',
-                  article.hasUnreadEvent && 'font-semibold'
+                  article.hasUnreadEvent && 'font-bold text-text-primary'
                 )}
               >
                 {article.articleTitle}
               </p>
-            </button>
+            </div>
           ))}
         </div>
       )}
@@ -339,9 +332,6 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
           <p className="text-lg font-semibold text-text-secondary">No subscriptions yet</p>
           <p className="mt-2 text-sm text-text-tertiary">
             Subscribe to article discussions from community pages
-          </p>
-          <p className="mt-1 text-xs text-text-tertiary">
-            You&apos;ll see them here for quick access
           </p>
         </div>
       )}
