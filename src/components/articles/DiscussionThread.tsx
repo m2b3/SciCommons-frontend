@@ -32,6 +32,7 @@ import { useRealtimeContextStore } from '@/stores/realtimeStore';
 import { Reaction } from '@/types';
 
 import FormInput from '../common/FormInput';
+import RenderParsedHTML from '../common/RenderParsedHTML';
 import TruncateText from '../common/TruncateText';
 import { Button, ButtonTitle } from '../ui/button';
 import {
@@ -321,10 +322,18 @@ const DiscussionThread: React.FC<DiscussionThreadProps> = ({
                         />
                       </div>
                       <div className="w-full min-w-0 break-words text-text-secondary [overflow-wrap:anywhere]">
-                        <TruncateText
-                          text={decodedContent}
-                          maxLines={3}
-                          textClassName="block w-full break-words [overflow-wrap:anywhere]"
+                        {/* Fixed by Codex on 2026-03-12
+                            Who: Codex
+                            What: Remove the shared markdown renderer's default bottom margin in thread view.
+                            Why: RenderParsedHTML defaults to `mb-10` on mobile, which added an unintended gap before the thread actions/comments row.
+                            How: Override the wrapper spacing with `containerClassName="mb-0"` to match other discussion surfaces. */}
+                        <RenderParsedHTML
+                          rawContent={decodedContent}
+                          supportMarkdown={true}
+                          supportLatex={true}
+                          isShrinked={false}
+                          containerClassName="mb-0"
+                          contentClassName="text-sm break-words [overflow-wrap:anywhere]"
                         />
                       </div>
                     </>
