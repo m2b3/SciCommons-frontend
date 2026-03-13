@@ -21,7 +21,7 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', 'Noto Sans', system-ui,
     'Helvetica Neue', Arial, sans-serif;
-  --Text-Tertiary: 71, 85, 105;
+  --Text-Tertiary: 100, 116, 139; 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -178,7 +178,7 @@ body {
     --Functional-Green-Greencontrast: 12, 94, 88;
 
     /* Functional Blue */
-    --Functional-Blue-Blue: var(--color-blue-600);
+    --Functional-Blue-Blue: 56, 116, 190; 
     --Functional-Blue-BlueLight: var(--color-blue-400);
     --Functional-Blue-Bluecontrast: var(--color-blue-700);
 
@@ -222,7 +222,7 @@ body {
        What: Increase light-mode tertiary text contrast.
        Why: Tertiary copy fell below WCAG AA on white surfaces.
        How: Darkened the tertiary token to a higher-contrast slate tone. */
-    --Text-Tertiary: 71, 85, 105;
+    --Text-Tertiary: 100, 116, 139;
 
     /* Loading */
     --loading: #f2f2f2;
