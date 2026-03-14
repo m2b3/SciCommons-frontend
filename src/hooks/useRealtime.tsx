@@ -12,6 +12,7 @@ import { captureMentionNotification } from '../lib/mentionNotifications';
 import { useAuthStore } from '../stores/authStore';
 import { useEphemeralUnreadStore } from '../stores/ephemeralUnreadStore';
 import { startSyncTimer, stopSyncTimer } from '../stores/readItemsStore';
+import { useRealtimeNotificationStore } from '../stores/realtimeNotificationStore';
 import { useRealtimeContextStore } from '../stores/realtimeStore';
 import { useSubscriptionUnreadStore } from '../stores/subscriptionUnreadStore';
 
@@ -21,10 +22,15 @@ type RealtimeEventType =
   | 'updated_discussion'
   | 'updated_comment'
   | 'deleted_discussion'
-  | 'deleted_comment';
+  | 'deleted_comment'
+  | 'new_notification';
 
-type RealtimeEvent = {
-  type: RealtimeEventType;
+/* Updated by Claude on 2026-03-15
+   What: Added new_notification event type support
+   Why: Backend now sends realtime notifications for system events
+   How: Extended RealtimeEvent union to include notification data shape */
+type RealtimeDiscussionCommentEvent = {
+  type: Exclude<RealtimeEventType, 'new_notification'>;
   data: {
     article_id: number;
     community_id: number;
@@ -53,6 +59,25 @@ type RealtimeEvent = {
   timestamp: string;
   event_id: number;
 };
+
+type RealtimeNotificationEvent = {
+  type: 'new_notification';
+  target_user_ids: number[];
+  data: {
+    notification_type: string;
+    category: string;
+    message: string;
+    link: string | null;
+    content: string | null;
+    community_id: number | null;
+    article_id: number | null;
+    notification_ids: number[];
+  };
+  timestamp: string;
+  event_id: number;
+};
+
+type RealtimeEvent = RealtimeDiscussionCommentEvent | RealtimeNotificationEvent;
 
 type PollSuccess = { events: RealtimeEvent[]; last_event_id: number };
 type PollCatchup = { catchup_required: true };
@@ -213,7 +238,7 @@ export function useRealtime() {
 
   // Improved cache update functions
   const updateDiscussionsCache = useCallback(
-    (event: RealtimeEvent) => {
+    (event: RealtimeDiscussionCommentEvent) => {
       const { article_id: articleId } = event.data;
 
       // Silently update discussions cache
@@ -311,7 +336,7 @@ export function useRealtime() {
   );
 
   const updateCommentsCache = useCallback(
-    (event: RealtimeEvent) => {
+    (event: RealtimeDiscussionCommentEvent) => {
       const { discussion_id: discussionId } = event.data;
       if (!discussionId) return;
 
@@ -594,19 +619,47 @@ export function useRealtime() {
       };
 
       for (const event of eventsToProcess) {
-        const { article_id: articleId, community_id: communityId } = event.data;
+        // Handle new_notification events separately as they have different data structure
+        if (event.type === 'new_notification') {
+          const notificationEvent = event as RealtimeNotificationEvent;
+          const currentUserId = useAuthStore.getState().user?.id;
+
+          if (currentUserId && notificationEvent.target_user_ids.includes(currentUserId)) {
+            const notificationStore = useRealtimeNotificationStore.getState();
+            notificationStore.addNotification({
+              id: `realtime-${notificationEvent.event_id}-${Date.now()}`,
+              notificationType: notificationEvent.data.notification_type,
+              category: notificationEvent.data.category,
+              message: notificationEvent.data.message,
+              link: notificationEvent.data.link,
+              content: notificationEvent.data.content,
+              communityId: notificationEvent.data.community_id,
+              articleId: notificationEvent.data.article_id,
+              notificationIds: notificationEvent.data.notification_ids,
+              timestamp: notificationEvent.timestamp,
+            });
+
+            queryClient.invalidateQueries({
+              predicate: (query) => matchesQueryKey(query.queryKey, '/api/users/notifications'),
+            });
+          }
+          continue;
+        }
+
+        const discCommentEvent = event as RealtimeDiscussionCommentEvent;
+        const { article_id: articleId, community_id: communityId } = discCommentEvent.data;
 
         // Check if this event is relevant to current context
         const isRelevantToCurrentContext =
           activeArticleId === articleId &&
           (activeCommunityId === communityId ||
-            (Array.isArray(event.community_ids) &&
-              event.community_ids.includes(activeCommunityId as number)));
+            (Array.isArray(discCommentEvent.community_ids) &&
+              discCommentEvent.community_ids.includes(activeCommunityId as number)));
 
         // Process discussion events
         if (['new_discussion', 'updated_discussion', 'deleted_discussion'].includes(event.type)) {
           if (isRelevantToCurrentContext || !isContextFresh()) {
-            updateDiscussionsCache(event);
+            updateDiscussionsCache(discCommentEvent);
           } else {
             // Invalidate for non-relevant contexts
             queryClient.invalidateQueries({
@@ -617,23 +670,23 @@ export function useRealtime() {
 
           if (
             (event.type === 'new_discussion' || event.type === 'updated_discussion') &&
-            event.data.discussion?.id !== undefined &&
-            typeof event.data.discussion.content === 'string'
+            discCommentEvent.data.discussion?.id !== undefined &&
+            typeof discCommentEvent.data.discussion.content === 'string'
           ) {
             captureMentionNotification({
               sourceType: 'discussion',
-              sourceId: Number(event.data.discussion.id),
-              discussionId: Number(event.data.discussion.id),
+              sourceId: Number(discCommentEvent.data.discussion.id),
+              discussionId: Number(discCommentEvent.data.discussion.id),
               articleId,
               communityId,
-              content: event.data.discussion.content,
-              authorUsername: event.data.discussion.user?.username,
+              content: discCommentEvent.data.discussion.content,
+              authorUsername: discCommentEvent.data.discussion.user?.username,
               createdAt: event.timestamp,
             });
           }
 
           // Show notification and mark subscription as having new event
-          if (event.type === 'new_discussion' && event.data.discussion) {
+          if (event.type === 'new_discussion' && discCommentEvent.data.discussion) {
             // Mark subscription as having new unread event (for sidebar)
             useSubscriptionUnreadStore.getState().markArticleHasNewEvent(communityId, articleId);
 
@@ -647,9 +700,9 @@ export function useRealtime() {
                What: Track realtime-only NEW badges for discussions.
                Why: Backend unread flags may arrive later, delaying NEW indicators.
                How: Record ephemeral unread entries on realtime events and clean expired ones. */
-            if (event.data.discussion.id !== undefined) {
+            if (discCommentEvent.data.discussion.id !== undefined) {
               const ephemeralStore = useEphemeralUnreadStore.getState();
-              ephemeralStore.markItemUnread('discussion', event.data.discussion.id);
+              ephemeralStore.markItemUnread('discussion', discCommentEvent.data.discussion.id);
               ephemeralStore.cleanupExpired();
             }
           }
@@ -658,10 +711,10 @@ export function useRealtime() {
         // Process comment events
         if (['new_comment', 'updated_comment', 'deleted_comment'].includes(event.type)) {
           if (isRelevantToCurrentContext || !isContextFresh()) {
-            updateCommentsCache(event);
+            updateCommentsCache(discCommentEvent);
           } else {
             // Invalidate for non-relevant contexts
-            const discussionId = event.data.discussion_id;
+            const discussionId = discCommentEvent.data.discussion_id;
             if (discussionId) {
               queryClient.invalidateQueries({
                 predicate: (query) =>
@@ -675,24 +728,24 @@ export function useRealtime() {
 
           if (
             (event.type === 'new_comment' || event.type === 'updated_comment') &&
-            event.data.comment?.id !== undefined &&
-            event.data.discussion_id !== undefined &&
-            typeof event.data.comment.content === 'string'
+            discCommentEvent.data.comment?.id !== undefined &&
+            discCommentEvent.data.discussion_id !== undefined &&
+            typeof discCommentEvent.data.comment.content === 'string'
           ) {
             captureMentionNotification({
               sourceType: 'comment',
-              sourceId: Number(event.data.comment.id),
-              discussionId: Number(event.data.discussion_id),
+              sourceId: Number(discCommentEvent.data.comment.id),
+              discussionId: Number(discCommentEvent.data.discussion_id),
               articleId,
               communityId,
-              content: event.data.comment.content,
-              authorUsername: event.data.comment.author?.username,
+              content: discCommentEvent.data.comment.content,
+              authorUsername: discCommentEvent.data.comment.author?.username,
               createdAt: event.timestamp,
             });
           }
 
           // Show notification and mark subscription as having new event
-          if (event.type === 'new_comment' && event.data.comment) {
+          if (event.type === 'new_comment' && discCommentEvent.data.comment) {
             // Mark subscription as having new unread event (for sidebar)
             useSubscriptionUnreadStore.getState().markArticleHasNewEvent(communityId, articleId);
 
@@ -706,17 +759,17 @@ export function useRealtime() {
                What: Track realtime-only NEW badges for comments and replies.
                Why: Comments can appear before unread flags, so NEW badges need a local overlay.
                How: Record ephemeral unread entries keyed by comment/reply IDs. */
-            if (event.data.comment.id !== undefined) {
-              const commentType = event.data.parent_id ? 'reply' : 'comment';
+            if (discCommentEvent.data.comment.id !== undefined) {
+              const commentType = discCommentEvent.data.parent_id ? 'reply' : 'comment';
               const ephemeralStore = useEphemeralUnreadStore.getState();
-              ephemeralStore.markItemUnread(commentType, event.data.comment.id);
+              ephemeralStore.markItemUnread(commentType, discCommentEvent.data.comment.id);
               /* Fixed by Codex on 2026-02-17
                  Who: Codex
                  What: Propagate realtime comment unread state to the parent discussion.
                  Why: Discussion cards should show NEW and auto-open when unread activity is inside their comment tree.
                  How: Mark the event's `discussion_id` as ephemeral unread alongside the comment/reply entry. */
-              if (event.data.discussion_id !== undefined) {
-                ephemeralStore.markItemUnread('discussion', event.data.discussion_id);
+              if (discCommentEvent.data.discussion_id !== undefined) {
+                ephemeralStore.markItemUnread('discussion', discCommentEvent.data.discussion_id);
               }
               ephemeralStore.cleanupExpired();
             }
@@ -725,7 +778,7 @@ export function useRealtime() {
 
         // Fixed by Claude Sonnet 4.5 on 2026-02-08
         // Issue 4: After processing each event, check if any queued events are now ready
-        const contextKey = `${communityId}:${articleId}`;
+        const contextKey = `${discCommentEvent.data.community_id}:${discCommentEvent.data.article_id}`;
         processPendingEvents(contextKey);
       }
     },
