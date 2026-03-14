@@ -1,3 +1,17 @@
+## 2026-03-14 - Discussions Tab NEW Badge Propagation
+
+Problem: On the discussions split view, unread discussion activity already showed `New` on sidebar article tiles and individual discussion topics, but the top `Discussions` tab stayed static and gave no summary signal.
+
+Root Cause: Unread state stopped at the sidebar/discussion-card level. `ArticleContentView` rendered a fixed tab label, and nothing aggregated child discussion unread state back up to that tab title on initial load, after topic scans, or during realtime updates.
+
+Solution: Added unread badge rendering to the shared tab title in `ArticleContentView`, propagated discussion-card `New` visibility upward through `DiscussionForum`, and combined that with fetched discussion unread flags plus subscription-summary/realtime store state so the top `Discussions` tab reflects unread activity on first load, after sidebar clears, and when realtime discussions/comments arrive.
+
+Result: The main `Discussions` tab now shows `New` whenever the selected article's discussions panel contains unread activity, including initial discussions-page loads and live realtime updates that also mark the left sidebar.
+
+Files Modified: `src/components/articles/ArticleContentView.tsx`, `src/components/articles/DiscussionForum.tsx`, `src/components/articles/DiscussionCard.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+Follow-up (same day): Removed the unread-only dark tile background in `src/app/(main)/discussions/DiscussionsSidebar.tsx` so sidebar background emphasis remains reserved for the currently selected article, while unread items continue to rely on the `New` pill and stronger title weight.
+
 ## 2026-03-12 - Discussion Thread Markdown Spacing Alignment
 
 Problem: After switching discussion thread content to the shared markdown renderer, mobile thread view showed extra vertical space before the actions/comments row.
