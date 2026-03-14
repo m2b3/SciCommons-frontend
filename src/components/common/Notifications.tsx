@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Link from 'next/link';
 
-import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
+import { useUsersApiGetNotifications, useUsersApiBulkMarkNotificationsAsRead } from '@/api/users/users';
 import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { getSafeNavigableUrl } from '@/lib/safeUrl';
 import { useAuthStore } from '@/stores/authStore';
@@ -26,19 +26,13 @@ const Notifications: React.FC<NotificationsProps> = ({ article_slug }) => {
     },
   });
 
-  const { mutate, isSuccess } = useUsersApiMarkNotificationAsRead({
+  const { mutate: bulkMarkAsRead } = useUsersApiBulkMarkNotificationsAsRead({
     request: authHeaders,
   });
 
-  useEffect(() => {
-    if (isSuccess) {
-      refetch();
-    }
-  }, [isSuccess, refetch]);
-
   const markAsRead = (id: number) => {
-    mutate(
-      { notificationId: id },
+    bulkMarkAsRead(
+      { data: { notification_ids: [id] } },
       {
         onSuccess: () => {
           refetch();
