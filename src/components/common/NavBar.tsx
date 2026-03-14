@@ -44,6 +44,8 @@ import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
 
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import NotificationDropdownContent from './NotificationDropdown';
+import NotificationToast from './NotificationToast';
 
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
@@ -63,8 +65,12 @@ const NavBar: React.FC = () => {
   );
   const markBellSeen = useNotificationActivityStore((state) => state.markBellSeen);
 
+  /* Fixed by Claude on 2026-03-15
+     What: Fetch only unread notifications initially
+     Why: Performance optimization - read notifications loaded on-demand on notifications page
+     How: Pass status: 'unread' filter to API call */
   const { data: systemNotificationsData } = useUsersApiGetNotifications(
-    {},
+    { status: 'unread' },
     {
       request: authHeaders,
       query: {
@@ -98,21 +104,18 @@ const NavBar: React.FC = () => {
 
   const effectiveLastBellSeenAt =
     user?.id && notificationActivityOwnerUserId === user.id ? lastBellSeenAt : 0;
-  const hasNewSystemNotificationActivitySinceBell =
-    latestSystemNotificationActivityAt > effectiveLastBellSeenAt;
-  const hasNewMentionNotificationActivitySinceBell =
-    latestMentionNotificationActivityAt > effectiveLastBellSeenAt;
   const latestNotificationActivityAt = Math.max(
     latestSystemNotificationActivityAt,
     latestMentionNotificationActivityAt
   );
   const hasNewNotificationsActivity = latestNotificationActivityAt > effectiveLastBellSeenAt;
 
-  const shouldOpenMentionsFromBell =
-    hasNewMentionNotificationActivitySinceBell && !hasNewSystemNotificationActivitySinceBell;
-  const notificationsHref = shouldOpenMentionsFromBell
-    ? '/notifications?tab=mentions'
-    : '/notifications?tab=system';
+  /* Fixed by Claude on 2026-03-15
+     What: Also show NEW badge if there are unread notifications
+     Why: User should see NEW indicator when they have unread notifications
+     How: Check unread count from systemNotificationsData */
+  const unreadNotificationsCount = systemNotificationsData?.data?.length ?? 0;
+  const showNewBadge = hasNewNotificationsActivity || unreadNotificationsCount > 0;
 
   // Get count of articles with new realtime events for discussions badge
   const newEventsCount = useSubscriptionUnreadStore((state) => state.getNewEventsCount());
@@ -262,25 +265,11 @@ const NavBar: React.FC = () => {
             <div className="hidden md:block">
               <CreateDropdown />
             </div>
-            <div className="relative">
-              <Link
-                href={notificationsHref}
-                aria-label="Notifications"
-                onClick={handleNotificationsClick}
-              >
-                <Bell className="hover:animate-wiggle h-9 w-9 cursor-pointer rounded-full p-2 text-text-secondary hover:text-functional-yellow" />
-              </Link>
-              {/* Fixed by Codex on 2026-02-26
-                  Who: Codex
-                  What: Expanded navbar bell "New" logic to include unseen system and mention activity.
-                  Why: Bell indicator should clear on click and represent activity across both notifications tabs.
-                  How: Compare latest activity timestamps with per-user bell seen timestamp and route to the correct initial tab. */}
-              {hasNewNotificationsActivity && (
-                <span className="pointer-events-none absolute -right-2 -top-1 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-functional-red">
-                  New
-                </span>
-              )}
-            </div>
+            <NotificationBell
+              hasNewActivity={showNewBadge}
+              onBellClick={handleNotificationsClick}
+              notifications={systemNotificationsData?.data ?? []}
+            />
             <ThemeSwitch iconSize={20} />
             <ProfileDropdown />
           </div>
@@ -305,6 +294,75 @@ const NavBar: React.FC = () => {
 };
 
 export default NavBar;
+
+/* Added by Claude on 2026-03-15
+   What: NotificationBell component with dropdown panel
+   Why: Users requested dropdown instead of direct navigation to notifications page
+   How: Shows unread notifications in dropdown, with realtime toast for new notifications */
+interface NotificationBellProps {
+  hasNewActivity: boolean;
+  onBellClick: () => void;
+  notifications: {
+    id: number;
+    message: string;
+    isRead: boolean;
+    notificationType: string;
+    createdAt: string;
+    content: string | null;
+    link: string | null;
+    category: string;
+  }[];
+}
+
+const NotificationBell: React.FC<NotificationBellProps> = ({
+  hasNewActivity,
+  onBellClick,
+  notifications,
+}) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setIsDropdownOpen(isOpen);
+    if (isOpen) {
+      onBellClick();
+    }
+  };
+
+  const handleClose = () => {
+    setIsDropdownOpen(false);
+  };
+
+  /* Fixed by Claude on 2026-03-15
+     What: Use hasNewActivity only for "New" badge (not realtime toast state)
+     Why: Badge should persist based on notification activity store, not toast visibility
+     How: Removed hasRealtimeNotifications check, keep original logic */
+  return (
+    <div className="relative">
+      <DropdownMenu open={isDropdownOpen} onOpenChange={handleOpenChange}>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            aria-label="Notifications"
+            className="relative rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+          >
+            <Bell className="hover:animate-wiggle h-9 w-9 cursor-pointer rounded-full p-2 text-text-secondary hover:text-functional-yellow" />
+            {hasNewActivity && (
+              <span className="pointer-events-none absolute -right-2 -top-1 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-functional-red">
+                New
+              </span>
+            )}
+          </button>
+        </DropdownMenuTrigger>
+        <NotificationDropdownContent
+          onClose={handleClose}
+          onNotificationClick={handleClose}
+          notifications={notifications}
+        />
+      </DropdownMenu>
+      <NotificationToast />
+    </div>
+  );
+};
 
 const CreateDropdown: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

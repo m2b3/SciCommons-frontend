@@ -183,6 +183,7 @@ export * from './notificationSchema';
 export * from './notificationSchemaContent';
 export * from './notificationSchemaExpiresAt';
 export * from './notificationSchemaLink';
+export * from './notificationStatusFilter';
 export * from './officialArticleStatsResponse';
 export * from './paginatedArticlesListResponse';
 export * from './paginatedArticlesResponse';
