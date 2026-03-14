@@ -172,6 +172,8 @@ export * from './joinRequestSchemaStatus';
 export * from './logInSchemaIn';
 export * from './logInSchemaOut';
 export * from './logInUserSchemaOut';
+export * from './markNotificationsReadResponseSchema';
+export * from './markNotificationsReadSchema';
 export * from './membersResponse';
 export * from './message';
 export * from './myappFlagsApiGetFlagsEntityType';
