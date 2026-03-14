@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check, CheckCheck, ExternalLink } from 'lucide-react';
 
-import { useUsersApiMarkNotificationAsRead } from '@/api/users/users';
+import { useUsersApiBulkMarkNotificationsAsRead } from '@/api/users/users';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import {
   DropdownMenuContent,
@@ -68,14 +68,14 @@ const NotificationDropdownContent: React.FC<NotificationDropdownContentProps> = 
   const [optimisticReadIds, setOptimisticReadIds] = useState<Set<number>>(new Set());
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
 
-  const { mutateAsync: markNotificationAsRead } = useUsersApiMarkNotificationAsRead({
+  /* Fixed by Claude on 2026-03-15
+     What: Use bulk mark notifications as read API
+     Why: Single API call instead of multiple calls for each notification
+     How: Use useUsersApiBulkMarkNotificationsAsRead with notification_ids array */
+  const { mutateAsync: bulkMarkAsRead } = useUsersApiBulkMarkNotificationsAsRead({
     request: authHeaders,
   });
 
-  /* Fixed by Claude on 2026-03-15
-     What: Filter notifications locally instead of fetching with filter
-     Why: Use existing notifications API call from NavBar, filter in UI
-     How: Filter to unread, exclude optimistic reads, limit to 50 */
   const notifications = useMemo(() => {
     return allNotifications
       .filter((n) => !n.isRead && !optimisticReadIds.has(n.id))
@@ -99,7 +99,7 @@ const NotificationDropdownContent: React.FC<NotificationDropdownContentProps> = 
       setOptimisticReadIds((prev) => new Set([...prev, notificationId]));
 
       try {
-        await markNotificationAsRead({ notificationId });
+        await bulkMarkAsRead({ data: { notification_ids: [notificationId] } });
         invalidateNotifications();
       } catch {
         setOptimisticReadIds((prev) => {
@@ -109,7 +109,7 @@ const NotificationDropdownContent: React.FC<NotificationDropdownContentProps> = 
         });
       }
     },
-    [markNotificationAsRead, invalidateNotifications]
+    [bulkMarkAsRead, invalidateNotifications]
   );
 
   const handleMarkAllAsRead = useCallback(async () => {
@@ -120,14 +120,14 @@ const NotificationDropdownContent: React.FC<NotificationDropdownContentProps> = 
     setOptimisticReadIds((prev) => new Set([...prev, ...ids]));
 
     try {
-      await Promise.allSettled(ids.map((id) => markNotificationAsRead({ notificationId: id })));
+      await bulkMarkAsRead({ data: { notification_ids: ids } });
       invalidateNotifications();
     } catch {
       setOptimisticReadIds(new Set());
     } finally {
       setIsMarkingAllAsRead(false);
     }
-  }, [isMarkingAllAsRead, markNotificationAsRead, notifications, invalidateNotifications]);
+  }, [isMarkingAllAsRead, bulkMarkAsRead, notifications, invalidateNotifications]);
 
   const renderNotificationItem = (notification: NotificationItem) => {
     const safeLink = getSafeNavigableUrl(notification.link, NOTIFICATION_PARSING_BASE);
