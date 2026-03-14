@@ -4,6 +4,7 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { NotificationStatusFilter } from './notificationStatusFilter';
 
 export type UsersApiGetNotificationsParams = {
 /**
@@ -18,4 +19,12 @@ community_id?: number | null;
  * Filter by post ID
  */
 post_id?: number | null;
+/**
+ * Limit number of notifications returned
+ */
+limit?: number | null;
+/**
+ * Filter by status: 'read' or 'unread'
+ */
+status?: NotificationStatusFilter | null;
 };

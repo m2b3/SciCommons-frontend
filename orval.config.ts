@@ -1,7 +1,8 @@
 // import { faker } from '@faker-js/faker';
 import { defineConfig } from 'orval';
 
-const backend_url = 'https://backendtest.scicommons.org'; // Change this to your backend URL
+// const backend_url = 'https://backendtest.scicommons.org'; // Change this to your backend URL
+const backend_url = 'http://localhost:8000'; // Change this to your backend URL
 
 export default defineConfig({
   backend: {
