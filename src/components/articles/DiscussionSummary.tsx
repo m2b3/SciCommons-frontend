@@ -108,7 +108,11 @@ const DiscussionSummary: React.FC<DiscussionSummaryProps> = ({ communityArticleI
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       mutation: {
         onSuccess: () => {
-          toast.success('Discussion summary created successfully');
+          /* Fixed by Codex on 2026-03-14
+             Who: Codex
+             What: Removed the discussion-summary create success toast.
+             Why: Product only wants success toasts for article submissions; summary creation already confirms itself in-panel.
+             How: Keep the editor close/reset/query invalidation flow and skip the toast. */
           setIsEditing(false);
           reset();
           queryClient.invalidateQueries({

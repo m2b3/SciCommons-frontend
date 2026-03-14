@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import { useArticlesDiscussionApiCreateDiscussion } from '@/api/discussions/discussions';
 import FormInput from '@/components/common/FormInput';
@@ -49,7 +48,11 @@ const DiscussionForm: React.FC<DiscussionFormProps> = ({
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: () => {
-        toast.success('Discussion created successfully');
+        /* Fixed by Codex on 2026-03-14
+           Who: Codex
+           What: Removed the discussion-create success toast.
+           Why: Product only wants success toasts for article submissions, not for follow-up discussion posting.
+           How: Keep the inline success behavior (close form, reset, refetch) and skip the toast notification. */
         setShowForm(false);
         reset();
         refetchDiscussions();

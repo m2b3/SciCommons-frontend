@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { NextPage } from 'next';
 import { useParams, useRouter } from 'next/navigation';
@@ -12,12 +12,16 @@ import { toast } from 'sonner';
 import { useArticlesApiCreateArticle } from '@/api/articles/articles';
 import { ArticleCreateSchema } from '@/api/schemas';
 import SubmitArticleForm from '@/components/articles/SubmitArticleForm';
+import {
+  clearCommunityArticleDraft,
+  getCommunityArticleDraft,
+  getCommunityArticleDraftValues,
+  saveCommunityArticleDraft,
+} from '@/lib/communityArticleDraft';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 import useFetchExternalArticleStore from '@/stores/useFetchExternalArticleStore';
 import { SubmitArticleFormValues } from '@/types';
-
-const STORAGE_KEY = 'communityArticleFormData';
 
 const defaultFormValues: SubmitArticleFormValues = {
   submissionType: 'Private', // Always Private for community articles - backend determines visibility based on community settings
@@ -35,7 +39,14 @@ const CommunityArticleForm: NextPage = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
   const params = useParams<{ slug: string }>();
+  const communitySlug = params?.slug || '';
   const [isInitialized, setIsInitialized] = useState(false);
+  const [hasSavedDraft, setHasSavedDraft] = useState(false);
+  /* Fixed by Codex GPT-5 on 2026-03-11
+     Problem: Discarding a draft called reset(), and react-hook-form watch callbacks immediately re-saved a new empty draft.
+     Solution: Pause autosave during reset-driven updates after discard and resume on the next explicit field change.
+     Result: Discard now removes persisted draft data instead of restoring an empty draft on revisit. */
+  const pauseDraftAutosaveUntilFieldEditRef = useRef(false);
 
   const { mutate: submitArticle, isPending } = useArticlesApiCreateArticle({
     request: {
@@ -50,7 +61,8 @@ const CommunityArticleForm: NextPage = () => {
           action: { label: 'Ok', onClick: () => {} },
         });
         router.push(`/article/${data.data.slug}`);
-        localStorage.removeItem(STORAGE_KEY);
+        clearCommunityArticleDraft(localStorage, communitySlug);
+        setHasSavedDraft(false);
       },
       onError: (error) => {
         showErrorToast(error);
@@ -73,51 +85,63 @@ const CommunityArticleForm: NextPage = () => {
 
   // Load saved form data on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      setActiveTab(parsedData.activeTab || 'upload');
-      const currentTabData = parsedData[parsedData.activeTab] || defaultFormValues;
-      reset(currentTabData);
+    const savedDraft = getCommunityArticleDraft(localStorage, communitySlug);
+    if (savedDraft) {
+      setActiveTab(savedDraft.activeTab);
+      reset(getCommunityArticleDraftValues(savedDraft, defaultFormValues));
+      setHasSavedDraft(true);
+    } else {
+      setHasSavedDraft(false);
     }
+
     setIsInitialized(true);
-  }, [reset]);
+  }, [communitySlug, reset]);
 
   // Save form data to local storage whenever it changes
   useEffect(() => {
     if (isInitialized) {
-      const subscription = watch((formData) => {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        const parsedData = savedData ? JSON.parse(savedData) : {};
+      const subscription = watch((formData, { name }) => {
+        if (pauseDraftAutosaveUntilFieldEditRef.current) {
+          if (!name) {
+            return;
+          }
+          pauseDraftAutosaveUntilFieldEditRef.current = false;
+        }
 
-        const dataToSave = {
-          ...parsedData,
-          [activeTab]: { ...formData, pdfFiles: undefined },
-          activeTab,
-        };
+        const normalizedAuthors = (formData.authors || []).filter(
+          (author): author is SubmitArticleFormValues['authors'][number] =>
+            Boolean(author?.value && author?.label)
+        );
+        const normalizedPdfFiles = (formData.pdfFiles || []).filter(
+          (pdfFile): pdfFile is SubmitArticleFormValues['pdfFiles'][number] =>
+            Boolean(pdfFile?.file)
+        );
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+        saveCommunityArticleDraft(localStorage, communitySlug, activeTab, {
+          ...defaultFormValues,
+          ...formData,
+          authors: normalizedAuthors,
+          pdfFiles: normalizedPdfFiles,
+        });
       });
       return () => subscription.unsubscribe();
     }
-  }, [watch, activeTab, isInitialized]);
+  }, [watch, communitySlug, activeTab, isInitialized]);
 
   // Handle tab change - preserve pdfFiles when switching tabs
   useEffect(() => {
     if (isInitialized) {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        const currentTabData = parsedData[activeTab] || defaultFormValues;
-        // Preserve pdfFiles from current form state when switching tabs
-        const currentPdfFiles = getValues('pdfFiles');
-        reset({
-          ...currentTabData,
-          pdfFiles: currentPdfFiles || [],
-        });
-      }
+      const savedDraft = getCommunityArticleDraft(localStorage, communitySlug);
+      const currentTabData = savedDraft?.[activeTab] || defaultFormValues;
+      const currentPdfFiles = getValues('pdfFiles');
+
+      reset({
+        ...defaultFormValues,
+        ...currentTabData,
+        pdfFiles: currentPdfFiles || [],
+      });
     }
-  }, [activeTab, reset, isInitialized, getValues]);
+  }, [communitySlug, activeTab, reset, isInitialized, getValues]);
 
   // Handle article data - preserve pdfFiles when loading article data
   useEffect(() => {
@@ -134,16 +158,17 @@ const CommunityArticleForm: NextPage = () => {
       };
       reset(newData);
 
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      const parsedData = savedData ? JSON.parse(savedData) : {};
-      const dataToSave = {
-        ...parsedData,
-        [activeTab]: newData,
-        activeTab,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+      saveCommunityArticleDraft(localStorage, communitySlug, activeTab, newData);
     }
-  }, [articleData, reset, activeTab, isInitialized, getValues]);
+  }, [articleData, reset, communitySlug, activeTab, isInitialized, getValues]);
+
+  const handleDiscardDraft = () => {
+    pauseDraftAutosaveUntilFieldEditRef.current = true;
+    clearCommunityArticleDraft(localStorage, communitySlug);
+    setHasSavedDraft(false);
+    setActiveTab('upload');
+    reset(defaultFormValues);
+  };
 
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
     const dataToSend: ArticleCreateSchema = {
@@ -157,7 +182,7 @@ const CommunityArticleForm: NextPage = () => {
         article_link: formData.article_link || undefined,
         // keywords: formData.keywords.map((keyword) => keyword.value),
         submission_type: formData.submissionType,
-        community_name: params?.slug,
+        community_name: communitySlug,
         pdf_link: articleData?.pdfLink || undefined,
       },
     };
@@ -182,12 +207,27 @@ const CommunityArticleForm: NextPage = () => {
       <div className="mx-auto w-full max-w-5xl border-common-contrast p-4 py-8 md:rounded-xl md:border md:bg-common-cardBackground md:p-8">
         <div className="mb-4">
           <button
-            onClick={() => router.push(`/community/${params?.slug}`)}
+            onClick={() => router.push(`/community/${communitySlug}`)}
             className="flex items-center gap-2 text-sm text-text-secondary hover:underline"
           >
             <MoveLeft size={16} /> Back to Community
           </button>
         </div>
+        {hasSavedDraft && (
+          <div
+            role="status"
+            className="mb-4 flex items-center justify-between gap-4 rounded-lg border border-functional-green/30 bg-functional-green/10 px-4 py-3 text-sm text-text-primary"
+          >
+            <p>Restored a saved draft for this community.</p>
+            <button
+              type="button"
+              onClick={handleDiscardDraft}
+              className="shrink-0 font-medium text-functional-green hover:underline"
+            >
+              Discard draft
+            </button>
+          </div>
+        )}
         <div className="mb-4 flex flex-col items-center justify-center">
           <h1 className="text-3xl font-bold text-text-primary">
             Create a<span className="text-functional-green"> Community </span>

@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { Send } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { usePostsApiCreatePost } from '@/api/posts/posts';
@@ -55,7 +54,11 @@ const CreatePostPage: React.FC = () => {
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
     mutation: {
       onSuccess: (data) => {
-        toast.success('Post created successfully');
+        /* Fixed by Codex on 2026-03-14
+           Who: Codex
+           What: Removed the post-create success toast.
+           Why: Product only wants success toasts for article submissions, not for general posting flows.
+           How: Rely on the redirect to the new post as the success confirmation instead of a toast. */
         router.push(`/posts/${data.data.id}`);
         reset();
         localStorage.removeItem(STORAGE_KEY);

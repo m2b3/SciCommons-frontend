@@ -1,3 +1,125 @@
+## 2026-03-14 - Frontend Comment Length Validation Shift to 1000 Words
+
+Problem: Comment entry on the frontend was enforcing an outdated 500-character cap, but product wanted a longer limit expressed in words instead of characters.
+
+Root Cause: The shared `CommentInput` component applied a client-side `maxLength` validator to the `content` field, so every discussion/review/post comment flow inherited the same 500-character cap.
+
+Solution: Replaced the shared character-based validator with a 1000-word validator that counts whitespace-delimited tokens. Kept required and minimum-length validation, and added a focused `CommentInput` test covering both the 1000-word allowed case and the 1001-word rejection case.
+
+Result: The frontend now allows substantially longer comments while still enforcing a consistent cap across discussion, review, and post comment flows. The UI limit is now 1000 words instead of 500 characters.
+
+Files Modified: `src/components/common/CommentInput.tsx`, `src/tests/__tests__/CommentInput.test.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Non-Article Posting Success Toast Suppression
+
+Problem: Success toasts were firing for secondary posting actions like discussions, reviews, summaries, and posts, which added noise after the UI had already updated inline.
+
+Root Cause: Several non-article create flows still showed success notifications by default even though the surrounding UI already provided immediate confirmation through reset, refetch, collapse, or redirect behavior.
+
+Solution: Removed success toasts from non-article create flows while keeping their existing UI follow-up behavior intact. Article submission success toasts were left in place per product direction.
+
+Result: Users still get explicit success feedback when posting articles, but discussion/review/post creation flows now complete more quietly and rely on the visible UI change instead of redundant toast confirmations.
+
+Files Modified: `src/components/articles/DiscussionForm.tsx`, `src/components/articles/ReviewForm.tsx`, `src/components/articles/DiscussionSummary.tsx`, `src/app/(main)/(posts)/posts/createpost/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Jest Canvas Native Dependency Bypass
+
+Problem: `yarn test` could fail before running any suites because `jest-environment-jsdom` detected the transitive `canvas` package and then crashed when the local native binary `canvas.node` was missing.
+
+Root Cause: `jsdom` probes `require.resolve('canvas')` during environment startup, which happens before Jest setup files run. Because `pdfjs-dist` pulls in `canvas`, a half-installed Windows native module caused all tests to abort even though the app test suite does not rely on native canvas features.
+
+Solution: Added a custom Jest environment that redirects the exact `canvas` module specifier to a local stub before `jest-environment-jsdom` loads, and mirrored that stub in `moduleNameMapper` so direct test-time imports also avoid the native package.
+
+Result: Jest now boots through the standard `jsdom` environment without depending on a compiled local `canvas.node` binary, eliminating the recurring native-install failure class from normal frontend test runs.
+
+Files Modified: `jest.config.ts`, `jest.canvas-safe-environment.cjs`, `src/tests/__mocks__/canvas.cjs`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Discussions Tab NEW Badge Propagation
+
+Problem: On the discussions split view, unread discussion activity already showed `New` on sidebar article tiles and individual discussion topics, but the top `Discussions` tab stayed static and gave no summary signal.
+
+Root Cause: Unread state stopped at the sidebar/discussion-card level. `ArticleContentView` rendered a fixed tab label, and nothing aggregated child discussion unread state back up to that tab title on initial load, after topic scans, or during realtime updates.
+
+Solution: Added unread badge rendering to the shared tab title in `ArticleContentView`, propagated discussion-card `New` visibility upward through `DiscussionForum`, and combined that with fetched discussion unread flags plus subscription-summary/realtime store state so the top `Discussions` tab reflects unread activity on first load, after sidebar clears, and when realtime discussions/comments arrive.
+
+Result: The main `Discussions` tab now shows `New` whenever the selected article's discussions panel contains unread activity, including initial discussions-page loads and live realtime updates that also mark the left sidebar.
+
+Files Modified: `src/components/articles/ArticleContentView.tsx`, `src/components/articles/DiscussionForum.tsx`, `src/components/articles/DiscussionCard.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+Follow-up (same day): Removed the unread-only dark tile background in `src/app/(main)/discussions/DiscussionsSidebar.tsx` so sidebar background emphasis remains reserved for the currently selected article, while unread items continue to rely on the `New` pill and stronger title weight.
+
+## 2026-03-12 - Discussion Thread Markdown Spacing Alignment
+
+Problem: After switching discussion thread content to the shared markdown renderer, mobile thread view showed extra vertical space before the actions/comments row.
+
+Root Cause: `DiscussionThread` used `RenderParsedHTML` without overriding its default wrapper spacing, so the component inherited the shared `mb-10 sm:mb-0` margin intended for expandable content surfaces.
+
+Solution: Added a local `containerClassName="mb-0"` override in `DiscussionThread` and documented the reason inline so thread view matches the spacing contract already used by discussion cards and summaries.
+
+Result: Thread view keeps the markdown-rendering fix while removing the unintended mobile gap, bringing layout behavior back in line with the rest of the discussion UI.
+
+Files Modified: `src/components/articles/DiscussionThread.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-11 - Community Article Draft Discard Persistence Fix
+
+Problem: Clicking `Discard draft` on the community article create page could still lead to a draft being restored on later visits.
+
+Root Cause: The discard flow called `reset(defaultFormValues)`, and `react-hook-form` watch callbacks persisted form state during reset-driven updates, recreating an empty draft immediately after clearing storage.
+
+Solution: Added a discard-specific autosave pause gate in `createcommunityarticle/page.tsx` so reset-triggered watch events are ignored after discard, and autosave resumes only after the next explicit field edit.
+
+Result: Discarding a community article draft now reliably removes persisted draft state instead of recreating it through reset side effects.
+
+Files Modified: `src/app/(main)/(communities)/community/[slug]/createcommunityarticle/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-09 - Remove Unused TipTap Stack
+
+Problem: TipTap packages and related editor files were still present even though the TipTap editor path is no longer used by the app.
+
+Root Cause: Legacy TipTap artifacts (dependencies, components, CSS placeholder styling, and docs tree references) remained after editor direction moved away from TipTap.
+
+Solution: Removed all `@tiptap/*` dependencies from `package.json` and corresponding lockfile entries from `yarn.lock`, deleted the unused `src/components/richtexteditor` TipTap files, removed the TipTap-specific CSS block in `src/app/globals.css`, and removed the obsolete `richtexteditor` folder listing from docs project structure.
+
+Result: The repository no longer includes TipTap dependency or source artifacts, reducing dependency footprint and eliminating dead editor code paths.
+
+Files Modified: `package.json`, `yarn.lock`, `src/components/richtexteditor/CommentEditor.tsx`, `src/components/richtexteditor/MenuBar.tsx`, `src/components/richtexteditor/TipTap.tsx`, `src/app/globals.css`, `src/pages/docs/project-structure.mdx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Intermediary Update Boilerplate Suppression Rule
+
+Problem: Progress updates repeatedly included a boilerplate sentence about final-response logging, which made routine status messages noisy and repetitive.
+
+Root Cause: Repository instructions required final-response logging but did not explicitly forbid repeating that requirement in interim commentary.
+
+Solution: Added a new `AGENTS.md` rule under repository notes instructing agents to avoid repeating boilerplate status lines about `codexOutput.md` logging and to keep intermediary updates task-specific.
+
+Result: Intermediary updates can stay concise and relevant while preserving the existing mandatory final-response logging behavior.
+
+Files Modified: `AGENTS.md`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - MDX Editor Ctrl/Cmd+Enter Submit Restoration
+
+Problem: `Ctrl/Cmd+Enter` stopped submitting forms from markdown editor fields, even though keyboard submit worked in plain textarea flows.
+
+Root Cause: `useSubmitOnCtrlEnter` was intentionally updated to skip already-handled key events (`defaultPrevented`) to avoid duplicate submissions, but the MDX editor path did not have its own local modifier+enter submit handler.
+
+Solution: Added MDX-local `Ctrl/Cmd+Enter` handling in `InitializedMDXEditor` that submits the nearest parent form with `requestSubmit()` after preventing default editor behavior.
+
+Result: Markdown editor forms regain keyboard submit behavior without reintroducing global double-submit risk in other textarea/form flows.
+
+Files Modified: `src/components/common/MarkdownEditor/InitializedMDXEditor.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-08 - Communities Card Role Marker Regression Fix (Role Parsing + Legacy Fallback)
+
+Problem: Community cards stopped showing role markers (`A/M/R/m`) reliably after switching to list-payload role wiring, so users could not quickly see whether they were admin/moderator/reviewer/member.
+
+Root Cause: Role normalization only matched a narrow set of exact role strings and did not account for variant tokenized role payloads (for example underscored or prefixed names) or legacy boolean membership flags that can still appear in some responses.
+
+Solution: Updated `communities/page.tsx` to (1) parse role strings by tokens with broader role matching, and (2) fall back to legacy `is_admin` / `is_moderator` / `is_reviewer` / `is_member` flags when role strings are missing or unmatched.
+
+Result: Role/access markers are restored with pre-disappearance behavior: `Communities` shows `A/M/R/m` plus non-member access dots, while `My Communities` continues showing `A/M/R` role badges.
+
+Files Modified: `src/app/(main)/(communities)/communities/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-08 - Communities Role Lookup Fan-out Removal (Use List Payload `role`)
 
 Problem: Community cards required extra client-side role fan-out calls (`admin`, `moderator`, `reviewer`, `member`) to render badges/sorting, causing unnecessary request overhead on page entry.
