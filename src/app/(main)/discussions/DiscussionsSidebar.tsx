@@ -278,13 +278,14 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
                 'hover:before:bg-common-minimal/50',
                 // Selected article styling
                 selectedArticle?.id === article.articleId &&
-                  'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10',
-                // Unread article styling - dark background when has unread events
-                article.hasUnreadEvent &&
-                  selectedArticle?.id !== article.articleId &&
-                  'before:bg-common-contrast/80'
+                  'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10'
               )}
             >
+              {/* Fixed by Codex on 2026-03-14
+                 Who: Codex
+                 What: Removed the unread-only dark card background from discussion sidebar tiles.
+                 Why: Users should read the active tile highlight as selection, not confuse unread state with the currently open article.
+                 How: Keep the `New` pill + bold title for unread cues while reserving the tile background emphasis for the selected article only. */}
               {/* Fixed by Codex on 2026-02-15
                  Who: Codex
                  What: Replace color-only unread dots with a labeled badge.

@@ -146,13 +146,17 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         { articleId, data: reviewData, params: { community_id: communityId } },
         {
           onSuccess: () => {
+            /* Fixed by Codex on 2026-03-14
+               Who: Codex
+               What: Removed the review-submit success toast.
+               Why: Product only wants success toasts for article submissions, while reviews should confirm through inline refresh.
+               How: Preserve reset/refetch/invalidation behavior and omit the success notification. */
             reset();
             markdownRef.current = '';
             setMarkdown('');
             reviewEditorRef.current?.setMarkdown?.('');
             refetch && refetch();
             invalidateReviewQueries();
-            toast.success('Review submitted successfully');
             onSubmitSuccess && onSubmitSuccess();
           },
           onError: (error) => {
