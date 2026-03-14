@@ -42,6 +42,13 @@ interface MentionMatch {
   query: string;
 }
 
+const MAX_COMMENT_WORDS = 1000;
+
+const countWords = (value: string): number => {
+  const normalizedValue = value.trim();
+  return normalizedValue ? normalizedValue.split(/\s+/).length : 0;
+};
+
 const CommentInput: React.FC<CommentInputProps> = ({
   onSubmit,
   placeholder,
@@ -285,9 +292,16 @@ const CommentInput: React.FC<CommentInputProps> = ({
   }, [highlightedMentionIndex, isMentionMenuOpen]);
 
   const contentField = register('content', {
+    /* Fixed by Codex on 2026-03-14
+       Who: Codex
+       What: Replaced the old character-based comment cap with a shared 1000-word validator.
+       Why: Product wants a frontend cap, but it should be based on words instead of the earlier 500-character limit.
+       How: Keep required/minimum validation and add a whitespace-token word count check that blocks submissions above 1000 words across all comment flows. */
     required: 'Content is required',
     minLength: { value: 3, message: 'Content must be at least 3 characters long' },
-    maxLength: { value: 500, message: 'Content must not exceed 500 characters' },
+    validate: (value) =>
+      countWords(value) <= MAX_COMMENT_WORDS ||
+      `Content must not exceed ${MAX_COMMENT_WORDS} words`,
   });
 
   return (

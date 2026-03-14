@@ -1,3 +1,15 @@
+## 2026-03-14 - Frontend Comment Length Validation Shift to 1000 Words
+
+Problem: Comment entry on the frontend was enforcing an outdated 500-character cap, but product wanted a longer limit expressed in words instead of characters.
+
+Root Cause: The shared `CommentInput` component applied a client-side `maxLength` validator to the `content` field, so every discussion/review/post comment flow inherited the same 500-character cap.
+
+Solution: Replaced the shared character-based validator with a 1000-word validator that counts whitespace-delimited tokens. Kept required and minimum-length validation, and added a focused `CommentInput` test covering both the 1000-word allowed case and the 1001-word rejection case.
+
+Result: The frontend now allows substantially longer comments while still enforcing a consistent cap across discussion, review, and post comment flows. The UI limit is now 1000 words instead of 500 characters.
+
+Files Modified: `src/components/common/CommentInput.tsx`, `src/tests/__tests__/CommentInput.test.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-14 - Non-Article Posting Success Toast Suppression
 
 Problem: Success toasts were firing for secondary posting actions like discussions, reviews, summaries, and posts, which added noise after the UI had already updated inline.
