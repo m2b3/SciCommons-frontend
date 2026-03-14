@@ -1,3 +1,27 @@
+## 2026-03-14 - Non-Article Posting Success Toast Suppression
+
+Problem: Success toasts were firing for secondary posting actions like discussions, reviews, summaries, and posts, which added noise after the UI had already updated inline.
+
+Root Cause: Several non-article create flows still showed success notifications by default even though the surrounding UI already provided immediate confirmation through reset, refetch, collapse, or redirect behavior.
+
+Solution: Removed success toasts from non-article create flows while keeping their existing UI follow-up behavior intact. Article submission success toasts were left in place per product direction.
+
+Result: Users still get explicit success feedback when posting articles, but discussion/review/post creation flows now complete more quietly and rely on the visible UI change instead of redundant toast confirmations.
+
+Files Modified: `src/components/articles/DiscussionForm.tsx`, `src/components/articles/ReviewForm.tsx`, `src/components/articles/DiscussionSummary.tsx`, `src/app/(main)/(posts)/posts/createpost/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Jest Canvas Native Dependency Bypass
+
+Problem: `yarn test` could fail before running any suites because `jest-environment-jsdom` detected the transitive `canvas` package and then crashed when the local native binary `canvas.node` was missing.
+
+Root Cause: `jsdom` probes `require.resolve('canvas')` during environment startup, which happens before Jest setup files run. Because `pdfjs-dist` pulls in `canvas`, a half-installed Windows native module caused all tests to abort even though the app test suite does not rely on native canvas features.
+
+Solution: Added a custom Jest environment that redirects the exact `canvas` module specifier to a local stub before `jest-environment-jsdom` loads, and mirrored that stub in `moduleNameMapper` so direct test-time imports also avoid the native package.
+
+Result: Jest now boots through the standard `jsdom` environment without depending on a compiled local `canvas.node` binary, eliminating the recurring native-install failure class from normal frontend test runs.
+
+Files Modified: `jest.config.ts`, `jest.canvas-safe-environment.cjs`, `src/tests/__mocks__/canvas.cjs`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-14 - Discussions Tab NEW Badge Propagation
 
 Problem: On the discussions split view, unread discussion activity already showed `New` on sidebar article tiles and individual discussion topics, but the top `Discussions` tab stayed static and gave no summary signal.
