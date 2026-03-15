@@ -339,7 +339,7 @@ export const usernameSchema = z
     message: 'Username must end with a lowercase letter or number.',
   });
 
-const internationalNamePattern = /^[\p{L}\p{M}](?:[\p{L}\p{M}'’ -]*[\p{L}\p{M}])?$/u;
+const internationalNamePattern = /^[\p{L}\p{M}](?:[\p{L}\p{M}'’ \.\-]*[\p{L}\p{M}\.])?$/u;
 
 export const nameSchema = z
   .string({ error: 'Name must be a string' })
@@ -347,7 +347,7 @@ export const nameSchema = z
   .min(1, { message: 'This field is required' })
   .max(50, { message: 'Name is too long' })
   .regex(internationalNamePattern, {
-    message: 'Name should contain letters only',
+    message: 'Name should contain letters, dots, or hyphens only',
   });
 
 export const researchInterestItemSchema = z
