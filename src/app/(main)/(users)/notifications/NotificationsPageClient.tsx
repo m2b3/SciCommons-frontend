@@ -13,8 +13,8 @@ import {
 } from '@/api/join-community/join-community';
 import {
   useUsersApiGetNotifications,
-  useUsersApiMarkNotificationAsRead,
   usersApiGetNotifications,
+  useUsersApiBulkMarkNotificationsAsRead,
 } from '@/api/users/users';
 import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
@@ -824,7 +824,11 @@ const NotificationPageContent: React.FC = () => {
     }
   );
 
-  const { mutateAsync: markNotificationAsRead } = useUsersApiMarkNotificationAsRead({
+  /* Fixed by Claude on 2026-03-15
+     What: Use bulk mark notifications as read API
+     Why: Single API call instead of multiple calls for each notification
+     How: Use useUsersApiBulkMarkNotificationsAsRead with notification_ids array */
+  const { mutateAsync: bulkMarkAsRead } = useUsersApiBulkMarkNotificationsAsRead({
     request: authHeaders,
   });
 
@@ -966,7 +970,7 @@ const NotificationPageContent: React.FC = () => {
       [notificationId]: true,
     }));
 
-    void markNotificationAsRead({ notificationId })
+    void bulkMarkAsRead({ data: { notification_ids: [notificationId] } })
       .then(() => {
         void refetch();
       })
@@ -983,11 +987,10 @@ const NotificationPageContent: React.FC = () => {
     const unreadNotificationIds = unreadSystemNotifications.map((notification) => notification.id);
     if (unreadNotificationIds.length === 0) return;
 
-    /* Fixed by Codex on 2026-02-25
-       Who: Codex
-       What: Added bulk mark-as-read support for system notifications.
-       Why: Users asked for a single action to clear the unread system pile.
-       How: Apply optimistic local read state for unread ids, execute mark-as-read calls in parallel, rollback failures, then refetch once. */
+    /* Fixed by Claude on 2026-03-15
+       What: Use bulk mark notifications as read API
+       Why: Single API call instead of multiple calls for each notification
+       How: Use bulkMarkAsRead with all notification IDs in one call */
     setIsMarkingAllAsRead(true);
     setOptimisticReadByNotificationId((previousRecord) => {
       const nextRecord = { ...previousRecord };
@@ -998,26 +1001,20 @@ const NotificationPageContent: React.FC = () => {
     });
 
     void (async () => {
-      const markResults = await Promise.allSettled(
-        unreadNotificationIds.map((notificationId) => markNotificationAsRead({ notificationId }))
-      );
-
-      const failedNotificationIds = unreadNotificationIds.filter(
-        (_, index) => markResults[index].status === 'rejected'
-      );
-
-      if (failedNotificationIds.length > 0) {
+      try {
+        await bulkMarkAsRead({ data: { notification_ids: unreadNotificationIds } });
+        await refetch();
+      } catch {
         setOptimisticReadByNotificationId((previousRecord) => {
           let nextRecord = previousRecord;
-          failedNotificationIds.forEach((notificationId) => {
+          unreadNotificationIds.forEach((notificationId) => {
             nextRecord = removeNotificationEntry(nextRecord, notificationId);
           });
           return nextRecord;
         });
+      } finally {
+        setIsMarkingAllAsRead(false);
       }
-
-      await refetch();
-      setIsMarkingAllAsRead(false);
     })();
   };
 
@@ -1120,7 +1117,7 @@ const NotificationPageContent: React.FC = () => {
       }
 
       try {
-        await markNotificationAsRead({ notificationId: notification.id });
+        await bulkMarkAsRead({ data: { notification_ids: [notification.id] } });
       } catch {
         // Keep the action in read state locally; persistence can recover on subsequent fetches/actions.
       } finally {
