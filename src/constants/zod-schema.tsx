@@ -75,11 +75,11 @@ export const linkedInUrlSchema = z.string().superRefine((url, ctx) => {
       message: "URL must start with 'https://'",
     });
   }
-  const domainMatch = url.match(/^https:\/\/([a-z]{2,3})\.linkedin\.com\/(.*)$/);
+  const domainMatch = url.match(/^https:\/\/([a-z]{2,3})\.linkedin\.com\/in\/(.*)$/);
   if (!domainMatch) {
     ctx.addIssue({
       code: 'custom',
-      message: "Invalid LinkedIn domain format (e.g., 'https://in.linkedin.com/...')",
+      message: "Invalid LinkedIn domain format (e.g., 'https://www.linkedin.com/in/...')",
     });
   } else {
     const [, subdomain, path] = domainMatch;
