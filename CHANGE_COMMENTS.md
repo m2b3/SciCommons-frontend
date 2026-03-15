@@ -1,3 +1,15 @@
+## 2026-03-15 - Navbar Discussions NEW Badge Subscription Alignment
+
+Problem: The top navbar `Discussions` link could miss `New` even when discussion surfaces (sidebar/tab/cards) were already showing unread activity.
+
+Root Cause: Navbar badge logic depended only on realtime event count and did not include backend subscription unread state (`has_unread_event` with read-state reconciliation).
+
+Solution: Added subscription unread evaluation in `NavBar` using `useArticlesDiscussionApiGetUserSubscriptions` plus `useSubscriptionUnreadStore.isArticleUnread`, and combined it with realtime count fallback before rendering the navbar `New` pill.
+
+Result: The top-of-page `Discussions` link now advertises unread discussion activity more consistently, matching the same unread sources used by discussion panels.
+
+Files Modified: `src/components/common/NavBar.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-14 - Frontend Comment Length Validation Shift to 1000 Words
 
 Problem: Comment entry on the frontend was enforcing an outdated 500-character cap, but product wanted a longer limit expressed in words instead of characters.

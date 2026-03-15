@@ -22,6 +22,7 @@ import {
   Users,
 } from 'lucide-react';
 
+import { useArticlesDiscussionApiGetUserSubscriptions } from '@/api/discussions/discussions';
 import { useUsersApiGetNotifications } from '@/api/users/users';
 import {
   DropdownMenu,
@@ -119,6 +120,40 @@ const NavBar: React.FC = () => {
 
   // Get count of articles with new realtime events for discussions badge
   const newEventsCount = useSubscriptionUnreadStore((state) => state.getNewEventsCount());
+  const isArticleUnread = useSubscriptionUnreadStore((state) => state.isArticleUnread);
+
+  const { data: discussionSubscriptionsData } = useArticlesDiscussionApiGetUserSubscriptions({
+    request: authHeaders,
+    query: {
+      enabled: Boolean(isAuthenticated),
+      staleTime: 60 * 1000,
+      refetchOnWindowFocus: true,
+    },
+  });
+
+  /* Fixed by Codex on 2026-03-15
+     Who: Codex
+     What: Expanded top-navbar Discussions NEW badge detection to include subscription unread state.
+     Why: The navbar previously relied only on realtime events, so it could miss NEW activity already reflected in discussion surfaces.
+     How: Combine subscription unread evaluation with realtime counts so the top Discussions link advertises any unread discussion entry points. */
+  const hasUnreadDiscussionsActivity = useMemo(() => {
+    const communities = discussionSubscriptionsData?.data?.communities;
+    if (!Array.isArray(communities) || communities.length === 0) {
+      return newEventsCount > 0;
+    }
+
+    const hasUnreadSubscriptionArticle = communities.some((community) =>
+      community.articles.some((article) =>
+        isArticleUnread(
+          community.community_id,
+          article.article_id,
+          Boolean(article.has_unread_event)
+        )
+      )
+    );
+
+    return hasUnreadSubscriptionArticle || newEventsCount > 0;
+  }, [discussionSubscriptionsData?.data?.communities, isArticleUnread, newEventsCount]);
 
   // Update tab title with unread count
   useTabTitleNotification();
@@ -250,7 +285,7 @@ const NavBar: React.FC = () => {
                 </Link>
                 {/* Unread indicator badge for Discussions */}
                 {link.href === '/discussions' &&
-                  newEventsCount > 0 &&
+                  hasUnreadDiscussionsActivity &&
                   !pathname?.startsWith('/discussion') && (
                     <span className="absolute -right-3 -top-2 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-functional-red">
                       New
