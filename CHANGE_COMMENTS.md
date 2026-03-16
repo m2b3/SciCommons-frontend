@@ -846,3 +846,14 @@ Solution: Replaced the name regex with deterministic checks in `superRefine`: va
 Result: Name validation is now stricter and consistent with the user-facing rule text, and test coverage now protects against dot-related regressions.
 
 Files Modified: `src/constants/zod-schema.tsx`, `src/tests/__tests__/zodSchema.test.ts`
+## 2026-03-16 - Silent Stale-Session Redirect Flow
+
+Problem: Users with stale/revoked auth sessions could briefly see page activity and an expiry toast before being redirected to login.
+
+Root Cause: Session invalidation was often discovered only after API 401 responses, while route guards and global interceptors still displayed intermediate toast/dialog feedback.
+
+Solution: Added first-bootstrap server session validation in `authStore.initializeAuth`, mounted a global `AuthBootstrap` initializer in root layout so auth resolution starts at app load, and converted automatic unauthenticated redirects in auth HOCs to silent `router.replace` login redirects with redirect targets. Updated global Axios 401 handler to remove the session-expired toast and perform immediate deduplicated login replacement.
+
+Result: Stale sessions now resolve with a smoother, quieter transition directly to login, with less visible intermediate UI churn.
+
+Files Modified: `src/stores/authStore.ts`, `src/components/common/AuthBootstrap.tsx`, `src/app/layout.tsx`, `src/HOCs/withAuthRedirect.tsx`, `src/HOCs/withAuth.tsx`, `src/api/custom-instance.ts`

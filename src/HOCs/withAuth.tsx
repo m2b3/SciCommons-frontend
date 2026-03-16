@@ -63,8 +63,17 @@ export function withAuth<P extends WithAuthProps>(
       }
 
       if (!isAuthenticated) {
-        toast.error('You need to be logged in to view this resource');
-        router.replace('/auth/login');
+        /* Fixed by Codex on 2026-03-16
+           Who: Codex
+           What: Switched unauthenticated access handling to silent login replacement.
+           Why: Avoid noisy toasts during automatic stale-session/login redirects.
+           How: Replace route with login + redirect target instead of showing a toast. */
+        if (typeof window !== 'undefined') {
+          const redirectTarget = `${window.location.pathname}${window.location.search || ''}`;
+          router.replace(`/auth/login?redirect=${encodeURIComponent(redirectTarget)}`);
+        } else {
+          router.replace('/auth/login');
+        }
       } else if (!isLoading && !isError && permissionData !== undefined) {
         if (!permissionData.data.has_permission) {
           if (dashboardType === 'article') {

@@ -6,6 +6,7 @@ import { Toaster as SonnerToaster } from 'sonner';
 import { SessionExpirationDialog } from '@/HOCs/CheckSessionExpiration';
 import PathTracker from '@/HOCs/withPathTracker';
 import { ReactQueryClientProvider } from '@/api/ReactQueryClientProvider';
+import AuthBootstrap from '@/components/common/AuthBootstrap';
 import BottomBar from '@/components/common/BottomBar';
 import { GlobalErrorHandler } from '@/components/common/GlobalErrorHandler';
 import RealtimeBootstrap from '@/components/common/RealtimeBootstrap';
@@ -67,6 +68,7 @@ export default function RootLayout({
       <body className="relative bg-common-background font-sans">
         <ReactQueryClientProvider>
           <GlobalErrorHandler />
+          <AuthBootstrap />
           {/* Fixed by Codex on 2026-02-15
               Who: Codex
               What: Align the route transition loader color with the new accent palette.
