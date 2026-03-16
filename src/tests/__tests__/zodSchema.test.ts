@@ -1,5 +1,6 @@
 import {
   emailOrUsernameSchema,
+  linkedInUrlSchema,
   matchPassword,
   nameSchema,
   optionalUrlSchema,
@@ -113,6 +114,24 @@ describe('statusSchema', () => {
   it('rejects whitespace-only status values', () => {
     expect(statusSchema.safeParse('   ').success).toBe(false);
     expect(statusSchema.safeParse('Researcher').success).toBe(true);
+  });
+});
+
+describe('linkedInUrlSchema', () => {
+  it('accepts personal LinkedIn profile URLs that use /in/', () => {
+    expect(linkedInUrlSchema.safeParse('https://www.linkedin.com/in/jane-doe').success).toBe(true);
+    expect(linkedInUrlSchema.safeParse('https://in.linkedin.com/in/jane-doe').success).toBe(true);
+  });
+
+  it('rejects non-profile LinkedIn paths', () => {
+    /* Fixed by Codex on 2026-03-16
+       Problem: LinkedIn validation changed to profile-only paths without direct regression tests.
+       Solution: Add negative coverage for non-/in/ LinkedIn URLs.
+       Result: Future edits cannot silently relax profile-only validation intent. */
+    expect(linkedInUrlSchema.safeParse('https://www.linkedin.com/company/openai').success).toBe(
+      false
+    );
+    expect(linkedInUrlSchema.safeParse('https://www.linkedin.com/pub/jane').success).toBe(false);
   });
 });
 

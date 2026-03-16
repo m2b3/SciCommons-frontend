@@ -835,3 +835,15 @@ Solution: Added `build` configuration in `docker-compose.dev.yml` with args mapp
 Result: `docker compose` can now rebuild the frontend image using `.env` values consistently, including UI skin selection.
 
 Files Modified: `docker-compose.dev.yml`, `Dockerfile`
+
+## 2026-03-16 - LinkedIn Profile-Only Validation Test Coverage
+
+Problem: LinkedIn URL validation was intentionally narrowed to personal profile paths (`/in/...`), but test coverage did not explicitly lock that behavior.
+
+Root Cause: `zodSchema.test.ts` had no dedicated LinkedIn schema cases for accepted profile URLs versus rejected non-profile URLs.
+
+Solution: Added regression tests for `linkedInUrlSchema` that accept `/in/...` profile URLs and reject `/company/...` and `/pub/...` URLs.
+
+Result: The profile-only LinkedIn requirement is now enforced by tests and less likely to regress silently.
+
+Files Modified: `src/tests/__tests__/zodSchema.test.ts`
