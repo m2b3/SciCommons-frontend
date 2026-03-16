@@ -47,6 +47,7 @@ interface DiscussionCardProps {
   articleId?: number;
   communityId?: number | null;
   mentionCandidates?: string[];
+  onNewTagVisibilityChange?: (discussionId: number, isVisible: boolean) => void;
 }
 
 interface DiscussionEditFormValues {
@@ -63,6 +64,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
   articleId,
   communityId,
   mentionCandidates = [],
+  onNewTagVisibilityChange,
 }) => {
   dayjs.extend(relativeTime);
 
@@ -126,6 +128,22 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
     hasUnreadCommentFlag: hasUnreadComment,
     articleContext: communityId && articleId ? { communityId, articleId } : undefined,
   });
+
+  /* Fixed by Codex on 2026-03-14
+     Who: Codex
+     What: Bubble discussion-card NEW badge visibility to parent discussion containers.
+     Why: The top Discussions tab should mirror unread activity from the panel, not stay static while child cards show NEW.
+     How: Report the current card badge state on mount/update and clear it again during cleanup/unmount. */
+  useEffect(() => {
+    if (discussion.id === undefined || !onNewTagVisibilityChange) return;
+
+    const resolvedDiscussionId = Number(discussion.id);
+    onNewTagVisibilityChange(resolvedDiscussionId, showNewTag);
+
+    return () => {
+      onNewTagVisibilityChange(resolvedDiscussionId, false);
+    };
+  }, [discussion.id, onNewTagVisibilityChange, showNewTag]);
 
   // Toggle comments display
   const handleToggleComments = useCallback(() => {

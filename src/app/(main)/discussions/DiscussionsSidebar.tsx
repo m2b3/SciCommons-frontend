@@ -274,15 +274,15 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
               key={`${article.communityId}-${article.articleId}`}
               role="listitem"
               className={cn(
-                'group relative flex w-full flex-col gap-1 rounded-sm p-2 transition-colors',
-                selectedArticle?.id === article.articleId
-                  ? 'border border-functional-green/30 bg-functional-green/10'
-                  : 'hover:bg-common-minimal/50',
-                article.hasUnreadEvent &&
-                  selectedArticle?.id !== article.articleId &&
-                  'bg-common-contrast/40'
+                'relative flex w-full flex-col gap-1 text-left transition-colors',
+                'before:absolute before:-inset-x-2 before:-inset-y-1.5 before:rounded-sm before:transition-colors',
+                'hover:before:bg-common-minimal/50',
+                // Selected article styling
+                selectedArticle?.id === article.articleId &&
+                'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10'
               )}
             >
+              {/* Accessibility: Absolute button overlay for item selection */}
               <button
                 type="button"
                 onClick={() => handleArticleSelect(article)}
@@ -291,6 +291,7 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
                 className="absolute inset-0 z-10 h-full w-full bg-transparent outline-none ring-functional-green focus-visible:ring-2"
               />
 
+              {/* NEW pill for unread cues */}
               {article.hasUnreadEvent && (
                 <span className="absolute -right-1 top-0 z-30 rounded-full border border-functional-red/50 bg-functional-red px-1.5 py-0.5 text-[8px] font-bold text-white">
                   NEW
@@ -315,6 +316,7 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
                 className={cn(
                   'relative z-0 line-clamp-2 text-xs font-medium text-text-secondary',
                   selectedArticle?.id === article.articleId && 'text-text-primary',
+                  // Visual cue for unread state
                   article.hasUnreadEvent && 'font-bold text-text-primary'
                 )}
               >

@@ -5,13 +5,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import { Check, CheckCheck, MessageSquare, SquareArrowOutUpRight, X } from 'lucide-react';
+import { Check, CheckCheck, Loader2, MessageSquare, SquareArrowOutUpRight, X } from 'lucide-react';
 
 import {
   communitiesApiJoinGetJoinRequests,
   useCommunitiesApiJoinManageJoinRequest,
 } from '@/api/join-community/join-community';
-import { useUsersApiGetNotifications, useUsersApiMarkNotificationAsRead } from '@/api/users/users';
+import {
+  useUsersApiBulkMarkNotificationsAsRead,
+  useUsersApiGetNotifications,
+  usersApiGetNotifications,
+} from '@/api/users/users';
 import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import TabNavigation from '@/components/ui/tab-navigation';
@@ -460,6 +464,9 @@ interface SystemNotificationsTabProps {
     notification: PreparedSystemNotification,
     action: JoinRequestAction
   ) => void;
+  onLoadReadNotifications: () => void;
+  isLoadingReadNotifications: boolean;
+  hasLoadedReadNotifications: boolean;
 }
 
 const SystemNotificationsTab: React.FC<SystemNotificationsTabProps> = ({
@@ -468,13 +475,51 @@ const SystemNotificationsTab: React.FC<SystemNotificationsTabProps> = ({
   readNotifications,
   onMarkAsRead,
   onManagerJoinRequestAction,
+  onLoadReadNotifications,
+  isLoadingReadNotifications,
+  hasLoadedReadNotifications,
 }) => {
   if (isPending) {
     return <NotificationCardSkeletonLoader />;
   }
 
-  if (unreadNotifications.length === 0 && readNotifications.length === 0) {
-    return <p className="text-center text-text-tertiary">No notifications to show.</p>;
+  if (unreadNotifications.length === 0 && !hasLoadedReadNotifications) {
+    return (
+      <div className="space-y-6">
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-text-primary">
+            Unread System Notifications (0)
+          </h2>
+          <div className="rounded-xl border border-common-minimal bg-common-background p-4 text-xs text-text-tertiary">
+            No unread system notifications.
+          </div>
+        </section>
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-text-secondary">Read System Notifications</h2>
+            <Button
+              type="button"
+              variant="outline"
+              className="px-3 py-1.5"
+              onClick={onLoadReadNotifications}
+              disabled={isLoadingReadNotifications}
+            >
+              {isLoadingReadNotifications ? (
+                <>
+                  <Loader2 size={12} className="mr-1.5 animate-spin" />
+                  <span className="text-xs">Loading...</span>
+                </>
+              ) : (
+                <span className="text-xs">Load Read</span>
+              )}
+            </Button>
+          </div>
+          <div className="rounded-xl border border-common-minimal bg-common-background p-4 text-xs text-text-tertiary">
+            Click &ldquo;Load Read&rdquo; to view read notifications.
+          </div>
+        </section>
+      </div>
+    );
   }
 
   const renderNotificationRow = (notification: PreparedSystemNotification, isRead: boolean) => {
@@ -623,10 +668,32 @@ const SystemNotificationsTab: React.FC<SystemNotificationsTabProps> = ({
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-text-secondary">
-          Read System Notifications
-        </h2>
-        {readNotifications.length === 0 ? (
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-text-secondary">Read System Notifications</h2>
+          {!hasLoadedReadNotifications && (
+            <Button
+              type="button"
+              variant="outline"
+              className="px-3 py-1.5"
+              onClick={onLoadReadNotifications}
+              disabled={isLoadingReadNotifications}
+            >
+              {isLoadingReadNotifications ? (
+                <>
+                  <Loader2 size={12} className="mr-1.5 animate-spin" />
+                  <span className="text-xs">Loading...</span>
+                </>
+              ) : (
+                <span className="text-xs">Load Read</span>
+              )}
+            </Button>
+          )}
+        </div>
+        {!hasLoadedReadNotifications ? (
+          <div className="rounded-xl border border-common-minimal bg-common-background p-4 text-xs text-text-tertiary">
+            Click &ldquo;Load Read&rdquo; to view read notifications.
+          </div>
+        ) : readNotifications.length === 0 ? (
           <div className="rounded-xl border border-common-minimal bg-common-background p-4 text-xs text-text-tertiary">
             No read system notifications.
           </div>
@@ -735,13 +802,20 @@ const NotificationPageContent: React.FC = () => {
     useState<Record<number, string>>({});
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
   const [isMarkingAllMentionsAsRead, setIsMarkingAllMentionsAsRead] = useState(false);
+  const [hasLoadedReadNotifications, setHasLoadedReadNotifications] = useState(false);
+  const [isLoadingReadNotifications, setIsLoadingReadNotifications] = useState(false);
+  const [readNotificationsData, setReadNotificationsData] = useState<SystemNotification[]>([]);
 
   useEffect(() => {
     setActiveTabIndex(initialActiveTabIndex);
   }, [initialActiveTabIndex]);
 
+  /* Fixed by Claude on 2026-03-15
+     What: Fetch only unread notifications by default
+     Why: Performance optimization - read notifications loaded on-demand
+     How: Pass status: 'unread' filter to API call */
   const { data, isPending, refetch } = useUsersApiGetNotifications(
-    {},
+    { status: 'unread' },
     {
       request: authHeaders,
       query: {
@@ -750,7 +824,11 @@ const NotificationPageContent: React.FC = () => {
     }
   );
 
-  const { mutateAsync: markNotificationAsRead } = useUsersApiMarkNotificationAsRead({
+  /* Fixed by Claude on 2026-03-15
+     What: Use bulk mark notifications as read API
+     Why: Single API call instead of multiple calls for each notification
+     How: Use useUsersApiBulkMarkNotificationsAsRead with notification_ids array */
+  const { mutateAsync: bulkMarkAsRead } = useUsersApiBulkMarkNotificationsAsRead({
     request: authHeaders,
   });
 
@@ -863,10 +941,28 @@ const NotificationPageContent: React.FC = () => {
     () => preparedSystemNotifications.filter((notification) => !notification.isRead),
     [preparedSystemNotifications]
   );
-  const readSystemNotifications = useMemo(
-    () => preparedSystemNotifications.filter((notification) => notification.isRead),
-    [preparedSystemNotifications]
-  );
+
+  /* Fixed by Claude on 2026-03-15
+     What: Use separately loaded read notifications data
+     Why: Read notifications are loaded on-demand, not with initial fetch
+     How: Prepare read notifications from readNotificationsData state */
+  const readSystemNotifications = useMemo(() => {
+    if (!hasLoadedReadNotifications) return [];
+
+    return sortSystemNotificationsByCreatedAt(
+      readNotificationsData.map((notification) => {
+        const managerJoinRequestContext = extractManagerJoinRequestContext(notification);
+        return {
+          ...notification,
+          isRead: true,
+          managerJoinRequestContext,
+          actionDecision: null,
+          actionPending: false,
+          actionError: null,
+        };
+      })
+    );
+  }, [hasLoadedReadNotifications, readNotificationsData]);
 
   const markAsRead = (notificationId: number) => {
     setOptimisticReadByNotificationId((previousRecord) => ({
@@ -874,7 +970,7 @@ const NotificationPageContent: React.FC = () => {
       [notificationId]: true,
     }));
 
-    void markNotificationAsRead({ notificationId })
+    void bulkMarkAsRead({ data: { notification_ids: [notificationId] } })
       .then(() => {
         void refetch();
       })
@@ -891,11 +987,10 @@ const NotificationPageContent: React.FC = () => {
     const unreadNotificationIds = unreadSystemNotifications.map((notification) => notification.id);
     if (unreadNotificationIds.length === 0) return;
 
-    /* Fixed by Codex on 2026-02-25
-       Who: Codex
-       What: Added bulk mark-as-read support for system notifications.
-       Why: Users asked for a single action to clear the unread system pile.
-       How: Apply optimistic local read state for unread ids, execute mark-as-read calls in parallel, rollback failures, then refetch once. */
+    /* Fixed by Claude on 2026-03-15
+       What: Use bulk mark notifications as read API
+       Why: Single API call instead of multiple calls for each notification
+       How: Use bulkMarkAsRead with all notification IDs in one call */
     setIsMarkingAllAsRead(true);
     setOptimisticReadByNotificationId((previousRecord) => {
       const nextRecord = { ...previousRecord };
@@ -906,26 +1001,20 @@ const NotificationPageContent: React.FC = () => {
     });
 
     void (async () => {
-      const markResults = await Promise.allSettled(
-        unreadNotificationIds.map((notificationId) => markNotificationAsRead({ notificationId }))
-      );
-
-      const failedNotificationIds = unreadNotificationIds.filter(
-        (_, index) => markResults[index].status === 'rejected'
-      );
-
-      if (failedNotificationIds.length > 0) {
+      try {
+        await bulkMarkAsRead({ data: { notification_ids: unreadNotificationIds } });
+        await refetch();
+      } catch {
         setOptimisticReadByNotificationId((previousRecord) => {
           let nextRecord = previousRecord;
-          failedNotificationIds.forEach((notificationId) => {
+          unreadNotificationIds.forEach((notificationId) => {
             nextRecord = removeNotificationEntry(nextRecord, notificationId);
           });
           return nextRecord;
         });
+      } finally {
+        setIsMarkingAllAsRead(false);
       }
-
-      await refetch();
-      setIsMarkingAllAsRead(false);
     })();
   };
 
@@ -943,6 +1032,25 @@ const NotificationPageContent: React.FC = () => {
       markMentionAsRead(user.id, mention.id);
     });
     setIsMarkingAllMentionsAsRead(false);
+  };
+
+  /* Added by Claude on 2026-03-15
+     What: Load read notifications on demand
+     Why: Performance optimization - don't load read notifications by default
+     How: Make separate API call with status: 'read' when user clicks button */
+  const handleLoadReadNotifications = async () => {
+    if (isLoadingReadNotifications || hasLoadedReadNotifications) return;
+
+    setIsLoadingReadNotifications(true);
+    try {
+      const response = await usersApiGetNotifications({ status: 'read' }, authHeaders);
+      setReadNotificationsData(response.data ?? []);
+      setHasLoadedReadNotifications(true);
+    } catch {
+      // Silently fail - user can try again
+    } finally {
+      setIsLoadingReadNotifications(false);
+    }
   };
 
   const handleManagerJoinRequestAction = (
@@ -1009,7 +1117,7 @@ const NotificationPageContent: React.FC = () => {
       }
 
       try {
-        await markNotificationAsRead({ notificationId: notification.id });
+        await bulkMarkAsRead({ data: { notification_ids: [notification.id] } });
       } catch {
         // Keep the action in read state locally; persistence can recover on subsequent fetches/actions.
       } finally {
@@ -1090,6 +1198,9 @@ const NotificationPageContent: React.FC = () => {
                 readNotifications={readSystemNotifications}
                 onMarkAsRead={markAsRead}
                 onManagerJoinRequestAction={handleManagerJoinRequestAction}
+                onLoadReadNotifications={handleLoadReadNotifications}
+                isLoadingReadNotifications={isLoadingReadNotifications}
+                hasLoadedReadNotifications={hasLoadedReadNotifications}
               />
             ),
           },

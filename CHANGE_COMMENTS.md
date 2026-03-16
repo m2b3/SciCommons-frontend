@@ -33,6 +33,68 @@ Solution: Added a dedicated manual script, `test:ally`, in `package.json` that t
 Result: Accessibility testing stays opt-in via `yarn test:ally`, does not run during normal test/build/deploy flows, starts the app automatically when needed, and no longer risks picking up Jest `.test.*` files under the Playwright runner.
 
 Files Modified: `playwright.config.ts`, `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+## 2026-03-15 - Navbar Discussions NEW Badge Subscription Alignment
+
+Problem: The top navbar `Discussions` link could miss `New` even when discussion surfaces (sidebar/tab/cards) were already showing unread activity.
+
+Root Cause: Navbar badge logic depended only on realtime event count and did not include backend subscription unread state (`has_unread_event` with read-state reconciliation).
+
+Solution: Added subscription unread evaluation in `NavBar` using `useArticlesDiscussionApiGetUserSubscriptions` plus `useSubscriptionUnreadStore.isArticleUnread`, and combined it with realtime count fallback before rendering the navbar `New` pill.
+
+Result: The top-of-page `Discussions` link now advertises unread discussion activity more consistently, matching the same unread sources used by discussion panels.
+
+Files Modified: `src/components/common/NavBar.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Frontend Comment Length Validation Shift to 1000 Words
+
+Problem: Comment entry on the frontend was enforcing an outdated 500-character cap, but product wanted a longer limit expressed in words instead of characters.
+
+Root Cause: The shared `CommentInput` component applied a client-side `maxLength` validator to the `content` field, so every discussion/review/post comment flow inherited the same 500-character cap.
+
+Solution: Replaced the shared character-based validator with a 1000-word validator that counts whitespace-delimited tokens. Kept required and minimum-length validation, and added a focused `CommentInput` test covering both the 1000-word allowed case and the 1001-word rejection case.
+
+Result: The frontend now allows substantially longer comments while still enforcing a consistent cap across discussion, review, and post comment flows. The UI limit is now 1000 words instead of 500 characters.
+
+Files Modified: `src/components/common/CommentInput.tsx`, `src/tests/__tests__/CommentInput.test.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Non-Article Posting Success Toast Suppression
+
+Problem: Success toasts were firing for secondary posting actions like discussions, reviews, summaries, and posts, which added noise after the UI had already updated inline.
+
+Root Cause: Several non-article create flows still showed success notifications by default even though the surrounding UI already provided immediate confirmation through reset, refetch, collapse, or redirect behavior.
+
+Solution: Removed success toasts from non-article create flows while keeping their existing UI follow-up behavior intact. Article submission success toasts were left in place per product direction.
+
+Result: Users still get explicit success feedback when posting articles, but discussion/review/post creation flows now complete more quietly and rely on the visible UI change instead of redundant toast confirmations.
+
+Files Modified: `src/components/articles/DiscussionForm.tsx`, `src/components/articles/ReviewForm.tsx`, `src/components/articles/DiscussionSummary.tsx`, `src/app/(main)/(posts)/posts/createpost/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Jest Canvas Native Dependency Bypass
+
+Problem: `yarn test` could fail before running any suites because `jest-environment-jsdom` detected the transitive `canvas` package and then crashed when the local native binary `canvas.node` was missing.
+
+Root Cause: `jsdom` probes `require.resolve('canvas')` during environment startup, which happens before Jest setup files run. Because `pdfjs-dist` pulls in `canvas`, a half-installed Windows native module caused all tests to abort even though the app test suite does not rely on native canvas features.
+
+Solution: Added a custom Jest environment that redirects the exact `canvas` module specifier to a local stub before `jest-environment-jsdom` loads, and mirrored that stub in `moduleNameMapper` so direct test-time imports also avoid the native package.
+
+Result: Jest now boots through the standard `jsdom` environment without depending on a compiled local `canvas.node` binary, eliminating the recurring native-install failure class from normal frontend test runs.
+
+Files Modified: `jest.config.ts`, `jest.canvas-safe-environment.cjs`, `src/tests/__mocks__/canvas.cjs`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-14 - Discussions Tab NEW Badge Propagation
+
+Problem: On the discussions split view, unread discussion activity already showed `New` on sidebar article tiles and individual discussion topics, but the top `Discussions` tab stayed static and gave no summary signal.
+
+Root Cause: Unread state stopped at the sidebar/discussion-card level. `ArticleContentView` rendered a fixed tab label, and nothing aggregated child discussion unread state back up to that tab title on initial load, after topic scans, or during realtime updates.
+
+Solution: Added unread badge rendering to the shared tab title in `ArticleContentView`, propagated discussion-card `New` visibility upward through `DiscussionForum`, and combined that with fetched discussion unread flags plus subscription-summary/realtime store state so the top `Discussions` tab reflects unread activity on first load, after sidebar clears, and when realtime discussions/comments arrive.
+
+Result: The main `Discussions` tab now shows `New` whenever the selected article's discussions panel contains unread activity, including initial discussions-page loads and live realtime updates that also mark the left sidebar.
+
+Files Modified: `src/components/articles/ArticleContentView.tsx`, `src/components/articles/DiscussionForum.tsx`, `src/components/articles/DiscussionCard.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+Follow-up (same day): Removed the unread-only dark tile background in `src/app/(main)/discussions/DiscussionsSidebar.tsx` so sidebar background emphasis remains reserved for the currently selected article, while unread items continue to rely on the `New` pill and stronger title weight.
+
 ## 2026-03-12 - Discussion Thread Markdown Spacing Alignment
 
 Problem: After switching discussion thread content to the shared markdown renderer, mobile thread view showed extra vertical space before the actions/comments row.

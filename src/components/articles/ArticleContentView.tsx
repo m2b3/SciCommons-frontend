@@ -36,6 +36,27 @@ interface ArticleContentViewProps {
   initialCommentId?: number | null;
 }
 
+const renderTabTitleWithNewBadge = (
+  baseLabel: 'Reviews' | 'Discussions',
+  showNewBadge: boolean
+): React.ReactNode => {
+  if (!showNewBadge) return baseLabel;
+
+  /* Fixed by Codex on 2026-03-14
+     Who: Codex
+     What: Add the shared pill-style NEW badge to the Discussions tab title.
+     Why: The split-view header needs the same text-based unread cue already used across sidebar and notification surfaces.
+     How: Compose the tab label as inline text plus a small badge node when unread discussion activity is present. */
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{baseLabel}</span>
+      <span className="rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-functional-red">
+        New
+      </span>
+    </span>
+  );
+};
+
 /**
  * Shared component for displaying article content with reviews and discussions tabs.
  * Used by both ArticleDisplayPageClient and DiscussionsPageClient to avoid duplication.
@@ -72,6 +93,7 @@ const ArticleContentView: React.FC<ArticleContentViewProps> = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [submitReviewInternal, setSubmitReviewInternal] = useState(false);
+  const [hasUnreadDiscussionTabActivity, setHasUnreadDiscussionTabActivity] = useState(false);
 
   // Fetch full article data
   const isQueryEnabled = !!articleSlug && !!accessToken;
@@ -169,6 +191,16 @@ const ArticleContentView: React.FC<ArticleContentViewProps> = ({
   }, [articleSlug]);
 
   const shouldShowSubscribeButton = !!resolvedCommunityArticleId && !!resolvedCommunityId;
+
+  useEffect(() => {
+    /* Fixed by Codex on 2026-03-14
+       Who: Codex
+       What: Reset per-article discussion-tab unread state when the article context changes.
+       Why: The tab badge is article-scoped and should not leak from the previously selected discussion panel.
+       How: Clear the local unread-tab flag before the next DiscussionForum instance recomputes and reports its state. */
+    setHasUnreadDiscussionTabActivity(false);
+  }, [articleSlug, externalArticleId, resolvedCommunityId]);
+
   /* Fixed by Codex on 2026-02-15
      Who: Codex
      What: Support a default tab override for article content views.
@@ -222,7 +254,7 @@ const ArticleContentView: React.FC<ArticleContentViewProps> = ({
           ),
         },
         {
-          title: 'Discussions',
+          title: renderTabTitleWithNewBadge('Discussions', hasUnreadDiscussionTabActivity),
           content: () =>
             articleData.data.id ? (
               <DiscussionForum
@@ -236,6 +268,7 @@ const ArticleContentView: React.FC<ArticleContentViewProps> = ({
                 isAdmin={isAdmin}
                 initialDiscussionId={initialDiscussionId}
                 initialCommentId={initialCommentId}
+                onUnreadStateChange={setHasUnreadDiscussionTabActivity}
               />
             ) : null,
         },
