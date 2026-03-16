@@ -19,6 +19,7 @@
     "check-types": "tsc --noEmit",
     "check-types:fast": "tsc --skipLibCheck --noEmit",
     "test": "jest",
+    "test:ally": "playwright test src/tests/__tests__/accessibility.public.spec.ts src/tests/__tests__/accessibility.protected.spec.ts",
     "test:all": "yarn test && yarn check-types && yarn lint && yarn prettier:check",
     "test:quick": "yarn test && yarn check-types && yarn lint",
     "test:fix": "yarn prettier && yarn lint:fix && yarn check-types:fast && yarn test",
@@ -97,6 +98,8 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
+    "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.3.1",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",

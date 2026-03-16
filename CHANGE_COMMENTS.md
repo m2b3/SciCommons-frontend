@@ -1,3 +1,62 @@
+## 2026-03-16 - Jest/Playwright Test Discovery Separation
+
+Problem: Running `yarn test` started failing because Jest discovered Playwright accessibility `*.spec.ts` files and attempted to execute them in the Jest/jsdom runtime.
+
+Root Cause: Jest's default test discovery includes `*.spec.ts`, and the new Playwright specs were added under `src/tests/__tests__` without an explicit Jest ignore rule.
+
+Solution: Added explicit Jest `testPathIgnorePatterns` entries in `jest.config.ts` for `accessibility.public.spec.ts` and `accessibility.protected.spec.ts` so those files run only via Playwright (`yarn test:ally`).
+
+Result: Jest test runs no longer import Playwright runtime modules, restoring stable `yarn test` execution while keeping Playwright accessibility checks available through their dedicated command.
+
+Files Modified: `jest.config.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-16 - Playwright Accessibility Audit Hardening (Auth Fail-Fast + Public/Protected Split)
+
+Problem: Accessibility audits could produce false confidence by auditing redirected login pages when protected-route authentication failed, and public audits were unnecessarily coupled to auth setup.
+
+Root Cause: A single `accessibility.spec.ts` mixed public/protected checks with weak auth validation (`Login` link visibility), while Playwright projects globally depended on the auth setup project and shared storage state.
+
+Solution: Split audits into `accessibility.public.spec.ts` and `accessibility.protected.spec.ts`, updated Playwright projects to run public audits without auth dependency and protected audits with explicit setup dependency + storage state, and hardened `auth.setup.ts` to fail immediately on missing `PW_LOGIN`/`PW_PASSWORD` plus assert post-login URL is not `/auth/login`.
+
+Result: Protected audits now fail loudly when authentication is missing/broken instead of silently passing on login redirects, and public audits run independently without requiring auth bootstrap.
+
+Files Modified: `playwright.config.ts`, `src/tests/auth.setup.ts`, `src/tests/__tests__/accessibility.public.spec.ts`, `src/tests/__tests__/accessibility.protected.spec.ts`, `src/tests/__tests__/accessibility.spec.ts` (removed), `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Disable Stored Playwright Workflow and Scope It to sureshDev PRs
+
+Problem: The Playwright GitHub Actions workflow was still active for pushes and PRs targeting `main`/`master`, even though the preferred workflow is manual local accessibility runs with the Actions file kept only for future use.
+
+Root Cause: `.github/workflows/playwright.yml` remained as an active workflow file and still used broad `push` plus `pull_request` triggers.
+
+Solution: Renamed the workflow to `.github/workflows/playwright.yml.disabled` so GitHub Actions ignores it, and updated the saved trigger to `pull_request` on `sureshDev` only for later re-enable.
+
+Result: No Playwright GitHub Actions workflow runs now, but the file remains in-repo and preconfigured for `sureshDev` PRs if re-enabled later.
+
+Files Modified: `.github/workflows/playwright.yml.disabled`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Remove Placeholder Playwright External-Site Spec
+
+Problem: Playwright test discovery still included the default sample spec, which depended on `https://playwright.dev/` instead of exercising SciCommons.
+
+Root Cause: The initial Playwright scaffold file, `src/tests/example.spec.ts`, was left in the repo after accessibility testing was added.
+
+Solution: Deleted the placeholder external-site Playwright sample so only project-relevant specs remain in the Playwright suite.
+
+Result: Manual Playwright runs no longer depend on a third-party site, which removes unnecessary flakiness and keeps the suite focused on SciCommons behavior.
+
+Files Modified: `src/tests/example.spec.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Manual Accessibility Script with Playwright-Managed App Startup
+
+Problem: Accessibility checks were intended to run only at deliberate moments, but Playwright depended on a separately started app server and could also discover Jest files from `src/tests`.
+
+Root Cause: `playwright.config.ts` had no `webServer` block and no Playwright-specific file match restriction, so manual runs required extra setup and the shared test directory created runner ambiguity.
+
+Solution: Added a dedicated manual script, `test:ally`, in `package.json` that targets the accessibility spec directly. Updated `playwright.config.ts` to start or reuse `yarn dev` only when Playwright is invoked, switched the base URL to `127.0.0.1`, and restricted Playwright discovery to `*.spec.ts(x)` files.
+
+Result: Accessibility testing stays opt-in via `yarn test:ally`, does not run during normal test/build/deploy flows, starts the app automatically when needed, and no longer risks picking up Jest `.test.*` files under the Playwright runner.
+
+Files Modified: `playwright.config.ts`, `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
 ## 2026-03-15 - Navbar Discussions NEW Badge Subscription Alignment
 
 Problem: The top navbar `Discussions` link could miss `New` even when discussion surfaces (sidebar/tab/cards) were already showing unread activity.

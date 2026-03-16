@@ -21,6 +21,7 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', 'Noto Sans', system-ui,
     'Helvetica Neue', Arial, sans-serif;
+  --Text-Tertiary: 100, 116, 139;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -177,7 +178,7 @@ body {
     --Functional-Green-Greencontrast: 12, 94, 88;
 
     /* Functional Blue */
-    --Functional-Blue-Blue: var(--color-blue-600);
+    --Functional-Blue-Blue: 56, 116, 190;
     --Functional-Blue-BlueLight: var(--color-blue-400);
     --Functional-Blue-Bluecontrast: var(--color-blue-700);
 
@@ -387,7 +388,7 @@ body {
     --Functional-Green-GreenLight: 142, 220, 202;
     --Functional-Green-Greencontrast: 12, 88, 76;
 
-    --Functional-Blue-Blue: 56, 116, 190;
+    --Functional-Blue-Blue: 45, 95, 165;
     --Functional-Blue-BlueLight: 133, 182, 226;
     --Functional-Blue-Bluecontrast: 41, 93, 160;
 
@@ -420,7 +421,7 @@ body {
 
     --Text-Primary: 18, 30, 26;
     --Text-Secondary: 74, 92, 86;
-    --Text-Tertiary: 103, 120, 112;
+    --Text-Tertiary: 75, 85, 99;
 
     --loading: #eef2ef;
 

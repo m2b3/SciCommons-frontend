@@ -49,6 +49,20 @@ const ItemCard: React.FC<ItemCardProps> = ({
         ? `/posts/${slug}`
         : '#';
 
+  /* Fixed by Codex on 2026-03-16
+    Who: Codex
+    What: Added title fallback for accessibility.
+    Why: Accessibility audits fail when links contain no discernible text.
+    How: Trim whitespace and provide a type-specific fallback if the title is empty. */
+
+  const displayTitle = title?.trim()
+    ? title
+    : isArticleType
+      ? 'Untitled Article'
+      : isCommunityType
+        ? 'Untitled Community'
+        : 'Untitled Item';
+
   return (
     <div className="mb-4 flex items-start gap-3 rounded-r-md border-l-4 border-common-contrast bg-common-cardBackground p-3 sm:gap-4 sm:p-4">
       <div className={`flex-shrink-0 rounded-full p-1.5 sm:p-2 ${iconColor}`}>
@@ -64,7 +78,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <div className="min-w-0 flex-1">
         <Link href={href} className="inline-block max-w-full">
           <h4 className="line-clamp-2 text-wrap break-words text-sm font-semibold text-text-primary [overflow-wrap:anywhere] hover:underline">
-            {title}
+            {displayTitle}
           </h4>
         </Link>
         <p className="mt-1 text-xs text-text-tertiary">
