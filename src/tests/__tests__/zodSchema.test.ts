@@ -16,6 +16,7 @@ describe('nameSchema', () => {
       'Jose Alvarez',
       "O'Connor",
       'Anne-Marie',
+      'J. R. R. Tolkien',
       'Zoe',
       'Dvorak',
       '李',
@@ -32,6 +33,18 @@ describe('nameSchema', () => {
     const invalidNames = ['John3', '!!!', '   ', '@name'];
 
     invalidNames.forEach((name) => {
+      expect(nameSchema.safeParse(name).success).toBe(false);
+    });
+  });
+
+  it('rejects malformed dot placement', () => {
+    /* Fixed by Codex on 2026-03-16
+       Problem: Dot-placement regressions were not covered, so invalid names like trailing or repeated dots could pass silently.
+       Solution: Add explicit cases for leading/trailing/repeated dots to lock expected behavior.
+       Result: Tests now guard against dot-related regressions in name validation. */
+    const invalidDotNames = ['A.', '.A', 'A..', 'John..Doe'];
+
+    invalidDotNames.forEach((name) => {
       expect(nameSchema.safeParse(name).success).toBe(false);
     });
   });

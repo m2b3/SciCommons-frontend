@@ -835,3 +835,14 @@ Solution: Added `build` configuration in `docker-compose.dev.yml` with args mapp
 Result: `docker compose` can now rebuild the frontend image using `.env` values consistently, including UI skin selection.
 
 Files Modified: `docker-compose.dev.yml`, `Dockerfile`
+## 2026-03-16 - Name Validation Dot-Placement Hardening
+
+Problem: The updated name validation accepted malformed dot placements (for example trailing dots like `A.` and repeated dots like `A..`) and the displayed validation message did not match the actual accepted characters.
+
+Root Cause: `nameSchema` used a single permissive regex that allowed dots in the final character position and did not explicitly block repeated dots; the user-facing message was narrowed to only letters/dots/hyphens while validation also allowed spaces and apostrophes.
+
+Solution: Replaced the name regex with deterministic checks in `superRefine`: validate allowed character set, enforce start/end letter boundaries, and reject leading/trailing/repeated dots. Updated the validation message to include all allowed separators. Added regression tests for leading/trailing/repeated-dot inputs and a valid dotted name format.
+
+Result: Name validation is now stricter and consistent with the user-facing rule text, and test coverage now protects against dot-related regressions.
+
+Files Modified: `src/constants/zod-schema.tsx`, `src/tests/__tests__/zodSchema.test.ts`
