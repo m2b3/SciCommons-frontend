@@ -293,7 +293,7 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
 
               {/* NEW pill for unread cues */}
               {article.hasUnreadEvent && (
-                <span className="absolute -right-1 top-0 z-30 rounded-full border border-functional-red/50 bg-functional-red px-1.5 py-0.5 text-[8px] font-bold text-white">
+                <span className="absolute -right-1 top-0 z-30 rounded-full bg-functional-red px-1.5 py-0.5 text-[8px] font-bold text-white shadow-sm">
                   NEW
                 </span>
               )}

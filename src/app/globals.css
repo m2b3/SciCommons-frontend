@@ -175,7 +175,7 @@ body {
        How: Shifted the base teal to a deeper tone and separated the light/contrast variants. */
     --Functional-Green-Green: 15, 118, 110;
     --Functional-Green-GreenLight: 94, 234, 212;
-    --Functional-Green-Greencontrast: 12, 94, 88;
+    --Functional-Green-Greencontrast: 4, 47, 46; 
 
     /* Functional Blue */
     --Functional-Blue-Blue: 56, 116, 190;
@@ -215,14 +215,14 @@ body {
     --Accessory-Accessory7: var(--neutral-400);
 
     /* Text Light */
-    --Text-Primary: 15, 23, 42;
-    --Text-Secondary: 71, 85, 105;
+    --Text-Primary: 2, 6, 23;  
+    --Text-Secondary: 30, 41, 59; 
     /* Fixed by Codex on 2026-02-15
        Who: Codex
        What: Increase light-mode tertiary text contrast.
        Why: Tertiary copy fell below WCAG AA on white surfaces.
        How: Darkened the tertiary token to a higher-contrast slate tone. */
-    --Text-Tertiary: 100, 116, 139;
+    --Text-Tertiary: 51, 65, 85;  
 
     /* Loading */
     --loading: #f2f2f2;
@@ -299,9 +299,9 @@ body {
     --Accessory-Accessory7: var(--neutral-500);
 
     /* Text Dark */
-    --Text-Primary: 226, 232, 240;
-    --Text-Secondary: 148, 163, 184;
-    --Text-Tertiary: 120, 134, 157;
+    --Text-Primary: 10, 20, 15;
+    --Text-Secondary: 45, 60, 55;
+    --Text-Tertiary: 65, 80, 75;
 
     /* Functional Green */
     /* Fixed by Codex on 2026-02-15
@@ -386,7 +386,7 @@ body {
 
     --Functional-Green-Green: 16, 110, 95;
     --Functional-Green-GreenLight: 142, 220, 202;
-    --Functional-Green-Greencontrast: 12, 88, 76;
+    --Functional-Green-Greencontrast: 5, 46, 38;
 
     --Functional-Blue-Blue: 45, 95, 165;
     --Functional-Blue-BlueLight: 133, 182, 226;
@@ -419,9 +419,9 @@ body {
     --Accessory-Accessory6: 210, 218, 212;
     --Accessory-Accessory7: 190, 200, 194;
 
-    --Text-Primary: 18, 30, 26;
-    --Text-Secondary: 74, 92, 86;
-    --Text-Tertiary: 75, 85, 99;
+    --Text-Primary: 6, 18, 14;     
+    --Text-Secondary: 20, 35, 30;    
+    --Text-Tertiary: 40, 60, 55;     
 
     --loading: #eef2ef;
 

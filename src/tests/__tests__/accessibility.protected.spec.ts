@@ -2,8 +2,11 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 const PROTECTED_PAGES = [
-  { name: 'My Contributions/Bookmarks', path: '/mycontributions' },
-  { name: 'Profile Settings', path: '/settings' },
+  { name: 'My Contributions', path: '/mycontributions' },
+  { name: 'Settings', path: '/settings' },
+  { name: 'Profile', path: '/myprofile' },
+  { name: 'Submit Article', path: '/submitarticle' }, 
+  { name: 'Create Community', path: '/createcommunity' },
 ];
 
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
