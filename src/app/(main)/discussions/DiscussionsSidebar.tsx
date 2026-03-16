@@ -276,11 +276,11 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
               className={cn(
                 'group relative flex w-full flex-col gap-1 rounded-sm p-2 transition-colors',
                 selectedArticle?.id === article.articleId
-                  ? 'bg-functional-green/10 border border-functional-green/30'
+                  ? 'border border-functional-green/30 bg-functional-green/10'
                   : 'hover:bg-common-minimal/50',
                 article.hasUnreadEvent &&
-                selectedArticle?.id !== article.articleId &&
-                'bg-common-contrast/40'
+                  selectedArticle?.id !== article.articleId &&
+                  'bg-common-contrast/40'
               )}
             >
               <button

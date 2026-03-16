@@ -42,7 +42,7 @@ export interface CommunityAccessIndicator {
 const roleBadgeClassByCode: Record<CommunityRoleBadge['code'], string> = {
   A: 'border-functional-yellow/60 bg-functional-yellow/10 text-functional-yellow',
   M: 'border-functional-green/60 bg-functional-green/10 text-functional-green',
-  R: 'border-functional-blue/60 bg-functional-blue/10 text-functional-blueContrast', 
+  R: 'border-functional-blue/60 bg-functional-blue/10 text-functional-blueContrast',
 };
 
 const accessIndicatorClassByTone: Record<CommunityAccessIndicator['tone'], string> = {

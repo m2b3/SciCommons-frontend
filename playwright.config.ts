@@ -1,16 +1,16 @@
+import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
-import { defineConfig, devices } from '@playwright/test';
+
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const isCI = !!process.env.CI;
 const STORAGE_STATE = 'playwright/.auth/user.json';
 
-
 export default defineConfig({
   timeout: 120000,
   expect: {
-    timeout: 15000, 
+    timeout: 15000,
   },
 
   testDir: './src/tests',
@@ -21,7 +21,7 @@ export default defineConfig({
   workers: isCI ? 1 : 1,
   reporter: [['list'], ['html']],
   use: {
-    baseURL: 'http://127.0.0.1:3000', 
+    baseURL: 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
   },
   /* Fixed by Codex on 2026-03-12
@@ -33,7 +33,7 @@ export default defineConfig({
      executing Jest tests under the Playwright runner. */
   webServer: {
     command: 'yarn dev',
-    url: 'http://127.0.0.1:3000',  
+    url: 'http://127.0.0.1:3000',
     reuseExistingServer: !isCI,
     timeout: 240000,
   },
