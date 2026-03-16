@@ -19,7 +19,7 @@
     "check-types": "tsc --noEmit",
     "check-types:fast": "tsc --skipLibCheck --noEmit",
     "test": "jest",
-    "test:ally": "playwright test src/tests/__tests__/accessibility.spec.ts",
+    "test:ally": "playwright test src/tests/__tests__/accessibility.public.spec.ts src/tests/__tests__/accessibility.protected.spec.ts",
     "test:all": "yarn test && yarn check-types && yarn lint && yarn prettier:check",
     "test:quick": "yarn test && yarn check-types && yarn lint",
     "test:fix": "yarn prettier && yarn lint:fix && yarn check-types:fast && yarn test",

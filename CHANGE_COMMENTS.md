@@ -1,3 +1,27 @@
+## 2026-03-16 - Jest/Playwright Test Discovery Separation
+
+Problem: Running `yarn test` started failing because Jest discovered Playwright accessibility `*.spec.ts` files and attempted to execute them in the Jest/jsdom runtime.
+
+Root Cause: Jest's default test discovery includes `*.spec.ts`, and the new Playwright specs were added under `src/tests/__tests__` without an explicit Jest ignore rule.
+
+Solution: Added explicit Jest `testPathIgnorePatterns` entries in `jest.config.ts` for `accessibility.public.spec.ts` and `accessibility.protected.spec.ts` so those files run only via Playwright (`yarn test:ally`).
+
+Result: Jest test runs no longer import Playwright runtime modules, restoring stable `yarn test` execution while keeping Playwright accessibility checks available through their dedicated command.
+
+Files Modified: `jest.config.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-16 - Playwright Accessibility Audit Hardening (Auth Fail-Fast + Public/Protected Split)
+
+Problem: Accessibility audits could produce false confidence by auditing redirected login pages when protected-route authentication failed, and public audits were unnecessarily coupled to auth setup.
+
+Root Cause: A single `accessibility.spec.ts` mixed public/protected checks with weak auth validation (`Login` link visibility), while Playwright projects globally depended on the auth setup project and shared storage state.
+
+Solution: Split audits into `accessibility.public.spec.ts` and `accessibility.protected.spec.ts`, updated Playwright projects to run public audits without auth dependency and protected audits with explicit setup dependency + storage state, and hardened `auth.setup.ts` to fail immediately on missing `PW_LOGIN`/`PW_PASSWORD` plus assert post-login URL is not `/auth/login`.
+
+Result: Protected audits now fail loudly when authentication is missing/broken instead of silently passing on login redirects, and public audits run independently without requiring auth bootstrap.
+
+Files Modified: `playwright.config.ts`, `src/tests/auth.setup.ts`, `src/tests/__tests__/accessibility.public.spec.ts`, `src/tests/__tests__/accessibility.protected.spec.ts`, `src/tests/__tests__/accessibility.spec.ts` (removed), `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-12 - Disable Stored Playwright Workflow and Scope It to sureshDev PRs
 
 Problem: The Playwright GitHub Actions workflow was still active for pushes and PRs targeting `main`/`master`, even though the preferred workflow is manual local accessibility runs with the Actions file kept only for future use.

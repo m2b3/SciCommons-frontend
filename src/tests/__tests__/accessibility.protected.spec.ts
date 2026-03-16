@@ -1,0 +1,34 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
+
+const PROTECTED_PAGES = [
+  { name: 'My Contributions/Bookmarks', path: '/mycontributions' },
+  { name: 'Profile Settings', path: '/settings' },
+];
+
+const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+test.describe('Global Accessibility Audit (Protected)', () => {
+  for (const pageInfo of PROTECTED_PAGES) {
+    test(`Audit Protected: ${pageInfo.name}`, async ({ page }) => {
+      await page.goto(pageInfo.path, { waitUntil: 'domcontentloaded' });
+
+      /* Fixed by Codex on 2026-03-16
+         Who: Codex
+         What: Added explicit protected-route URL assertions before running Axe.
+         Why: Prevent false-pass audits when auth failure silently redirects to /auth/login.
+         How: Assert the page URL is not login and still resolves to the expected protected path. */
+      await expect(page).not.toHaveURL(/\/auth\/login(?:\?|$)/);
+      await expect(page).toHaveURL(new RegExp(`${escapeRegex(pageInfo.path)}(?:[/?#].*)?$`));
+
+      await page.waitForSelector('h1, h2, main', { state: 'visible', timeout: 15000 });
+      await page.waitForTimeout(1000);
+
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+
+      expect(results.violations).toEqual([]);
+    });
+  }
+});

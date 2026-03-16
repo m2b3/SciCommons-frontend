@@ -3,6 +3,7 @@
 /backend/
 
 codexOutput.md
+.playwrightenv
 
 # dependencies
 /node_modules

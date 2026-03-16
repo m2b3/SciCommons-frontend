@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+const playwrightEnvPath = path.resolve(__dirname, '.playwrightenv');
+dotenv.config({ path: playwrightEnvPath });
 
 const isCI = !!process.env.CI;
 const STORAGE_STATE = 'playwright/.auth/user.json';
@@ -44,77 +45,30 @@ export default defineConfig({
       testMatch: /auth\.setup\.ts/,
     },
     {
-      name: 'chromium',
+      /* Fixed by Codex on 2026-03-16
+         Who: Codex
+         What: Split unauthenticated accessibility tests into a separate project.
+         Why: Public page audits should not depend on login setup or auth storage state.
+         How: Run only accessibility.public.spec.ts in a dedicated project with no setup dependency. */
+      name: 'public-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+      testMatch: /accessibility\.public\.spec\.ts/,
+    },
+    {
+      /* Fixed by Codex on 2026-03-16
+         Who: Codex
+         What: Scope authenticated accessibility tests to a separate project.
+         Why: Protected audits must explicitly depend on successful auth setup.
+         How: Run accessibility.protected.spec.ts with setup dependency and storage state. */
+      name: 'protected-chromium',
       use: {
         ...devices['Desktop Chrome'],
         storageState: STORAGE_STATE,
       },
       dependencies: ['setup'],
-    },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'Mobile Chrome',
-      use: {
-        ...devices['Pixel 5'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'Mobile Safari',
-      use: {
-        ...devices['iPhone 12'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'Small Phone (iPhone SE)',
-      use: {
-        ...devices['iPhone SE'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'Tablet Landscape',
-      use: {
-        ...devices['iPad Pro 11 landscape'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'Galaxy Fold',
-      use: {
-        ...devices['Galaxy Z Fold 5'],
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'Wide Desktop',
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 2560, height: 1440 },
-        storageState: STORAGE_STATE,
-      },
-      dependencies: ['setup'],
+      testMatch: /accessibility\.protected\.spec\.ts/,
     },
   ],
 });

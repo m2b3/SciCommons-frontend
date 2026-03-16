@@ -1,8 +1,20 @@
-import { test as setup } from '@playwright/test';
+import { expect, test as setup } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
+  /* Fixed by Codex on 2026-03-16
+     Who: Codex
+     What: Added strict environment validation for Playwright auth setup.
+     Why: Empty or missing credentials can accidentally produce misleading downstream test behavior.
+     How: Fail immediately with an explicit error before attempting UI login. */
+  const loginValue = process.env.PW_LOGIN?.trim();
+  const passwordValue = process.env.PW_PASSWORD?.trim();
+
+  if (!loginValue || !passwordValue) {
+    throw new Error('Missing PW_LOGIN or PW_PASSWORD in .playwrightenv');
+  }
+
   console.log('Navigating to Login Page...');
 
   await page.goto('/auth/login', { timeout: 90000 });
@@ -20,14 +32,15 @@ setup('authenticate', async ({ page }) => {
 
   await emailInput.first().waitFor({ state: 'visible', timeout: 60000 });
 
-  await emailInput.first().fill(process.env.PW_LOGIN || '');
-  await page.locator('input[type="password"]').fill(process.env.PW_PASSWORD || '');
+  await emailInput.first().fill(loginValue);
+  await page.locator('input[type="password"]').fill(passwordValue);
 
   console.log('Submitting credentials...');
   await page.getByRole('button', { name: /login/i }).first().click();
 
   try {
     await page.waitForURL(/^(?!.*\/auth\/login).*/, { timeout: 45000 });
+    await expect(page).not.toHaveURL(/\/auth\/login(?:\?|$)/);
     console.log('Login successful! State saved.');
   } catch (e) {
     const alert = page.getByRole('alert');

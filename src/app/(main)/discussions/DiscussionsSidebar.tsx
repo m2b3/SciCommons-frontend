@@ -279,7 +279,7 @@ const DiscussionsSidebar: React.FC<DiscussionsSidebarProps> = ({
                 'hover:before:bg-common-minimal/50',
                 // Selected article styling
                 selectedArticle?.id === article.articleId &&
-                'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10'
+                  'before:border-functional-green/30 before:bg-functional-green/10 hover:before:bg-functional-green/10'
               )}
             >
               {/* Accessibility: Absolute button overlay for item selection */}

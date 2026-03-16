@@ -57,7 +57,11 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
   const displayTitle = title?.trim()
     ? title
-    : (isArticleType ? 'Untitled Article' : isCommunityType ? 'Untitled Community' : 'Untitled Item');
+    : isArticleType
+      ? 'Untitled Article'
+      : isCommunityType
+        ? 'Untitled Community'
+        : 'Untitled Item';
 
   return (
     <div className="mb-4 flex items-start gap-3 rounded-r-md border-l-4 border-common-contrast bg-common-cardBackground p-3 sm:gap-4 sm:p-4">
@@ -82,12 +86,13 @@ const ItemCard: React.FC<ItemCardProps> = ({
         </p>
         {type && (
           <span
-            className={`mt-2 inline-block rounded-full px-2 py-1 text-xs font-semibold ${isArticleType
+            className={`mt-2 inline-block rounded-full px-2 py-1 text-xs font-semibold ${
+              isArticleType
                 ? 'bg-functional-green/10 text-functional-green'
                 : isCommunityType
                   ? 'bg-functional-blue/10 text-functional-blue'
                   : 'bg-functional-yellow/10 text-functional-yellow'
-              }`}
+            }`}
           >
             {type}
           </span>
