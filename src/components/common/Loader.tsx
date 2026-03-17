@@ -4,7 +4,7 @@ import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
 
 const Loader = () => {
   return (
-    <div className="flex h-[80vh] md:h-[90vh] flex-col items-center justify-center bg-transparent p-6">
+    <div className="flex h-[80vh] flex-col items-center justify-center bg-transparent p-6 md:h-[90vh]">
       <div className="w-24 md:w-32">
         <InfiniteSpinnerAnimation color="#042f2e" strokeWidth={12} />
       </div>

@@ -5,7 +5,7 @@ const PROTECTED_PAGES = [
   { name: 'My Contributions', path: '/mycontributions' },
   { name: 'Settings', path: '/settings' },
   { name: 'Profile', path: '/myprofile' },
-  { name: 'Submit Article', path: '/submitarticle' }, 
+  { name: 'Submit Article', path: '/submitarticle' },
   { name: 'Create Community', path: '/createcommunity' },
 ];
 

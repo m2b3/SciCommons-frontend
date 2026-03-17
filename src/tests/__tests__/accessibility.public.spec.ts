@@ -7,7 +7,7 @@ const PUBLIC_PAGES = [
   { name: 'Register', path: '/auth/register' },
   { name: 'Communities', path: '/communities' },
   { name: 'Discussions', path: '/discussions' },
-  { name: "Help", path: '/help' },
+  { name: 'Help', path: '/help' },
   { name: 'About', path: '/about' },
 ];
 
