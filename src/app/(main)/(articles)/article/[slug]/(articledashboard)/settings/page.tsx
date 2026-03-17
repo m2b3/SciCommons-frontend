@@ -20,7 +20,7 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   // const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
-  const [isEditEnabled, setIsEditEnabled] = useState(false);
+  const [isEditEnabled, setIsEditEnabled] = useState(true);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   const { data, isPending, error } = useArticlesApiGetArticle(
