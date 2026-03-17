@@ -58,13 +58,15 @@ const NavBar: React.FC = () => {
     <header className="sticky top-0 z-[1000] w-full border-b border-common-minimal bg-common-background/50 text-text-primary backdrop-blur-md">
       <nav className="container mx-auto flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
-          <MoveLeft
-            className="mr-4 size-5 cursor-pointer text-primary"
-            strokeWidth={1.5}
-            onClick={() => {
-              router.back();
-            }}
-          />
+          {pathname !== '/' && (
+            <MoveLeft
+              className="mr-4 size-5 cursor-pointer text-primary"
+              strokeWidth={1.5}
+              onClick={() => {
+                router.back();
+              }}
+            />
+          )}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
               <Image

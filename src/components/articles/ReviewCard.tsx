@@ -163,7 +163,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 text-sm font-bold text-text-secondary">
                   {review.user.username}
-                  {review.is_author && (
+                  {review.is_author && !review.deleted_at && (
                     <>
                       <span className="text-[10px] font-normal text-text-tertiary">(You)</span>
                       <Pencil
