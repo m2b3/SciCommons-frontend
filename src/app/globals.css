@@ -299,9 +299,9 @@ body {
     --Accessory-Accessory7: var(--neutral-500);
 
     /* Text Dark */
-    --Text-Primary: 10, 20, 15;
-    --Text-Secondary: 45, 60, 55;
-    --Text-Tertiary: 65, 80, 75;
+    --Text-Primary: 226, 232, 240;
+    --Text-Secondary: 148, 163, 184;
+    --Text-Tertiary: 120, 134, 157;
 
     /* Functional Green */
     /* Fixed by Codex on 2026-02-15
