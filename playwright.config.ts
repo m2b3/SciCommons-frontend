@@ -8,10 +8,24 @@ dotenv.config({ path: playwrightEnvPath });
 const isCI = !!process.env.CI;
 const STORAGE_STATE = 'playwright/.auth/user.json';
 
+const caps = {
+  browser: 'chrome',
+  os: 'osx',
+  os_version: 'sonoma',
+  project: 'SciCommons Accessibility', 
+  build: 'Initial Setup Build',
+  'browserstack.username': process.env.BROWSERSTACK_USERNAME,
+  'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
+  'browserstack.local': 'true',
+};
+
+
 export default defineConfig({
+  globalSetup: require.resolve('./src/tests/global-setup'),
+  globalTeardown: require.resolve('./src/tests/global-teardown'),
   timeout: 120000,
   expect: {
-    timeout: 15000,
+    timeout: 30000,
   },
 
   testDir: './src/tests',
@@ -22,6 +36,8 @@ export default defineConfig({
   workers: isCI ? 1 : 1,
   reporter: [['list'], ['html']],
   use: {
+    actionTimeout: 60000,
+    navigationTimeout: 60000,
     baseURL: 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
   },
@@ -66,6 +82,26 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: STORAGE_STATE,
+      },
+      dependencies: ['setup'],
+      testMatch: /accessibility\.protected\.spec\.ts/,
+    },
+    {
+      name: 'browserstack-public',
+      use: {
+        connectOptions: {
+          wsEndpoint: `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify({ ...caps, name: 'Public Audit' }))}`,
+        },
+      },
+      testMatch: /accessibility\.public\.spec\.ts/,
+    },
+    {
+      name: 'browserstack-protected',
+      use: {
+        storageState: STORAGE_STATE,
+        connectOptions: {
+          wsEndpoint: `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify({ ...caps, name: 'Protected Audit' }))}`,
+        },
       },
       dependencies: ['setup'],
       testMatch: /accessibility\.protected\.spec\.ts/,

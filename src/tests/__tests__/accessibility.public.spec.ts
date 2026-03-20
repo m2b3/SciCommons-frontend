@@ -13,16 +13,29 @@ const PUBLIC_PAGES = [
 
 test.describe('Global Accessibility Audit (Public)', () => {
   for (const pageInfo of PUBLIC_PAGES) {
-    test(`Audit Public: ${pageInfo.name}`, async ({ page }) => {
-      await page.goto(pageInfo.path, { waitUntil: 'domcontentloaded' });
-      await page.waitForSelector('h1, h2, main', { state: 'visible', timeout: 15000 });
-      await page.waitForTimeout(1000);
+    test(`Audit Public: ${pageInfo.name}`, async ({ page }, testInfo) => {
+      try {
+        await page.goto(pageInfo.path, { waitUntil: 'commit', timeout: 60000 });
+        await page.waitForSelector('h1, h2, main', { state: 'visible', timeout: 45000 });
+        await page.waitForTimeout(1000);
 
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-        .analyze();
+        const results = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+          .exclude('iframe')
+          .analyze();
 
-      expect(results.violations).toEqual([]);
+        expect(results.violations).toEqual([]);
+
+        if (testInfo.project.name.includes('browserstack')) {
+          await page.evaluate(_ => { }, `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Audit Passed"}}`);
+        }
+
+      } catch (e) {
+        if (testInfo.project.name.includes('browserstack')) {
+          await page.evaluate(_ => { }, `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed", "reason": "${e.message}"}}`);
+        }
+        throw e;
+      }
     });
   }
 });

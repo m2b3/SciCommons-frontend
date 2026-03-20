@@ -13,25 +13,36 @@ const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$
 
 test.describe('Global Accessibility Audit (Protected)', () => {
   for (const pageInfo of PROTECTED_PAGES) {
-    test(`Audit Protected: ${pageInfo.name}`, async ({ page }) => {
-      await page.goto(pageInfo.path, { waitUntil: 'domcontentloaded' });
+    test(`Audit Protected: ${pageInfo.name}`, async ({ page }, testInfo) => {
+      try {
+        await page.goto(pageInfo.path, { waitUntil: 'commit', timeout: 60000 });
 
-      /* Fixed by Codex on 2026-03-16
-         Who: Codex
-         What: Added explicit protected-route URL assertions before running Axe.
-         Why: Prevent false-pass audits when auth failure silently redirects to /auth/login.
-         How: Assert the page URL is not login and still resolves to the expected protected path. */
-      await expect(page).not.toHaveURL(/\/auth\/login(?:\?|$)/);
-      await expect(page).toHaveURL(new RegExp(`${escapeRegex(pageInfo.path)}(?:[/?#].*)?$`));
+        /* Fixed by Codex on 2026-03-16
+           Who: Codex
+           What: Added explicit protected-route URL assertions before running Axe.
+           Why: Prevent false-pass audits when auth failure silently redirects to /auth/login.
+           How: Assert the page URL is not login and still resolves to the expected protected path. */
+        await expect(page).not.toHaveURL(/\/auth\/login(?:\?|$)/);
+        await expect(page).toHaveURL(new RegExp(`${escapeRegex(pageInfo.path)}(?:[/?#].*)?$`));
 
-      await page.waitForSelector('h1, h2, main', { state: 'visible', timeout: 15000 });
-      await page.waitForTimeout(1000);
+        await page.waitForSelector('h1, h2, main', { state: 'visible', timeout: 45000 });
+        await page.waitForTimeout(1000);
 
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-        .analyze();
+        const results = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+          .analyze();
 
-      expect(results.violations).toEqual([]);
+        expect(results.violations).toEqual([]);
+
+        if (testInfo.project.name.includes('browserstack')) {
+          await page.evaluate(_ => { }, `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Accessibility Audit Passed"}}`);
+        }
+      } catch (e: any) {
+        if (testInfo.project.name.includes('browserstack')) {
+          await page.evaluate(_ => { }, `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed", "reason": "${e.message}"}}`);
+        }
+        throw e;
+      }
     });
   }
 });

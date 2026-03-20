@@ -73,3 +73,6 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 /playwright/
+
+# BrowserStack Local logs
+local.log
