@@ -148,30 +148,33 @@ const CreatePostPage: React.FC = () => {
   return (
     <div className="grid min-h-screen grid-cols-1 text-dark-primary md:grid-cols-[1fr_260px] lg:grid-cols-[1fr_360px]">
       <div className="h-full w-full px-8">
-        <div className="mx-auto mt-10 h-fit w-full max-w-[720px] rounded-common-xl border border-gray-100 bg-gray-50 p-6 shadow-common">
-          <h1 className="mb-6 text-3xl font-semibold text-gray-700">Create a New Post</h1>
+        <div className="mx-auto mt-10 h-fit w-full max-w-[720px] rounded-common-xl border border-common-minimal bg-common-cardBackground p-6 shadow-common">
+          <h1 className="mb-6 text-3xl font-semibold text-text-primary">Create a New Post</h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="title" className="mb-1 block text-sm font-medium text-text-secondary">
                 Title
               </label>
               <input
                 id="title"
                 {...register('title', { required: 'Title is required' })}
-                className="w-full rounded-common-lg bg-white-secondary px-3 py-2 ring-1 ring-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-common-lg bg-white-secondary px-3 py-2 text-text-primary ring-1 ring-common-minimal focus:outline-none focus:ring-1 focus:ring-green-500"
                 placeholder="Enter your post title"
               />
               {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>}
             </div>
             <div>
-              <label htmlFor="content" className="mb-1 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="content"
+                className="mb-1 block text-sm font-medium text-text-secondary"
+              >
                 Content
               </label>
               <textarea
                 id="content"
                 {...register('content', { required: 'Content is required' })}
                 rows={5}
-                className="w-full rounded-common-lg bg-white-primary px-3 py-2 ring-1 ring-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-common-lg bg-white-primary px-3 py-2 text-text-primary ring-1 ring-common-minimal focus:outline-none focus:ring-1 focus:ring-green-500"
                 placeholder="What's on your mind?"
                 value={postBody}
                 onChange={handleInputChange}
@@ -181,7 +184,7 @@ const CreatePostPage: React.FC = () => {
               )}
             </div>
             <div className="mt-2 flex w-full flex-row flex-wrap">
-              <span className="text-sm text-gray-700">Hashtags used: </span>
+              <span className="text-sm text-text-secondary">Hashtags used: </span>
               <span className="flex w-full flex-wrap">{renderTextWithHashtags(postBody)}</span>
             </div>
             <div className="flex justify-end">
@@ -200,7 +203,7 @@ const CreatePostPage: React.FC = () => {
           </form>
         </div>
       </div>
-      <div className="hidden h-screen w-full overflow-y-auto border-l border-gray-100 bg-gray-100 px-6 py-10 md:flex md:flex-col">
+      <div className="hidden h-screen w-full overflow-y-auto border-l border-common-minimal bg-common-background px-6 py-10 md:flex md:flex-col">
         {availableHashtags?.length > 0 && (
           <div className="flex w-full flex-col gap-4 border-b border-common-contrast pb-4">
             <h4 className="font-bold text-primary">Available Hashtags</h4>
@@ -236,7 +239,7 @@ const CreatePostPage: React.FC = () => {
             {HashtagsList.map((hashtagObj, index) => (
               <div
                 key={index}
-                className="flex cursor-pointer flex-wrap items-center gap-1 rounded-full bg-gray-200 px-3 py-2"
+                className="flex cursor-pointer flex-wrap items-center gap-1 rounded-full bg-common-minimal px-3 py-2"
                 onClick={() => {
                   const newPostBody = `${postBody} ${hashtagObj.hashtag}`;
                   setPostBody(newPostBody);
