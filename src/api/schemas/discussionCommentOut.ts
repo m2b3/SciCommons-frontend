@@ -4,13 +4,16 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { DiscussionCommentOutId } from './discussionCommentOutId';
 import type { UserStats } from './userStats';
+import type { FlagType } from './flagType';
+import type { DiscussionCommentOutId } from './discussionCommentOutId';
 
 export interface DiscussionCommentOut {
   author: UserStats;
   content: string;
   created_at: string;
+  /** List of flags set for this entity for the current user (e.g., ['unread']). Empty for unauthenticated users. */
+  flags?: FlagType[];
   id?: DiscussionCommentOutId;
   is_author?: boolean;
   is_pseudonymous?: boolean;

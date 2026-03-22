@@ -51,47 +51,60 @@ const ActivateAccount = ({ params }: { params: { token: string } }) => {
   }, [isActivated, router]);
 
   return (
-    <div className="relative flex h-dvh flex-col items-center justify-center bg-black p-4 sm:p-0">
-      <Image
-        src="/images/assets/bg-auth-pages.webp"
-        alt="Background"
-        layout="fill"
-        objectFit="cover"
-        className="z-0"
-      />
-      <div className="relative flex h-fit w-full flex-col gap-6 overflow-y-auto rounded-xl bg-white px-8 py-12 sm:w-[540px] sm:justify-center sm:px-10 sm:py-14 md:shadow-[0px_4px_200px_-40px_rgba(66,182,95,0.5)]">
-        <div className="text-center">
-          <div className="flex items-center justify-center">
-            <Image src="/auth/activateaccount.png" alt="logo" width={80} height={80} />
+    <>
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Convert activation page colors to token-based styling.
+          Why: Support UI skins without per-component palette edits.
+          How: Replace fixed black/white utilities with semantic tokens. */}
+      <div className="relative flex h-dvh flex-col items-center justify-center bg-common-background p-4 sm:p-0">
+        <Image
+          src="/images/assets/bg-auth-pages.webp"
+          alt=""
+          aria-hidden="true"
+          layout="fill"
+          objectFit="cover"
+          className="z-0"
+        />
+        <div className="relative flex h-fit w-full flex-col gap-6 overflow-y-auto rounded-xl bg-common-cardBackground px-8 py-12 sm:w-[540px] sm:justify-center sm:px-10 sm:py-14 md:shadow-common">
+          <div className="text-center">
+            <div className="flex items-center justify-center">
+              <Image
+                src="/auth/activateaccount.png"
+                alt="Account activation illustration"
+                width={80}
+                height={80}
+              />
+            </div>
+            <h1 className="mt-4 text-2xl font-bold text-text-primary">
+              {isPending
+                ? 'Activating your Account...'
+                : isError
+                  ? 'Error Activating Account'
+                  : 'Account Activated'}
+            </h1>
+            <div className="mt-2 text-sm text-text-secondary">
+              {isPending ? (
+                <div className="mt-4 flex justify-center">
+                  <RefreshCcw className="spin-animation h-8 w-8 shrink-0 text-functional-green" />
+                </div>
+              ) : isError ? (
+                `${error?.response?.data.message || ErrorMessage}`
+              ) : (
+                `Your account has been activated successfully! Redirecting to login page in ${countdown} seconds...`
+              )}
+            </div>
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-black">
-            {isPending
-              ? 'Activating your Account...'
-              : isError
-                ? 'Error Activating Account'
-                : 'Account Activated'}
-          </h1>
-          <div className="mt-2 text-sm text-text-secondary">
-            {isPending ? (
-              <div className="mt-4 flex justify-center">
-                <RefreshCcw className="spin-animation h-8 w-8 shrink-0 text-functional-green" />
-              </div>
-            ) : isError ? (
-              `${error?.response?.data.message || ErrorMessage}`
-            ) : (
-              `Your account has been activated successfully! Redirecting to login page in ${countdown} seconds...`
-            )}
-          </div>
+          <Link
+            href="/auth/login"
+            className="mt-2 flex items-center justify-center text-xs text-functional-green hover:underline"
+          >
+            <MoveLeftIcon className="mr-1 size-4 shrink-0" />
+            Back to Sign in
+          </Link>
         </div>
-        <Link
-          href="/auth/login"
-          className="mt-2 flex items-center justify-center text-xs text-functional-green hover:underline"
-        >
-          <MoveLeftIcon className="mr-1 size-4 shrink-0" />
-          Back to Sign in
-        </Link>
       </div>
-    </div>
+    </>
   );
 };
 

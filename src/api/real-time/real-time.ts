@@ -4,7 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,20 +15,21 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
-import { customInstance } from '.././custom-instance';
-import type { ErrorType } from '.././custom-instance';
+  UseQueryResult
+} from '@tanstack/react-query'
 import type {
   Message,
   MyappRealtimeApiHeartbeatParams,
   RealtimeHeartbeatOut,
   RealtimeRegisterOut,
-  RealtimeStatusOut,
-} from '.././schemas';
+  RealtimeStatusOut
+} from '.././schemas'
+import { customInstance } from '.././custom-instance';
+import type { ErrorType } from '.././custom-instance';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * Register a new queue for real-time updates
@@ -35,73 +39,59 @@ Returns:
     - last_event_id: Current event ID to start polling from
  * @summary Register Queue
  */
-export const myappRealtimeApiRegisterQueue = (options?: SecondParameter<typeof customInstance>) => {
-  return customInstance<RealtimeRegisterOut>(
-    { url: `/api/realtime/register`, method: 'POST' },
-    options
-  );
-};
+export const myappRealtimeApiRegisterQueue = (
+    
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<RealtimeRegisterOut>(
+      {url: `/api/realtime/register`, method: 'POST'
+    },
+      options);
+    }
+  
 
-export const getMyappRealtimeApiRegisterQueueMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>,
-  TError,
-  void,
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>,
-    void
-  > = () => {
-    return myappRealtimeApiRegisterQueue(requestOptions);
-  };
+export const getMyappRealtimeApiRegisterQueueMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>, TError,void, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type MyappRealtimeApiRegisterQueueMutationResult = NonNullable<
-  Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>
->;
 
-export type MyappRealtimeApiRegisterQueueMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>, void> = () => {
+          
 
-/**
+          return  myappRealtimeApiRegisterQueue(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MyappRealtimeApiRegisterQueueMutationResult = NonNullable<Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>>
+    
+    export type MyappRealtimeApiRegisterQueueMutationError = ErrorType<Message>
+
+    /**
  * @summary Register Queue
  */
-export const useMyappRealtimeApiRegisterQueue = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getMyappRealtimeApiRegisterQueueMutationOptions(options);
+export const useMyappRealtimeApiRegisterQueue = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof myappRealtimeApiRegisterQueue>>,
+        TError,
+        void,
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getMyappRealtimeApiRegisterQueueMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * Send heartbeat to keep queue alive
 
 Args:
@@ -109,142 +99,119 @@ Args:
  * @summary Heartbeat
  */
 export const myappRealtimeApiHeartbeat = (
-  params: MyappRealtimeApiHeartbeatParams,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<RealtimeHeartbeatOut>(
-    { url: `/api/realtime/heartbeat`, method: 'POST', params },
-    options
-  );
-};
+    params: MyappRealtimeApiHeartbeatParams,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<RealtimeHeartbeatOut>(
+      {url: `/api/realtime/heartbeat`, method: 'POST',
+        params
+    },
+      options);
+    }
+  
 
-export const getMyappRealtimeApiHeartbeatMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>,
-    TError,
-    { params: MyappRealtimeApiHeartbeatParams },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>,
-  TError,
-  { params: MyappRealtimeApiHeartbeatParams },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>,
-    { params: MyappRealtimeApiHeartbeatParams }
-  > = (props) => {
-    const { params } = props ?? {};
+export const getMyappRealtimeApiHeartbeatMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>, TError,{params: MyappRealtimeApiHeartbeatParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>, TError,{params: MyappRealtimeApiHeartbeatParams}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return myappRealtimeApiHeartbeat(params, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type MyappRealtimeApiHeartbeatMutationResult = NonNullable<
-  Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>, {params: MyappRealtimeApiHeartbeatParams}> = (props) => {
+          const {params} = props ?? {};
 
-export type MyappRealtimeApiHeartbeatMutationError = ErrorType<Message>;
+          return  myappRealtimeApiHeartbeat(params,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MyappRealtimeApiHeartbeatMutationResult = NonNullable<Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>>
+    
+    export type MyappRealtimeApiHeartbeatMutationError = ErrorType<Message>
+
+    /**
  * @summary Heartbeat
  */
-export const useMyappRealtimeApiHeartbeat = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>,
-    TError,
-    { params: MyappRealtimeApiHeartbeatParams },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>,
-  TError,
-  { params: MyappRealtimeApiHeartbeatParams },
-  TContext
-> => {
-  const mutationOptions = getMyappRealtimeApiHeartbeatMutationOptions(options);
+export const useMyappRealtimeApiHeartbeat = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>, TError,{params: MyappRealtimeApiHeartbeatParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof myappRealtimeApiHeartbeat>>,
+        TError,
+        {params: MyappRealtimeApiHeartbeatParams},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getMyappRealtimeApiHeartbeatMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * Get real-time system status for the current user
 
 Returns status information about the real-time system including subscriptions
  * @summary Get Realtime Status
  */
 export const myappRealtimeApiGetRealtimeStatus = (
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<RealtimeStatusOut>(
-    { url: `/api/realtime/status`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<RealtimeStatusOut>(
+      {url: `/api/realtime/status`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
 export const getMyappRealtimeApiGetRealtimeStatusQueryKey = () => {
-  return [`/api/realtime/status`] as const;
-};
+    return [`/api/realtime/status`] as const;
+    }
 
-export const getMyappRealtimeApiGetRealtimeStatusQueryOptions = <
-  TData = Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>,
-  TError = ErrorType<Message>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+    
+export const getMyappRealtimeApiGetRealtimeStatusQueryOptions = <TData = Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError = ErrorType<Message>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getMyappRealtimeApiGetRealtimeStatusQueryKey();
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>> = ({
-    signal,
-  }) => myappRealtimeApiGetRealtimeStatus(requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getMyappRealtimeApiGetRealtimeStatusQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type MyappRealtimeApiGetRealtimeStatusQueryResult = NonNullable<
-  Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>
->;
-export type MyappRealtimeApiGetRealtimeStatusQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>> = ({ signal }) => myappRealtimeApiGetRealtimeStatus(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type MyappRealtimeApiGetRealtimeStatusQueryResult = NonNullable<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>>
+export type MyappRealtimeApiGetRealtimeStatusQueryError = ErrorType<Message>
 
 /**
  * @summary Get Realtime Status
  */
-export const useMyappRealtimeApiGetRealtimeStatus = <
-  TData = Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>,
-  TError = ErrorType<Message>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getMyappRealtimeApiGetRealtimeStatusQueryOptions(options);
+export const useMyappRealtimeApiGetRealtimeStatus = <TData = Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError = ErrorType<Message>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof myappRealtimeApiGetRealtimeStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getMyappRealtimeApiGetRealtimeStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
+

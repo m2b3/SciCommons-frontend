@@ -29,15 +29,19 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
     }
   }, [error]);
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Official stats view relied on hard-coded grays and button colors.
+     Solution: Replace fixed utilities with semantic text/surface/functional tokens.
+     Result: Metrics and actions now track the active skin palette. */
   return (
     data && (
-      <div className="container mx-auto p-6 text-gray-900">
+      <div className="container mx-auto p-6 text-text-primary">
         {/* Header */}
         <header className="mb-6">
           <h1 className="font-bold res-heading-lg">
             <TruncateText text={data.data.title} maxLines={2} />
           </h1>
-          <p className="text-gray-500 res-text-xs">
+          <p className="text-text-tertiary res-text-xs">
             Submitted on {new Date(data.data.submission_date).toLocaleDateString()} by{' '}
             {data.data.submitter}
           </p>
@@ -45,17 +49,17 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
 
         {/* Article Performance Metrics */}
         <section className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded bg-white-primary p-4 shadow">
+          <div className="rounded bg-common-cardBackground p-4 shadow">
             <h2 className="font-semibold res-heading-sm">{data.data.reviews_count}</h2>
-            <p className="text-gray-500 res-text-xs">Reviews and Ratings</p>
+            <p className="text-text-tertiary res-text-xs">Reviews and Ratings</p>
           </div>
-          <div className="rounded bg-white-primary p-4 shadow">
+          <div className="rounded bg-common-cardBackground p-4 shadow">
             <h2 className="font-semibold res-heading-sm">{data.data.likes}</h2>
-            <p className="text-gray-500 res-text-xs">Total Likes</p>
+            <p className="text-text-tertiary res-text-xs">Total Likes</p>
           </div>
-          <div className="rounded bg-white-primary p-4 shadow">
+          <div className="rounded bg-common-cardBackground p-4 shadow">
             <h2 className="font-semibold res-heading-sm">{data.data.discussions}</h2>
-            <p className="text-gray-500 res-text-xs">Total Discussions</p>
+            <p className="text-text-tertiary res-text-xs">Total Discussions</p>
           </div>
         </section>
 
@@ -105,13 +109,13 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
         {/* Reviews and Feedback */}
         <section className="mb-6">
           <h2 className="mb-4 font-semibold res-heading-sm">Reviews and Feedback</h2>
-          <div className="rounded bg-white-primary p-4 shadow">
+          <div className="rounded bg-common-cardBackground p-4 shadow">
             <h3 className="mb-2 font-semibold res-heading-xs">Recent Reviews</h3>
             <ul>
               {data.data.recent_reviews.map((review, index) => (
                 <li key={index} className="flex flex-col gap-2">
                   <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(review.excerpt) }} />
-                  <p className="text-gray-500 res-text-xs">
+                  <p className="text-text-tertiary res-text-xs">
                     {new Date(review.date).toLocaleDateString()}
                   </p>
                 </li>
@@ -123,11 +127,11 @@ const Dashboard = ({ params }: { params: { slug: string } }) => {
         {/* Engagement Actions */}
         <section className="mb-6">
           <h2 className="mb-4 font-semibold res-heading-sm">Engagement Actions</h2>
-          <div className="rounded bg-white-primary p-4 shadow">
-            <button className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+          <div className="rounded bg-common-cardBackground p-4 shadow">
+            <button className="mr-2 rounded bg-functional-blue px-4 py-2 text-primary-foreground hover:bg-functional-blueContrast">
               Share Article
             </button>
-            <button className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600">
+            <button className="rounded bg-functional-green px-4 py-2 text-primary-foreground hover:bg-functional-greenContrast">
               Respond to Reviews
             </button>
           </div>

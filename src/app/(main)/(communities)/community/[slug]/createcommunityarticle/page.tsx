@@ -20,7 +20,7 @@ import { SubmitArticleFormValues } from '@/types';
 const STORAGE_KEY = 'communityArticleFormData';
 
 const defaultFormValues: SubmitArticleFormValues = {
-  submissionType: 'Public',
+  submissionType: 'Private', // Always Private for community articles - backend determines visibility based on community settings
   title: '',
   abstract: '',
   authors: [],
@@ -209,7 +209,7 @@ const CommunityArticleForm: NextPage = () => {
             activeTab,
             setActiveTab,
             onSearch: handleSearch,
-            showPrivateCheckOption: true,
+            hideSubmissionTypeSelector: true,
             articleData,
           }}
         />

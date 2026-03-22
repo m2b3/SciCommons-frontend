@@ -4,8 +4,8 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { CommunityType } from './communityType';
 import type { CreateCommunityDetailsCommunitySettings } from './createCommunityDetailsCommunitySettings';
+import type { CommunityType } from './communityType';
 
 export interface CreateCommunityDetails {
   community_settings?: CreateCommunityDetailsCommunitySettings;

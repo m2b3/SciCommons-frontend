@@ -6,10 +6,10 @@
  */
 
 export type ArticlesApiGetArticlesParams = {
-  community_id?: number | null;
-  search?: string | null;
-  sort?: string | null;
-  rating?: number | null;
-  page?: number;
-  per_page?: number;
+community_id?: number | null;
+search?: string | null;
+sort?: string | null;
+rating?: number | null;
+page?: number;
+per_page?: number;
 };

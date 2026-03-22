@@ -9,9 +9,18 @@
 }
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 241, 245, 249;
+  /* Fixed by Codex GPT-5 on 2026-02-18
+     Who: Codex GPT-5
+     What: Added local font-variable fallbacks for sans and display families.
+     Why: Build-time Google font fetching is not reliable in restricted Docker/CI networks.
+     How: Define --font-sans and --font-display as resilient local stacks used by Tailwind utilities. */
+  --font-sans: 'Manrope', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, BlinkMacSystemFont,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', 'Noto Sans', system-ui,
+    'Helvetica Neue', Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,6 +39,11 @@ body {
 
 @layer base {
   :root {
+    /* Fixed by Codex on 2026-02-15
+       Who: Codex
+       What: Refresh the light theme palette with cooler neutrals and a teal accent.
+       Why: The previous white/green palette felt staid and overly flat.
+       How: Adjusted common background/text tokens and brand green hues to a modern teal spectrum. */
     /* New background color variables */
     --color-white-primary: #ffffff;
     --color-white-secondary: #ffffff;
@@ -39,8 +53,8 @@ body {
 
     /* ShadCN Colors */
 
-    --background: 0 0% 100%; /* bg-gray-50 */
-    --foreground: 222.2 47.4% 11.2%; /* text-gray-800 */
+    --background: 220 33% 98%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -51,7 +65,7 @@ body {
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
 
-    --card: 0 0% 100%; /* bg-gray-50 */
+    --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
 
     --primary: 222.2 47.4% 11.2%;
@@ -66,8 +80,8 @@ body {
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --brand-green: 120 57% 40%;
-    --brand-green-foreground: 120 100% 98%;
+    --brand-green: 173 80% 40%;
+    --brand-green-foreground: 173 100% 96%;
 
     --ring: 215 20.2% 65.1%;
 
@@ -153,9 +167,14 @@ body {
     --neutral-1000: 10, 10, 10;
 
     /* Functional Green */
-    --Functional-Green-Green: var(--color-green-600);
-    --Functional-Green-GreenLight: var(--color-green-400);
-    --Functional-Green-Greencontrast: var(--color-green-700);
+    /* Fixed by Codex on 2026-02-15
+       Who: Codex
+       What: Darkened the primary teal for better text contrast in light mode.
+       Why: The previous teal was too light for color-blind and low-contrast contexts.
+       How: Shifted the base teal to a deeper tone and separated the light/contrast variants. */
+    --Functional-Green-Green: 15, 118, 110;
+    --Functional-Green-GreenLight: 94, 234, 212;
+    --Functional-Green-Greencontrast: 12, 94, 88;
 
     /* Functional Blue */
     --Functional-Blue-Blue: var(--color-blue-600);
@@ -178,12 +197,12 @@ body {
     --Functional-Gray-Graycontrast: var(--color-gray-400);
 
     /* Common Light */
-    --Common-Background: var(--neutral-50);
-    --Common-CardBackground: var(--neutral-100);
-    --Common-Minimal: var(--neutral-200);
-    --Common-Contrast: var(--neutral-300);
-    --Common-HeavyContrast: var(--neutral-400);
-    --Common-Invert: var(--neutral-0);
+    --Common-Background: 248, 250, 252;
+    --Common-CardBackground: 255, 255, 255;
+    --Common-Minimal: 226, 232, 240;
+    --Common-Contrast: 203, 213, 225;
+    --Common-HeavyContrast: 148, 163, 184;
+    --Common-Invert: 15, 23, 42;
 
     /* Accessory Light */
     --Accessory-Accessory1: var(--neutral-0);
@@ -195,9 +214,14 @@ body {
     --Accessory-Accessory7: var(--neutral-400);
 
     /* Text Light */
-    --Text-Primary: var(--neutral-800);
-    --Text-Secondary: var(--neutral-600);
-    --Text-Tertiary: var(--neutral-400);
+    --Text-Primary: 15, 23, 42;
+    --Text-Secondary: 71, 85, 105;
+    /* Fixed by Codex on 2026-02-15
+       Who: Codex
+       What: Increase light-mode tertiary text contrast.
+       Why: Tertiary copy fell below WCAG AA on white surfaces.
+       How: Darkened the tertiary token to a higher-contrast slate tone. */
+    --Text-Tertiary: 100, 116, 139;
 
     /* Loading */
     --loading: #f2f2f2;
@@ -208,6 +232,11 @@ body {
   }
 
   .dark {
+    /* Fixed by Codex on 2026-02-15
+       Who: Codex
+       What: Rebalance dark mode neutrals to match the new cool-teal accent.
+       Why: Dark mode needed cleaner contrast with the updated brand palette.
+       How: Shifted common background/text tokens and teal accents to the new scale. */
     /* Background variations */
     --color-white-primary: #111827;
     --color-white-secondary: #1f2937;
@@ -244,20 +273,20 @@ body {
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --brand-green: 120 100% 98%;
-    --brand-green-foreground: 120 57% 20%;
+    --brand-green: 173 80% 88%;
+    --brand-green-foreground: 173 80% 18%;
 
     --ring: 216 34% 17%;
 
     --radius: 0.5rem;
 
     /* Common Dark */
-    --Common-Background: var(--neutral-950);
-    --Common-CardBackground: var(--neutral-900);
-    --Common-Minimal: var(--neutral-800);
-    --Common-Contrast: var(--neutral-750);
-    --Common-HeavyContrast: var(--neutral-650);
-    --Common-Invert: var(--neutral-1000);
+    --Common-Background: 11, 18, 32;
+    --Common-CardBackground: 15, 23, 42;
+    --Common-Minimal: 30, 41, 59;
+    --Common-Contrast: 51, 65, 85;
+    --Common-HeavyContrast: 71, 85, 105;
+    --Common-Invert: 226, 232, 240;
 
     /* Accessory Dark */
     --Accessory-Accessory1: var(--neutral-950);
@@ -269,9 +298,19 @@ body {
     --Accessory-Accessory7: var(--neutral-500);
 
     /* Text Dark */
-    --Text-Primary: var(--neutral-100);
-    --Text-Secondary: var(--neutral-400);
-    --Text-Tertiary: var(--neutral-500);
+    --Text-Primary: 226, 232, 240;
+    --Text-Secondary: 148, 163, 184;
+    --Text-Tertiary: 120, 134, 157;
+
+    /* Functional Green */
+    /* Fixed by Codex on 2026-02-15
+       Who: Codex
+       What: Brightened the teal accent for dark mode readability.
+       Why: Dark surfaces need higher luminance accents for clear state cues.
+       How: Used a lighter teal base with a slightly deeper hover tone. */
+    --Functional-Green-Green: 45, 212, 191;
+    --Functional-Green-GreenLight: 94, 234, 212;
+    --Functional-Green-Greencontrast: 20, 184, 166;
 
     /* Funtional Gray */
     --Functional-Gray-Gray: var(--color-gray-700);
@@ -300,6 +339,352 @@ body {
     --scrollbar-thumb-color: var(--neutral-800);
     --scrollbar-thumb-hover-color: var(--neutral-700);
   }
+
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Add a separable "sage" UI skin via CSS variable overrides.
+     Why: Enable look-and-feel swaps without component rewrites.
+     How: Provide a data-skin="sage" variant for both light and dark tokens. */
+  :root[data-skin='sage'] {
+    --color-white-primary: #f9fbf8;
+    --color-white-secondary: #ffffff;
+    --color-dark-primary: #0f1f1a;
+    --color-dark-secondary: #1b2c26;
+
+    --background: 150 25% 97%;
+    --foreground: 164 28% 15%;
+
+    --muted: 150 20% 92%;
+    --muted-foreground: 160 10% 40%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 164 28% 15%;
+
+    --border: 150 16% 86%;
+    --input: 150 16% 86%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 164 28% 15%;
+
+    --primary: 164 40% 28%;
+    --primary-foreground: 150 25% 96%;
+
+    --secondary: 150 20% 92%;
+    --secondary-foreground: 164 28% 15%;
+
+    --accent: 150 20% 90%;
+    --accent-foreground: 164 28% 15%;
+
+    --destructive: 0 70% 48%;
+    --destructive-foreground: 0 0% 98%;
+
+    --brand-green: 163 45% 34%;
+    --brand-green-foreground: 150 45% 96%;
+
+    --ring: 150 18% 70%;
+
+    --Functional-Green-Green: 16, 110, 95;
+    --Functional-Green-GreenLight: 142, 220, 202;
+    --Functional-Green-Greencontrast: 12, 88, 76;
+
+    --Functional-Blue-Blue: 56, 116, 190;
+    --Functional-Blue-BlueLight: 133, 182, 226;
+    --Functional-Blue-Bluecontrast: 41, 93, 160;
+
+    --Functional-Yellow-Yellow: 204, 141, 0;
+    --Functional-Yellow-YellowLight: 242, 205, 120;
+    --Functional-Yellow-Yellowcontrast: 176, 116, 0;
+
+    --Functional-Red-Red: 200, 64, 64;
+    --Functional-Red-RedLight: 235, 162, 162;
+    --Functional-Red-Redcontrast: 170, 50, 50;
+
+    --Functional-Gray-Gray: 196, 202, 196;
+    --Functional-Gray-GrayLight: 220, 226, 220;
+    --Functional-Gray-Graycontrast: 170, 178, 170;
+
+    --Common-Background: 245, 248, 246;
+    --Common-CardBackground: 255, 255, 255;
+    --Common-Minimal: 232, 238, 233;
+    --Common-Contrast: 212, 222, 214;
+    --Common-HeavyContrast: 176, 188, 178;
+    --Common-Invert: 18, 30, 26;
+
+    --Accessory-Accessory1: 255, 255, 255;
+    --Accessory-Accessory2: 249, 251, 248;
+    --Accessory-Accessory3: 243, 246, 242;
+    --Accessory-Accessory4: 236, 240, 235;
+    --Accessory-Accessory5: 228, 234, 228;
+    --Accessory-Accessory6: 210, 218, 212;
+    --Accessory-Accessory7: 190, 200, 194;
+
+    --Text-Primary: 18, 30, 26;
+    --Text-Secondary: 74, 92, 86;
+    --Text-Tertiary: 103, 120, 112;
+
+    --loading: #eef2ef;
+
+    --scrollbar-track-color: var(--Common-Background);
+    --scrollbar-thumb-color: var(--Common-Contrast);
+    --scrollbar-thumb-hover-color: var(--Common-HeavyContrast);
+  }
+
+  .dark[data-skin='sage'] {
+    --color-white-primary: #0f1a16;
+    --color-white-secondary: #16231e;
+    --color-dark-primary: #f3f7f4;
+    --color-dark-secondary: #e2e9e4;
+
+    --background: 164 35% 8%;
+    --foreground: 150 22% 88%;
+
+    --muted: 162 28% 16%;
+    --muted-foreground: 150 12% 60%;
+
+    --accent: 162 28% 18%;
+    --accent-foreground: 150 22% 92%;
+
+    --popover: 164 35% 8%;
+    --popover-foreground: 150 22% 80%;
+
+    --border: 162 22% 18%;
+    --input: 162 22% 18%;
+
+    --card: 164 35% 8%;
+    --card-foreground: 150 22% 88%;
+
+    --primary: 150 30% 88%;
+    --primary-foreground: 164 35% 8%;
+
+    --secondary: 164 35% 12%;
+    --secondary-foreground: 150 22% 88%;
+
+    --destructive: 0 55% 30%;
+    --destructive-foreground: 150 22% 92%;
+
+    --brand-green: 160 42% 75%;
+    --brand-green-foreground: 164 35% 16%;
+
+    --ring: 162 22% 20%;
+
+    --Common-Background: 12, 22, 18;
+    --Common-CardBackground: 18, 30, 26;
+    --Common-Minimal: 26, 40, 35;
+    --Common-Contrast: 44, 60, 54;
+    --Common-HeavyContrast: 68, 84, 78;
+    --Common-Invert: 232, 240, 236;
+
+    --Accessory-Accessory1: 12, 22, 18;
+    --Accessory-Accessory2: 18, 30, 26;
+    --Accessory-Accessory3: 24, 38, 33;
+    --Accessory-Accessory4: 30, 46, 40;
+    --Accessory-Accessory5: 44, 60, 54;
+    --Accessory-Accessory6: 68, 84, 78;
+    --Accessory-Accessory7: 90, 104, 98;
+
+    --Text-Primary: 232, 240, 236;
+    --Text-Secondary: 170, 186, 178;
+    --Text-Tertiary: 140, 156, 148;
+
+    --Functional-Green-Green: 62, 199, 170;
+    --Functional-Green-GreenLight: 130, 230, 210;
+    --Functional-Green-Greencontrast: 40, 170, 145;
+
+    --Functional-Blue-Blue: 88, 168, 220;
+    --Functional-Blue-BlueLight: 140, 200, 235;
+    --Functional-Blue-Bluecontrast: 70, 140, 196;
+
+    --Functional-Yellow-Yellow: 224, 177, 68;
+    --Functional-Yellow-YellowLight: 244, 214, 140;
+    --Functional-Yellow-Yellowcontrast: 200, 140, 40;
+
+    --Functional-Red-Red: 230, 116, 116;
+    --Functional-Red-RedLight: 246, 180, 180;
+    --Functional-Red-Redcontrast: 200, 90, 90;
+
+    --Functional-Gray-Gray: 90, 104, 98;
+    --Functional-Gray-GrayLight: 118, 132, 126;
+    --Functional-Gray-Graycontrast: 72, 86, 80;
+
+    --loading: #2c3732;
+
+    --scrollbar-track-color: var(--Common-Background);
+    --scrollbar-thumb-color: var(--Common-Contrast);
+    --scrollbar-thumb-hover-color: var(--Common-HeavyContrast);
+  }
+
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Add a warm "copper" skin palette for token overrides.
+     Why: Provide a contrasting sample skin to validate swappable theming.
+     How: Override core background/foreground + semantic token scales. */
+  :root[data-skin='copper'] {
+    --color-white-primary: #fffaf4;
+    --color-white-secondary: #ffffff;
+    --color-dark-primary: #2f231b;
+    --color-dark-secondary: #3d2f27;
+
+    --background: 30 40% 97%;
+    --foreground: 24 32% 14%;
+
+    --muted: 30 25% 93%;
+    --muted-foreground: 24 12% 40%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 32% 14%;
+
+    --border: 30 20% 86%;
+    --input: 30 20% 86%;
+
+    --card: 30 40% 99%;
+    --card-foreground: 24 32% 14%;
+
+    --primary: 24 55% 38%;
+    --primary-foreground: 30 40% 96%;
+
+    --secondary: 30 30% 92%;
+    --secondary-foreground: 24 32% 14%;
+
+    --accent: 28 35% 90%;
+    --accent-foreground: 24 32% 14%;
+
+    --destructive: 0 70% 48%;
+    --destructive-foreground: 0 0% 98%;
+
+    --brand-green: 24 55% 42%;
+    --brand-green-foreground: 30 45% 96%;
+
+    --ring: 28 20% 70%;
+
+    --Functional-Green-Green: 104, 133, 92;
+    --Functional-Green-GreenLight: 184, 214, 168;
+    --Functional-Green-Greencontrast: 86, 112, 74;
+
+    --Functional-Blue-Blue: 83, 120, 165;
+    --Functional-Blue-BlueLight: 156, 190, 224;
+    --Functional-Blue-Bluecontrast: 62, 97, 140;
+
+    --Functional-Yellow-Yellow: 208, 148, 76;
+    --Functional-Yellow-YellowLight: 242, 203, 140;
+    --Functional-Yellow-Yellowcontrast: 184, 124, 60;
+
+    --Functional-Red-Red: 186, 72, 64;
+    --Functional-Red-RedLight: 236, 156, 148;
+    --Functional-Red-Redcontrast: 160, 56, 50;
+
+    --Functional-Gray-Gray: 200, 190, 176;
+    --Functional-Gray-GrayLight: 224, 216, 206;
+    --Functional-Gray-Graycontrast: 176, 166, 152;
+
+    --Common-Background: 251, 247, 242;
+    --Common-CardBackground: 255, 252, 248;
+    --Common-Minimal: 243, 236, 228;
+    --Common-Contrast: 221, 210, 196;
+    --Common-HeavyContrast: 189, 172, 155;
+    --Common-Invert: 41, 30, 24;
+
+    --Accessory-Accessory1: 255, 252, 248;
+    --Accessory-Accessory2: 251, 247, 242;
+    --Accessory-Accessory3: 245, 238, 230;
+    --Accessory-Accessory4: 238, 228, 216;
+    --Accessory-Accessory5: 227, 216, 202;
+    --Accessory-Accessory6: 206, 192, 176;
+    --Accessory-Accessory7: 186, 168, 152;
+
+    --Text-Primary: 41, 30, 24;
+    --Text-Secondary: 96, 76, 64;
+    --Text-Tertiary: 120, 98, 85;
+
+    --loading: #f3eee8;
+
+    --scrollbar-track-color: var(--Common-Background);
+    --scrollbar-thumb-color: var(--Common-Contrast);
+    --scrollbar-thumb-hover-color: var(--Common-HeavyContrast);
+  }
+
+  .dark[data-skin='copper'] {
+    --color-white-primary: #1e1511;
+    --color-white-secondary: #2a1e19;
+    --color-dark-primary: #f6ede3;
+    --color-dark-secondary: #e5d8ca;
+
+    --background: 24 30% 8%;
+    --foreground: 30 25% 88%;
+
+    --muted: 24 24% 14%;
+    --muted-foreground: 28 12% 62%;
+
+    --accent: 26 24% 18%;
+    --accent-foreground: 30 25% 90%;
+
+    --popover: 24 30% 8%;
+    --popover-foreground: 30 25% 80%;
+
+    --border: 24 20% 18%;
+    --input: 24 20% 18%;
+
+    --card: 24 30% 8%;
+    --card-foreground: 30 25% 88%;
+
+    --primary: 30 30% 90%;
+    --primary-foreground: 24 30% 10%;
+
+    --secondary: 24 30% 12%;
+    --secondary-foreground: 30 25% 88%;
+
+    --destructive: 0 55% 30%;
+    --destructive-foreground: 30 25% 92%;
+
+    --brand-green: 24 55% 70%;
+    --brand-green-foreground: 24 30% 18%;
+
+    --ring: 24 20% 20%;
+
+    --Common-Background: 24, 18, 14;
+    --Common-CardBackground: 32, 24, 20;
+    --Common-Minimal: 42, 32, 26;
+    --Common-Contrast: 60, 48, 40;
+    --Common-HeavyContrast: 88, 72, 60;
+    --Common-Invert: 244, 233, 221;
+
+    --Accessory-Accessory1: 24, 18, 14;
+    --Accessory-Accessory2: 32, 24, 20;
+    --Accessory-Accessory3: 40, 30, 26;
+    --Accessory-Accessory4: 48, 38, 32;
+    --Accessory-Accessory5: 60, 48, 40;
+    --Accessory-Accessory6: 88, 72, 60;
+    --Accessory-Accessory7: 112, 92, 78;
+
+    --Text-Primary: 244, 233, 221;
+    --Text-Secondary: 196, 178, 162;
+    --Text-Tertiary: 166, 148, 132;
+
+    --Functional-Green-Green: 164, 196, 140;
+    --Functional-Green-GreenLight: 206, 226, 192;
+    --Functional-Green-Greencontrast: 132, 166, 112;
+
+    --Functional-Blue-Blue: 130, 176, 220;
+    --Functional-Blue-BlueLight: 172, 206, 234;
+    --Functional-Blue-Bluecontrast: 110, 150, 196;
+
+    --Functional-Yellow-Yellow: 230, 184, 106;
+    --Functional-Yellow-YellowLight: 246, 214, 158;
+    --Functional-Yellow-Yellowcontrast: 204, 156, 84;
+
+    --Functional-Red-Red: 232, 132, 120;
+    --Functional-Red-RedLight: 246, 184, 176;
+    --Functional-Red-Redcontrast: 204, 108, 98;
+
+    --Functional-Gray-Gray: 112, 92, 78;
+    --Functional-Gray-GrayLight: 142, 120, 104;
+    --Functional-Gray-Graycontrast: 94, 76, 64;
+
+    --loading: #2f241e;
+
+    --scrollbar-track-color: var(--Common-Background);
+    --scrollbar-thumb-color: var(--Common-Contrast);
+    --scrollbar-thumb-hover-color: var(--Common-HeavyContrast);
+  }
 }
 
 /* html {
@@ -311,10 +696,19 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 }
 
@@ -344,6 +738,61 @@ body {
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #555;
+  }
+
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Add modern hero utility styles (ambient gradients, glass panels, soft motion).
+     Why: The homepage needed more visual depth without adding heavy UI chrome.
+     How: Introduced reusable hero/background utilities and gentle animations. */
+  .hero-ambient {
+    background: radial-gradient(800px 420px at 15% -10%, rgba(20, 184, 166, 0.18), transparent 60%),
+      radial-gradient(700px 360px at 85% -20%, rgba(59, 130, 246, 0.14), transparent 60%),
+      linear-gradient(180deg, rgba(248, 250, 252, 1) 0%, rgba(241, 245, 249, 1) 100%);
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 24px 60px -45px rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .dark .hero-ambient {
+    background: radial-gradient(800px 420px at 15% -10%, rgba(45, 212, 191, 0.15), transparent 60%),
+      radial-gradient(700px 360px at 85% -20%, rgba(59, 130, 246, 0.12), transparent 60%),
+      linear-gradient(180deg, rgba(11, 18, 32, 1) 0%, rgba(15, 23, 42, 1) 100%);
+  }
+
+  .dark .glass-panel {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    box-shadow: 0 24px 60px -45px rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-orb {
+    width: 240px;
+    height: 240px;
+    border-radius: 999px;
+    filter: blur(12px);
+    opacity: 0.45;
+  }
+
+  .hero-orb.teal {
+    background: radial-gradient(circle at 30% 30%, rgba(45, 212, 191, 0.7), transparent 65%);
+  }
+
+  .hero-orb.blue {
+    background: radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.6), transparent 65%);
+  }
+
+  .fade-up {
+    animation: fade-up 0.8s ease-out both;
+  }
+
+  .float-soft {
+    animation: float-soft 12s ease-in-out infinite;
   }
 }
 
@@ -471,6 +920,27 @@ body {
   }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+}
+
 .spin-animation {
   animation: spin-loader 1s linear infinite;
 }
@@ -551,4 +1021,111 @@ body {
 
 .mdxeditor-select-content:focus {
   border-color: rgb(var(--Functional-Green-Green)) !important;
+}
+
+/* Fixed by Codex on 2026-02-16
+   Who: Codex
+   What: Applied a custom Sonner toast theme aligned with app tokens.
+   Why: The default rich-color Sonner palette looked pale/orange and visually inconsistent.
+   How: Added dedicated toast classes and semantic state variants (success/info/warning/error/loading). */
+.sc-toast {
+  border: 1px solid rgba(var(--Common-Contrast), 0.95) !important;
+  background: rgba(var(--Common-CardBackground), 0.985) !important;
+  color: rgb(var(--Text-Primary)) !important;
+  border-radius: 0.75rem !important;
+  box-shadow:
+    0 18px 40px -26px rgba(2, 6, 23, 0.7),
+    inset 0 1px 0 rgba(var(--Common-Invert), 0.08) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.sc-toast-title {
+  color: rgb(var(--Text-Primary)) !important;
+  font-weight: 600 !important;
+}
+
+.sc-toast-description {
+  color: rgb(var(--Text-Secondary)) !important;
+}
+
+.sc-toast-success {
+  border-left: 4px solid rgba(var(--Functional-Green-Green), 0.95) !important;
+  border-color: rgba(var(--Functional-Green-Green), 0.6) !important;
+  background: linear-gradient(
+      0deg,
+      rgba(var(--Common-CardBackground), 0.97),
+      rgba(var(--Common-CardBackground), 0.97)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--Functional-Green-GreenLight), 0.28),
+      rgba(var(--Functional-Green-Green), 0.14)
+    ) !important;
+}
+
+.sc-toast-info {
+  border-left: 4px solid rgba(var(--Functional-Blue-Blue), 0.95) !important;
+  border-color: rgba(var(--Functional-Blue-Blue), 0.62) !important;
+  background: linear-gradient(
+      0deg,
+      rgba(var(--Common-CardBackground), 0.97),
+      rgba(var(--Common-CardBackground), 0.97)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--Functional-Blue-BlueLight), 0.24),
+      rgba(var(--Functional-Blue-Blue), 0.13)
+    ) !important;
+}
+
+.sc-toast-warning {
+  border-left: 4px solid rgba(var(--Functional-Yellow-Yellow), 0.95) !important;
+  border-color: rgba(var(--Functional-Yellow-Yellow), 0.64) !important;
+  background: linear-gradient(
+      0deg,
+      rgba(var(--Common-CardBackground), 0.97),
+      rgba(var(--Common-CardBackground), 0.97)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--Functional-Yellow-YellowLight), 0.28),
+      rgba(var(--Functional-Yellow-Yellow), 0.16)
+    ) !important;
+}
+
+.sc-toast-error {
+  border-left: 4px solid rgba(var(--Functional-Red-Red), 0.95) !important;
+  border-color: rgba(var(--Functional-Red-Red), 0.62) !important;
+  background: linear-gradient(
+      0deg,
+      rgba(var(--Common-CardBackground), 0.97),
+      rgba(var(--Common-CardBackground), 0.97)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--Functional-Red-RedLight), 0.3),
+      rgba(var(--Functional-Red-Red), 0.16)
+    ) !important;
+}
+
+.sc-toast-loading {
+  border-left: 4px solid rgba(var(--Functional-Gray-Graycontrast), 0.9) !important;
+  border-color: rgba(var(--Functional-Gray-Graycontrast), 0.72) !important;
+}
+
+.sc-toast-action {
+  background: rgb(var(--Functional-Green-Green)) !important;
+  color: rgb(var(--Common-CardBackground)) !important;
+  border: 1px solid rgba(var(--Functional-Green-Greencontrast), 0.7) !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+}
+
+.sc-toast-cancel,
+.sc-toast-close {
+  background: rgba(var(--Common-Minimal), 0.95) !important;
+  color: rgb(var(--Text-Secondary)) !important;
+  border: 1px solid rgba(var(--Common-Contrast), 0.8) !important;
+  border-radius: 0.5rem !important;
 }

@@ -53,7 +53,9 @@ const ResendVerificationForm: React.FC = () => {
       <div className="flex items-center justify-center">
         <Image src="/signupsuccess.gif" alt="Email Sent" width={80} height={80} />
       </div>
-      <h2 className="mt-4 font-bold text-black res-heading-base">Verification Email Sent!</h2>
+      <h2 className="mt-4 font-bold text-text-primary res-heading-base">
+        Verification Email Sent!
+      </h2>
       <p className="mt-2 text-sm text-text-secondary">
         We&apos;ve sent a verification email to {sentEmail}. Please check your inbox and follow the
         instructions to verify your account.
@@ -69,60 +71,73 @@ const ResendVerificationForm: React.FC = () => {
   );
 
   return (
-    <div className="relative flex h-dvh flex-col items-center justify-center bg-black p-4 sm:p-0">
-      <Image
-        src="/images/assets/bg-auth-pages.webp"
-        alt="Background"
-        layout="fill"
-        objectFit="cover"
-        className="z-0"
-      />
-      <div className="relative flex h-fit w-full flex-col gap-10 overflow-y-auto rounded-xl bg-white px-8 py-12 sm:w-[540px] sm:justify-center sm:px-10 sm:py-14 md:shadow-[0px_4px_200px_-40px_rgba(66,182,95,0.5)]">
-        {isEmailSent ? (
-          <SuccessMessage />
-        ) : (
-          <>
-            <div className="text-center">
-              <div className="flex items-center justify-center">
-                <Image src="/auth/resendemail.png" alt="logo" width={80} height={80} />
+    <>
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Update resend-verification styling to use theme tokens.
+          Why: Ensure skins can override palette without editing markup.
+          How: Replace fixed black/white/gray utilities with semantic tokens. */}
+      <div className="relative flex h-dvh flex-col items-center justify-center bg-common-background p-4 sm:p-0">
+        <Image
+          src="/images/assets/bg-auth-pages.webp"
+          alt=""
+          aria-hidden="true"
+          layout="fill"
+          objectFit="cover"
+          className="z-0"
+        />
+        <div className="relative flex h-fit w-full flex-col gap-10 overflow-y-auto rounded-xl bg-common-cardBackground px-8 py-12 sm:w-[540px] sm:justify-center sm:px-10 sm:py-14 md:shadow-common">
+          {isEmailSent ? (
+            <SuccessMessage />
+          ) : (
+            <>
+              <div className="text-center">
+                <div className="flex items-center justify-center">
+                  <Image
+                    src="/auth/resendemail.png"
+                    alt="Resend verification illustration"
+                    width={80}
+                    height={80}
+                  />
+                </div>
+                <h1 className="mt-4 font-bold text-text-primary res-heading-base">
+                  Resend Verification Email
+                </h1>
+                <p className="mt-2 text-sm text-text-secondary">
+                  Enter your email or username to receive a new verification email.
+                </p>
               </div>
-              <h1 className="mt-4 font-bold text-black res-heading-base">
-                Resend Verification Email
-              </h1>
-              <p className="mt-2 text-sm text-text-secondary">
-                Enter your email or username to receive a new verification email.
-              </p>
-            </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              <FormInput<IResendForm>
-                label="Email or Username"
-                name="login"
-                type="text"
-                placeholder="Enter your email or username"
-                register={register}
-                requiredMessage="Email or username is required"
-                patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[\w.]+$/}
-                patternMessage="Enter a valid email or username"
-                errors={errors}
-                inputClassName="bg-neutral-150 text-black ring-neutral-200"
-              />
-              <div>
-                <Button type="submit" loading={isPending} showLoadingSpinner className="w-full">
-                  <ButtonTitle>Resend Verification Email</ButtonTitle>
-                </Button>
-                <Link
-                  href="/auth/login"
-                  className="mt-2 flex items-center justify-center text-xs text-functional-green hover:underline"
-                >
-                  <MoveLeftIcon className="mr-1 size-4 shrink-0" />
-                  Back to Sign in
-                </Link>
-              </div>
-            </form>
-          </>
-        )}
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <FormInput<IResendForm>
+                  label="Email or Username"
+                  name="login"
+                  type="text"
+                  placeholder="Enter your email or username"
+                  register={register}
+                  requiredMessage="Email or username is required"
+                  patternValue={/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[\w.]+$/}
+                  patternMessage="Enter a valid email or username"
+                  errors={errors}
+                  inputClassName="bg-common-minimal text-text-primary ring-common-contrast"
+                />
+                <div>
+                  <Button type="submit" loading={isPending} showLoadingSpinner className="w-full">
+                    <ButtonTitle>Resend Verification Email</ButtonTitle>
+                  </Button>
+                  <Link
+                    href="/auth/login"
+                    className="mt-2 flex items-center justify-center text-xs text-functional-green hover:underline"
+                  >
+                    <MoveLeftIcon className="mr-1 size-4 shrink-0" />
+                    Back to Sign in
+                  </Link>
+                </div>
+              </form>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

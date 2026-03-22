@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CommunityListOutCreatedAt } from './communityListOutCreatedAt';
+import type { CommunityListOutIsBookmarked } from './communityListOutIsBookmarked';
 import type { CommunityListOutOrg } from './communityListOutOrg';
 import type { CommunityType } from './communityType';
 
@@ -12,6 +13,7 @@ export interface CommunityListOut {
   created_at?: CommunityListOutCreatedAt;
   description: string;
   id: number;
+  is_bookmarked?: CommunityListOutIsBookmarked;
   name: string;
   num_members: number;
   num_published_articles: number;

@@ -54,8 +54,12 @@ const SubmitToCommunity = ({ slug }: { slug: string }) => {
     );
   };
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Submit-to-community form used fixed gray/green utilities that bypassed skins.
+     Solution: Replace hard-coded colors with semantic tokens for surfaces and actions.
+     Result: Form visuals now follow the active skin palette. */
   return (
-    <div className="my-4 rounded-lg bg-white-secondary p-4 shadow-md">
+    <div className="my-4 rounded-lg bg-common-cardBackground p-4 shadow-md">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-8">
         <FormInput<FormValues>
           label="Enter the community name"
@@ -79,13 +83,15 @@ const SubmitToCommunity = ({ slug }: { slug: string }) => {
           textArea={true}
         />
         <div className="flex justify-end space-x-4">
-          <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 res-text-sm hover:bg-gray-300">
+          <button className="rounded-md bg-common-minimal px-4 py-2 text-text-secondary res-text-sm hover:bg-common-contrast">
             Cancel
           </button>
           <button
             className={clsx(
-              'rounded-md px-4 py-2 text-white res-text-sm',
-              isPending ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
+              'rounded-md px-4 py-2 text-primary-foreground res-text-sm',
+              isPending
+                ? 'bg-functional-gray'
+                : 'bg-functional-green hover:bg-functional-greenContrast'
             )}
             disabled={isPending}
           >

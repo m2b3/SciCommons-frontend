@@ -70,14 +70,14 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
       <div className="flex flex-col items-start">
         <div className="flex items-center gap-4">
           <Image
-            src={profilePicture ? profilePicture : `/images/assets/user-icon.png`}
+            src={profilePicture ? profilePicture : `/images/assets/user-icon.webp`}
             alt={name}
             width={32}
             height={32}
             className="aspect-square shrink-0 rounded-full object-cover"
             quality={75}
             sizes="32px"
-            loading="lazy"
+            unoptimized={!profilePicture}
           />
           <div className="flex flex-col">
             <p className="text-sm font-bold text-text-primary">{name}</p>
@@ -106,6 +106,12 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              <DropdownMenuItem
+                onClick={() => !isPending && handleAction(Action.PromoteAdmin)}
+                className="cursor-pointer"
+              >
+                Admin
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => !isPending && handleAction(Action.PromoteModerator)}
                 className="cursor-pointer"
@@ -145,7 +151,7 @@ const UsersListItem: React.FC<UsersListItemProps> = ({
       )}
       {/* {activeTab === 'Admins' && (
         <button
-          className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+          className="rounded-md bg-common-minimal px-4 py-2 text-text-secondary hover:bg-common-contrast"
           onClick={() => handleAction(Action.DemoteAdmin)}
         >
           Demote

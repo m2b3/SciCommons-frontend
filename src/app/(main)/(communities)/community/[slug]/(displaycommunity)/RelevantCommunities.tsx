@@ -19,9 +19,13 @@ const RelevantCommunities = ({ communityId }: RelevantCommunitiesProps) => {
     }
   }, [error]);
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Relevant communities panel used fixed gray/white utilities.
+     Solution: Replace hard-coded colors with semantic tokens for borders, surfaces, and text.
+     Result: Panel now reflects active skin palettes. */
   return (
-    <div className="rounded-md border-2 border-gray-200 bg-white-secondary p-6 shadow-md">
-      <h2 className="mb-4 font-semibold text-gray-900 res-heading-xs">Relevant Communities</h2>
+    <div className="rounded-md border-2 border-common-contrast bg-common-cardBackground p-6 shadow-md">
+      <h2 className="mb-4 font-semibold text-text-primary res-heading-xs">Relevant Communities</h2>
       <div className="flex flex-col gap-8">
         {isPending &&
           Array.from({ length: 3 }).map((_, index) => (
@@ -29,7 +33,7 @@ const RelevantCommunities = ({ communityId }: RelevantCommunitiesProps) => {
           ))}
         {data && data.data.length === 0 && (
           <div className="rounded-md py-4">
-            <p className="text-gray-700 res-text-sm">No relevant communities found.</p>
+            <p className="text-text-secondary res-text-sm">No relevant communities found.</p>
           </div>
         )}
         {data &&

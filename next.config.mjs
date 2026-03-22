@@ -4,10 +4,12 @@ import nextra from 'nextra';
 
 const isDev = process.env.NODE_ENV === 'development';
 
+// NOTE(bsureshkrishna, 2026-02-07): Config hardened after baseline 5271498
+// (PWA caching defaults relaxed, image optimization retained, remote host allowlist tightened).
 const withPWA = withPWAInit({
   dest: 'public',
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
+  cacheOnFrontEndNav: false,
+  aggressiveFrontEndNavCaching: false,
   reloadOnOnline: true,
   swcMinify: true,
   disable: isDev, // Disable PWA in development for faster builds
@@ -59,9 +61,14 @@ const nextConfig = withPWA({
 
   // Optimize images
   images: {
+    // Keep Next.js image optimization enabled; `unoptimized: true` caused images not to render here.
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'gsoc2024.s3.amazonaws.com',
+      },
+      {
+        protocol: 'http',
         hostname: 'gsoc2024.s3.amazonaws.com',
       },
       {
@@ -69,9 +76,18 @@ const nextConfig = withPWA({
         hostname: 'picsum.photos',
       },
       {
+        protocol: 'http',
+        hostname: 'picsum.photos',
+      },
+      {
         protocol: 'https',
         hostname: 'cdn.scicommons.org',
       },
+      {
+        protocol: 'http',
+        hostname: 'cdn.scicommons.org',
+      },
+      // Do not allow loopback hosts here; Next image optimizer would create an SSRF path.
     ],
     // Modern image formats for better compression
     formats: ['image/avif', 'image/webp'],

@@ -4,9 +4,9 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
+import type { UserStats } from './userStats';
 import type { ReviewCommentOutId } from './reviewCommentOutId';
 import type { ReviewCommentOutRating } from './reviewCommentOutRating';
-import type { UserStats } from './userStats';
 
 export interface ReviewCommentOut {
   author: UserStats;

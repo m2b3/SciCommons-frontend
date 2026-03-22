@@ -4,8 +4,8 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { PostOutId } from './postOutId';
 import type { UserStats } from './userStats';
+import type { PostOutId } from './postOutId';
 
 export interface PostOut {
   author: UserStats;

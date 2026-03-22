@@ -4,7 +4,10 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,11 +15,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
-import { customInstance } from '.././custom-instance';
-import type { BodyType, ErrorType } from '.././custom-instance';
+  UseQueryResult
+} from '@tanstack/react-query'
 import type {
   ArticlesDiscussionApiCreateDiscussionParams,
   ArticlesDiscussionApiGetSubscriptionStatusParams,
@@ -30,387 +30,271 @@ import type {
   DiscussionSubscriptionOut,
   DiscussionSubscriptionSchema,
   DiscussionSubscriptionUpdateSchema,
+  DiscussionSummaryCreateSchema,
+  DiscussionSummaryOut,
+  DiscussionSummaryUpdateSchema,
   Message,
   PaginatedDiscussionSchema,
   SubscriptionStatusSchema,
-  UserSubscriptionsOut,
-} from '.././schemas';
+  UserSubscriptionsOut
+} from '.././schemas'
+import { customInstance } from '.././custom-instance';
+import type { ErrorType, BodyType } from '.././custom-instance';
+
 
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
+
 
 /**
  * @summary Create Discussion
  */
 export const articlesDiscussionApiCreateDiscussion = (
-  articleId: number,
-  createDiscussionSchema: BodyType<CreateDiscussionSchema>,
-  params?: ArticlesDiscussionApiCreateDiscussionParams,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<DiscussionOut>(
-    {
-      url: `/api/articles/${articleId}/discussions/`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    articleId: number,
+    createDiscussionSchema: BodyType<CreateDiscussionSchema>,
+    params?: ArticlesDiscussionApiCreateDiscussionParams,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionOut>(
+      {url: `/api/articles/${articleId}/discussions/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
       data: createDiscussionSchema,
-      params,
+        params
     },
-    options
-  );
-};
-
-export const getArticlesDiscussionApiCreateDiscussionMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>,
-    TError,
-    {
-      articleId: number;
-      data: BodyType<CreateDiscussionSchema>;
-      params?: ArticlesDiscussionApiCreateDiscussionParams;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>,
-  TError,
-  {
-    articleId: number;
-    data: BodyType<CreateDiscussionSchema>;
-    params?: ArticlesDiscussionApiCreateDiscussionParams;
-  },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>,
-    {
-      articleId: number;
-      data: BodyType<CreateDiscussionSchema>;
-      params?: ArticlesDiscussionApiCreateDiscussionParams;
+      options);
     }
-  > = (props) => {
-    const { articleId, data, params } = props ?? {};
+  
 
-    return articlesDiscussionApiCreateDiscussion(articleId, data, params, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getArticlesDiscussionApiCreateDiscussionMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>, TError,{articleId: number;data: BodyType<CreateDiscussionSchema>;params?: ArticlesDiscussionApiCreateDiscussionParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>, TError,{articleId: number;data: BodyType<CreateDiscussionSchema>;params?: ArticlesDiscussionApiCreateDiscussionParams}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-export type ArticlesDiscussionApiCreateDiscussionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>
->;
-export type ArticlesDiscussionApiCreateDiscussionMutationBody = BodyType<CreateDiscussionSchema>;
-export type ArticlesDiscussionApiCreateDiscussionMutationError = ErrorType<Message>;
+      
 
-/**
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>, {articleId: number;data: BodyType<CreateDiscussionSchema>;params?: ArticlesDiscussionApiCreateDiscussionParams}> = (props) => {
+          const {articleId,data,params} = props ?? {};
+
+          return  articlesDiscussionApiCreateDiscussion(articleId,data,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiCreateDiscussionMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>>
+    export type ArticlesDiscussionApiCreateDiscussionMutationBody = BodyType<CreateDiscussionSchema>
+    export type ArticlesDiscussionApiCreateDiscussionMutationError = ErrorType<Message>
+
+    /**
  * @summary Create Discussion
  */
-export const useArticlesDiscussionApiCreateDiscussion = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>,
-    TError,
-    {
-      articleId: number;
-      data: BodyType<CreateDiscussionSchema>;
-      params?: ArticlesDiscussionApiCreateDiscussionParams;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>,
-  TError,
-  {
-    articleId: number;
-    data: BodyType<CreateDiscussionSchema>;
-    params?: ArticlesDiscussionApiCreateDiscussionParams;
-  },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiCreateDiscussionMutationOptions(options);
+export const useArticlesDiscussionApiCreateDiscussion = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>, TError,{articleId: number;data: BodyType<CreateDiscussionSchema>;params?: ArticlesDiscussionApiCreateDiscussionParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussion>>,
+        TError,
+        {articleId: number;data: BodyType<CreateDiscussionSchema>;params?: ArticlesDiscussionApiCreateDiscussionParams},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiCreateDiscussionMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary List Discussions
  */
 export const articlesDiscussionApiListDiscussions = (
-  articleId: number,
-  params?: ArticlesDiscussionApiListDiscussionsParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    articleId: number,
+    params?: ArticlesDiscussionApiListDiscussionsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<PaginatedDiscussionSchema>(
-    { url: `/api/articles/${articleId}/discussions/`, method: 'GET', params, signal },
-    options
-  );
-};
+      
+      
+      return customInstance<PaginatedDiscussionSchema>(
+      {url: `/api/articles/${articleId}/discussions/`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiListDiscussionsQueryKey = (
-  articleId: number,
-  params?: ArticlesDiscussionApiListDiscussionsParams
+export const getArticlesDiscussionApiListDiscussionsQueryKey = (articleId: number,
+    params?: ArticlesDiscussionApiListDiscussionsParams,) => {
+    return [`/api/articles/${articleId}/discussions/`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getArticlesDiscussionApiListDiscussionsQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>, TError = ErrorType<Message>>(articleId: number,
+    params?: ArticlesDiscussionApiListDiscussionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/articles/${articleId}/discussions/`, ...(params ? [params] : [])] as const;
-};
 
-export const getArticlesDiscussionApiListDiscussionsQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>,
-  TError = ErrorType<Message>,
->(
-  articleId: number,
-  params?: ArticlesDiscussionApiListDiscussionsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getArticlesDiscussionApiListDiscussionsQueryKey(articleId, params);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiListDiscussionsQueryKey(articleId,params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>
-  > = ({ signal }) =>
-    articlesDiscussionApiListDiscussions(articleId, params, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, enabled: !!articleId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>> = ({ signal }) => articlesDiscussionApiListDiscussions(articleId,params, requestOptions, signal);
 
-export type ArticlesDiscussionApiListDiscussionsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>
->;
-export type ArticlesDiscussionApiListDiscussionsQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(articleId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiListDiscussionsQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>>
+export type ArticlesDiscussionApiListDiscussionsQueryError = ErrorType<Message>
 
 /**
  * @summary List Discussions
  */
-export const useArticlesDiscussionApiListDiscussions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>,
-  TError = ErrorType<Message>,
->(
-  articleId: number,
-  params?: ArticlesDiscussionApiListDiscussionsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesDiscussionApiListDiscussionsQueryOptions(
-    articleId,
-    params,
-    options
-  );
+export const useArticlesDiscussionApiListDiscussions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>, TError = ErrorType<Message>>(
+ articleId: number,
+    params?: ArticlesDiscussionApiListDiscussionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesDiscussionApiListDiscussionsQueryOptions(articleId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * Get all active subscriptions for the current user grouped by community
-Returns:
-{
-    "communities": [
-        {
-            "community_id": 1,
-            "community_name": "AI Research",
-            "articles": [
-                {
-                    "article_id": 123,
-                    "article_title": "Deep Learning Paper",
-                    "article_slug": "deep-learning-paper"
-                }
-            ]
-        }
-    ]
-}
  * @summary Get User Subscriptions
  */
 export const articlesDiscussionApiGetUserSubscriptions = (
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<UserSubscriptionsOut>(
-    { url: `/api/articles/discussions/my-subscriptions/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<UserSubscriptionsOut>(
+      {url: `/api/articles/discussions/my-subscriptions/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
 export const getArticlesDiscussionApiGetUserSubscriptionsQueryKey = () => {
-  return [`/api/articles/discussions/my-subscriptions/`] as const;
-};
+    return [`/api/articles/discussions/my-subscriptions/`] as const;
+    }
 
-export const getArticlesDiscussionApiGetUserSubscriptionsQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
-  TError = ErrorType<Message>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
-      TError,
-      TData
-    >
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+    
+export const getArticlesDiscussionApiGetUserSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>, TError = ErrorType<Message>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getArticlesDiscussionApiGetUserSubscriptionsQueryKey();
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>
-  > = ({ signal }) => articlesDiscussionApiGetUserSubscriptions(requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiGetUserSubscriptionsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesDiscussionApiGetUserSubscriptionsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>
->;
-export type ArticlesDiscussionApiGetUserSubscriptionsQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>> = ({ signal }) => articlesDiscussionApiGetUserSubscriptions(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiGetUserSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>>
+export type ArticlesDiscussionApiGetUserSubscriptionsQueryError = ErrorType<Message>
 
 /**
  * @summary Get User Subscriptions
  */
-export const useArticlesDiscussionApiGetUserSubscriptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
-  TError = ErrorType<Message>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>,
-      TError,
-      TData
-    >
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesDiscussionApiGetUserSubscriptionsQueryOptions(options);
+export const useArticlesDiscussionApiGetUserSubscriptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>, TError = ErrorType<Message>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetUserSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesDiscussionApiGetUserSubscriptionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * Check if user is subscribed to discussions for a specific community article
  * @summary Get Subscription Status
  */
 export const articlesDiscussionApiGetSubscriptionStatus = (
-  params: ArticlesDiscussionApiGetSubscriptionStatusParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    params: ArticlesDiscussionApiGetSubscriptionStatusParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<SubscriptionStatusSchema>(
-    { url: `/api/articles/discussions/subscription-status/`, method: 'GET', params, signal },
-    options
-  );
-};
+      
+      
+      return customInstance<SubscriptionStatusSchema>(
+      {url: `/api/articles/discussions/subscription-status/`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiGetSubscriptionStatusQueryKey = (
-  params: ArticlesDiscussionApiGetSubscriptionStatusParams
+export const getArticlesDiscussionApiGetSubscriptionStatusQueryKey = (params: ArticlesDiscussionApiGetSubscriptionStatusParams,) => {
+    return [`/api/articles/discussions/subscription-status/`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getArticlesDiscussionApiGetSubscriptionStatusQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>, TError = ErrorType<Message>>(params: ArticlesDiscussionApiGetSubscriptionStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/api/articles/discussions/subscription-status/`, ...(params ? [params] : [])] as const;
-};
 
-export const getArticlesDiscussionApiGetSubscriptionStatusQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
-  TError = ErrorType<Message>,
->(
-  params: ArticlesDiscussionApiGetSubscriptionStatusParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getArticlesDiscussionApiGetSubscriptionStatusQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiGetSubscriptionStatusQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>
-  > = ({ signal }) => articlesDiscussionApiGetSubscriptionStatus(params, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>> = ({ signal }) => articlesDiscussionApiGetSubscriptionStatus(params, requestOptions, signal);
 
-export type ArticlesDiscussionApiGetSubscriptionStatusQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>
->;
-export type ArticlesDiscussionApiGetSubscriptionStatusQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiGetSubscriptionStatusQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>>
+export type ArticlesDiscussionApiGetSubscriptionStatusQueryError = ErrorType<Message>
 
 /**
  * @summary Get Subscription Status
  */
-export const useArticlesDiscussionApiGetSubscriptionStatus = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
-  TError = ErrorType<Message>,
->(
-  params: ArticlesDiscussionApiGetSubscriptionStatusParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesDiscussionApiGetSubscriptionStatusQueryOptions(params, options);
+export const useArticlesDiscussionApiGetSubscriptionStatus = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>, TError = ErrorType<Message>>(
+ params: ArticlesDiscussionApiGetSubscriptionStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetSubscriptionStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesDiscussionApiGetSubscriptionStatusQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * Subscribe to discussions in a specific community article for real-time updates
@@ -421,874 +305,951 @@ Args:
  * @summary Subscribe To Discussion
  */
 export const articlesDiscussionApiSubscribeToDiscussion = (
-  discussionSubscriptionSchema: BodyType<DiscussionSubscriptionSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<DiscussionSubscriptionOut>(
-    {
-      url: `/api/articles/discussions/subscribe/`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: discussionSubscriptionSchema,
+    discussionSubscriptionSchema: BodyType<DiscussionSubscriptionSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionSubscriptionOut>(
+      {url: `/api/articles/discussions/subscribe/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: discussionSubscriptionSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiSubscribeToDiscussionMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
-    TError,
-    { data: BodyType<DiscussionSubscriptionSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
-  TError,
-  { data: BodyType<DiscussionSubscriptionSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
-    { data: BodyType<DiscussionSubscriptionSchema> }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getArticlesDiscussionApiSubscribeToDiscussionMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>, TError,{data: BodyType<DiscussionSubscriptionSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>, TError,{data: BodyType<DiscussionSubscriptionSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiSubscribeToDiscussion(data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiSubscribeToDiscussionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>
->;
-export type ArticlesDiscussionApiSubscribeToDiscussionMutationBody =
-  BodyType<DiscussionSubscriptionSchema>;
-export type ArticlesDiscussionApiSubscribeToDiscussionMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>, {data: BodyType<DiscussionSubscriptionSchema>}> = (props) => {
+          const {data} = props ?? {};
 
-/**
+          return  articlesDiscussionApiSubscribeToDiscussion(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiSubscribeToDiscussionMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>>
+    export type ArticlesDiscussionApiSubscribeToDiscussionMutationBody = BodyType<DiscussionSubscriptionSchema>
+    export type ArticlesDiscussionApiSubscribeToDiscussionMutationError = ErrorType<Message>
+
+    /**
  * @summary Subscribe To Discussion
  */
-export const useArticlesDiscussionApiSubscribeToDiscussion = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
-    TError,
-    { data: BodyType<DiscussionSubscriptionSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
-  TError,
-  { data: BodyType<DiscussionSubscriptionSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiSubscribeToDiscussionMutationOptions(options);
+export const useArticlesDiscussionApiSubscribeToDiscussion = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>, TError,{data: BodyType<DiscussionSubscriptionSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiSubscribeToDiscussion>>,
+        TError,
+        {data: BodyType<DiscussionSubscriptionSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiSubscribeToDiscussionMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Get Discussion
  */
 export const articlesDiscussionApiGetDiscussion = (
-  discussionId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    discussionId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<DiscussionOut>(
-    { url: `/api/articles/discussions/${discussionId}/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<DiscussionOut>(
+      {url: `/api/articles/discussions/${discussionId}/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiGetDiscussionQueryKey = (discussionId: number) => {
-  return [`/api/articles/discussions/${discussionId}/`] as const;
-};
+export const getArticlesDiscussionApiGetDiscussionQueryKey = (discussionId: number,) => {
+    return [`/api/articles/discussions/${discussionId}/`] as const;
+    }
 
-export const getArticlesDiscussionApiGetDiscussionQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>,
-  TError = ErrorType<Message>,
->(
-  discussionId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getArticlesDiscussionApiGetDiscussionQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError = ErrorType<Message>>(discussionId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getArticlesDiscussionApiGetDiscussionQueryKey(discussionId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>> = ({
-    signal,
-  }) => articlesDiscussionApiGetDiscussion(discussionId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiGetDiscussionQueryKey(discussionId);
 
-  return { queryKey, queryFn, enabled: !!discussionId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesDiscussionApiGetDiscussionQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>
->;
-export type ArticlesDiscussionApiGetDiscussionQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>> = ({ signal }) => articlesDiscussionApiGetDiscussion(discussionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(discussionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiGetDiscussionQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>>
+export type ArticlesDiscussionApiGetDiscussionQueryError = ErrorType<Message>
 
 /**
  * @summary Get Discussion
  */
-export const useArticlesDiscussionApiGetDiscussion = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>,
-  TError = ErrorType<Message>,
->(
-  discussionId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesDiscussionApiGetDiscussionQueryOptions(discussionId, options);
+export const useArticlesDiscussionApiGetDiscussion = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError = ErrorType<Message>>(
+ discussionId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussion>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesDiscussionApiGetDiscussionQueryOptions(discussionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Update Discussion
  */
 export const articlesDiscussionApiUpdateDiscussion = (
-  discussionId: number,
-  createDiscussionSchema: BodyType<CreateDiscussionSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<DiscussionOut>(
-    {
-      url: `/api/articles/discussions/${discussionId}/`,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      data: createDiscussionSchema,
+    discussionId: number,
+    createDiscussionSchema: BodyType<CreateDiscussionSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionOut>(
+      {url: `/api/articles/discussions/${discussionId}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: createDiscussionSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiUpdateDiscussionMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>,
-    TError,
-    { discussionId: number; data: BodyType<CreateDiscussionSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>,
-  TError,
-  { discussionId: number; data: BodyType<CreateDiscussionSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>,
-    { discussionId: number; data: BodyType<CreateDiscussionSchema> }
-  > = (props) => {
-    const { discussionId, data } = props ?? {};
+export const getArticlesDiscussionApiUpdateDiscussionMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>, TError,{discussionId: number;data: BodyType<CreateDiscussionSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>, TError,{discussionId: number;data: BodyType<CreateDiscussionSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiUpdateDiscussion(discussionId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiUpdateDiscussionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>
->;
-export type ArticlesDiscussionApiUpdateDiscussionMutationBody = BodyType<CreateDiscussionSchema>;
-export type ArticlesDiscussionApiUpdateDiscussionMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>, {discussionId: number;data: BodyType<CreateDiscussionSchema>}> = (props) => {
+          const {discussionId,data} = props ?? {};
 
-/**
+          return  articlesDiscussionApiUpdateDiscussion(discussionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiUpdateDiscussionMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>>
+    export type ArticlesDiscussionApiUpdateDiscussionMutationBody = BodyType<CreateDiscussionSchema>
+    export type ArticlesDiscussionApiUpdateDiscussionMutationError = ErrorType<Message>
+
+    /**
  * @summary Update Discussion
  */
-export const useArticlesDiscussionApiUpdateDiscussion = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>,
-    TError,
-    { discussionId: number; data: BodyType<CreateDiscussionSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>,
-  TError,
-  { discussionId: number; data: BodyType<CreateDiscussionSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiUpdateDiscussionMutationOptions(options);
+export const useArticlesDiscussionApiUpdateDiscussion = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>, TError,{discussionId: number;data: BodyType<CreateDiscussionSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussion>>,
+        TError,
+        {discussionId: number;data: BodyType<CreateDiscussionSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiUpdateDiscussionMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Delete Discussion
  */
 export const articlesDiscussionApiDeleteDiscussion = (
-  discussionId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<Message>(
-    { url: `/api/articles/discussions/${discussionId}/`, method: 'DELETE' },
-    options
-  );
-};
+    discussionId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<Message>(
+      {url: `/api/articles/discussions/${discussionId}/`, method: 'DELETE'
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiDeleteDiscussionMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>,
-    TError,
-    { discussionId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>,
-  TError,
-  { discussionId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>,
-    { discussionId: number }
-  > = (props) => {
-    const { discussionId } = props ?? {};
+export const getArticlesDiscussionApiDeleteDiscussionMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>, TError,{discussionId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>, TError,{discussionId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiDeleteDiscussion(discussionId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiDeleteDiscussionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>, {discussionId: number}> = (props) => {
+          const {discussionId} = props ?? {};
 
-export type ArticlesDiscussionApiDeleteDiscussionMutationError = ErrorType<Message>;
+          return  articlesDiscussionApiDeleteDiscussion(discussionId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiDeleteDiscussionMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>>
+    
+    export type ArticlesDiscussionApiDeleteDiscussionMutationError = ErrorType<Message>
+
+    /**
  * @summary Delete Discussion
  */
-export const useArticlesDiscussionApiDeleteDiscussion = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>,
-    TError,
-    { discussionId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>,
-  TError,
-  { discussionId: number },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiDeleteDiscussionMutationOptions(options);
+export const useArticlesDiscussionApiDeleteDiscussion = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>, TError,{discussionId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussion>>,
+        TError,
+        {discussionId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiDeleteDiscussionMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
+ * Toggle the resolved status of a discussion.
+If resolved, it will be unresolved. If unresolved, it will be resolved.
+Only available for community articles and can only be done by:
+- Community admin
+- Discussion author
+
+Args:
+    discussion_id: The ID of the discussion to toggle resolved status
+ * @summary Toggle Discussion Resolved
+ */
+export const articlesDiscussionApiToggleDiscussionResolved = (
+    discussionId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionOut>(
+      {url: `/api/articles/discussions/${discussionId}/resolve/`, method: 'PATCH'
+    },
+      options);
+    }
+  
+
+
+export const getArticlesDiscussionApiToggleDiscussionResolvedMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>, TError,{discussionId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>, TError,{discussionId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>, {discussionId: number}> = (props) => {
+          const {discussionId} = props ?? {};
+
+          return  articlesDiscussionApiToggleDiscussionResolved(discussionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiToggleDiscussionResolvedMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>>
+    
+    export type ArticlesDiscussionApiToggleDiscussionResolvedMutationError = ErrorType<Message>
+
+    /**
+ * @summary Toggle Discussion Resolved
+ */
+export const useArticlesDiscussionApiToggleDiscussionResolved = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>, TError,{discussionId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiToggleDiscussionResolved>>,
+        TError,
+        {discussionId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getArticlesDiscussionApiToggleDiscussionResolvedMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Create Comment
  */
 export const articlesDiscussionApiCreateComment = (
-  discussionId: number,
-  discussionCommentCreateSchema: BodyType<DiscussionCommentCreateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<DiscussionCommentOut>(
-    {
-      url: `/api/articles/discussions/${discussionId}/comments/`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: discussionCommentCreateSchema,
+    discussionId: number,
+    discussionCommentCreateSchema: BodyType<DiscussionCommentCreateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionCommentOut>(
+      {url: `/api/articles/discussions/${discussionId}/comments/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: discussionCommentCreateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiCreateCommentMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>,
-    TError,
-    { discussionId: number; data: BodyType<DiscussionCommentCreateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>,
-  TError,
-  { discussionId: number; data: BodyType<DiscussionCommentCreateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>,
-    { discussionId: number; data: BodyType<DiscussionCommentCreateSchema> }
-  > = (props) => {
-    const { discussionId, data } = props ?? {};
+export const getArticlesDiscussionApiCreateCommentMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>, TError,{discussionId: number;data: BodyType<DiscussionCommentCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>, TError,{discussionId: number;data: BodyType<DiscussionCommentCreateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiCreateComment(discussionId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiCreateCommentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>
->;
-export type ArticlesDiscussionApiCreateCommentMutationBody =
-  BodyType<DiscussionCommentCreateSchema>;
-export type ArticlesDiscussionApiCreateCommentMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>, {discussionId: number;data: BodyType<DiscussionCommentCreateSchema>}> = (props) => {
+          const {discussionId,data} = props ?? {};
 
-/**
+          return  articlesDiscussionApiCreateComment(discussionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiCreateCommentMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>>
+    export type ArticlesDiscussionApiCreateCommentMutationBody = BodyType<DiscussionCommentCreateSchema>
+    export type ArticlesDiscussionApiCreateCommentMutationError = ErrorType<Message>
+
+    /**
  * @summary Create Comment
  */
-export const useArticlesDiscussionApiCreateComment = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>,
-    TError,
-    { discussionId: number; data: BodyType<DiscussionCommentCreateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>,
-  TError,
-  { discussionId: number; data: BodyType<DiscussionCommentCreateSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiCreateCommentMutationOptions(options);
+export const useArticlesDiscussionApiCreateComment = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>, TError,{discussionId: number;data: BodyType<DiscussionCommentCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiCreateComment>>,
+        TError,
+        {discussionId: number;data: BodyType<DiscussionCommentCreateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiCreateCommentMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary List Discussion Comments
  */
 export const articlesDiscussionApiListDiscussionComments = (
-  discussionId: number,
-  params?: ArticlesDiscussionApiListDiscussionCommentsParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    discussionId: number,
+    params?: ArticlesDiscussionApiListDiscussionCommentsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<DiscussionCommentOut[]>(
-    { url: `/api/articles/discussions/${discussionId}/comments/`, method: 'GET', params, signal },
-    options
-  );
-};
+      
+      
+      return customInstance<DiscussionCommentOut[]>(
+      {url: `/api/articles/discussions/${discussionId}/comments/`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiListDiscussionCommentsQueryKey = (
-  discussionId: number,
-  params?: ArticlesDiscussionApiListDiscussionCommentsParams
+export const getArticlesDiscussionApiListDiscussionCommentsQueryKey = (discussionId: number,
+    params?: ArticlesDiscussionApiListDiscussionCommentsParams,) => {
+    return [`/api/articles/discussions/${discussionId}/comments/`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getArticlesDiscussionApiListDiscussionCommentsQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>, TError = ErrorType<Message>>(discussionId: number,
+    params?: ArticlesDiscussionApiListDiscussionCommentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [
-    `/api/articles/discussions/${discussionId}/comments/`,
-    ...(params ? [params] : []),
-  ] as const;
-};
 
-export const getArticlesDiscussionApiListDiscussionCommentsQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>,
-  TError = ErrorType<Message>,
->(
-  discussionId: number,
-  params?: ArticlesDiscussionApiListDiscussionCommentsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getArticlesDiscussionApiListDiscussionCommentsQueryKey(discussionId, params);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiListDiscussionCommentsQueryKey(discussionId,params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>
-  > = ({ signal }) =>
-    articlesDiscussionApiListDiscussionComments(discussionId, params, requestOptions, signal);
+  
 
-  return { queryKey, queryFn, enabled: !!discussionId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>> = ({ signal }) => articlesDiscussionApiListDiscussionComments(discussionId,params, requestOptions, signal);
 
-export type ArticlesDiscussionApiListDiscussionCommentsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>
->;
-export type ArticlesDiscussionApiListDiscussionCommentsQueryError = ErrorType<Message>;
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(discussionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiListDiscussionCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>>
+export type ArticlesDiscussionApiListDiscussionCommentsQueryError = ErrorType<Message>
 
 /**
  * @summary List Discussion Comments
  */
-export const useArticlesDiscussionApiListDiscussionComments = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>,
-  TError = ErrorType<Message>,
->(
-  discussionId: number,
-  params?: ArticlesDiscussionApiListDiscussionCommentsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesDiscussionApiListDiscussionCommentsQueryOptions(
-    discussionId,
-    params,
-    options
-  );
+export const useArticlesDiscussionApiListDiscussionComments = <TData = Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>, TError = ErrorType<Message>>(
+ discussionId: number,
+    params?: ArticlesDiscussionApiListDiscussionCommentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiListDiscussionComments>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesDiscussionApiListDiscussionCommentsQueryOptions(discussionId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Get Comment
  */
 export const articlesDiscussionApiGetComment = (
-  commentId: number,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal
+    commentId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
-  return customInstance<DiscussionCommentOut>(
-    { url: `/api/articles/discussions/comments/${commentId}/`, method: 'GET', signal },
-    options
-  );
-};
+      
+      
+      return customInstance<DiscussionCommentOut>(
+      {url: `/api/articles/discussions/comments/${commentId}/`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiGetCommentQueryKey = (commentId: number) => {
-  return [`/api/articles/discussions/comments/${commentId}/`] as const;
-};
+export const getArticlesDiscussionApiGetCommentQueryKey = (commentId: number,) => {
+    return [`/api/articles/discussions/comments/${commentId}/`] as const;
+    }
 
-export const getArticlesDiscussionApiGetCommentQueryOptions = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>,
-  TError = ErrorType<Message>,
->(
-  commentId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
+    
+export const getArticlesDiscussionApiGetCommentQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError = ErrorType<Message>>(commentId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getArticlesDiscussionApiGetCommentQueryKey(commentId);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>> = ({
-    signal,
-  }) => articlesDiscussionApiGetComment(commentId, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiGetCommentQueryKey(commentId);
 
-  return { queryKey, queryFn, enabled: !!commentId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  
 
-export type ArticlesDiscussionApiGetCommentQueryResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>
->;
-export type ArticlesDiscussionApiGetCommentQueryError = ErrorType<Message>;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>> = ({ signal }) => articlesDiscussionApiGetComment(commentId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(commentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiGetCommentQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>>
+export type ArticlesDiscussionApiGetCommentQueryError = ErrorType<Message>
 
 /**
  * @summary Get Comment
  */
-export const useArticlesDiscussionApiGetComment = <
-  TData = Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>,
-  TError = ErrorType<Message>,
->(
-  commentId: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getArticlesDiscussionApiGetCommentQueryOptions(commentId, options);
+export const useArticlesDiscussionApiGetComment = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError = ErrorType<Message>>(
+ commentId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetComment>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  query.queryKey = queryOptions.queryKey;
+  const queryOptions = getArticlesDiscussionApiGetCommentQueryOptions(commentId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
-};
+}
+
+
 
 /**
  * @summary Update Comment
  */
 export const articlesDiscussionApiUpdateComment = (
-  commentId: number,
-  discussionCommentUpdateSchema: BodyType<DiscussionCommentUpdateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<DiscussionCommentOut>(
-    {
-      url: `/api/articles/discussions/comments/${commentId}/`,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      data: discussionCommentUpdateSchema,
+    commentId: number,
+    discussionCommentUpdateSchema: BodyType<DiscussionCommentUpdateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionCommentOut>(
+      {url: `/api/articles/discussions/comments/${commentId}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: discussionCommentUpdateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiUpdateCommentMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>,
-    TError,
-    { commentId: number; data: BodyType<DiscussionCommentUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>,
-  TError,
-  { commentId: number; data: BodyType<DiscussionCommentUpdateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>,
-    { commentId: number; data: BodyType<DiscussionCommentUpdateSchema> }
-  > = (props) => {
-    const { commentId, data } = props ?? {};
+export const getArticlesDiscussionApiUpdateCommentMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>, TError,{commentId: number;data: BodyType<DiscussionCommentUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>, TError,{commentId: number;data: BodyType<DiscussionCommentUpdateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiUpdateComment(commentId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiUpdateCommentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>
->;
-export type ArticlesDiscussionApiUpdateCommentMutationBody =
-  BodyType<DiscussionCommentUpdateSchema>;
-export type ArticlesDiscussionApiUpdateCommentMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>, {commentId: number;data: BodyType<DiscussionCommentUpdateSchema>}> = (props) => {
+          const {commentId,data} = props ?? {};
 
-/**
+          return  articlesDiscussionApiUpdateComment(commentId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiUpdateCommentMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>>
+    export type ArticlesDiscussionApiUpdateCommentMutationBody = BodyType<DiscussionCommentUpdateSchema>
+    export type ArticlesDiscussionApiUpdateCommentMutationError = ErrorType<Message>
+
+    /**
  * @summary Update Comment
  */
-export const useArticlesDiscussionApiUpdateComment = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>,
-    TError,
-    { commentId: number; data: BodyType<DiscussionCommentUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>,
-  TError,
-  { commentId: number; data: BodyType<DiscussionCommentUpdateSchema> },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiUpdateCommentMutationOptions(options);
+export const useArticlesDiscussionApiUpdateComment = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>, TError,{commentId: number;data: BodyType<DiscussionCommentUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiUpdateComment>>,
+        TError,
+        {commentId: number;data: BodyType<DiscussionCommentUpdateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiUpdateCommentMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * @summary Delete Comment
  */
 export const articlesDiscussionApiDeleteComment = (
-  commentId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<void>(
-    { url: `/api/articles/discussions/comments/${commentId}/`, method: 'DELETE' },
-    options
-  );
-};
+    commentId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/articles/discussions/comments/${commentId}/`, method: 'DELETE'
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiDeleteCommentMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>,
-    TError,
-    { commentId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>,
-  TError,
-  { commentId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>,
-    { commentId: number }
-  > = (props) => {
-    const { commentId } = props ?? {};
+export const getArticlesDiscussionApiDeleteCommentMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>, TError,{commentId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>, TError,{commentId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiDeleteComment(commentId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiDeleteCommentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>, {commentId: number}> = (props) => {
+          const {commentId} = props ?? {};
 
-export type ArticlesDiscussionApiDeleteCommentMutationError = ErrorType<Message>;
+          return  articlesDiscussionApiDeleteComment(commentId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiDeleteCommentMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>>
+    
+    export type ArticlesDiscussionApiDeleteCommentMutationError = ErrorType<Message>
+
+    /**
  * @summary Delete Comment
  */
-export const useArticlesDiscussionApiDeleteComment = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>,
-    TError,
-    { commentId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>,
-  TError,
-  { commentId: number },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiDeleteCommentMutationOptions(options);
+export const useArticlesDiscussionApiDeleteComment = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>, TError,{commentId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiDeleteComment>>,
+        TError,
+        {commentId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiDeleteCommentMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * Update discussion subscription (mainly to activate/deactivate)
  * @summary Update Discussion Subscription
  */
 export const articlesDiscussionApiUpdateDiscussionSubscription = (
-  subscriptionId: number,
-  discussionSubscriptionUpdateSchema: BodyType<DiscussionSubscriptionUpdateSchema>,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<DiscussionSubscriptionOut>(
-    {
-      url: `/api/articles/discussions/subscriptions/${subscriptionId}/`,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      data: discussionSubscriptionUpdateSchema,
+    subscriptionId: number,
+    discussionSubscriptionUpdateSchema: BodyType<DiscussionSubscriptionUpdateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionSubscriptionOut>(
+      {url: `/api/articles/discussions/subscriptions/${subscriptionId}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: discussionSubscriptionUpdateSchema
     },
-    options
-  );
-};
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiUpdateDiscussionSubscriptionMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
-    TError,
-    { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
-  TError,
-  { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
-    { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> }
-  > = (props) => {
-    const { subscriptionId, data } = props ?? {};
+export const getArticlesDiscussionApiUpdateDiscussionSubscriptionMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>, TError,{subscriptionId: number;data: BodyType<DiscussionSubscriptionUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>, TError,{subscriptionId: number;data: BodyType<DiscussionSubscriptionUpdateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiUpdateDiscussionSubscription(subscriptionId, data, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>
->;
-export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationBody =
-  BodyType<DiscussionSubscriptionUpdateSchema>;
-export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationError = ErrorType<Message>;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>, {subscriptionId: number;data: BodyType<DiscussionSubscriptionUpdateSchema>}> = (props) => {
+          const {subscriptionId,data} = props ?? {};
 
-/**
+          return  articlesDiscussionApiUpdateDiscussionSubscription(subscriptionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>>
+    export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationBody = BodyType<DiscussionSubscriptionUpdateSchema>
+    export type ArticlesDiscussionApiUpdateDiscussionSubscriptionMutationError = ErrorType<Message>
+
+    /**
  * @summary Update Discussion Subscription
  */
-export const useArticlesDiscussionApiUpdateDiscussionSubscription = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
-    TError,
-    { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
-  TError,
-  { subscriptionId: number; data: BodyType<DiscussionSubscriptionUpdateSchema> },
-  TContext
-> => {
-  const mutationOptions =
-    getArticlesDiscussionApiUpdateDiscussionSubscriptionMutationOptions(options);
+export const useArticlesDiscussionApiUpdateDiscussionSubscription = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>, TError,{subscriptionId: number;data: BodyType<DiscussionSubscriptionUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSubscription>>,
+        TError,
+        {subscriptionId: number;data: BodyType<DiscussionSubscriptionUpdateSchema>},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
-/**
+      const mutationOptions = getArticlesDiscussionApiUpdateDiscussionSubscriptionMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
  * Unsubscribe from discussion updates (soft delete by setting is_active to False)
  * @summary Unsubscribe From Discussion
  */
 export const articlesDiscussionApiUnsubscribeFromDiscussion = (
-  subscriptionId: number,
-  options?: SecondParameter<typeof customInstance>
-) => {
-  return customInstance<void>(
-    { url: `/api/articles/discussions/subscriptions/${subscriptionId}/`, method: 'DELETE' },
-    options
-  );
-};
+    subscriptionId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/articles/discussions/subscriptions/${subscriptionId}/`, method: 'DELETE'
+    },
+      options);
+    }
+  
 
-export const getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
-    TError,
-    { subscriptionId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
-  TError,
-  { subscriptionId: number },
-  TContext
-> => {
-  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
-    { subscriptionId: number }
-  > = (props) => {
-    const { subscriptionId } = props ?? {};
+export const getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>, TError,{subscriptionId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>, TError,{subscriptionId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
 
-    return articlesDiscussionApiUnsubscribeFromDiscussion(subscriptionId, requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type ArticlesDiscussionApiUnsubscribeFromDiscussionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>
->;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>, {subscriptionId: number}> = (props) => {
+          const {subscriptionId} = props ?? {};
 
-export type ArticlesDiscussionApiUnsubscribeFromDiscussionMutationError = ErrorType<Message>;
+          return  articlesDiscussionApiUnsubscribeFromDiscussion(subscriptionId,requestOptions)
+        }
 
-/**
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiUnsubscribeFromDiscussionMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>>
+    
+    export type ArticlesDiscussionApiUnsubscribeFromDiscussionMutationError = ErrorType<Message>
+
+    /**
  * @summary Unsubscribe From Discussion
  */
-export const useArticlesDiscussionApiUnsubscribeFromDiscussion = <
-  TError = ErrorType<Message>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
-    TError,
-    { subscriptionId: number },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
-  TError,
-  { subscriptionId: number },
-  TContext
-> => {
-  const mutationOptions = getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions(options);
+export const useArticlesDiscussionApiUnsubscribeFromDiscussion = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>, TError,{subscriptionId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiUnsubscribeFromDiscussion>>,
+        TError,
+        {subscriptionId: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions);
-};
+      const mutationOptions = getArticlesDiscussionApiUnsubscribeFromDiscussionMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
+ * Get the discussion summary for a community article.
+Available to all users who can view the article.
+
+Optimized: Single query with all necessary joins.
+ * @summary Get Discussion Summary
+ */
+export const articlesDiscussionApiGetDiscussionSummary = (
+    communityArticleId: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<DiscussionSummaryOut>(
+      {url: `/api/articles/discussions/summary/${communityArticleId}/`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getArticlesDiscussionApiGetDiscussionSummaryQueryKey = (communityArticleId: number,) => {
+    return [`/api/articles/discussions/summary/${communityArticleId}/`] as const;
+    }
+
+    
+export const getArticlesDiscussionApiGetDiscussionSummaryQueryOptions = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>, TError = ErrorType<Message>>(communityArticleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getArticlesDiscussionApiGetDiscussionSummaryQueryKey(communityArticleId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>> = ({ signal }) => articlesDiscussionApiGetDiscussionSummary(communityArticleId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(communityArticleId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ArticlesDiscussionApiGetDiscussionSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>>
+export type ArticlesDiscussionApiGetDiscussionSummaryQueryError = ErrorType<Message>
+
+/**
+ * @summary Get Discussion Summary
+ */
+export const useArticlesDiscussionApiGetDiscussionSummary = <TData = Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>, TError = ErrorType<Message>>(
+ communityArticleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof articlesDiscussionApiGetDiscussionSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getArticlesDiscussionApiGetDiscussionSummaryQueryOptions(communityArticleId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Create a discussion summary for a community article.
+Only community admins can create summaries.
+
+Optimized: Uses prefetch for admin check, atomic create with get_or_create pattern.
+ * @summary Create Discussion Summary
+ */
+export const articlesDiscussionApiCreateDiscussionSummary = (
+    communityArticleId: number,
+    discussionSummaryCreateSchema: BodyType<DiscussionSummaryCreateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionSummaryOut>(
+      {url: `/api/articles/discussions/summary/${communityArticleId}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: discussionSummaryCreateSchema
+    },
+      options);
+    }
+  
+
+
+export const getArticlesDiscussionApiCreateDiscussionSummaryMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>, TError,{communityArticleId: number;data: BodyType<DiscussionSummaryCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>, TError,{communityArticleId: number;data: BodyType<DiscussionSummaryCreateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>, {communityArticleId: number;data: BodyType<DiscussionSummaryCreateSchema>}> = (props) => {
+          const {communityArticleId,data} = props ?? {};
+
+          return  articlesDiscussionApiCreateDiscussionSummary(communityArticleId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiCreateDiscussionSummaryMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>>
+    export type ArticlesDiscussionApiCreateDiscussionSummaryMutationBody = BodyType<DiscussionSummaryCreateSchema>
+    export type ArticlesDiscussionApiCreateDiscussionSummaryMutationError = ErrorType<Message>
+
+    /**
+ * @summary Create Discussion Summary
+ */
+export const useArticlesDiscussionApiCreateDiscussionSummary = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>, TError,{communityArticleId: number;data: BodyType<DiscussionSummaryCreateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiCreateDiscussionSummary>>,
+        TError,
+        {communityArticleId: number;data: BodyType<DiscussionSummaryCreateSchema>},
+        TContext
+      > => {
+
+      const mutationOptions = getArticlesDiscussionApiCreateDiscussionSummaryMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
+ * Update the discussion summary for a community article.
+Only community admins can update summaries.
+ * @summary Update Discussion Summary
+ */
+export const articlesDiscussionApiUpdateDiscussionSummary = (
+    communityArticleId: number,
+    discussionSummaryUpdateSchema: BodyType<DiscussionSummaryUpdateSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<DiscussionSummaryOut>(
+      {url: `/api/articles/discussions/summary/${communityArticleId}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: discussionSummaryUpdateSchema
+    },
+      options);
+    }
+  
+
+
+export const getArticlesDiscussionApiUpdateDiscussionSummaryMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>, TError,{communityArticleId: number;data: BodyType<DiscussionSummaryUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>, TError,{communityArticleId: number;data: BodyType<DiscussionSummaryUpdateSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>, {communityArticleId: number;data: BodyType<DiscussionSummaryUpdateSchema>}> = (props) => {
+          const {communityArticleId,data} = props ?? {};
+
+          return  articlesDiscussionApiUpdateDiscussionSummary(communityArticleId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiUpdateDiscussionSummaryMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>>
+    export type ArticlesDiscussionApiUpdateDiscussionSummaryMutationBody = BodyType<DiscussionSummaryUpdateSchema>
+    export type ArticlesDiscussionApiUpdateDiscussionSummaryMutationError = ErrorType<Message>
+
+    /**
+ * @summary Update Discussion Summary
+ */
+export const useArticlesDiscussionApiUpdateDiscussionSummary = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>, TError,{communityArticleId: number;data: BodyType<DiscussionSummaryUpdateSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiUpdateDiscussionSummary>>,
+        TError,
+        {communityArticleId: number;data: BodyType<DiscussionSummaryUpdateSchema>},
+        TContext
+      > => {
+
+      const mutationOptions = getArticlesDiscussionApiUpdateDiscussionSummaryMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
+ * Delete the discussion summary for a community article.
+Only community admins can delete summaries.
+ * @summary Delete Discussion Summary
+ */
+export const articlesDiscussionApiDeleteDiscussionSummary = (
+    communityArticleId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/articles/discussions/summary/${communityArticleId}/`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getArticlesDiscussionApiDeleteDiscussionSummaryMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>, TError,{communityArticleId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>, TError,{communityArticleId: number}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>, {communityArticleId: number}> = (props) => {
+          const {communityArticleId} = props ?? {};
+
+          return  articlesDiscussionApiDeleteDiscussionSummary(communityArticleId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesDiscussionApiDeleteDiscussionSummaryMutationResult = NonNullable<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>>
+    
+    export type ArticlesDiscussionApiDeleteDiscussionSummaryMutationError = ErrorType<Message>
+
+    /**
+ * @summary Delete Discussion Summary
+ */
+export const useArticlesDiscussionApiDeleteDiscussionSummary = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>, TError,{communityArticleId: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesDiscussionApiDeleteDiscussionSummary>>,
+        TError,
+        {communityArticleId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getArticlesDiscussionApiDeleteDiscussionSummaryMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

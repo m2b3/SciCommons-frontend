@@ -13,8 +13,13 @@ const CustomTooltip = ({ info }: CustomTooltipProps) => {
     <TooltipProvider delayDuration={10}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button type="button">
-            <Info size={12} className="text-text-secondary" />
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Add aria-label to tooltip icon button.
+              Why: Icon-only buttons need a text label for screen readers.
+              How: Provide an explicit aria-label and keep existing tooltip. */}
+          <button type="button" aria-label="More information">
+            <Info size={12} className="text-text-secondary" aria-hidden="true" />
           </button>
         </TooltipTrigger>
         <TooltipContent>

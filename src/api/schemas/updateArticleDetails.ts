@@ -4,9 +4,9 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { FAQSchema } from './fAQSchema';
 import type { UpdateArticleDetailsAbstract } from './updateArticleDetailsAbstract';
 import type { UpdateArticleDetailsAuthors } from './updateArticleDetailsAuthors';
+import type { FAQSchema } from './fAQSchema';
 import type { UpdateArticleDetailsSubmissionType } from './updateArticleDetailsSubmissionType';
 import type { UpdateArticleDetailsTitle } from './updateArticleDetailsTitle';
 

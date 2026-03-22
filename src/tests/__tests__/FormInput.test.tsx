@@ -66,12 +66,12 @@ describe('FormInput', () => {
   it('applies error styles when there is an error', () => {
     const errorsWithMessage = { testInput: { message: 'Error message' } };
     render(<FormInput {...defaultProps} errors={errorsWithMessage} />);
-    expect(screen.getByRole('textbox')).toHaveClass('border-red-500');
+    expect(screen.getByRole('textbox')).toHaveClass('border-functional-red');
   });
 
   it('does not apply error styles when readOnly is true, even if there is an error', () => {
     const errorsWithMessage = { testInput: { message: 'Error message' } };
     render(<FormInput {...defaultProps} errors={errorsWithMessage} readOnly={true} />);
-    expect(screen.getByRole('textbox')).not.toHaveClass('border-red-500');
+    expect(screen.getByRole('textbox')).not.toHaveClass('border-functional-red');
   });
 });

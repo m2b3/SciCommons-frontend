@@ -6,6 +6,6 @@
  */
 
 export type UsersCommonApiCheckPermissionParams = {
-  dashboard_type?: 'article' | 'community' | null;
-  resource_id?: string | null;
+dashboard_type?: 'article' | 'community' | null;
+resource_id?: string | null;
 };

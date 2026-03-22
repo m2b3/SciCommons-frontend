@@ -120,8 +120,12 @@ const FileUpload = <TFieldValues extends FieldValues>({
     disabled: fileObjs.length >= MAX_FILES,
   });
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: File upload root text color was hard-coded to gray.
+     Solution: Use the semantic primary text token to align with skins.
+     Result: File upload text adapts to active theme palettes. */
   return (
-    <div className="w-full text-gray-900">
+    <div className="w-full text-text-primary">
       <div
         {...getRootProps()}
         className={clsx(

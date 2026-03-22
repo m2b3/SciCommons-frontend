@@ -47,7 +47,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const [selectedType, setSelectedType] = useState<OptionType>(data?.data.type as OptionType);
-  const [isEditEnabled, setIsEditEnabled] = useState(false);
+  const [isEditEnabled, setIsEditEnabled] = useState(true);
   const [selectedPublicCommunitiesSettings, setSelectedPublicCommunitiesSettings] = useState(
     data?.data.community_settings as string
   );
@@ -161,32 +161,43 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
 
   return (
     <div className="relative my-4 rounded-xl border-common-contrast sm:border sm:bg-common-cardBackground sm:p-4 md:p-6">
-      <div
-        className="absolute hidden aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:right-4 sm:top-4 sm:block md:right-6 md:top-6"
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Replace edit-mode toggles with accessible buttons.
+          Why: Clickable divs are not keyboard accessible.
+          How: Use button elements with aria-label and pressed state. */}
+      <button
+        type="button"
+        className="absolute hidden aspect-square h-fit rounded-full p-2 hover:bg-common-contrast sm:right-4 sm:top-4 sm:block md:right-6 md:top-6"
         onClick={() => setIsEditEnabled(!isEditEnabled)}
+        aria-label={isEditEnabled ? 'Disable editing' : 'Enable editing'}
+        aria-pressed={isEditEnabled}
       >
         {!isEditEnabled ? (
           <Pencil className="size-5 text-functional-blue" />
         ) : (
           <X className="size-5 text-text-secondary" />
         )}
-      </div>
+      </button>
       <div className="mb-4 flex items-center justify-between sm:justify-center">
         <h1 className="text-center font-bold text-text-primary res-heading-sm">
           Edit your
           <span className="text-functional-green"> Community </span>
           Details
         </h1>
-        <div
-          className="aspect-square h-fit cursor-pointer rounded-full p-2 hover:bg-common-contrast sm:hidden"
+        <button
+          type="button"
+          className="aspect-square h-fit rounded-full p-2 hover:bg-common-contrast sm:hidden"
           onClick={() => setIsEditEnabled(!isEditEnabled)}
+          aria-label={isEditEnabled ? 'Disable editing' : 'Enable editing'}
+          aria-pressed={isEditEnabled}
         >
           {!isEditEnabled ? (
             <Pencil className="size-5 text-functional-blue" />
           ) : (
             <X className="size-5 text-text-secondary" />
           )}
-        </div>
+        </button>
       </div>
       {isPending && <DetailsSkeleton />}
       {data && (
@@ -214,12 +225,14 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
             textArea={true}
             placeholder="Briefly describe your community"
             register={register}
+            control={control}
             requiredMessage="Description is required"
             minLengthValue={10}
             minLengthMessage="Description must be at least 10 characters"
-            info="Your community's name should be unique and descriptive."
+            info="Provide a brief description of your community."
             errors={errors}
             readOnly={!isEditEnabled}
+            supportMarkdown={true}
           />
           {/* Tags */}
           {/* <Controller
@@ -261,6 +274,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                           field.onChange(value);
                           setSelectedType(value);
                         }}
+                        groupName="community-type"
                         showRadio={false}
                       />
                     ))}
@@ -293,6 +307,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
                               field.onChange(value);
                               setSelectedPublicCommunitiesSettings(value);
                             }}
+                            groupName="community-settings"
                           />
                         ))}
                       </>

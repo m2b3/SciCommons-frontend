@@ -4,8 +4,8 @@
  * MyApp API
  * OpenAPI spec version: 1.0.0
  */
-import type { ArticleBasicOut } from './articleBasicOut';
 import type { DateCount } from './dateCount';
+import type { ArticleBasicOut } from './articleBasicOut';
 
 export interface CommunityStatsResponse {
   article_submission_trends: DateCount[];

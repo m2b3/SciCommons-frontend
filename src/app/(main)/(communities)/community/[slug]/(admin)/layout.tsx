@@ -14,7 +14,7 @@ export default function CommunityAdminLayout({ children }: { children: React.Rea
     // {
     //   href: `/community/${params?.slug}/dashboard`,
     //   label: 'Dashboard',
-    //   icon: <Activity className="mr-3 dark:text-gray-300" />,
+    //   icon: <Activity className="mr-3 text-text-secondary" />,
     // },
     {
       href: `/community/${params?.slug}/settings`,

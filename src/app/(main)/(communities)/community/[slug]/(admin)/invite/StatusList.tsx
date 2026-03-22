@@ -37,6 +37,10 @@ const StatusList = ({ slug }: { slug: string }) => {
     return item.status === filter;
   });
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Invite status filter used hard-coded gray/indigo input styles.
+     Solution: Replace fixed colors with semantic token classes for borders and focus states.
+     Result: Filter control now aligns with active skin styling. */
   return (
     <div className="my-4 rounded-xl border-common-contrast text-text-primary sm:border sm:bg-common-cardBackground sm:p-4">
       <div className="mb-4 flex items-center justify-between">
@@ -44,7 +48,7 @@ const StatusList = ({ slug }: { slug: string }) => {
         <select
           value={filter}
           onChange={handleFilterChange}
-          className="block w-40 rounded-md border-gray-300 px-3 py-2 res-text-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+          className="block w-40 rounded-md border border-common-contrast bg-common-cardBackground px-3 py-2 text-text-primary res-text-sm focus:border-functional-blue focus:outline-none focus:ring-functional-blue"
         >
           <option value="All">All</option>
           <option value="Accepted">Accepted</option>

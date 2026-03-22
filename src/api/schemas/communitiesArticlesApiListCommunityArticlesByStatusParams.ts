@@ -7,11 +7,11 @@
 import type { ArticleStatus } from './articleStatus';
 
 export type CommunitiesArticlesApiListCommunityArticlesByStatusParams = {
-  status?: ArticleStatus | null;
-  submitted_after?: string | null;
-  submitted_before?: string | null;
-  page?: number;
-  size?: number;
-  sort_by?: string;
-  sort_order?: string;
+status?: ArticleStatus | null;
+submitted_after?: string | null;
+submitted_before?: string | null;
+page?: number;
+size?: number;
+sort_by?: string;
+sort_order?: string;
 };

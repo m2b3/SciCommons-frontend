@@ -55,7 +55,7 @@ const CreateCommunity: React.FC = () => {
       },
     },
     mutation: {
-      onSuccess: async (data) => {
+      onSuccess: async (_data) => {
         toast.success('Community created successfully! Redirecting to community page...');
         // Invalidate queries so the communities page is always fresh
         await queryClient.invalidateQueries({ queryKey: ['communities'] });
@@ -168,13 +168,15 @@ const CreateCommunity: React.FC = () => {
             textArea={true}
             placeholder="Briefly describe your community"
             register={register}
+            control={control}
             requiredMessage="Description is required"
             minLengthValue={1}
             maxLengthValue={500}
-            minLengthMessage="Description must be at least 1 characters"
+            minLengthMessage="Description must be at least 1 character"
             maxLengthMessage="Description must not exceed 500 characters"
-            info="Your community's name should be unique and descriptive."
+            info="Provide a brief description of your community."
             errors={errors}
+            supportMarkdown={true}
           />
           {/* <Controller
           name="tags"
@@ -215,6 +217,7 @@ const CreateCommunity: React.FC = () => {
                           field.onChange(value);
                           setSelectedType(value);
                         }}
+                        groupName="community-type"
                         showRadio={false}
                       />
                     ))}
@@ -246,6 +249,7 @@ const CreateCommunity: React.FC = () => {
                               field.onChange(value);
                               setSelectedPublicCommunitiesSettings(value);
                             }}
+                            groupName="community-settings"
                           />
                         ))}
                       </>

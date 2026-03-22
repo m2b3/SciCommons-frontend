@@ -47,22 +47,12 @@ import { cn } from '@/lib/utils';
 // Only import this to the next file
 export default function InitializedMDXEditor({
   editorRef,
+  hideToolbar = false,
   ...props
-}: { editorRef: ForwardedRef<MDXEditorMethods> | null } & MDXEditorProps) {
+}: { editorRef: ForwardedRef<MDXEditorMethods> | null; hideToolbar?: boolean } & MDXEditorProps) {
   const { theme } = useTheme();
 
-  const defaultSnippetContent = `
-export default function App() {
-  return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
-    </div>
-  );
-}
-`.trim();
-
-  const YoutubeDirectiveDescriptor: DirectiveDescriptor<any> = {
+  const YoutubeDirectiveDescriptor: DirectiveDescriptor = {
     name: 'youtube',
     type: 'leafDirective',
     testNode(node) {
@@ -71,6 +61,10 @@ export default function App() {
     attributes: ['id'],
     hasChildren: false,
     Editor: ({ mdastNode, lexicalNode, parentEditor }) => {
+      const videoId =
+        mdastNode.attributes && typeof mdastNode.attributes.id === 'string'
+          ? mdastNode.attributes.id
+          : '';
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <button
@@ -86,7 +80,7 @@ export default function App() {
           <iframe
             width="560"
             height="315"
-            src={`https://www.youtube.com/embed/${mdastNode.attributes.id}`}
+            src={`https://www.youtube.com/embed/${videoId}`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -117,7 +111,7 @@ export default function App() {
   };
 
   const ALL_PLUGINS = [
-    toolbarPlugin({ toolbarContents: () => <CustomToolbar /> }),
+    ...(hideToolbar ? [] : [toolbarPlugin({ toolbarContents: () => <CustomToolbar /> })]),
     listsPlugin(),
     quotePlugin(),
     headingsPlugin({ allowedHeadingLevels: [1, 2, 3, 4, 5, 6] }),
@@ -164,8 +158,10 @@ export default function App() {
       onChange={(markdown, initialMarkdownNormalize) => {
         props.onChange?.(markdown, initialMarkdownNormalize);
       }}
-      placeholder="Write here..."
-      className={cn('rounded-lg border border-common-minimal', theme === 'dark' ? 'dark' : 'light')}
+      placeholder={props.placeholder || 'Write here...'}
+      className={cn('rounded-lg border border-common-contrast bg-common-background', theme, {
+        'bg-common-cardBackground': props.readOnly,
+      })}
       contentEditableClassName={markdownStyles}
     />
   );

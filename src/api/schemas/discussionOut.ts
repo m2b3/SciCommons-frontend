@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { DiscussionOutDeletedAt } from './discussionOutDeletedAt';
+import type { FlagType } from './flagType';
 import type { DiscussionOutId } from './discussionOutId';
 import type { UserStats } from './userStats';
 
@@ -14,9 +15,12 @@ export interface DiscussionOut {
   content: string;
   created_at: string;
   deleted_at?: DiscussionOutDeletedAt;
+  /** List of flags set for this entity for the current user (e.g., ['unread']). Empty for unauthenticated users. */
+  flags?: FlagType[];
   id?: DiscussionOutId;
   is_author?: boolean;
   is_pseudonymous?: boolean;
+  is_resolved?: boolean;
   /** @maxLength 200 */
   topic: string;
   updated_at: string;

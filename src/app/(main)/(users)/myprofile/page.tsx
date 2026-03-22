@@ -5,6 +5,9 @@ import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+// NOTE(Codex for bsureshkrishna, 2026-02-09): Gate profile behind auth to prevent
+// unauthenticated access to user data editing.
+import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useUsersApiUpdateUser } from '@/api/users/users';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Option } from '@/components/ui/multiple-selector';
@@ -35,6 +38,7 @@ export interface IProfileForm {
     status: string;
     startYear: string;
     endYear: string;
+    isOngoing?: boolean;
   }>;
   researchInterests: Option[];
 }
@@ -69,7 +73,7 @@ const Home: React.FC = () => {
 
   const methods = useForm<IProfileForm>({
     defaultValues: {
-      professionalStatuses: [{ status: '', startYear: '', endYear: '' }],
+      professionalStatuses: [],
     },
     mode: 'onChange',
   });
@@ -91,10 +95,37 @@ const Home: React.FC = () => {
       academic_statuses: formData.professionalStatuses.map((status) => ({
         academic_email: status.status,
         start_year: status.startYear,
-        end_year: status.endYear,
+        end_year: status.isOngoing ? null : status.endYear,
       })),
       research_interests: formData.researchInterests.map((interest) => interest.value),
     };
+
+    /* Fixed by Codex on 2026-02-22
+       Who: Codex
+       What: Harden submit-time year validation for professional statuses.
+       Why: Non-numeric or malformed year strings could pass the previous Number/parse checks.
+       How: Enforce 4-digit year format for start/end and keep range/order checks against the current year. */
+    const invalidYear = formData.professionalStatuses.some((s) => {
+      const currentYear = new Date().getFullYear();
+
+      if (!/^\d{4}$/.test(s.startYear)) return true;
+      const start = Number(s.startYear);
+      if (start < 1950 || start > currentYear) return true;
+
+      if (!s.isOngoing) {
+        if (!/^\d{4}$/.test(s.endYear)) return true;
+        const end = Number(s.endYear);
+        if (end < start) return true;
+        if (end > currentYear) return true;
+      }
+
+      return false;
+    });
+
+    if (invalidYear) {
+      toast.error('Enter valid years: use 4-digit years between 1950 and the current year.');
+      return;
+    }
 
     mutate({
       data: {
@@ -102,6 +133,10 @@ const Home: React.FC = () => {
         profile_image: formData.profilePicture ? formData.profilePicture[0] : undefined,
       },
     });
+  };
+
+  const onInvalid = () => {
+    toast.error('Please fix the highlighted fields before saving.');
   };
 
   useEffect(() => {
@@ -122,7 +157,8 @@ const Home: React.FC = () => {
           professionalStatuses: data.data.academic_statuses.map((status) => ({
             status: status.academic_email,
             startYear: String(status.start_year),
-            endYear: String(status.end_year),
+            endYear: status.end_year ? String(status.end_year) : '',
+            isOngoing: status.end_year === null,
           })),
           researchInterests: data.data.research_interests.map((interest) => ({
             label: interest,
@@ -142,7 +178,7 @@ const Home: React.FC = () => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="py-8 res-text-sm">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="py-8 res-text-sm">
         <div className="container mx-auto px-4">
           <Profile
             errors={errors}
@@ -166,4 +202,5 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+// NOTE(Codex for bsureshkrishna, 2026-02-09): Enforce auth requirement for profile.
+export default withAuthRedirect(Home, { requireAuth: true });

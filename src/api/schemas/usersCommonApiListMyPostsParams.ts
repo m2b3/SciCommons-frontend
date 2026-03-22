@@ -6,9 +6,9 @@
  */
 
 export type UsersCommonApiListMyPostsParams = {
-  page?: number;
-  size?: number;
-  sort_by?: string;
-  sort_order?: string;
-  hashtag?: string | null;
+page?: number;
+size?: number;
+sort_by?: string;
+sort_order?: string;
+hashtag?: string | null;
 };

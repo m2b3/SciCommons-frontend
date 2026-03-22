@@ -3,11 +3,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import katex, { KatexOptions } from 'katex';
 import { ChevronsDown } from 'lucide-react';
-import { marked } from 'marked';
+import { Renderer, marked } from 'marked';
 
-import { markdownStyles } from '@/constants/common.constants';
+import { ENABLE_SHOW_MORE, markdownStyles } from '@/constants/common.constants';
 import { cn } from '@/lib/utils';
 
+// NOTE(bsureshkrishna, 2026-02-07): Centralized safe markdown/LaTeX rendering after baseline 5271498.
+// Uses DOMPurify for XSS protection and optional "show more" truncation for long content.
 // Type to ensure at least one of supportMarkdown or supportLatex is true
 type SupportConfig =
   | { supportMarkdown: true; supportLatex?: boolean }
@@ -21,12 +23,14 @@ const RenderParsedHTML = ({
   gradientClassName,
   supportMarkdown = true,
   supportLatex = true,
+  flattenHeadings = false,
 }: {
   rawContent: string;
   isShrinked?: boolean;
   containerClassName?: string;
   contentClassName?: string;
   gradientClassName?: string;
+  flattenHeadings?: boolean;
 } & SupportConfig) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -38,7 +42,7 @@ const RenderParsedHTML = ({
       const katexOptions: KatexOptions = {
         displayMode: true,
         output: 'mathml' as const,
-        trust: true,
+        trust: false,
         strict: false,
         throwOnError: false,
         macros: {
@@ -59,7 +63,7 @@ const RenderParsedHTML = ({
       // This regex matches \begin{envname}...\end{envname} environments
       processedContent = processedContent.replace(
         /\\begin\{(equation\*?|align\*?|gather\*?|split|multline\*?|alignat\*?|flalign\*?|eqnarray\*?)\}([\s\S]*?)\\end\{\1\}/g,
-        (match, envName, expr) => {
+        (match, _envName, _expr) => {
           try {
             return katex.renderToString(match, {
               ...katexOptions,
@@ -113,10 +117,40 @@ const RenderParsedHTML = ({
     try {
       let processedContent = content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, '');
 
+      // Create custom renderer
+      let renderer: Renderer | undefined;
+      if (supportMarkdown) {
+        renderer = new Renderer();
+
+        // Fix links without protocols
+        renderer.link = ({ href, title, tokens }) => {
+          // Extract text from tokens
+          const text = tokens.map((t) => ('text' in t ? t.text : '')).join('');
+
+          // If href doesn't start with a protocol or /, assume it's an external link
+          if (href && !href.match(/^(https?:\/\/|mailto:|tel:|#|\/)/i)) {
+            // Check if it looks like a domain (contains a dot)
+            if (href.includes('.') || href.includes('://')) {
+              href = `https://${href}`;
+            }
+          }
+
+          const titleAttr = title ? ` title="${title}"` : '';
+          return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+        };
+
+        // Flatten headings if needed
+        if (flattenHeadings) {
+          renderer.heading = ({ text }) => {
+            return `<strong>${text}</strong> `;
+          };
+        }
+      }
+
       // If only markdown is supported
       if (supportMarkdown && !supportLatex) {
         try {
-          return marked.parse(processedContent) as string;
+          return marked.parse(processedContent, renderer ? { renderer } : {}) as string;
         } catch (e) {
           console.warn('Markdown parsing failed:', e);
           return processedContent;
@@ -137,7 +171,7 @@ const RenderParsedHTML = ({
 
         // Finally process markdown
         try {
-          return marked.parse(processedContent) as string;
+          return marked.parse(processedContent, renderer ? { renderer } : {}) as string;
         } catch (e) {
           console.warn('Markdown parsing failed:', e);
           return processedContent;
@@ -165,10 +199,15 @@ const RenderParsedHTML = ({
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-  }, [rawContent, supportMarkdown, supportLatex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawContent, supportMarkdown, supportLatex, flattenHeadings]);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!ENABLE_SHOW_MORE) {
+      setIsOverflowing(false);
+      return;
+    }
     if (contentRef.current) {
       setIsOverflowing(contentRef.current.scrollHeight > 100);
     }
@@ -179,7 +218,7 @@ const RenderParsedHTML = ({
       <div
         className={cn(
           'overflow-hidden transition-all duration-300 ease-in-out',
-          isShrinked && !isExpanded && isOverflowing && 'h-fit max-h-[100px]'
+          ENABLE_SHOW_MORE && isShrinked && !isExpanded && isOverflowing && 'h-fit max-h-[100px]'
         )}
       >
         <div
@@ -189,7 +228,7 @@ const RenderParsedHTML = ({
         />
       </div>
 
-      {isShrinked && isOverflowing && (
+      {ENABLE_SHOW_MORE && isShrinked && isOverflowing && (
         <>
           <div
             className={cn(

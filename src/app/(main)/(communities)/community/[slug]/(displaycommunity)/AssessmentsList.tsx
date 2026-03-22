@@ -32,7 +32,7 @@ const AssessmentsList: React.FC<AssessmentsListProps> = ({ communityId }) => {
       )}
       {data &&
         data.data.map((article) => (
-          <div className="relative flex flex-col gap-2 bg-white p-2" key={article.id}>
+          <div className="relative flex flex-col gap-2" key={article.id}>
             <ArticleCard article={article} forCommunity />
           </div>
         ))}
