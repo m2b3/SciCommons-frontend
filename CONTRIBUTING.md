@@ -1,6 +1,8 @@
 # Contribution Guidelines
 **Enhancements, bug reports, and site testing are welcomed and highly encouraged!**
 
+**The live branch for the front-end is sureshDev. Please target that**
+
 *This guide serves to set clear expectations for everyone involved with the project so that we can improve it together while also creating a welcoming space for everyone to participate. Following these guidelines will help ensure a positive experience for contributors and maintainers.*
 
 ### 🪲 Finding an Issue
