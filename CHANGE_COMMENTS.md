@@ -1,3 +1,15 @@
+## 2026-03-22 - Review Pinning Ported onto sureshDev
+
+Problem: The pinned-review feature existed only on an old stale branch, so `sureshDev` lacked the moderator pin/unpin controls and did not visually surface pinned reviews.
+
+Root Cause: `sureshDev` was behind the newer backend contract for review pinning, and the shared review UI still rendered reviews in plain list order with no pinned-state handling.
+
+Solution: Added frontend pin/unpin support directly in `ReviewCard` using the backend `/api/articles/reviews/{reviewId}/pin/` endpoint via the shared Axios client, corrected permission gating to compare moderator/reviewer access against the logged-in user, added a shared pinned-state helper that works with both legacy `flags` payloads and newer `pinned` payloads, and sorted pinned reviews to the top in `ReviewsTabBody`.
+
+Result: Community moderators can now pin and unpin reviews from `sureshDev`, pinned reviews are clearly marked in the card UI, and pinned entries stay surfaced at the top of the review list instead of getting buried.
+
+Files Modified: `src/components/articles/reviewPinning.ts`, `src/components/articles/ReviewCard.tsx`, `src/components/articles/ReviewsTabBody.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-22 - BrowserStack Playwright Opt-In Gating
 
 Problem: The BrowserStack testing branch made ordinary Playwright accessibility runs fail unless BrowserStack credentials were present, even though the app itself was unchanged.
