@@ -908,3 +908,151 @@ export const useArticlesReviewApiGetRating = <
 
   return query;
 };
+
+/**
+ * @summary Pin Review
+ */
+export const articlesReviewApiPinReview = (
+  reviewId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    { url: `/api/articles/reviews/${reviewId}/pin/`, method: 'POST' },
+    options
+  );
+};
+
+export const getArticlesReviewApiPinReviewMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesReviewApiPinReview>>,
+    TError,
+    { reviewId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesReviewApiPinReview>>,
+  TError,
+  { reviewId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesReviewApiPinReview>>,
+    { reviewId: number }
+  > = (props) => {
+    const { reviewId } = props ?? {};
+
+    return articlesReviewApiPinReview(reviewId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesReviewApiPinReviewMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesReviewApiPinReview>>
+>;
+export type ArticlesReviewApiPinReviewMutationError = ErrorType<Message>;
+
+/**
+ * @summary Pin Review
+ */
+export const useArticlesReviewApiPinReview = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesReviewApiPinReview>>,
+    TError,
+    { reviewId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesReviewApiPinReview>>,
+  TError,
+  { reviewId: number },
+  TContext
+> => {
+  const mutationOptions = getArticlesReviewApiPinReviewMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * @summary Unpin Review
+ */
+export const articlesReviewApiUnpinReview = (
+  reviewId: number,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<Message>(
+    { url: `/api/articles/reviews/${reviewId}/pin/`, method: 'DELETE' },
+    options
+  );
+};
+
+export const getArticlesReviewApiUnpinReviewMutationOptions = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesReviewApiUnpinReview>>,
+    TError,
+    { reviewId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof articlesReviewApiUnpinReview>>,
+  TError,
+  { reviewId: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof articlesReviewApiUnpinReview>>,
+    { reviewId: number }
+  > = (props) => {
+    const { reviewId } = props ?? {};
+
+    return articlesReviewApiUnpinReview(reviewId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ArticlesReviewApiUnpinReviewMutationResult = NonNullable<
+  Awaited<ReturnType<typeof articlesReviewApiUnpinReview>>
+>;
+export type ArticlesReviewApiUnpinReviewMutationError = ErrorType<Message>;
+
+/**
+ * @summary Unpin Review
+ */
+export const useArticlesReviewApiUnpinReview = <
+  TError = ErrorType<Message>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof articlesReviewApiUnpinReview>>,
+    TError,
+    { reviewId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof articlesReviewApiUnpinReview>>,
+  TError,
+  { reviewId: number },
+  TContext
+> => {
+  const mutationOptions = getArticlesReviewApiUnpinReviewMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};

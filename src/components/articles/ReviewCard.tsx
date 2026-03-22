@@ -10,6 +10,7 @@ import {
   ChevronUp,
   MessageCircle,
   Pencil,
+  Pin,
   Shield,
   Star,
   StarIcon,
@@ -18,6 +19,10 @@ import {
 import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
+import {
+  useArticlesReviewApiPinReview,
+  useArticlesReviewApiUnpinReview,
+} from '@/api/reviews/reviews';
 import { ReviewOut } from '@/api/schemas';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -78,6 +83,32 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
       },
     });
 
+  const { mutate: pinReview, isPending: pinPending } = useArticlesReviewApiPinReview({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onSuccess: () => {
+        refetch && refetch();
+        toast.success('Review pinned successfully');
+      },
+      onError: (error) => {
+        showErrorToast(error);
+      },
+    },
+  });
+
+  const { mutate: unpinReview, isPending: unpinPending } = useArticlesReviewApiUnpinReview({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onSuccess: () => {
+        refetch && refetch();
+        toast.success('Review unpinned successfully');
+      },
+      onError: (error) => {
+        showErrorToast(error);
+      },
+    },
+  });
+
   // const handleReaction = (reaction: Reaction) => {
   //   if (reaction === 'upvote')
   //     mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: 1 } });
@@ -126,6 +157,8 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   const canApprove =
     review.community_article?.reviewer_ids?.includes(review.user.id || 0) ||
     review.community_article?.moderator_id === review.user.id;
+
+  const canPin = review.community_article?.moderator_id === review.user.id;
 
   return (
     <>
@@ -211,11 +244,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div>
           </div>
           <h3 className="mt-2 text-sm font-semibold">
-            <TruncateText
-              text={currentVersion.subject}
-              maxLines={2}
-              textClassName="text-text-primary text-base"
-            />
+            <div className="flex items-center gap-2">
+              {review.pinned && <Pin className="h-4 w-4 fill-current text-functional-yellow" />}
+              <TruncateText
+                text={currentVersion.subject}
+                maxLines={2}
+                textClassName="text-text-primary text-base"
+              />
+            </div>
           </h3>
 
           <div>
@@ -305,6 +341,22 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                     <CheckCircle className="h-4 w-4" />
                   </ButtonIcon>
                   <ButtonTitle>{review.is_approved ? 'Approved' : 'Approve'}</ButtonTitle>
+                </Button>
+              )}
+              {canPin && (
+                <Button
+                  disabled={pinPending || unpinPending}
+                  onClick={() =>
+                    review.pinned
+                      ? unpinReview({ reviewId: review.id || 0 })
+                      : pinReview({ reviewId: review.id || 0 })
+                  }
+                  variant={review.pinned ? 'default' : 'outline'}
+                >
+                  <ButtonIcon>
+                    <Pin className={`h-4 w-4 ${review.pinned ? 'fill-current' : ''}`} />
+                  </ButtonIcon>
+                  <ButtonTitle>{review.pinned ? 'Unpin' : 'Pin'}</ButtonTitle>
                 </Button>
               )}
             </div>

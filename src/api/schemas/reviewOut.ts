@@ -22,6 +22,7 @@ export interface ReviewOut {
   is_approved?: boolean;
   is_author?: boolean;
   is_pseudonymous?: boolean;
+  pinned?: boolean;
   rating: number;
   /** @maxLength 10 */
   review_type?: string;
