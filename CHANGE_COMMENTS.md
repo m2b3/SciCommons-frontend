@@ -1,3 +1,27 @@
+## 2026-03-22 - BrowserStack Optional Dependency Runtime Guidance
+
+Problem: Developers who intentionally ran the BrowserStack Playwright path without `browserstack-local` installed would hit a generic runtime module-load failure.
+
+Root Cause: The BrowserStack setup now lazy-loads the package correctly, but the missing-package path still surfaced the raw dynamic import error.
+
+Solution: Wrapped the lazy `browserstack-local` import in an explicit guard that throws a direct actionable message telling the developer that BrowserStack testing requires the optional package to be installed locally.
+
+Result: BrowserStack remains an opt-in developer-only dependency, while failed BrowserStack attempts now explain exactly what is missing and how to proceed.
+
+Files Modified: `src/tests/global-setup.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-22 - BrowserStack Playwright Type-Check and Lint Cleanup
+
+Problem: Validation on `sureshDev` still failed in the Playwright BrowserStack helpers due to a missing `browserstack-local` type declaration, `unknown` error handling in the public accessibility spec, and leftover `any` usage warnings in setup/teardown and protected accessibility code.
+
+Root Cause: The BrowserStack flow mixed eager module import with no local type declaration, and older catch/global helper code relied on `any` instead of explicit typed handling.
+
+Solution: Added a local `browserstack-local` declaration file, switched BrowserStack Local loading in `global-setup.ts` to a lazy runtime import gated by credentials, typed the shared global tunnel handle, and replaced `any`-based error handling in the accessibility specs with a small `unknown` -> message helper.
+
+Result: The BrowserStack-related Playwright files now pass lint cleanly, and the two repo-wide TypeScript blockers that previously broke `tsc --skipLibCheck --noEmit` are removed.
+
+Files Modified: `src/types/browserstack-local.d.ts`, `src/tests/global-setup.ts`, `src/tests/global-teardown.ts`, `src/tests/__tests__/accessibility.public.spec.ts`, `src/tests/__tests__/accessibility.protected.spec.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-22 - Review Pinning Ported onto sureshDev
 
 Problem: The pinned-review feature existed only on an old stale branch, so `sureshDev` lacked the moderator pin/unpin controls and did not visually surface pinned reviews.

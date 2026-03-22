@@ -1,5 +1,11 @@
+import type { Local as BrowserStackLocalInstance } from 'browserstack-local';
+
+const browserStackGlobal = globalThis as typeof globalThis & {
+  _bsLocal?: BrowserStackLocalInstance;
+};
+
 async function globalTeardown() {
-  const bsLocal = (global as any)._bsLocal;
+  const bsLocal = browserStackGlobal._bsLocal;
   if (bsLocal) {
     return new Promise<void>((resolve) => {
       bsLocal.stop(() => {

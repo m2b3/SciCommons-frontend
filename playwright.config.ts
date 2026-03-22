@@ -9,15 +9,15 @@ const isCI = !!process.env.CI;
 const STORAGE_STATE = 'playwright/.auth/user.json';
 const isBrowserStackEnabled = Boolean(
   process.env.PW_USE_BROWSERSTACK === '1' &&
-  process.env.BROWSERSTACK_USERNAME &&
-  process.env.BROWSERSTACK_ACCESS_KEY,
+    process.env.BROWSERSTACK_USERNAME &&
+    process.env.BROWSERSTACK_ACCESS_KEY
 );
 
 const caps = {
   browser: 'chrome',
   os: 'osx',
   os_version: 'sonoma',
-  project: 'SciCommons Accessibility', 
+  project: 'SciCommons Accessibility',
   build: 'Initial Setup Build',
   'browserstack.username': process.env.BROWSERSTACK_USERNAME,
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
@@ -55,7 +55,9 @@ const browserStackProjects = isBrowserStackEnabled
 
 export default defineConfig({
   globalSetup: isBrowserStackEnabled ? require.resolve('./src/tests/global-setup') : undefined,
-  globalTeardown: isBrowserStackEnabled ? require.resolve('./src/tests/global-teardown') : undefined,
+  globalTeardown: isBrowserStackEnabled
+    ? require.resolve('./src/tests/global-teardown')
+    : undefined,
   timeout: 120000,
   expect: {
     timeout: 30000,

@@ -2,9 +2,9 @@ import { FC, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
+import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useMutation } from '@tanstack/react-query';
 import {
   CheckCircle,
   ChevronDown,
@@ -20,8 +20,8 @@ import {
 import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
-import { Message, ReviewOut } from '@/api/schemas';
 import { customInstance } from '@/api/custom-instance';
+import { Message, ReviewOut } from '@/api/schemas';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -378,9 +378,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 <Button
                   disabled={pinPending || unpinPending}
                   onClick={() =>
-                    isPinned
-                      ? unpinReview(review.id || 0)
-                      : pinReview(review.id || 0)
+                    isPinned ? unpinReview(review.id || 0) : pinReview(review.id || 0)
                   }
                   variant={isPinned ? 'default' : 'outline'}
                 >

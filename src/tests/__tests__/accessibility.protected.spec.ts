@@ -1,6 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+const getErrorMessage = (error: unknown) => (error instanceof Error ? error.message : String(error));
+
 const PROTECTED_PAGES = [
   { name: 'My Contributions', path: '/mycontributions' },
   { name: 'Settings', path: '/settings' },
@@ -35,11 +37,17 @@ test.describe('Global Accessibility Audit (Protected)', () => {
         expect(results.violations).toEqual([]);
 
         if (testInfo.project.name.includes('browserstack')) {
-          await page.evaluate(_ => { }, `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Accessibility Audit Passed"}}`);
+          await page.evaluate(
+            (_) => {},
+            `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Accessibility Audit Passed"}}`
+          );
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (testInfo.project.name.includes('browserstack')) {
-          await page.evaluate(_ => { }, `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed", "reason": "${e.message}"}}`);
+          await page.evaluate(
+            (_) => {},
+            `browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed", "reason": "${getErrorMessage(e)}"}}`
+          );
         }
         throw e;
       }
