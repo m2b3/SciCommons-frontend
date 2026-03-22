@@ -1,3 +1,15 @@
+## 2026-03-22 - BrowserStack Playwright Opt-In Gating
+
+Problem: The BrowserStack testing branch made ordinary Playwright accessibility runs fail unless BrowserStack credentials were present, even though the app itself was unchanged.
+
+Root Cause: `playwright.config.ts` unconditionally registered BrowserStack global setup/teardown, and `src/tests/global-setup.ts` threw immediately when `BROWSERSTACK_ACCESS_KEY` was missing.
+
+Solution: Gated BrowserStack tunnel bootstrap and remote Playwright projects behind an explicit `PW_USE_BROWSERSTACK=1` opt-in plus required BrowserStack credentials. Also hardened `global-setup.ts` so missing credentials are treated as a no-op fallback instead of a hard failure.
+
+Result: Local Chromium accessibility runs remain unchanged and do not require BrowserStack secrets, while BrowserStack execution still works when deliberately enabled.
+
+Files Modified: `playwright.config.ts`, `src/tests/global-setup.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-16 - Jest/Playwright Test Discovery Separation
 
 Problem: Running `yarn test` started failing because Jest discovered Playwright accessibility `*.spec.ts` files and attempted to execute them in the Jest/jsdom runtime.

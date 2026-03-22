@@ -4,7 +4,13 @@ let bsLocal: any;
 
 async function globalSetup() {
   const bsKey = process.env.BROWSERSTACK_ACCESS_KEY;
-  if (!bsKey) throw new Error('Missing BROWSERSTACK_ACCESS_KEY');
+  if (!bsKey) {
+    /* Fixed by Codex on 2026-03-22
+       Problem: Global setup hard-failed even when BrowserStack was not intentionally in use.
+       Solution: Treat missing BrowserStack credentials as a no-op in the tunnel bootstrap.
+       Result: Accidental setup invocation no longer breaks local Playwright runs. */
+    return;
+  }
 
   bsLocal = new BrowserStackLocal.Local();
 

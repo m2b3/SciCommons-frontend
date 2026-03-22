@@ -7,6 +7,11 @@ dotenv.config({ path: playwrightEnvPath });
 
 const isCI = !!process.env.CI;
 const STORAGE_STATE = 'playwright/.auth/user.json';
+const isBrowserStackEnabled = Boolean(
+  process.env.PW_USE_BROWSERSTACK === '1' &&
+  process.env.BROWSERSTACK_USERNAME &&
+  process.env.BROWSERSTACK_ACCESS_KEY,
+);
 
 const caps = {
   browser: 'chrome',
@@ -19,10 +24,38 @@ const caps = {
   'browserstack.local': 'true',
 };
 
+/* Fixed by Codex on 2026-03-22
+   Problem: BrowserStack setup was enabled for every Playwright invocation.
+   Solution: Gate BrowserStack tunnel/bootstrap and remote projects behind an explicit opt-in flag plus required credentials.
+   Result: Local Chromium accessibility runs keep working unchanged, while BrowserStack remains available when intentionally enabled. */
+const browserStackProjects = isBrowserStackEnabled
+  ? [
+      {
+        name: 'browserstack-public',
+        use: {
+          connectOptions: {
+            wsEndpoint: `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify({ ...caps, name: 'Public Audit' }))}`,
+          },
+        },
+        testMatch: /accessibility\.public\.spec\.ts/,
+      },
+      {
+        name: 'browserstack-protected',
+        use: {
+          storageState: STORAGE_STATE,
+          connectOptions: {
+            wsEndpoint: `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify({ ...caps, name: 'Protected Audit' }))}`,
+          },
+        },
+        dependencies: ['setup'],
+        testMatch: /accessibility\.protected\.spec\.ts/,
+      },
+    ]
+  : [];
 
 export default defineConfig({
-  globalSetup: require.resolve('./src/tests/global-setup'),
-  globalTeardown: require.resolve('./src/tests/global-teardown'),
+  globalSetup: isBrowserStackEnabled ? require.resolve('./src/tests/global-setup') : undefined,
+  globalTeardown: isBrowserStackEnabled ? require.resolve('./src/tests/global-teardown') : undefined,
   timeout: 120000,
   expect: {
     timeout: 30000,
@@ -86,25 +119,6 @@ export default defineConfig({
       dependencies: ['setup'],
       testMatch: /accessibility\.protected\.spec\.ts/,
     },
-    {
-      name: 'browserstack-public',
-      use: {
-        connectOptions: {
-          wsEndpoint: `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify({ ...caps, name: 'Public Audit' }))}`,
-        },
-      },
-      testMatch: /accessibility\.public\.spec\.ts/,
-    },
-    {
-      name: 'browserstack-protected',
-      use: {
-        storageState: STORAGE_STATE,
-        connectOptions: {
-          wsEndpoint: `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify({ ...caps, name: 'Protected Audit' }))}`,
-        },
-      },
-      dependencies: ['setup'],
-      testMatch: /accessibility\.protected\.spec\.ts/,
-    },
+    ...browserStackProjects,
   ],
 });
