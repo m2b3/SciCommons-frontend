@@ -5,17 +5,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FileX2 } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
 
-import { useArticlesApiGetArticles } from '@/api/articles/articles';
 import { ArticlesListOut } from '@/api/schemas';
-import { useUsersApiListMyArticles } from '@/api/users/users';
 import ArticleCard, { ArticleCardSkeleton } from '@/components/articles/ArticleCard';
 import ArticlePreviewSection from '@/components/articles/ArticlePreviewSection';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
 import TabComponent from '@/components/communities/TabComponent';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { FIVE_MINUTES_IN_MS, SCREEN_WIDTH_SM } from '@/constants/common.constants';
+import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
-import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useArticlesViewStore } from '@/stores/articlesViewStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -106,21 +103,9 @@ const TabContent: React.FC<TabContentProps> = ({
         : undefined,
   });
 
-  const { data, isPending, error } = useArticlesApiGetArticles<ArticlesResponse>(
-    {
-      page,
-      per_page: 50,
-      search,
-    },
-    {
-      query: {
-        staleTime: FIVE_MINUTES_IN_MS,
-        refetchOnWindowFocus: true,
-        queryKey: ['articles', page, search],
-        enabled: isActive,
-      },
-    }
-  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isDesktop && viewType === 'preview') {
@@ -129,19 +114,35 @@ const TabContent: React.FC<TabContentProps> = ({
   }, [isDesktop, viewType]);
 
   useEffect(() => {
-    if (error) {
-      showErrorToast(error);
-    }
-    if (data) {
-      if (page === 1) {
-        setArticles(data.data.items);
-      } else {
-        setArticles((prevArticles) => [...prevArticles, ...data.data.items]);
+    const fetchArticles = async () => {
+      if (!isActive) return;
+      try {
+        setLoading(true);
+        setError(null);
+
+        const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/v1/articles?page=${page}&per_page=50&search=${search}`;
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Failed to load data');
+        const result = await response.json();
+
+        setData(result.data?.items || []);
+
+        if (page === 1) {
+          setArticles(result.data?.items || []);
+        } else {
+          setArticles((prevArticles) => [...prevArticles, ...(result.data?.items || [])]);
+        }
+        setTotalItems(result.data?.total || 0);
+        setTotalPages(result.data?.num_pages || 1);
+      } catch (err) {
+        setError('Failed to load data');
+      } finally {
+        setLoading(false);
       }
-      setTotalItems(data.data.total);
-      setTotalPages(data.data.num_pages);
-    }
-  }, [data, error, page, loadingType]);
+    };
+
+    fetchArticles();
+  }, [page, search, isActive, loadingType]);
 
   const handleSearch = useCallback(
     (term: string) => {
@@ -182,6 +183,14 @@ const TabContent: React.FC<TabContentProps> = ({
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
+  if (loading && page === 1) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p style={{ color: 'red' }}>{error}</p>;
+  }
+
   return (
     <div
       data-slot="articles-tab"
@@ -211,7 +220,7 @@ const TabContent: React.FC<TabContentProps> = ({
             onLoadMore={handleLoadMore}
             renderItem={renderArticle}
             renderSkeleton={renderSkeleton}
-            isLoading={isPending}
+            isLoading={loading}
             items={articles}
             totalItems={totalItems}
             totalPages={totalPages}
@@ -319,22 +328,9 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
         : undefined,
   });
 
-  const { data, isPending, error } = useUsersApiListMyArticles<ArticlesResponse>(
-    {
-      page,
-      per_page: 50,
-      search,
-    },
-    {
-      query: {
-        staleTime: FIVE_MINUTES_IN_MS,
-        refetchOnWindowFocus: true,
-        queryKey: ['my_articles', page, search],
-        enabled: isActive,
-      },
-      request: { headers: { Authorization: `Bearer ${accessToken}` } },
-    }
-  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isDesktop && viewType === 'preview') {
@@ -343,19 +339,37 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   }, [isDesktop, viewType]);
 
   useEffect(() => {
-    if (error) {
-      showErrorToast(error);
-    }
-    if (data) {
-      if (page === 1) {
-        setArticles(data.data.items);
-      } else {
-        setArticles((prevArticles) => [...prevArticles, ...data.data.items]);
+    const fetchArticles = async () => {
+      if (!isActive) return;
+      try {
+        setLoading(true);
+        setError(null);
+
+        const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/v1/users/me_articles?page=${page}&per_page=50&search=${search}`;
+        const response = await fetch(API_URL, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!response.ok) throw new Error('Failed to load data');
+        const result = await response.json();
+
+        setData(result.data?.items || []);
+
+        if (page === 1) {
+          setArticles(result.data?.items || []);
+        } else {
+          setArticles((prevArticles) => [...prevArticles, ...(result.data?.items || [])]);
+        }
+        setTotalItems(result.data?.total || 0);
+        setTotalPages(result.data?.num_pages || 1);
+      } catch (err) {
+        setError('Failed to load data');
+      } finally {
+        setLoading(false);
       }
-      setTotalItems(data.data.total);
-      setTotalPages(data.data.num_pages);
-    }
-  }, [data, error, page, loadingType]);
+    };
+
+    fetchArticles();
+  }, [page, search, isActive, loadingType]);
 
   const handleSearch = useCallback(
     (term: string) => {
@@ -396,6 +410,14 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
   );
   const renderSkeleton = useCallback(() => <ArticleCardSkeleton />, []);
 
+  if (loading && page === 1) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p style={{ color: 'red' }}>{error}</p>;
+  }
+
   return (
     <div
       data-slot="my-articles-tab"
@@ -425,7 +447,7 @@ const MyArticlesTabContent: React.FC<TabContentProps> = ({
             onLoadMore={handleLoadMore}
             renderItem={renderArticle}
             renderSkeleton={renderSkeleton}
-            isLoading={isPending}
+            isLoading={loading}
             items={articles}
             totalItems={totalItems}
             totalPages={totalPages}
