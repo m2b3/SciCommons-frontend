@@ -6,7 +6,7 @@ type AnyFunction = (...args: any) => any;
 export const useScaleBackground = (isOpen: boolean, side: DrawerDirection) => {
   const timeoutIdRef = React.useRef<number | null>(null);
   const setBackgroundColorOnScale = true;
-  const noBodyStyles = true;
+  const noBodyStyles = false;
   const [initialBackgroundColor, setInitialBackgroundColor] = React.useState<string | undefined>(
     undefined
   );
