@@ -225,18 +225,16 @@ const NavBar: React.FC = () => {
     <header className="sticky top-0 z-[1000] w-full border-b border-common-contrast/40 bg-common-background/70 text-text-primary backdrop-blur-md">
       <nav className="container mx-auto flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
-          {pathname !== '/' && (
-            <button
-              type="button"
-              aria-label="Go back"
-              className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
-              onClick={() => {
-                router.back();
-              }}
-            >
-              <MoveLeft className="size-5" strokeWidth={1.5} />
-            </button>
-          )}
+          <button
+            type="button"
+            aria-label="Go back"
+            className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+            onClick={() => {
+              router.back();
+            }}
+          >
+            <MoveLeft className="size-5" strokeWidth={1.5} />
+          </button>
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
               <Image

@@ -190,7 +190,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
   // Check if user can resolve/unresolve (admin or discussion author)
   const canResolve = isCommunityArticle && (isAdmin || discussion.is_author);
-  const canEditDiscussion = !!discussion.is_author;
+  const canEditDiscussion = !!discussion.is_author && !discussion.deleted_at;
   const shouldShowActions = (canResolve || canEditDiscussion) && !isEditing;
 
   const { mutate: toggleResolved, isPending: isToggling } =
