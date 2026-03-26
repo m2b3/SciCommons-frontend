@@ -114,7 +114,12 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
+      /* Fixed by Codex on 2026-02-15
+         Who: Codex
+         What: Tokenize command item selection text color.
+         Why: Keep selection contrast consistent with active skin.
+         How: Use primary-foreground instead of hard-coded white. */
+      'relative flex cursor-default select-none items-center rounded-sm px-1.5 py-1 text-xs outline-none aria-selected:bg-functional-greenContrast aria-selected:text-primary-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
       className
     )}
     {...props}

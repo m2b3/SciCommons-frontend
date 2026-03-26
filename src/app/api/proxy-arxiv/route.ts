@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// NOTE(bsureshkrishna, 2026-02-07): Server-side arXiv proxy added after baseline 5271498
+// to avoid CORS issues and keep XML fetches off the client.
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const arxivId = searchParams.get('id');

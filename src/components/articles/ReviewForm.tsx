@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { MDXEditorMethods } from '@mdxeditor/editor';
+import { useQueryClient } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -13,6 +14,7 @@ import FormInput from '@/components/common/FormInput';
 import LabeledTooltip from '@/components/common/LabeledToolTip';
 import { ForwardRefEditor } from '@/components/common/MarkdownEditor/ForwardRefEditor';
 import { Ratings } from '@/components/ui/ratings';
+import { reviewSubjectSchema } from '@/constants/zod-schema';
 import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -40,7 +42,7 @@ interface ReviewFormProps {
   onSubmitSuccess?: () => void;
 }
 
-type ActionType = 'create' | 'edit' | 'delete';
+type ActionType = 'create' | 'edit';
 
 const ReviewForm: React.FC<ReviewFormProps> = ({
   articleId,
@@ -55,10 +57,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   is_submitter = false,
   onSubmitSuccess,
 }) => {
+  const queryClient = useQueryClient();
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
-
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [action, setAction] = React.useState<ActionType>('create');
+  const reviewDeleteDialogTitleId = React.useId();
+  const reviewDeleteDialogDescriptionId = React.useId();
   const reviewEditorRef = React.useRef<MDXEditorMethods>(null);
   const markdownRef = React.useRef<string>(content || '');
   const [markdown, setMarkdown] = React.useState<string>(content || '');
@@ -94,11 +99,31 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const formRef = React.useRef<HTMLFormElement>(null);
   useSubmitOnCtrlEnter(formRef, isPending || editPending || deletePending);
 
+  /* Fixed by Codex on 2026-02-16
+     Who: Codex
+     What: Added explicit invalidation for article review-list queries after review mutations.
+     Why: Refetch callbacks alone can miss other subscribed instances or stale keys in split-view/sidebar layouts.
+     How: Invalidate all queries under `/api/articles/{articleId}/reviews/` prefix post-mutation success. */
+  const invalidateReviewQueries = React.useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: [`/api/articles/${articleId}/reviews/`] });
+  }, [queryClient, articleId]);
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
+    /* Fixed by Codex on 2026-02-16
+       Who: Codex
+       What: Added explicit review-content validation before API submission.
+       Why: Empty markdown payloads could slip through and render as placeholder-like "..." text.
+       How: Normalize and trim markdown content from editor ref, then block submission if empty. */
+    const normalizedMarkdown = markdownRef.current.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    if (!normalizedMarkdown) {
+      toast.error('Review content is required');
+      return;
+    }
+
     const reviewData = {
       ...data,
       article_id: articleId,
-      content: markdownRef.current,
+      content: normalizedMarkdown,
     };
 
     if (action === 'edit' && reviewId) {
@@ -108,20 +133,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           onSuccess: () => {
             toast.success('Review updated successfully');
             refetch && refetch();
-            setEdit && setEdit(false);
-          },
-          onError: (error) => {
-            showErrorToast(error);
-          },
-        }
-      );
-    } else if (action === 'delete' && reviewId) {
-      deleteReview(
-        { reviewId: reviewId },
-        {
-          onSuccess: () => {
-            toast.success('Review deleted successfully');
-            refetch && refetch();
+            invalidateReviewQueries();
             setEdit && setEdit(false);
           },
           onError: (error) => {
@@ -134,12 +146,17 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         { articleId, data: reviewData, params: { community_id: communityId } },
         {
           onSuccess: () => {
+            /* Fixed by Codex on 2026-03-14
+               Who: Codex
+               What: Removed the review-submit success toast.
+               Why: Product only wants success toasts for article submissions, while reviews should confirm through inline refresh.
+               How: Preserve reset/refetch/invalidation behavior and omit the success notification. */
             reset();
             markdownRef.current = '';
             setMarkdown('');
             reviewEditorRef.current?.setMarkdown?.('');
             refetch && refetch();
-            toast.success('Review submitted successfully');
+            invalidateReviewQueries();
             onSubmitSuccess && onSubmitSuccess();
           },
           onError: (error) => {
@@ -149,6 +166,27 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         }
       );
     }
+  };
+
+  const handleDeleteReview = () => {
+    if (!reviewId) return;
+
+    deleteReview(
+      { reviewId },
+      {
+        onSuccess: () => {
+          toast.success('Review deleted successfully');
+          refetch?.();
+          invalidateReviewQueries();
+          setEdit?.(false);
+        },
+        onError: (error) => {
+          showErrorToast(error);
+        },
+      }
+    );
+
+    setShowDeleteConfirm(false);
   };
 
   return (
@@ -199,15 +237,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               type="text"
               placeholder="Enter the title of your review"
               register={register}
-              requiredMessage="Subject is required"
-              minLengthValue={10}
-              minLengthMessage="Title must be at least 10 characters"
-              maxLengthValue={100}
-              maxLengthMessage="Title must not exceed 100 characters"
+              schema={reviewSubjectSchema}
               info="Please provide a clear and concise title for your article."
               errors={errors}
               labelClassName="text-text-secondary"
-              inputClassName="bg-common-invert text-text-primary ring-common-contrast"
+              inputClassName="bg-common-cardBackground text-text-primary ring-common-contrast"
             />
             {/* <Controller
               name="content"
@@ -256,9 +290,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 </Button>
                 <Button
                   variant={'danger'}
-                  onClick={() => setAction('delete')}
+                  onClick={() => setShowDeleteConfirm(true)}
                   loading={deletePending}
-                  type="submit"
+                  type="button"
                 >
                   <ButtonTitle>{deletePending ? 'Deleting...' : 'Delete'}</ButtonTitle>
                 </Button>
@@ -291,6 +325,53 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               </div>
             )}
           </form>
+          {/* Fixed by Codex on 2026-02-24
+              Who: Codex
+              What: Hardened review-delete confirmation modal accessibility and layering.
+              Why: z-50 can render behind fixed mobile nav (z-[1000]), and dialog semantics were missing.
+              How: Raised overlay z-index and added role/aria labelling for assistive technology. */}
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={reviewDeleteDialogTitleId}
+                aria-describedby={reviewDeleteDialogDescriptionId}
+                className="w-[320px] rounded-xl bg-common-cardBackground p-6"
+              >
+                <p id={reviewDeleteDialogTitleId} className="mb-2 text-lg font-semibold">
+                  Delete this review?
+                </p>
+                <p
+                  id={reviewDeleteDialogDescriptionId}
+                  className="mb-4 text-sm text-text-secondary"
+                >
+                  This action cannot be undone.
+                </p>
+
+                <div className="mt-4 flex justify-end gap-2">
+                  <Button
+                    variant="gray"
+                    size="sm"
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(false)}
+                  >
+                    <ButtonTitle>Cancel</ButtonTitle>
+                  </Button>
+
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    loading={deletePending}
+                    type="button"
+                    onClick={handleDeleteReview}
+                  >
+                    <ButtonTitle>Delete</ButtonTitle>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </>

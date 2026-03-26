@@ -36,6 +36,7 @@ interface ArticleSubmissionProps {
 
 const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) => {
   const router = useRouter();
+  const encodedCommunityName = encodeURIComponent(communityName || '');
 
   const [open, onOpenChange] = React.useState(false);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -94,7 +95,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
         <DropdownMenuTrigger asChild>
           <Button className="py-1.5" withTooltip tooltipData="Create or Submit Article">
             <ButtonIcon>
-              <Plus className="size-4 text-white" />
+              <Plus className="size-4 text-primary-foreground" />
             </ButtonIcon>
             <ButtonTitle>Create</ButtonTitle>
           </Button>
@@ -104,7 +105,7 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
             <DialogTrigger>Submit Existing Article</DialogTrigger>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href={`/community/${communityName}/createcommunityarticle`}>
+            <Link href={`/community/${encodedCommunityName}/createcommunityarticle`}>
               Create New Article
             </Link>
           </DropdownMenuItem>
@@ -124,7 +125,9 @@ const ArticleSubmission: React.FC<ArticleSubmissionProps> = ({ communityName }) 
                 <p className="text-center text-text-secondary">You have no articles to submit</p>
                 <Button
                   className="mx-auto mt-4"
-                  onClick={() => router.push(`/community/${communityName}/createcommunityarticle`)}
+                  onClick={() =>
+                    router.push(`/community/${encodedCommunityName}/createcommunityarticle`)
+                  }
                 >
                   <ButtonTitle>Create Article</ButtonTitle>
                 </Button>

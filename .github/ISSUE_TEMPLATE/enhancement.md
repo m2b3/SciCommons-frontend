@@ -1,10 +1,9 @@
 ---
 name: ✨ Enhancement
 about: Suggest an improvement to an existing feature.
-title: "[ENHANCEMENT] "
+title: '[ENHANCEMENT] '
 labels: enhancement
 assignees: ''
-
 ---
 
 **What is the current state?**

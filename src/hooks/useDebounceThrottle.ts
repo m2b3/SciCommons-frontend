@@ -13,11 +13,14 @@ export function useDebounceValue<T>(value: T, delay: number): T {
 }
 
 // Debounce Function Hook
-export function useDebounceFunction<F extends (...args: any[]) => any>(fn: F, delay: number): F {
+export function useDebounceFunction<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  delay: number
+): (...args: TArgs) => void {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   return useCallback(
-    (...args: Parameters<F>) => {
+    (...args: TArgs) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
       timeoutRef.current = setTimeout(() => {
@@ -25,7 +28,7 @@ export function useDebounceFunction<F extends (...args: any[]) => any>(fn: F, de
       }, delay);
     },
     [fn, delay]
-  ) as F;
+  );
 }
 
 // Throttle Value Hook
@@ -51,12 +54,15 @@ export function useThrottleValue<T>(value: T, limit: number): T {
 }
 
 // Throttle Function Hook
-export function useThrottleFunction<F extends (...args: any[]) => any>(fn: F, limit: number): F {
+export function useThrottleFunction<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  limit: number
+): (...args: TArgs) => void {
   const lastRan = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   return useCallback(
-    (...args: Parameters<F>) => {
+    (...args: TArgs) => {
       const now = Date.now();
       const remainingTime = limit - (now - lastRan.current);
 
@@ -72,5 +78,5 @@ export function useThrottleFunction<F extends (...args: any[]) => any>(fn: F, li
       }
     },
     [fn, limit]
-  ) as F;
+  );
 }

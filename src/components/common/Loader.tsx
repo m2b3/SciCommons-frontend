@@ -4,12 +4,13 @@ import InfiniteSpinnerAnimation from '../animations/InfiniteSpinnerAnimation';
 
 const Loader = () => {
   return (
-    <div className="md::h-[90vh] flex h-[80vh] flex-col items-center justify-center bg-transparent p-6">
-      {/* {loaders[type]} */}
+    <div className="flex h-[80vh] flex-col items-center justify-center bg-transparent p-6 md:h-[90vh]">
       <div className="w-24 md:w-32">
-        <InfiniteSpinnerAnimation color="#16A34A" strokeWidth={12} />
+        <InfiniteSpinnerAnimation color="#042f2e" strokeWidth={12} />
       </div>
-      <div className={`mt-4 animate-pulse text-center text-sm font-normal text-functional-green`}>
+      {/* Animation is only on this dot */}
+      <div className="mt-6 h-2 w-2 animate-bounce rounded-full bg-functional-green" />
+      <div className="mt-4 text-center text-sm font-bold text-functional-greenContrast">
         SciCommons is performing some checks, please wait...
       </div>
     </div>

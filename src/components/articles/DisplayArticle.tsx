@@ -3,22 +3,26 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Link2, Settings } from 'lucide-react';
+import { Bookmark, Link2, PanelLeft, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMediaQuery } from 'usehooks-ts';
 
 import { useCommunitiesArticlesApiToggleArticlePseudonymous } from '@/api/community-articles/community-articles';
-import { ArticleOut } from '@/api/schemas';
+import { ArticleOut, BookmarkContentTypeEnum } from '@/api/schemas';
+import { useUsersCommonApiToggleBookmark } from '@/api/users-common-api/users-common-api';
 import TruncateText from '@/components/common/TruncateText';
 import { SCREEN_WIDTH_SM } from '@/constants/common.constants';
 import { useDebounceFunction } from '@/hooks/useDebounceThrottle';
+import { showErrorToast } from '@/lib/toastHelpers';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import PdfIcon from '../ui/Icons/PdfIcon';
-import { Button } from '../ui/button';
+import { Button, ButtonTitle } from '../ui/button';
 import { Switch } from '../ui/switch';
+import AbstractText from './AbstractText';
 import ArticleStats from './ArticleStats';
 
 // Dynamically import Drawer components
@@ -49,18 +53,38 @@ const SheetTrigger = lazy(() =>
 
 interface DisplayArticleProps {
   article: ArticleOut;
+  editCommunityName?: string | null;
+  editReturnTo?: string | null;
+  editReturnPath?: string | null;
+  showPdfViewerButton?: boolean;
+  handleOpenPdfViewer?: () => void;
 }
 
-const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
+const DisplayArticle: React.FC<DisplayArticleProps> = ({
+  article,
+  editCommunityName = null,
+  editReturnTo = null,
+  editReturnPath = null,
+  showPdfViewerButton = false,
+  handleOpenPdfViewer = () => {},
+}) => {
   const hasImage = !!article.article_image_url;
   const accessToken = useAuthStore((state) => state.accessToken);
   const [isPseudonymous, setIsPseudonymous] = useState(true);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(article.is_bookmarked ?? false);
 
   useEffect(() => {
     setIsPseudonymous(article.is_pseudonymous || false);
   }, [article.is_pseudonymous]);
+
+  // Sync bookmark state when article data changes (e.g., after auth state changes)
+  useEffect(() => {
+    if (article.is_bookmarked !== undefined && article.is_bookmarked !== null) {
+      setIsBookmarked(article.is_bookmarked);
+    }
+  }, [article.is_bookmarked]);
 
   const {
     mutate,
@@ -87,9 +111,85 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
       toast.error('Update failed');
       setIsPseudonymous(article.is_pseudonymous || false);
     }
-  }, [isMutationSuccess, mutationData, isMutationError]);
+  }, [isMutationSuccess, mutationData, isMutationError, article.is_pseudonymous]);
 
   const debouncedIsPseudonymous = useDebounceFunction(handleMakePseudonymous, 500);
+
+  const { mutate: toggleBookmark, isPending: isBookmarkPending } = useUsersCommonApiToggleBookmark({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    mutation: {
+      onMutate: () => {
+        // Optimistically update the UI
+        setIsBookmarked((prev) => !prev);
+      },
+      onSuccess: (response) => {
+        // Sync with server response
+        setIsBookmarked(response.data.is_bookmarked);
+      },
+      onError: (error) => {
+        // Revert optimistic update on error
+        setIsBookmarked((prev) => !prev);
+        showErrorToast(error);
+      },
+    },
+  });
+
+  const handleBookmarkToggle = () => {
+    if (!accessToken) {
+      toast.error('Please login to bookmark articles');
+      return;
+    }
+
+    if (!article.id) {
+      toast.error('Article ID is missing');
+      return;
+    }
+
+    toggleBookmark({
+      data: {
+        content_type: BookmarkContentTypeEnum.articlesarticle,
+        object_id: article.id,
+      },
+    });
+  };
+
+  /* Fixed by Codex on 2026-02-19
+     Who: Codex
+     What: Preserve caller context in the Edit Article settings URL.
+     Why: Users editing from side-panel list views should return to the same list/panel context.
+     How: Attach returnPath (and existing community context when available) to the settings query. */
+  const editArticleHref = React.useMemo(() => {
+    if (!article.slug) return '/articles';
+    const params = new URLSearchParams();
+    const resolvedCommunityName = editCommunityName || article.community_article?.community.name;
+
+    if (resolvedCommunityName) {
+      params.set('community', resolvedCommunityName);
+      params.set('returnTo', editReturnTo || 'community');
+    } else if (editReturnTo) {
+      params.set('returnTo', editReturnTo);
+    }
+
+    if (editReturnPath) {
+      params.set('returnPath', editReturnPath);
+    }
+
+    if (article.id) {
+      params.set('articleId', String(article.id));
+    }
+
+    const query = params.toString();
+    return query
+      ? `/article/${article.slug}/settings?${query}`
+      : `/article/${article.slug}/settings`;
+  }, [
+    article.slug,
+    article.community_article,
+    article.id,
+    editCommunityName,
+    editReturnTo,
+    editReturnPath,
+  ]);
 
   return (
     <div className={`flex flex-col items-start res-text-xs ${hasImage ? 'sm:flex-row' : ''}`}>
@@ -123,11 +223,14 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
           {/* <div className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
           </div> */}
-          <RenderParsedHTML
-            rawContent={article.abstract}
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Render the article abstract via AbstractText.
+              Why: Keep newline handling consistent across all abstract displays.
+              How: Replace RenderParsedHTML with the shared wrapper component. */}
+          <AbstractText
+            text={article.abstract}
             isShrinked={true}
-            supportMarkdown={false}
-            supportLatex={true}
             gradientClassName="sm:from-common-background"
           />
         </div>
@@ -174,6 +277,19 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
                   </a>
                 </div>
               ))}
+              {showPdfViewerButton && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => handleOpenPdfViewer()}
+                    variant="outline"
+                    className="gap-2 rounded-full p-2 hover:border-functional-blueLight/30 hover:text-functional-blueLight"
+                    size="xs"
+                  >
+                    <PanelLeft size={12} />
+                    <ButtonTitle>View PDF with Annotations</ButtonTitle>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -183,12 +299,53 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
         </div>
 
         <div className="mb-2 flex w-full items-center justify-end gap-2 sm:absolute sm:bottom-0 sm:right-0 sm:mb-0 sm:w-fit">
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Tokenize article action pill surfaces.
+              Why: Keep edit/settings controls aligned with skin palettes.
+              How: Replace hard-coded white/black utilities with semantic tokens. */}
           {article.is_submitter && (
-            <Link href={`/article/${article.slug}/settings`}>
-              <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
-                Edit Article
-              </div>
+            <Link
+              href={editArticleHref}
+              className="rounded-md border border-common-contrast bg-common-cardBackground px-3 py-1.5 text-xs text-text-primary"
+            >
+              {/* Fixed by Codex on 2026-02-15
+                  Who: Codex
+                  What: Use semantic link text for edit action.
+                  Why: Div-wrapped links obscure the interactive element for assistive tech.
+                  How: Move styling onto the Link so the anchor is the focus target. */}
+              Edit Article
             </Link>
+          )}
+          {!article.community_article && (
+            /* Fixed by Codex on 2026-02-15
+               Who: Codex
+               What: Add ARIA labels and pressed state to the bookmark toggle.
+               Why: Icon-only buttons need accessible names and state feedback.
+               How: Provide aria-label/aria-pressed on the Button element. */
+            <Button
+              variant="outline"
+              size="xs"
+              className="aspect-square p-1.5"
+              aria-label={isBookmarked ? 'Remove bookmark for article' : 'Add bookmark for article'}
+              aria-pressed={isBookmarked}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+                handleBookmarkToggle();
+              }}
+              disabled={isBookmarkPending}
+              withTooltip
+              tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+            >
+              <Bookmark
+                className={cn('size-4 transition-colors', {
+                  'fill-functional-yellow text-functional-yellow': isBookmarked,
+                  'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+                })}
+              />
+            </Button>
           )}
           {article.community_article && article.community_article?.is_admin && (
             <Suspense
@@ -201,12 +358,21 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
                 </Button>
               }
             >
+              {/* Fixed by Codex on 2026-02-15
+                  Who: Codex
+                  What: Make settings triggers accessible buttons with labels.
+                  Why: Icon-only sheet/drawer triggers were unlabeled for screen readers.
+                  How: Use asChild buttons with aria-labels and explicit types. */}
               {isDesktop ? (
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                  <SheetTrigger>
-                    <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
+                  <SheetTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label="Open article settings"
+                      className="rounded-lg border border-common-contrast bg-common-cardBackground px-4 py-2 text-text-primary res-text-xs"
+                    >
                       <Settings size={18} />
-                    </div>
+                    </button>
                   </SheetTrigger>
                   <SheetContent
                     isOpen={isSheetOpen}
@@ -241,10 +407,14 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
                 </Sheet>
               ) : (
                 <Drawer>
-                  <DrawerTrigger>
-                    <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
+                  <DrawerTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label="Open article settings"
+                      className="rounded-lg border border-common-contrast bg-common-cardBackground px-4 py-2 text-text-primary res-text-xs"
+                    >
                       <Settings size={18} />
-                    </div>
+                    </button>
                   </DrawerTrigger>
                   <DrawerContent className="flex flex-col items-center p-0 pt-4">
                     <DrawerHeader className="flex flex-col items-center">

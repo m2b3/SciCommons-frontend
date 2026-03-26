@@ -6,45 +6,73 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { BellOff, BellPlus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { useCommunitiesApiGetCommunity } from '@/api/communities/communities';
 import {
   getArticlesDiscussionApiGetSubscriptionStatusQueryKey,
   useArticlesDiscussionApiGetSubscriptionStatus,
+  useArticlesDiscussionApiGetUserSubscriptions,
   useArticlesDiscussionApiListDiscussions,
   useArticlesDiscussionApiSubscribeToDiscussion,
   useArticlesDiscussionApiUnsubscribeFromDiscussion,
 } from '@/api/discussions/discussions';
+import { EntityType } from '@/api/schemas';
 import EmptyState from '@/components/common/EmptyState';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import { ErrorMessage } from '@/constants';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { hasUnreadCommentFlag, hasUnreadFlag } from '@/hooks/useUnreadFlags';
+import { captureMentionNotification } from '@/lib/mentionNotifications';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { useEphemeralUnreadStore } from '@/stores/ephemeralUnreadStore';
+import { useReadItemsStore } from '@/stores/readItemsStore';
 import { useRealtimeContextStore } from '@/stores/realtimeStore';
+import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
 
 import DiscussionCard, { DiscussionCardSkeleton } from './DiscussionCard';
 import DiscussionForm from './DiscussionForm';
+import DiscussionSummary from './DiscussionSummary';
 import DiscussionThread from './DiscussionThread';
 
 interface DiscussionForumProps {
   articleId: number;
   communityId?: number | null;
+  communitySlug?: string | null;
   communityArticleId?: number | null;
   showSubscribeButton?: boolean;
+  isAdmin?: boolean;
+  initialDiscussionId?: number | null;
+  initialCommentId?: number | null;
+  onUnreadStateChange?: (hasUnread: boolean) => void;
 }
 
 const DiscussionForum: React.FC<DiscussionForumProps> = ({
   articleId,
   communityId,
+  communitySlug,
   communityArticleId,
   showSubscribeButton = false,
+  isAdmin = false,
+  initialDiscussionId = null,
+  initialCommentId = null,
+  onUnreadStateChange,
 }) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
   const queryClient = useQueryClient();
+  const readItems = useReadItemsStore((state) => state.readItems);
+  const ephemeralUnreadItems = useEphemeralUnreadStore((state) => state.items);
+  const articlesWithNewEvents = useSubscriptionUnreadStore((state) => state.articlesWithNewEvents);
+  const isArticleUnread = useSubscriptionUnreadStore((state) => state.isArticleUnread);
 
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [discussionId, setDiscussionId] = useState<number | null>(null);
+  const [discussionId, setDiscussionId] = useState<number | null>(initialDiscussionId);
+  const [focusedCommentId, setFocusedCommentId] = useState<number | null>(initialCommentId);
+  const [discussionIdsWithVisibleNewTags, setDiscussionIdsWithVisibleNewTags] = useState<
+    Set<number>
+  >(new Set());
+  const normalizedCommunitySlug = communitySlug?.trim() || '';
 
   const { data, isPending, error, refetch } = useArticlesDiscussionApiListDiscussions(
     articleId,
@@ -81,13 +109,158 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
   const isSubscribed = subscriptionData?.data?.is_subscribed || false;
   const subscriptionId = subscriptionData?.data?.subscription?.id;
 
+  const { data: userSubscriptionsData } = useArticlesDiscussionApiGetUserSubscriptions({
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    query: {
+      enabled: !!accessToken && !!communityId && typeof onUnreadStateChange === 'function',
+      staleTime: FIFTEEN_MINUTES_IN_MS,
+      refetchOnWindowFocus: true,
+    },
+  });
+
+  const { data: communityData } = useCommunitiesApiGetCommunity(normalizedCommunitySlug, {
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+    query: {
+      enabled: !!accessToken && !!communityId && !!normalizedCommunitySlug,
+      staleTime: FIFTEEN_MINUTES_IN_MS,
+      refetchOnWindowFocus: false,
+    },
+  });
+
+  /* Fixed by Codex on 2026-02-25
+     Who: Codex
+     What: Added discussion mention candidates sourced from community membership.
+     Why: `@` tagging should only suggest valid members for communities the user belongs to.
+     How: Read `community.members` from the community API response and normalize/dedupe names before passing to comment inputs. */
+  const mentionCandidates = React.useMemo(() => {
+    const members = communityData?.data?.members;
+    if (!Array.isArray(members)) return [];
+
+    const dedupedMembers = new Set<string>();
+    members.forEach((memberName) => {
+      const normalizedMemberName = memberName.trim();
+      if (normalizedMemberName.length > 0) {
+        dedupedMembers.add(normalizedMemberName);
+      }
+    });
+
+    return Array.from(dedupedMembers);
+  }, [communityData?.data?.members]);
+
+  useEffect(() => {
+    setDiscussionIdsWithVisibleNewTags(new Set());
+  }, [articleId]);
+
+  /* Fixed by Codex on 2026-03-14
+     Who: Codex
+     What: Track which discussion cards currently render a NEW badge.
+     Why: The parent Discussions tab must stay in sync with child-card unread indicators, including the short post-read dwell period.
+     How: Maintain a set of discussion ids whose cards report visible NEW state through a lightweight callback. */
+  const handleDiscussionNewTagVisibilityChange = React.useCallback(
+    (nextDiscussionId: number, isVisible: boolean) => {
+      if (typeof onUnreadStateChange !== 'function') return;
+
+      setDiscussionIdsWithVisibleNewTags((previousIds) => {
+        const isAlreadyTracked = previousIds.has(nextDiscussionId);
+        if (isAlreadyTracked === isVisible) {
+          return previousIds;
+        }
+
+        const nextIds = new Set(previousIds);
+        if (isVisible) {
+          nextIds.add(nextDiscussionId);
+        } else {
+          nextIds.delete(nextDiscussionId);
+        }
+        return nextIds;
+      });
+    },
+    [onUnreadStateChange]
+  );
+
+  const hasUnreadDiscussionItems = React.useMemo(() => {
+    if (typeof onUnreadStateChange !== 'function') return false;
+
+    const discussions = data?.data.items;
+    if (!Array.isArray(discussions) || discussions.length === 0) return false;
+
+    const ephemeralUnreadStore = useEphemeralUnreadStore.getState();
+
+    return discussions.some((discussion) => {
+      if (discussion.id === undefined) return false;
+
+      const resolvedDiscussionId = Number(discussion.id);
+      const discussionReadKey = `${resolvedDiscussionId}-${EntityType.discussion}`;
+      const isAlreadyRead = readItems.has(discussionReadKey);
+      const realtimeUnreadKey = `discussion:${resolvedDiscussionId}`;
+      const hasTrackedRealtimeUnread = Object.prototype.hasOwnProperty.call(
+        ephemeralUnreadItems,
+        realtimeUnreadKey
+      );
+      const hasRealtimeUnread =
+        hasTrackedRealtimeUnread &&
+        ephemeralUnreadStore.isItemUnread('discussion', resolvedDiscussionId);
+
+      return (
+        (hasUnreadFlag(discussion.flags) && !isAlreadyRead) ||
+        hasUnreadCommentFlag(discussion.flags) ||
+        hasRealtimeUnread
+      );
+    });
+  }, [data?.data.items, onUnreadStateChange, readItems, ephemeralUnreadItems]);
+
+  const hasUnreadSubscriptionSummary = React.useMemo(() => {
+    if (typeof onUnreadStateChange !== 'function' || !communityId) return false;
+
+    const articleSubscriptionKey = `${communityId}-${articleId}`;
+    if (articlesWithNewEvents.has(articleSubscriptionKey)) return true;
+
+    const communities = userSubscriptionsData?.data?.communities;
+    if (!Array.isArray(communities)) return false;
+
+    const matchingCommunity = communities.find(
+      (community) => community.community_id === communityId
+    );
+    const matchingArticle = matchingCommunity?.articles.find(
+      (article) => article.article_id === articleId
+    );
+    if (!matchingArticle) return false;
+
+    return isArticleUnread(communityId, articleId, matchingArticle.has_unread_event || false);
+  }, [
+    articleId,
+    articlesWithNewEvents,
+    communityId,
+    isArticleUnread,
+    onUnreadStateChange,
+    userSubscriptionsData?.data?.communities,
+  ]);
+
+  const hasUnreadDiscussionActivity =
+    discussionIdsWithVisibleNewTags.size > 0 ||
+    hasUnreadDiscussionItems ||
+    hasUnreadSubscriptionSummary;
+
+  /* Fixed by Codex on 2026-03-14
+     Who: Codex
+     What: Promote unread discussion activity from the forum body to the top tab title.
+     Why: Users need the main Discussions tab to advertise unread state on initial load, after sidebar clears, and during realtime updates.
+     How: Combine card-level NEW visibility, fetched discussion unread flags, and the sidebar subscription summary into one parent callback. */
+  useEffect(() => {
+    onUnreadStateChange?.(hasUnreadDiscussionActivity);
+  }, [hasUnreadDiscussionActivity, onUnreadStateChange]);
+
   // Subscribe mutation
   const { mutate: subscribe, isPending: isSubscribing } =
     useArticlesDiscussionApiSubscribeToDiscussion({
       request: { headers: { Authorization: `Bearer ${accessToken}` } },
       mutation: {
         onSuccess: (response) => {
-          toast.success('Successfully subscribed to discussions');
+          /* Fixed by Codex on 2026-02-15
+             Problem: Subscribe success toast duplicated the button's state change feedback.
+             Solution: Commented out the subscribe success toast to reduce redundant UI noise.
+             Result: The button label/state change now serves as the confirmation. */
+          // toast.success('Successfully subscribed to discussions');
 
           // Update cached subscription status immediately for better UX (no refetch)
           const params = {
@@ -152,12 +325,53 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
     }
   }, [error]);
 
+  /* Fixed by Codex on 2026-02-25
+     Who: Codex
+     What: Sync initial discussion deep-link selection to the current article context.
+     Why: Mention links now open `/discussions?articleId=...&discussionId=...` and should land in the thread view.
+     How: Reapply `initialDiscussionId` whenever article context changes; reset to list view when absent. */
+  useEffect(() => {
+    /* Fixed by Codex on 2026-02-26
+       Who: Codex
+       What: Synced discussion + comment deep-link targets to current article context.
+       Why: Mention URLs may carry both `discussionId` and `commentId`; both must reset when context changes.
+       How: Reapply incoming deep-link ids on article changes and clear them when absent. */
+    setDiscussionId(initialDiscussionId ?? null);
+    setFocusedCommentId(initialCommentId ?? null);
+  }, [articleId, initialCommentId, initialDiscussionId]);
+
+  /* Fixed by Codex on 2026-02-25
+     Who: Codex
+     What: Scan fetched discussions for `@username` mentions.
+     Why: Mention notifications must be captured from initial backend payloads, not only realtime events.
+     How: Walk loaded discussions and register each matching mention once through the shared helper/store. */
+  useEffect(() => {
+    const discussions = data?.data.items;
+    if (!Array.isArray(discussions) || discussions.length === 0) return;
+
+    discussions.forEach((discussion) => {
+      if (discussion.id === undefined) return;
+
+      captureMentionNotification({
+        sourceType: 'discussion',
+        sourceId: Number(discussion.id),
+        discussionId: Number(discussion.id),
+        articleId: discussion.article_id,
+        communityId: communityId ?? null,
+        content: discussion.content,
+        authorUsername: discussion.user?.username,
+        createdAt: discussion.created_at,
+      });
+    });
+  }, [communityId, data?.data.items]);
+
   const handleNewDiscussion = (): void => {
     setShowForm((prev) => !prev);
   };
 
   const handleDiscussionClick = (discussionId: number): void => {
     setDiscussionId(discussionId);
+    setFocusedCommentId(null);
   };
 
   const handleSubscriptionToggle = (): void => {
@@ -179,11 +393,24 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
   };
 
   if (discussionId) {
-    return <DiscussionThread discussionId={discussionId} setDiscussionId={setDiscussionId} />;
+    return (
+      <DiscussionThread
+        discussionId={discussionId}
+        setDiscussionId={setDiscussionId}
+        initialCommentId={focusedCommentId}
+        mentionCandidates={mentionCandidates}
+        refetchDiscussions={refetch}
+      />
+    );
   }
 
   return (
     <div>
+      {/* Discussion Summary - only for community articles */}
+      {communityArticleId && (
+        <DiscussionSummary communityArticleId={communityArticleId} isAdmin={isAdmin} />
+      )}
+
       <div className="mb-4 flex flex-wrap items-center justify-between text-sm">
         <h1 className="text-xl font-bold text-text-primary">Discussions</h1>
         <div className="flex items-center gap-2">
@@ -254,6 +481,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
           setShowForm={setShowForm}
           articleId={articleId}
           communityId={communityId}
+          mentionCandidates={mentionCandidates}
           refetchDiscussions={refetch}
         />
       ) : (
@@ -280,6 +508,13 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
               key={discussion.id}
               discussion={discussion}
               handleDiscussionClick={handleDiscussionClick}
+              isAdmin={isAdmin}
+              isCommunityArticle={!!communityId}
+              refetch={refetch}
+              articleId={articleId}
+              communityId={communityId}
+              mentionCandidates={mentionCandidates}
+              onNewTagVisibilityChange={handleDiscussionNewTagVisibilityChange}
             />
           ))}
       </div>

@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { getUsersApiGetMeQueryKey, useUsersApiGetMe } from '@/api/users/users';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { useAuthStore } from '@/stores/authStore';
 
 /**
@@ -10,21 +11,18 @@ import { useAuthStore } from '@/stores/authStore';
  * Shared across all components that need user data
  */
 export const useCurrentUser = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const authHeaders = useAuthHeaders();
 
   const query = useUsersApiGetMe({
     query: {
-      enabled: !!accessToken,
+      enabled: isAuthenticated,
       // Cache data for 15 minutes before considering it stale
       staleTime: FIFTEEN_MINUTES_IN_MS, // 15 minutes
       // Keep unused data in cache for 15 minutes before garbage collection
       gcTime: FIFTEEN_MINUTES_IN_MS, // 15 minutes (formerly cacheTime)
     },
-    request: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    request: authHeaders,
   });
 
   return query;

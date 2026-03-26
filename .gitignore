@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/backend/
+
+codexOutput.md
+.playwrightenv
+
 # dependencies
 /node_modules
 /.pnp
@@ -45,3 +50,29 @@ next-env.d.ts
 /public/swe-worker-*.js
 /public/workbox-*.js
 /public/workbox-*.js.map
+# AI tool directories and config
+.claude/
+.openai/
+.anthropic/
+
+# Test images
+fig*.jpg
+inp.jpg
+bkm.jpg
+Nul
+
+# Environment files (comprehensive)
+.env
+.env.*
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+/playwright/
+
+# BrowserStack Local logs
+local.log

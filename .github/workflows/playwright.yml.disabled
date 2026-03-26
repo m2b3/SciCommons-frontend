@@ -1,0 +1,32 @@
+name: Playwright Tests
+# Fixed by Codex on 2026-03-12
+# Problem: The Playwright GitHub Actions workflow was still active and targeted
+# main/master push and PR events, but the desired setup is to keep it disabled
+# for now while preserving a ready-to-use PR-only trigger for sureshDev.
+# Solution: Rename the workflow file so GitHub Actions ignores it, and change the
+# stored trigger to pull_request on sureshDev only.
+# Result: The workflow stays handy for future re-enable without running today.
+on:
+  pull_request:
+    branches: [ sureshDev ]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm install -g yarn && yarn
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+    - name: Run Playwright tests
+      run: yarn playwright test
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30

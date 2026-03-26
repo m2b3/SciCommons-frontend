@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { ChevronDown, Grid2X2, Grid3X3, LayoutGrid, PanelLeft, Square } from 'lucide-react';
+import {
+  ChevronDown,
+  Grid2X2,
+  Grid3X3,
+  LayoutGrid,
+  ListFilter,
+  PanelLeft,
+  Square,
+} from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 
 import EmptyState from '@/components/common/EmptyState';
@@ -53,6 +61,9 @@ interface SearchableListProps<T> {
   setViewType?: (viewType: 'grid' | 'list' | 'preview') => void;
   setGridCount?: (gridCount: number) => void;
   allowedViewTypes?: Array<'grid' | 'list' | 'preview'>;
+  filters?: Array<{ label: string; value: string }>;
+  activeFilter?: string;
+  onSelectFilter?: (filter: string) => void;
 }
 
 function SearchableList<T>({
@@ -65,7 +76,7 @@ function SearchableList<T>({
   totalItems,
   totalPages,
   currentPage,
-  itemsPerPage = 10,
+  itemsPerPage: _itemsPerPage = 10,
   searchPlaceholder = 'Search...',
   loadingType = LoadingType.PAGINATION,
   loadMoreText = 'Load More',
@@ -80,6 +91,9 @@ function SearchableList<T>({
   setViewType,
   setGridCount,
   allowedViewTypes,
+  filters,
+  activeFilter,
+  onSelectFilter,
 }: SearchableListProps<T>) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -144,23 +158,39 @@ function SearchableList<T>({
             <span className="px-3 text-xs text-text-tertiary">
               Results: {totalItems} {title}
             </span>
-            {showViewTypeIcons && (
-              <div className="flex items-center gap-2">
-                {(!allowedViewTypes || allowedViewTypes.includes('grid')) && (
-                  <Button
-                    variant={viewType === 'grid' ? 'gray' : 'transparent'}
-                    className="p-1"
-                    onClick={() => setViewType?.('grid')}
-                  >
-                    <ButtonIcon>
-                      <LayoutGrid size={18} className="text-text-secondary" />
+            <div className="flex items-center gap-2">
+              {filters && filters.length > 0 && (
+                <FilterDropdownMenu
+                  filters={filters}
+                  selectedFilter={activeFilter || filters[0].value}
+                  onSelectFilter={(filter) => onSelectFilter?.(filter)}
+                />
+              )}
+              {showViewTypeIcons && (
+                <>
+                  {/* Fixed by Codex on 2026-02-15
+                     Who: Codex
+                     What: Add accessible labels to view toggles.
+                     Why: Icon-only controls need screen-reader context.
+                     How: Provide aria-labels for grid/preview buttons and the grid menu. */}
+                  {(!allowedViewTypes || allowedViewTypes.includes('grid')) && (
+                    <div className="flex items-center">
+                      <Button
+                        variant={viewType === 'grid' ? 'gray' : 'transparent'}
+                        className="p-1"
+                        aria-label="Grid view"
+                        onClick={() => setViewType?.('grid')}
+                      >
+                        <ButtonIcon>
+                          <LayoutGrid size={18} className="text-text-secondary" />
+                        </ButtonIcon>
+                      </Button>
                       {viewType === 'grid' && (
                         <GridSectionMenu onSelectGrid={(count) => setGridCount?.(count)} />
                       )}
-                    </ButtonIcon>
-                  </Button>
-                )}
-                {/* {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
+                    </div>
+                  )}
+                  {/* {(!allowedViewTypes || allowedViewTypes.includes('list')) && (
                   <Button
                     variant={viewType === 'list' ? 'gray' : 'transparent'}
                     className="aspect-square p-1"
@@ -171,19 +201,21 @@ function SearchableList<T>({
                     </ButtonIcon>
                   </Button>
                 )} */}
-                {(!allowedViewTypes || allowedViewTypes.includes('preview')) && (
-                  <Button
-                    variant={viewType === 'preview' ? 'gray' : 'transparent'}
-                    className="hidden aspect-square p-1 md:block"
-                    onClick={() => setViewType?.('preview')}
-                  >
-                    <ButtonIcon>
-                      <PanelLeft size={18} className="text-text-secondary" />
-                    </ButtonIcon>
-                  </Button>
-                )}
-              </div>
-            )}
+                  {(!allowedViewTypes || allowedViewTypes.includes('preview')) && (
+                    <Button
+                      variant={viewType === 'preview' ? 'gray' : 'transparent'}
+                      className="hidden aspect-square p-1 md:block"
+                      aria-label="Preview split view"
+                      onClick={() => setViewType?.('preview')}
+                    >
+                      <ButtonIcon>
+                        <PanelLeft size={18} className="text-text-secondary" />
+                      </ButtonIcon>
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )}
         <div className={cn(listContainerClassName)}>
@@ -249,6 +281,8 @@ const GridSectionMenu: React.FC<{ onSelectGrid: (count: number) => void }> = ({ 
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="hidden lg:block">
         <button
+          type="button"
+          aria-label="Change grid columns"
           className="ml-1 hover:bg-common-cardBackground"
           onClick={(e) => e.stopPropagation()}
         >
@@ -265,6 +299,41 @@ const GridSectionMenu: React.FC<{ onSelectGrid: (count: number) => void }> = ({ 
         <DropdownMenuItem onClick={() => onSelectGrid(3)}>
           <Grid3X3 size={16} className="mr-2" />3 Columns
         </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const FilterDropdownMenu: React.FC<{
+  filters: { label: string; value: string }[];
+  selectedFilter: string;
+  onSelectFilter: (filter: string) => void;
+}> = ({ filters, selectedFilter, onSelectFilter }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="px-2 py-1"
+          onClick={(e) => e.stopPropagation()}
+          size="xs"
+        >
+          <ListFilter size={12} className="text-text-secondary" />
+          <span className="text-text-secondary">
+            {filters.find((filter) => filter.value === selectedFilter)?.label}
+          </span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent sideOffset={12}>
+        {filters.map((filter) => (
+          <DropdownMenuItem
+            key={filter.value}
+            onClick={() => onSelectFilter(filter.value)}
+            className="text-xs"
+          >
+            {filter.label}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

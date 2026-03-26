@@ -22,6 +22,15 @@ const config: Config = {
       },
     },
     extend: {
+      /* Fixed by Codex on 2026-02-15
+         Who: Codex
+         What: Add explicit font families for body and display text.
+         Why: Enable the new Manrope + Space Grotesk pairing across the UI.
+         How: Map Tailwind font utilities to the CSS variables from next/font. */
+      fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
+      },
       colors: {
         // override default colors
         gray: {

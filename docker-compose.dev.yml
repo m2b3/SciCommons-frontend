@@ -1,7 +1,18 @@
 services:
   scicommons:
     container_name: scicommons
-    image: ghcr.io/m2b3/scicommons-frontend:main # Change this to your image name
+    # Fixed by Codex GPT-5 on 2026-02-16
+    # Problem: Compose used only a pre-tagged image and could not read build args from .env.
+    # Solution: Add local build config and map required NEXT_PUBLIC_* args from .env.
+    # Result: `docker compose up --build` rebuilds image with backend, realtime, and skin values.
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+        NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL}
+        NEXT_PUBLIC_UI_SKIN: ${NEXT_PUBLIC_UI_SKIN}
+    image: scicommons-frontend:latest
     restart: always
     ports:
       - 3000:3000

@@ -3,18 +3,17 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  FacebookIconFilled,
-  InstagramIconFilled,
-  TwitterIconFilled,
-  YoutubeIconFilled,
-} from '@/components/ui/Icons/common';
 import useStore from '@/hooks/useStore';
 import { useAuthStore } from '@/stores/authStore';
 
 const navLinks = [
   { name: 'Home', path: '/' },
-  { name: 'Articles', path: '/articles' },
+  /* Fixed by Codex on 2026-02-16
+     Who: Codex
+     What: Hid the footer Articles entry without deleting route support.
+     Why: Prevent casual user entry into /articles while keeping the framework for later re-enable.
+     How: Commented out the Articles nav item in footer links. */
+  // { name: 'Articles', path: '/articles' },
   { name: 'Communities', path: '/communities' },
   { name: 'About', path: '/about' },
   { name: 'Login', path: '/auth/login' },
@@ -27,6 +26,7 @@ const Footer: React.FC = () => {
   const isAshokaUser = useStore(useAuthStore, (state) =>
     state.user?.email?.endsWith('ashoka.edu.in')
   );
+  const currentYear = new Date().getFullYear();
 
   // Filter navLinks to remove Login/Register if authenticated
   const filteredNavLinks = isAuthenticated
@@ -39,14 +39,24 @@ const Footer: React.FC = () => {
   const secondColLinks = filteredNavLinks.slice(mid);
 
   return (
-    <footer className="rounded-t-3xl bg-functional-green/10 pb-16 dark:bg-functional-green/10 md:pb-0">
-      <div className="sm-gap-0 flex w-full flex-col justify-between gap-10 p-8 pt-12 sm:flex-row sm:p-16 md:px-44 md:py-12">
-        <div className="flex flex-col items-start gap-12">
+    <footer className="rounded-t-3xl border-t border-common-contrast/40 bg-common-background pb-16 md:pb-0">
+      {/* Fixed by Codex on 2026-02-15
+         Who: Codex
+         What: Rebalanced the footer colors to match the cooler, modern palette.
+         Why: The solid green footer block felt heavy against the new lighter hero.
+         How: Swapped to neutral backgrounds with accent gradients for the legal strip. */}
+      {/* Fixed by Codex on 2026-02-16
+         Who: Codex
+         What: Aligned footer logo and nav blocks across both mobile and desktop layouts.
+         Why: The navigation block looked visually offset from the SC logo, especially in stacked mobile view.
+         How: Center-align stacked mobile sections, restore left alignment from `sm` onward, and keep a small desktop optical offset. */}
+      <div className="sm-gap-0 flex w-full flex-col items-center justify-between gap-10 p-8 pt-12 sm:flex-row sm:items-center sm:p-16 md:px-44 md:py-12">
+        <div className="flex flex-col items-center gap-12 sm:items-start">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
               <Image
                 src="/logo.png"
-                alt="Logo"
+                alt="SciCommons logo"
                 width={isAshokaUser ? 90 : 120}
                 height={isAshokaUser ? 66 : 80}
               />
@@ -58,7 +68,8 @@ const Footer: React.FC = () => {
               </>
             )}
           </div>
-          <div className="flex gap-8 md:order-2">
+          {/* Commented out social media icons - dead links */}
+          {/* <div className="flex gap-8 md:order-2">
             <a href="#" className="text-functional-green">
               <span className="sr-only">Facebook</span>
               <FacebookIconFilled fontSize={24} strokeWidth={0} />
@@ -75,29 +86,43 @@ const Footer: React.FC = () => {
               <span className="sr-only">Twitter</span>
               <TwitterIconFilled fontSize={24} strokeWidth={0} />
             </a>
-          </div>
+          </div> */}
         </div>
 
-        <div className="flex gap-6 text-xs font-semibold leading-6 text-functional-green sm:gap-14">
-          <div className="flex flex-col gap-2">
+        <div className="flex justify-center gap-6 text-xs font-semibold leading-6 text-text-secondary sm:justify-start sm:gap-14 sm:pt-1">
+          <div className="flex flex-col items-center gap-2 sm:items-start">
             {firstColLinks.map((link) => (
-              <Link key={link.name} href={link.path} className="hover:underline">
+              <Link
+                key={link.name}
+                href={link.path}
+                className="hover:text-functional-green hover:underline"
+              >
                 {link.name}
               </Link>
             ))}
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col items-center gap-2 sm:items-start">
             {secondColLinks.map((link) => (
-              <Link key={link.name} href={link.path} className="hover:underline">
+              <Link
+                key={link.name}
+                href={link.path}
+                className="hover:text-functional-green hover:underline"
+              >
                 {link.name}
               </Link>
             ))}
           </div>
         </div>
       </div>
-      <div className="flex w-full flex-wrap items-center bg-functional-green p-4 text-xs font-semibold text-white dark:text-black sm:justify-center">
-        <span className="mr-2 sm:mr-4">© 2024 SciCommons. All rights reserved.</span>
-        <span className="mr-2 sm:mr-4">
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Tokenize footer legal strip text color.
+          Why: Keep gradient text contrast aligned with skin palettes.
+          How: Replace white/black utilities with primary-foreground. */}
+      <div className="flex w-full flex-wrap items-center bg-gradient-to-r from-functional-green to-functional-blue p-4 text-xs font-semibold text-primary-foreground sm:justify-center">
+        <span className="mr-2 sm:mr-4">© 2024–{currentYear} SciCommons</span>
+        {/* Commented out dead links */}
+        {/* <span className="mr-2 sm:mr-4">
           <span className="mr-2 sm:mr-4">|</span>
           <Link href="/terms-and-conditions" className="hover:underline">
             Terms and Conditions
@@ -108,7 +133,7 @@ const Footer: React.FC = () => {
           <Link href="/privacy-policy" className="hover:underline">
             Privacy Policy
           </Link>
-        </span>
+        </span> */}
       </div>
     </footer>
   );

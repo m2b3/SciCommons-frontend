@@ -43,7 +43,18 @@ const SocialShare: React.FC<SocialShareProps> = ({ url, title, description }) =>
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Share2 className="h-4 w-4" />
+        {/* Fixed by Codex on 2026-02-15
+           Who: Codex
+           What: Wrap the share icon in a real button with an accessible label.
+           Why: Bare SVG triggers are not focusable for keyboard users.
+           How: Use a button element as the popover trigger. */}
+        <button
+          type="button"
+          aria-label="Share post"
+          className="h-4 w-4 text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+        >
+          <Share2 className="h-4 w-4" />
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-48">
         <div className="flex flex-col space-y-2">

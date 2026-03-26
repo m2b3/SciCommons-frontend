@@ -94,15 +94,19 @@ const ImageUpload = <TFieldValues extends FieldValues>({
     maxSize: 2 * 1024 * 1024,
   });
 
+  /* Fixed by Codex on 2026-02-15
+     Problem: Image upload UI relied on fixed gray/blue/green/red utilities.
+     Solution: Swap hard-coded colors for semantic tokens across borders, text, and progress states.
+     Result: Upload styling now adapts cleanly to skin changes. */
   return (
     <div className="mt-4 w-full rounded res-text-sm">
       <LabeledTooltip label={label} info={info} />
       <div
         {...getRootProps()}
         className={clsx(
-          'cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-6 text-center transition-colors duration-200 ease-in-out hover:bg-gray-100',
+          'cursor-pointer rounded-md border-2 border-dashed border-common-contrast p-6 text-center transition-colors duration-200 ease-in-out hover:bg-common-contrast',
           {
-            'border-red-500': error,
+            'border-functional-red': error,
           }
         )}
       >
@@ -118,17 +122,22 @@ const ImageUpload = <TFieldValues extends FieldValues>({
             />
             <p className="text-center">
               Drop your image to replace or{' '}
-              <span className="cursor-pointer text-blue-500">Browse</span>
+              <span className="cursor-pointer text-functional-blue hover:text-functional-blueContrast">
+                Browse
+              </span>
             </p>
-            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+            <p className="text-sm text-text-tertiary">Supports: PNG, JPG, JPEG, WEBP</p>
           </div>
         ) : (
           <>
             <Image src="/imageupload.png" width={64} height={64} className="mx-auto" alt="Upload" />
             <p>
-              Drop your image here, or <span className="cursor-pointer text-blue-500">Browse</span>
+              Drop your image here, or{' '}
+              <span className="cursor-pointer text-functional-blue hover:text-functional-blueContrast">
+                Browse
+              </span>
             </p>
-            <p className="text-sm text-gray-500">Supports: PNG, JPG, JPEG, WEBP</p>
+            <p className="text-sm text-text-tertiary">Supports: PNG, JPG, JPEG, WEBP</p>
           </>
         )}
       </div>
@@ -153,21 +162,23 @@ const ImageUpload = <TFieldValues extends FieldValues>({
                       : 'Completed'}
                 </span>
               </div>
-              <div className="mt-1 h-2 rounded bg-gray-200">
+              <div className="mt-1 h-2 rounded bg-common-contrast">
                 <div
-                  className={`h-2 rounded ${fileObj.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`}
+                  className={`h-2 rounded ${fileObj.status === 'completed' ? 'bg-functional-green' : 'bg-functional-blue'}`}
                   style={{ width: `${fileObj.progress}%` }}
                 ></div>
               </div>
             </div>
             {fileObj.status === 'completed' && (
-              <CheckCircle size={24} className="ml-2 text-green-500" />
+              <CheckCircle size={24} className="ml-2 text-functional-green" />
             )}
-            {fileObj.status === 'error' && <CircleX size={24} className="ml-2 text-red-500" />}
+            {fileObj.status === 'error' && (
+              <CircleX size={24} className="ml-2 text-functional-red" />
+            )}
           </div>
         </div>
       )}
-      {error && <div className="mt-2 text-sm text-red-500">{error.message}</div>}
+      {error && <div className="mt-2 text-sm text-functional-red">{error.message}</div>}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
+import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -10,6 +11,7 @@ import {
   ChevronUp,
   MessageCircle,
   Pencil,
+  Pin,
   Shield,
   Star,
   StarIcon,
@@ -18,7 +20,8 @@ import {
 import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
-import { ReviewOut } from '@/api/schemas';
+import { customInstance } from '@/api/custom-instance';
+import { Message, ReviewOut } from '@/api/schemas';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -28,11 +31,24 @@ import TruncateText from '../common/TruncateText';
 import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
 import ReviewComments from './ReviewComments';
 import ReviewForm from './ReviewForm';
+import { isReviewPinned } from './reviewPinning';
 
 interface ReviewCardProps {
   review: ReviewOut;
   refetch?: () => void;
 }
+
+const pinReviewRequest = (reviewId: number, accessToken: string | null) =>
+  customInstance<Message>(
+    { url: `/api/articles/reviews/${reviewId}/pin/`, method: 'POST' },
+    accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}
+  );
+
+const unpinReviewRequest = (reviewId: number, accessToken: string | null) =>
+  customInstance<Message>(
+    { url: `/api/articles/reviews/${reviewId}/pin/`, method: 'DELETE' },
+    accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}
+  );
 
 const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   dayjs.extend(relativeTime);
@@ -42,6 +58,8 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   const [displayComments, setDisplayComments] = useState<boolean>(false);
 
   const accessToken = useAuthStore((state) => state.accessToken);
+  const currentUser = useAuthStore((state) => state.user);
+  const isPinned = isReviewPinned(review);
 
   // COMMENTED OUT BCOZ WE ARE NOT SHOWING REACTIONS IN REVIEW CARD
   // const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
@@ -78,6 +96,33 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
       },
     });
 
+  /* Fixed by Codex on 2026-03-22
+     Who: Codex
+     What: Added manual review pin/unpin mutations on sureshDev.
+     Why: This branch's generated client predates the dedicated review pin hooks, but the backend pin endpoint is still the feature we need to surface.
+     How: Call the pin endpoint directly through the shared Axios instance, then refetch the review list so both sort order and pinned UI refresh from server state. */
+  const { mutate: pinReview, isPending: pinPending } = useMutation({
+    mutationFn: (reviewId: number) => pinReviewRequest(reviewId, accessToken),
+    onSuccess: () => {
+      refetch && refetch();
+      toast.success('Review pinned successfully');
+    },
+    onError: (error) => {
+      showErrorToast(error as Parameters<typeof showErrorToast>[0]);
+    },
+  });
+
+  const { mutate: unpinReview, isPending: unpinPending } = useMutation({
+    mutationFn: (reviewId: number) => unpinReviewRequest(reviewId, accessToken),
+    onSuccess: () => {
+      refetch && refetch();
+      toast.success('Review unpinned successfully');
+    },
+    onError: (error) => {
+      showErrorToast(error as Parameters<typeof showErrorToast>[0]);
+    },
+  });
+
   // const handleReaction = (reaction: Reaction) => {
   //   if (reaction === 'upvote')
   //     mutate({ data: { content_type: 'articles.review', object_id: Number(review.id), vote: 1 } });
@@ -102,18 +147,23 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     }
   }, [review, selectedVersion]);
 
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Tokenize review type badges.
+     Why: Keep role pills consistent across skins.
+     How: Replace purple/blue utilities with functional tokens. */
   const getReviewTypeTag = (reviewType: string) => {
     switch (reviewType) {
       case 'reviewer':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800 dark:bg-purple-950 dark:text-purple-400">
+          <span className="ml-2 flex items-center rounded-full bg-functional-green/10 px-2 py-1 text-xs font-medium text-functional-green">
             <UserCircle className="mr-1 h-3 w-3" />
             Reviewer
           </span>
         );
       case 'moderator':
         return (
-          <span className="ml-2 flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+          <span className="ml-2 flex items-center rounded-full bg-functional-blue/10 px-2 py-1 text-xs font-medium text-functional-blue">
             <Shield className="mr-1 h-3 w-3" />
             Moderator
           </span>
@@ -124,8 +174,10 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   };
 
   const canApprove =
-    review.community_article?.reviewer_ids?.includes(review.user.id || 0) ||
-    review.community_article?.moderator_id === review.user.id;
+    !!currentUser &&
+    (review.community_article?.reviewer_ids?.includes(currentUser.id) ||
+      review.community_article?.moderator_id === currentUser.id);
+  const canPin = !!currentUser && review.community_article?.moderator_id === currentUser.id;
 
   return (
     <>
@@ -150,7 +202,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                     ? review.user.profile_pic_url?.startsWith('http')
                       ? review.user.profile_pic_url
                       : `data:image/png;base64,${review.user.profile_pic_url}`
-                    : `/images/assets/user-icon.png`
+                    : `/images/assets/user-icon.webp`
                 }
                 alt={review.user.username}
                 width={32}
@@ -158,7 +210,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 className="shrink-0 rounded-full object-cover"
                 quality={75}
                 sizes="32px"
-                loading="lazy"
+                unoptimized={!review.user.profile_pic_url}
               />
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 text-sm font-bold text-text-secondary">
@@ -166,11 +218,19 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   {review.is_author && (
                     <>
                       <span className="text-[10px] font-normal text-text-tertiary">(You)</span>
-                      <Pencil
-                        size={12}
+                      {/* Fixed by Codex on 2026-02-15
+                         Who: Codex
+                         What: Make the edit action keyboard accessible.
+                         Why: Clickable icons without buttons are not focusable.
+                         How: Wrap the icon in a button with an aria-label. */}
+                      <button
+                        type="button"
+                        aria-label="Edit review"
                         onClick={() => setEdit(!edit)}
-                        className="cursor-pointer hover:text-functional-green"
-                      />
+                        className="inline-flex items-center"
+                      >
+                        <Pencil size={12} className="cursor-pointer hover:text-functional-green" />
+                      </button>
                     </>
                   )}
                   {getReviewTypeTag(review.review_type || '')}
@@ -211,11 +271,14 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div>
           </div>
           <h3 className="mt-2 text-sm font-semibold">
-            <TruncateText
-              text={currentVersion.subject}
-              maxLines={2}
-              textClassName="text-text-primary text-base"
-            />
+            <div className="flex items-center gap-2">
+              {isPinned && <Pin className="h-4 w-4 fill-current text-functional-yellow" />}
+              <TruncateText
+                text={currentVersion.subject}
+                maxLines={2}
+                textClassName="text-text-primary text-base"
+              />
+            </div>
           </h3>
 
           <div>
@@ -232,6 +295,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
               supportLatex={true}
               containerClassName="mb-0"
               contentClassName="text-xs sm:text-sm"
+              gradientClassName="sm:from-common-background"
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -276,6 +340,9 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
             </div> */}
             <div className="ml-auto flex items-center space-x-2 text-text-secondary">
               <button
+                type="button"
+                aria-expanded={displayComments}
+                aria-controls={`review-${review.id}-comments`}
                 onClick={() => setDisplayComments((prev) => !prev)}
                 className="flex items-center gap-2 text-[10px] hover:underline focus:outline-none"
               >
@@ -307,10 +374,29 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                   <ButtonTitle>{review.is_approved ? 'Approved' : 'Approve'}</ButtonTitle>
                 </Button>
               )}
+              {canPin && (
+                <Button
+                  disabled={pinPending || unpinPending}
+                  onClick={() =>
+                    isPinned ? unpinReview(review.id || 0) : pinReview(review.id || 0)
+                  }
+                  variant={isPinned ? 'default' : 'outline'}
+                >
+                  <ButtonIcon>
+                    <Pin className={`h-4 w-4 ${isPinned ? 'fill-current' : ''}`} />
+                  </ButtonIcon>
+                  <ButtonTitle>{isPinned ? 'Unpin' : 'Pin'}</ButtonTitle>
+                </Button>
+              )}
             </div>
           </div>
           {displayComments && (
-            <div className="w-full">
+            /* Fixed by Codex on 2026-02-17
+               Who: Codex
+               What: Add a small vertical gap above expanded review comments.
+               Why: The comments toolbar row sat too close to the right-side "{n} comments" toggle row.
+               How: Apply a subtle top margin on the review comments container. */
+            <div className="mt-1 w-full" id={`review-${review.id}-comments`}>
               <ReviewComments
                 reviewId={Number(review.id)}
                 displayComments={displayComments}

@@ -10,10 +10,12 @@ export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
   onSubmit,
+  ariaLabel = 'Search',
 }: {
   placeholders: string[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  ariaLabel?: string;
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -48,12 +50,17 @@ export function PlaceholdersAndVanishInput({
 
     const fontSize = parseFloat(computedStyles.getPropertyValue('font-size'));
     ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
-    ctx.fillStyle = '#FFF';
+    /* Fixed by Codex on 2026-02-15
+       Who: Codex
+       What: Sync vanish text color with the input's computed color.
+       Why: Preserve contrast when skins change text colors.
+       How: Use computed styles instead of a hard-coded white fill. */
+    ctx.fillStyle = computedStyles.color;
     ctx.fillText(value, 16, 40);
 
     const imageData = ctx.getImageData(0, 0, 800, 800);
     const pixelData = imageData.data;
-    const newData: any[] = [];
+    const newData: Array<{ x: number; y: number; color: [number, number, number, number] }> = [];
 
     for (let t = 0; t < 800; t++) {
       const i = 4 * t * 800;
@@ -152,102 +159,116 @@ export function PlaceholdersAndVanishInput({
     onSubmit && onSubmit(e);
   };
   return (
-    <form
-      className={cn(
-        'relative mx-auto h-12 w-full overflow-hidden rounded-full bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 dark:bg-zinc-800',
-        value && 'bg-gray-50'
-      )}
-      onSubmit={handleSubmit}
-    >
-      <canvas
+    <>
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Replace input hard-coded colors with semantic tokens.
+          Why: Allow skins to control search surface/background contrast.
+          How: Swap white/gray/black utilities for token classes. */}
+      <form
         className={cn(
-          'pointer-events-none absolute  left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-8',
-          !animating ? 'opacity-0' : 'opacity-100'
+          'relative mx-auto h-12 w-full overflow-hidden rounded-full bg-common-cardBackground shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200',
+          value && 'bg-common-minimal'
         )}
-        ref={canvasRef}
-      />
-      <input
-        onChange={(e) => {
-          if (!animating) {
-            setValue(e.target.value);
-            onChange && onChange(e);
-          }
-        }}
-        onKeyDown={handleKeyDown}
-        ref={inputRef}
-        value={value}
-        type="text"
-        className={cn(
-          'relative z-50 h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-black focus:outline-none focus:ring-0 dark:text-white sm:pl-10 sm:text-base',
-          animating && 'text-transparent dark:text-transparent'
-        )}
-      />
-
-      <button
-        disabled={!value}
-        type="submit"
-        className="absolute right-2 top-1/2 z-50 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black transition duration-200 disabled:bg-gray-100 dark:bg-zinc-900 dark:disabled:bg-zinc-800"
+        onSubmit={handleSubmit}
       >
-        <motion.svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-4 w-4 text-gray-300"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <motion.path
-            d="M5 12l14 0"
-            initial={{
-              strokeDasharray: '50%',
-              strokeDashoffset: '50%',
-            }}
-            animate={{
-              strokeDashoffset: value ? 0 : '50%',
-            }}
-            transition={{
-              duration: 0.3,
-              ease: 'linear',
-            }}
-          />
-          <path d="M13 18l6 -6" />
-          <path d="M13 6l6 6" />
-        </motion.svg>
-      </button>
+        <canvas
+          className={cn(
+            'pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-8',
+            !animating ? 'opacity-0' : 'opacity-100'
+          )}
+          ref={canvasRef}
+        />
+        <input
+          onChange={(e) => {
+            if (!animating) {
+              setValue(e.target.value);
+              onChange && onChange(e);
+            }
+          }}
+          onKeyDown={handleKeyDown}
+          ref={inputRef}
+          value={value}
+          type="text"
+          aria-label={ariaLabel}
+          className={cn(
+            'relative z-50 h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-text-primary focus:outline-none focus:ring-0 sm:pl-10 sm:text-base',
+            animating && 'text-transparent'
+          )}
+        />
 
-      <div className="pointer-events-none absolute inset-0 flex items-center rounded-full">
-        <AnimatePresence mode="wait">
-          {!value && (
-            <motion.p
+        <button
+          disabled={!value}
+          type="submit"
+          className="absolute right-2 top-1/2 z-50 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-common-invert transition duration-200 disabled:bg-common-minimal"
+          aria-label="Submit search"
+        >
+          {/* Fixed by Codex on 2026-02-15
+            Who: Codex
+            What: Add aria-label to icon-only submit control.
+            Why: Screen readers need a text label for the submit button.
+            How: Provide an explicit aria-label on the button. */}
+          <motion.svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4 text-common-background"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <motion.path
+              d="M5 12l14 0"
               initial={{
-                y: 5,
-                opacity: 0,
+                strokeDasharray: '50%',
+                strokeDashoffset: '50%',
               }}
-              key={`current-placeholder-${currentPlaceholder}`}
               animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              exit={{
-                y: -15,
-                opacity: 0,
+                strokeDashoffset: value ? 0 : '50%',
               }}
               transition={{
                 duration: 0.3,
                 ease: 'linear',
               }}
-              className="w-[calc(100%-2rem)] truncate pl-4 text-left text-sm font-normal text-neutral-500 dark:text-zinc-500 sm:pl-12 sm:text-base"
-            >
-              {placeholders[currentPlaceholder]}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-    </form>
+            />
+            <path d="M13 18l6 -6" />
+            <path d="M13 6l6 6" />
+          </motion.svg>
+        </button>
+
+        <div className="pointer-events-none absolute inset-0 flex items-center rounded-full">
+          <AnimatePresence mode="wait">
+            {!value && (
+              <motion.p
+                initial={{
+                  y: 5,
+                  opacity: 0,
+                }}
+                key={`current-placeholder-${currentPlaceholder}`}
+                animate={{
+                  y: 0,
+                  opacity: 1,
+                }}
+                exit={{
+                  y: -15,
+                  opacity: 0,
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: 'linear',
+                }}
+                className="w-[calc(100%-2rem)] truncate pl-4 text-left text-sm font-normal text-text-tertiary sm:pl-12 sm:text-base"
+              >
+                {placeholders[currentPlaceholder]}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+      </form>
+    </>
   );
 }

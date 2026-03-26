@@ -5,167 +5,284 @@ import Link from 'next/link';
 
 import Footer from '@/components/common/Footer';
 import NavBar from '@/components/common/NavBar';
-// import {
-//   Accordion,
-//   AccordionContent,
-//   AccordionItem,
-//   AccordionTrigger,
-// } from '@/components/ui/accordian';
 import { Button, ButtonTitle } from '@/components/ui/button';
-import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
-
-// import { faqs } from '@/constants/common.constants';
-
-// import FeaturesSection from './FeaturesSection';
 
 const Home = () => {
-  const words = [
-    {
-      text: 'Welcome',
-    },
-    {
-      text: 'to',
-    },
-    {
-      text: 'SciCommons.',
-      className: 'text-functional-green',
-    },
-  ];
-
   return (
     <div className="relative bg-common-background">
       <NavBar />
-      {/* <Banner /> */}
-      <div className="relative inset-0 z-0 -mt-12 flex h-[calc(100vh-180px)] flex-col items-center justify-center overflow-hidden rounded-t-3xl bg-common-background md:h-[calc(100vh-220px)]">
-        <Image
-          src={'/images/assets/gradient.webp'}
-          fill
-          alt=""
-          className="z-0 opacity-10 invert dark:invert-0"
-          quality={10}
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Rebuilt the hero layout with ambient gradients, glass cards, and softer spacing.
+          Why: The previous hero was flat and overly white/green.
+          How: Added ambient background layers, staggered fades, and modern highlight cards. */}
+      <section className="relative overflow-hidden">
+        <div className="hero-ambient absolute inset-0" />
+        <div className="hero-orb teal float-soft pointer-events-none absolute -left-12 top-24 hidden md:block" />
+        <div
+          className="hero-orb blue float-soft pointer-events-none absolute -right-20 -top-10 hidden md:block"
+          style={{ animationDelay: '2s' }}
         />
-        <div className="z-10 -mt-6 flex h-full w-full flex-col items-center justify-center backdrop-blur-xl">
-          <div className="flex h-full w-full flex-col items-center justify-center">
-            <span className="mb-1 text-3xl font-bold text-text-primary sm:text-4xl md:hidden">
-              Welcome to
-            </span>
-            <TypewriterEffectSmooth words={words} />
-            <p className="mb-6 max-w-3xl px-4 text-center text-xs text-text-secondary sm:text-sm">
-              Be part of the change. Join our open platform to review, rate, and access research
-              freely. Improve research quality and accessibility with community-driven peer review.
-            </p>
-            <div className="flex flex-row items-center space-x-4">
-              <Link href="/articles">
-                <Button variant={'gray'} className="w-40 bg-black text-white dark:text-white">
-                  <ButtonTitle>Explore Articles</ButtonTitle>
-                </Button>
-              </Link>
-              <Link href="/communities">
-                <Button className="w-40">
-                  <ButtonTitle>Visit Communities</ButtonTitle>
-                </Button>
-              </Link>
+        <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-16 pt-20 text-center sm:px-10 sm:pt-24">
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Temporarily hid the hero tagline pill above the main headline.
+              Why: User wants to remove the badge but keep it for later reuse.
+              How: Wrapped the tagline span in a JSX comment. */}
+          {/*
+          <span
+            className="fade-up inline-flex items-center gap-2 rounded-full border border-common-contrast/40 bg-common-cardBackground/80 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-tertiary backdrop-blur"
+            style={{ animationDelay: '80ms' }}
+          >
+            Open science. Clear signals.
+          </span>
+          */}
+          <h1
+            className="fade-up mt-6 text-4xl font-semibold text-text-primary sm:text-5xl md:text-6xl"
+            style={{ animationDelay: '140ms' }}
+          >
+            Welcome to <span className="text-functional-green">SciCommons</span>
+          </h1>
+          <p
+            className="fade-up mt-4 max-w-2xl text-sm text-text-secondary sm:text-base"
+            style={{ animationDelay: '200ms' }}
+          >
+            Community-driven scholarly discussion.
+            <br />
+            Personalized feeds coming soon.
+          </p>
+          <div
+            className="fade-up mt-8 flex flex-wrap items-center justify-center gap-4"
+            style={{ animationDelay: '260ms' }}
+          >
+            {/* Fixed by Codex on 2026-02-15
+                Who: Codex
+                What: Hide the Explore Articles CTA and promote Visit Communities to the primary style.
+                Why: The homepage should feature a single centered primary action.
+                How: Commented out the Explore Articles link and applied the primary gradient styling to the remaining button. */}
+            {/*
+            <Link href="/articles">
+              <Button
+                variant={'default'}
+                className="w-44 rounded-full bg-gradient-to-r from-functional-green to-functional-blue shadow-lg shadow-functional-green/20 hover:shadow-functional-green/30"
+              >
+                <ButtonTitle className="text-xs font-semibold tracking-wide">
+                  Explore Articles
+                </ButtonTitle>
+              </Button>
+            </Link>
+            */}
+            <Link href="/communities">
+              <Button
+                variant={'default'}
+                className="w-44 rounded-full bg-gradient-to-r from-functional-green to-functional-blue shadow-lg shadow-functional-green/20 hover:shadow-functional-green/30"
+              >
+                <ButtonTitle className="text-xs font-semibold tracking-wide">
+                  Visit Communities
+                </ButtonTitle>
+              </Button>
+            </Link>
+          </div>
+          {/* Fixed by Codex on 2026-02-15
+              Who: Codex
+              What: Temporarily hid the three hero highlight cards.
+              Why: User wants the cards removed but recoverable later.
+              How: Wrapped the highlight card section in a JSX comment. */}
+          {/*
+          <div
+            className="fade-up mt-12 grid w-full gap-4 sm:grid-cols-3"
+            style={{ animationDelay: '320ms' }}
+          >
+            <div className="glass-panel rounded-2xl p-5 text-left">
+              <div className="h-1 w-10 rounded-full bg-functional-green/80" />
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
+                Open Review
+              </p>
+              <p className="mt-3 text-sm font-semibold text-text-primary">
+                Review research in context.
+              </p>
+              <p className="mt-2 text-xs text-text-secondary">
+                Structured discussions keep feedback focused, fair, and discoverable.
+              </p>
+            </div>
+            <div className="glass-panel rounded-2xl p-5 text-left">
+              <div className="h-1 w-10 rounded-full bg-functional-blue/80" />
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
+                Community Journals
+              </p>
+              <p className="mt-3 text-sm font-semibold text-text-primary">
+                Curate with trusted peers.
+              </p>
+              <p className="mt-2 text-xs text-text-secondary">
+                Build editorial communities and publish with shared standards.
+              </p>
+            </div>
+            <div className="glass-panel rounded-2xl p-5 text-left">
+              <div className="h-1 w-10 rounded-full bg-functional-yellow/80" />
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
+                Transparent Metrics
+              </p>
+              <p className="mt-3 text-sm font-semibold text-text-primary">
+                Signal quality, not hype.
+              </p>
+              <p className="mt-2 text-xs text-text-secondary">
+                Surface engagement and review depth with clarity and trust.
+              </p>
             </div>
           </div>
-          <div className="relative z-20 rounded-t-3xl pb-20">
-            <p className="w-full pb-8 text-center text-sm font-bold text-text-secondary md:text-base">
+          */}
+          <div
+            className="fade-up mt-12 flex w-full flex-col items-center justify-center gap-6"
+            style={{ animationDelay: '380ms' }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
               Our Supporters
             </p>
-            <div className="flex w-full flex-col items-center justify-center gap-8 sm:flex-row">
-              {/* KCDHA Logo - CSS-based theme switching */}
-              <Image
-                width={160}
-                height={40}
-                src="/images/KCDHA-White.png"
-                alt="KCDHA"
-                className="hidden dark:block"
-              />
-              <Image
-                width={160}
-                height={40}
-                src="/images/KCDHA-Black.png"
-                alt="KCDHA"
-                className="block dark:hidden"
-              />
-              {/* GSoC Logo - CSS-based theme switching */}
-              <Image
-                width={280}
-                height={40}
-                src="/images/GSoC-White.png"
-                alt="GSoC"
-                className="hidden dark:block"
-              />
-              <Image
-                width={280}
-                height={40}
-                src="/images/GSoC-Black.png"
-                alt="GSoC"
-                className="block dark:hidden"
-              />
+            {/* Fixed by Codex on 2026-02-25
+                Who: Codex
+                What: Added INCF to the home supporters strip and switched desktop logo layout to two rows.
+                Why: The single-row supporter strip became visually long after adding another supporter.
+                How: Converted the logo container to a responsive grid (1 column mobile, 2 columns on sm+) and appended the INCF logo asset. */}
+            <div className="grid w-full max-w-3xl grid-cols-1 items-center justify-items-center gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-6">
+              {/* Fixed by Codex on 2026-02-25
+                  Who: Codex
+                  What: Added outbound supporter links to each home-page supporter logo.
+                  Why: Supporter logos should navigate to the corresponding supporter websites.
+                  How: Wrapped each logo pair in an external Link with target/rel safeguards. */}
+              <Link
+                href="https://www.ashoka.edu.in/page/koita-centre-for-digital-health-at-ashoka/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Koita Centre for Digital Health at Ashoka"
+                className="inline-flex items-center justify-center"
+              >
+                <Image
+                  width={160}
+                  height={40}
+                  src="/images/KCDHA-White.png"
+                  alt="KCDHA"
+                  className="hidden dark:block"
+                />
+                <Image
+                  width={160}
+                  height={40}
+                  src="/images/KCDHA-Black.png"
+                  alt="KCDHA"
+                  className="block dark:hidden"
+                />
+              </Link>
+              {/* Fixed by Codex on 2026-02-18
+                  Who: Codex
+                  What: Added DRAC as a new supporter logo in the home hero supporters strip.
+                  Why: User provided light/dark DRAC assets and requested it be listed with existing supporters.
+                  How: Rendered theme-specific DRAC images with dark-mode class toggles to match current supporter behavior. */}
+              <Link
+                href="https://www.alliancecan.ca/en"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Digital Research Alliance of Canada"
+                className="inline-flex items-center justify-center"
+              >
+                <Image
+                  width={316}
+                  height={40}
+                  src="/images/DRAC_dark.png"
+                  alt="DRAC"
+                  className="hidden dark:block"
+                />
+                <Image
+                  width={316}
+                  height={40}
+                  src="/images/DRAC.png"
+                  alt="DRAC"
+                  className="block dark:hidden"
+                />
+              </Link>
+              {/* Fixed by Codex on 2026-02-18
+                  Who: Codex
+                  What: Nudged the GSoC logo slightly upward in desktop layout.
+                  Why: Its artwork bounding box makes it render visually lower than the adjacent supporter logos.
+                  How: Applied a small breakpoint-scoped negative Y translation to both light/dark variants. */}
+              <Link
+                href="https://summerofcode.withgoogle.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Google Summer of Code"
+                className="inline-flex items-center justify-center"
+              >
+                <Image
+                  width={280}
+                  height={40}
+                  src="/images/GSoC-White.png"
+                  alt="GSoC"
+                  className="hidden dark:block sm:-translate-y-px"
+                />
+                <Image
+                  width={280}
+                  height={40}
+                  src="/images/GSoC-Black.png"
+                  alt="GSoC"
+                  className="block dark:hidden sm:-translate-y-px"
+                />
+              </Link>
+              <Link
+                href="https://www.incf.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit International Neuroinformatics Coordinating Facility"
+                className="inline-flex items-center justify-center"
+              >
+                <Image width={74} height={40} src="/images/INCF.png" alt="INCF" />
+              </Link>
             </div>
           </div>
         </div>
-      </div>
-      <div className="relative z-20 -mt-8 rounded-t-3xl bg-common-background p-12 pb-20">
-        <p className="w-full pb-8 text-center text-sm font-bold text-text-secondary md:text-base">
-          Featured Video
-        </p>
-        <div className="flex w-full flex-col items-center justify-center">
-          <div className="aspect-video w-full max-w-4xl overflow-hidden rounded-lg border-2 border-functional-greenContrast/20">
-            <iframe
-              width="100%"
-              height="100%"
-              src="https://www.youtube.com/embed/kzZ4-7w4vhk"
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-            ></iframe>
+      </section>
+      {/* Fixed by Codex on 2026-02-15
+          Who: Codex
+          What: Temporarily hid the quick-start action cards under the hero.
+          Why: User wants the cards removed but recoverable later.
+          How: Wrapped the quick-start card section in a JSX comment. */}
+      {/*
+      <section className="relative z-10 bg-common-background">
+        <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-4 sm:px-10">
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="rounded-2xl border border-common-contrast/20 bg-common-cardBackground p-6 shadow-common">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
+                Discover
+              </p>
+              <h2 className="mt-3 text-lg font-semibold text-text-primary">
+                Browse fresh reviews.
+              </h2>
+              <p className="mt-2 text-sm text-text-secondary">
+                Explore peer feedback, highlights, and new submissions in one view.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-common-contrast/20 bg-common-cardBackground p-6 shadow-common">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
+                Collaborate
+              </p>
+              <h2 className="mt-3 text-lg font-semibold text-text-primary">
+                Join focused communities.
+              </h2>
+              <p className="mt-2 text-sm text-text-secondary">
+                Follow topic-driven journals and contribute to shared review standards.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-common-contrast/20 bg-common-cardBackground p-6 shadow-common">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-tertiary">
+                Contribute
+              </p>
+              <h2 className="mt-3 text-lg font-semibold text-text-primary">
+                Publish with confidence.
+              </h2>
+              <p className="mt-2 text-sm text-text-secondary">
+                Submit preprints and connect with reviewers who care about rigor.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      {/*
-        Features section commented out for now — keep markup for future re-enable
-
-      <div className="relative z-30 -mt-8 h-fit w-full rounded-t-3xl bg-[#E3F2E9] pb-20 dark:bg-[#0F1E15]">
-        <div className="flex w-full flex-col items-center py-8">
-          <span className="text-center text-xl font-bold text-functional-green md:text-2xl">
-            Features
-          </span>
-          <span className="text-base text-text-secondary">Uniqueness of our platform</span>
-        </div>
-        <FeaturesSection />
-      </div>
-      */}
-      {/*
-        FAQ section commented out for now — keep markup for future re-enable
-
-      <div className="relative z-40 -mt-8 flex w-full flex-col items-center rounded-t-3xl bg-common-background py-12">
-        <span className="px-8 text-center text-xl font-bold text-text-primary md:text-2xl">
-          We Have Answered Almost All Your Questions
-        </span>
-        <div className="mt-8 flex w-full max-w-[95%] flex-col items-center p-4 md:max-w-[80%]">
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, i) => (
-              <AccordionItem
-                className="w-full border-b border-common-contrast px-0 py-1"
-                key={i}
-                value={faq?.ques}
-              >
-                <AccordionTrigger className="w-full p-5" defaultIconNeeded={true}>
-                  <span className="w-full text-left text-sm text-text-primary md:text-base">
-                    {faq?.ques}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-5 pb-5 pt-0">
-                  <span className="text-xs text-text-secondary md:text-sm">{faq?.ans}</span>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </div>
+      </section>
       */}
       <Footer />
     </div>

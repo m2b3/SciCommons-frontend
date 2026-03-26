@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Users } from 'lucide-react';
 
@@ -8,9 +8,14 @@ import { useCommunitiesApiListCommunities } from '@/api/communities/communities'
 import { CommunityListOut } from '@/api/schemas';
 import { useUsersApiListMyCommunities } from '@/api/users/users';
 import SearchableList, { LoadingType } from '@/components/common/SearchableList';
-import CommunityCard, { CommunityCardSkeleton } from '@/components/communities/CommunityCard';
+import CommunityCard, {
+  CommunityAccessIndicator,
+  CommunityCardSkeleton,
+  CommunityRoleBadge,
+} from '@/components/communities/CommunityCard';
 import TabComponent from '@/components/communities/TabComponent';
 import { FIVE_MINUTES_IN_MS } from '@/constants/common.constants';
+import { useFilteredList } from '@/hooks/useFilteredList';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -22,10 +27,84 @@ interface CommunitiesResponse {
   };
 }
 
+enum CommunityFilters {
+  ALL = 'all',
+  BOOKMARKED = 'bookmarked',
+}
+
 enum Tabs {
   COMMUNITIES = 'Communities',
   MY_COMMUNITIES = 'My Communities',
 }
+
+type CommunityMembershipRole = 'admin' | 'moderator' | 'reviewer' | 'member' | null;
+
+const roleBadgeDefinitions: Record<
+  Exclude<CommunityMembershipRole, 'member' | null>,
+  CommunityRoleBadge
+> = {
+  admin: { code: 'A', label: 'Admin' },
+  moderator: { code: 'M', label: 'Moderator' },
+  reviewer: { code: 'R', label: 'Reviewer' },
+};
+
+const resolveCommunityRoleFromString = (
+  role: CommunityListOut['role']
+): CommunityMembershipRole => {
+  const normalizedRole = role?.trim().toLowerCase();
+  if (!normalizedRole) return null;
+
+  const roleTokens = normalizedRole.split(/[^a-z]+/).filter(Boolean);
+  if (roleTokens.length === 0) return null;
+
+  if (roleTokens.includes('owner') || roleTokens.includes('admin')) return 'admin';
+  if (roleTokens.includes('moderator') || roleTokens.includes('mod')) return 'moderator';
+  if (roleTokens.includes('reviewer') || roleTokens.includes('review')) return 'reviewer';
+  if (roleTokens.includes('member')) return 'member';
+
+  return null;
+};
+
+/* Fixed by Codex on 2026-03-08
+   Who: Codex
+   What: Restored card role/member markers across the role API transition.
+   Why: Some payloads provide role strings in varied token formats or only legacy boolean flags.
+   How: Parse tokenized role strings with broader matching and fall back to legacy `is_*` membership flags. */
+const resolveCommunityRole = (community: CommunityListOut): CommunityMembershipRole => {
+  const roleFromString = resolveCommunityRoleFromString(community.role);
+  if (roleFromString) return roleFromString;
+
+  const legacyMembershipFields = community as CommunityListOut & {
+    is_admin?: boolean;
+    is_moderator?: boolean;
+    is_reviewer?: boolean;
+    is_member?: boolean;
+  };
+
+  if (legacyMembershipFields.is_admin) return 'admin';
+  if (legacyMembershipFields.is_moderator) return 'moderator';
+  if (legacyMembershipFields.is_reviewer) return 'reviewer';
+  if (legacyMembershipFields.is_member) return 'member';
+
+  return null;
+};
+
+/* Fixed by Codex on 2026-03-08
+   Who: Codex
+   What: Unified card role sorting around the new list API `role` field.
+   Why: Backend now returns role per community item, so client no longer needs 4 extra role lookup calls.
+   How: Normalize per-item roles, map admin/moderator/reviewer/member to ordered tiers, and keep type-based fallback for non-members. */
+const getCommunitySortTier = (community: CommunityListOut): number => {
+  const membershipRole = resolveCommunityRole(community);
+
+  if (membershipRole === 'admin') return 0;
+  if (membershipRole === 'moderator') return 1;
+  if (membershipRole === 'reviewer') return 2;
+  if (membershipRole === 'member') return 3;
+  if (community.type === 'public') return 4;
+  if (community.type === 'private') return 5;
+  return 6;
+};
 
 interface TabContentProps {
   search: string;
@@ -42,13 +121,24 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
   setSearch,
   page,
   setPage,
+  accessToken,
   isActive,
   headerTabs,
 }) => {
-  const [communities, setCommunities] = useState<CommunityListOut[]>([]);
+  const { displayedItems, setItems, appendItems, setFilter, activeFilter, reset } =
+    useFilteredList<CommunityListOut>({
+      filters: {
+        [CommunityFilters.ALL]: () => true,
+        [CommunityFilters.BOOKMARKED]: (community) => community.is_bookmarked === true,
+      },
+      defaultFilter: CommunityFilters.ALL,
+    });
+
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
+
+  const requestConfig = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
 
   const { data, isPending, error } = useCommunitiesApiListCommunities<CommunitiesResponse>(
     {
@@ -60,9 +150,10 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
       query: {
         staleTime: FIVE_MINUTES_IN_MS,
         refetchOnWindowFocus: true,
-        queryKey: ['communities', page, search],
+        queryKey: ['communities', page, search, accessToken ? 'authenticated' : 'public'],
         enabled: isActive,
       },
+      request: requestConfig,
     }
   );
 
@@ -72,22 +163,22 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
     }
     if (data) {
       if (page === 1 || loadingType === LoadingType.PAGINATION) {
-        setCommunities(data.data.items);
+        setItems(data.data.items);
       } else {
-        setCommunities((prevCommunities) => [...prevCommunities, ...data.data.items]);
+        appendItems(data.data.items);
       }
       setTotalItems(data.data.total);
       setTotalPages(data.data.num_pages);
     }
-  }, [data, error, page, loadingType]);
+  }, [data, error, page, loadingType, setItems, appendItems]);
 
   const handleSearch = useCallback(
     (term: string) => {
       setSearch(term);
       setPage(1);
-      setCommunities([]);
+      reset();
     },
-    [setSearch, setPage]
+    [setSearch, setPage, reset]
   );
 
   const handleLoadMore = useCallback(
@@ -97,10 +188,51 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderCommunity = useCallback(
-    (community: CommunityListOut) => <CommunityCard community={community} />,
-    []
-  );
+  /* Fixed by Codex on 2026-03-08
+     Who: Codex
+     What: Kept deterministic Communities sorting while removing role fan-out queries.
+     Why: The list API now includes each user's role per community item, so sorting can be done from one payload.
+     How: Stable-sort by per-item role tier, then preserve original list order within the same tier. */
+  const sortedDisplayedItems = useMemo(() => {
+    return displayedItems
+      .map((community, index) => ({ community, index }))
+      .sort((left, right) => {
+        const tierDelta =
+          getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
+        return tierDelta !== 0 ? tierDelta : left.index - right.index;
+      })
+      .map(({ community }) => community);
+  }, [displayedItems]);
+
+  const renderCommunity = useCallback((community: CommunityListOut) => {
+    const membershipRole = resolveCommunityRole(community);
+    const roleBadges: CommunityRoleBadge[] =
+      membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
+    const isMemberOnly = membershipRole === 'member';
+    const hasAnyMembership = membershipRole !== null;
+    const accessIndicator: CommunityAccessIndicator | undefined = !hasAnyMembership
+      ? community.type === 'public'
+        ? {
+            tone: 'public',
+            label: 'Public community, not a member',
+          }
+        : community.type === 'private'
+          ? {
+              tone: 'private',
+              label: 'Private community, membership required',
+            }
+          : undefined
+      : undefined;
+
+    return (
+      <CommunityCard
+        community={community}
+        roleBadges={roleBadges}
+        showMemberBadge={isMemberOnly}
+        accessIndicator={accessIndicator}
+      />
+    );
+  }, []);
 
   const renderSkeleton = useCallback(() => <CommunityCardSkeleton />, []);
 
@@ -114,7 +246,7 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
         renderItem={renderCommunity}
         renderSkeleton={renderSkeleton}
         isLoading={isPending}
-        items={communities}
+        items={sortedDisplayedItems}
         totalItems={totalItems}
         totalPages={totalPages}
         currentPage={page}
@@ -126,6 +258,14 @@ const CommunitiesTabContent: React.FC<TabContentProps> = ({
         title={Tabs.COMMUNITIES}
         headerTabs={headerTabs}
         listContainerClassName="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
+        filters={[
+          { label: 'All', value: CommunityFilters.ALL },
+          { label: 'Bookmarked', value: CommunityFilters.BOOKMARKED },
+        ]}
+        activeFilter={activeFilter}
+        onSelectFilter={(filter) => {
+          setFilter(filter);
+        }}
       />
     </div>
   );
@@ -140,10 +280,21 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
   isActive,
   headerTabs,
 }) => {
-  const [communities, setCommunities] = useState<CommunityListOut[]>([]);
+  const { displayedItems, setItems, appendItems, setFilter, activeFilter, reset } =
+    useFilteredList<CommunityListOut>({
+      filters: {
+        [CommunityFilters.ALL]: () => true,
+        [CommunityFilters.BOOKMARKED]: (community) => community.is_bookmarked === true,
+      },
+      defaultFilter: CommunityFilters.ALL,
+    });
+
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const loadingType = LoadingType.PAGINATION;
+  const myCommunitiesRequestConfig = accessToken
+    ? { headers: { Authorization: `Bearer ${accessToken}` } }
+    : undefined;
 
   const { data, isPending, error } = useUsersApiListMyCommunities<CommunitiesResponse>(
     {
@@ -158,9 +309,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
         queryKey: ['my_communities', page, search],
         enabled: isActive,
       },
-      request: {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      },
+      request: myCommunitiesRequestConfig,
     }
   );
 
@@ -170,22 +319,33 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     }
     if (data) {
       if (page === 1 || loadingType === LoadingType.PAGINATION) {
-        setCommunities(data.data.items);
+        setItems(data.data.items);
       } else {
-        setCommunities((prevCommunities) => [...prevCommunities, ...data.data.items]);
+        appendItems(data.data.items);
       }
       setTotalItems(data.data.total);
       setTotalPages(data.data.num_pages);
     }
-  }, [data, error, page, loadingType]);
+  }, [data, error, page, loadingType, setItems, appendItems]);
+
+  const sortedDisplayedItems = useMemo(() => {
+    return displayedItems
+      .map((community, index) => ({ community, index }))
+      .sort((left, right) => {
+        const tierDelta =
+          getCommunitySortTier(left.community) - getCommunitySortTier(right.community);
+        return tierDelta !== 0 ? tierDelta : left.index - right.index;
+      })
+      .map(({ community }) => community);
+  }, [displayedItems]);
 
   const handleSearch = useCallback(
     (term: string) => {
       setSearch(term);
       setPage(1);
-      setCommunities([]);
+      reset();
     },
-    [setSearch, setPage]
+    [setSearch, setPage, reset]
   );
 
   const handleLoadMore = useCallback(
@@ -195,10 +355,12 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
     [setPage]
   );
 
-  const renderCommunity = useCallback(
-    (community: CommunityListOut) => <CommunityCard community={community} />,
-    []
-  );
+  const renderCommunity = useCallback((community: CommunityListOut) => {
+    const membershipRole = resolveCommunityRole(community);
+    const roleBadges: CommunityRoleBadge[] =
+      membershipRole && membershipRole !== 'member' ? [roleBadgeDefinitions[membershipRole]] : [];
+    return <CommunityCard community={community} roleBadges={roleBadges} />;
+  }, []);
 
   const renderSkeleton = useCallback(() => <CommunityCardSkeleton />, []);
 
@@ -212,7 +374,7 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
         renderItem={renderCommunity}
         renderSkeleton={renderSkeleton}
         isLoading={isPending}
-        items={communities}
+        items={sortedDisplayedItems}
         totalItems={totalItems}
         totalPages={totalPages}
         currentPage={page}
@@ -224,6 +386,14 @@ const MyCommunitiesTabContent: React.FC<TabContentProps> = ({
         title={Tabs.MY_COMMUNITIES}
         headerTabs={headerTabs}
         listContainerClassName="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
+        filters={[
+          { label: 'All', value: CommunityFilters.ALL },
+          { label: 'Bookmarked', value: CommunityFilters.BOOKMARKED },
+        ]}
+        activeFilter={activeFilter}
+        onSelectFilter={(filter) => {
+          setFilter(filter);
+        }}
       />
     </div>
   );
@@ -260,17 +430,20 @@ const Communities: React.FC = () => {
           setPage={setCommunitiesPage}
           isActive={activeTab === Tabs.COMMUNITIES}
           headerTabs={<CommunitiesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
+          accessToken={accessToken ?? undefined}
         />
         {user && accessToken && (
-          <MyCommunitiesTabContent
-            search={myCommunitiesSearch}
-            setSearch={setMyCommunitiesSearch}
-            page={myCommunitiesPage}
-            setPage={setMyCommunitiesPage}
-            accessToken={accessToken}
-            isActive={activeTab === Tabs.MY_COMMUNITIES}
-            headerTabs={<CommunitiesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
-          />
+          <>
+            <MyCommunitiesTabContent
+              search={myCommunitiesSearch}
+              setSearch={setMyCommunitiesSearch}
+              page={myCommunitiesPage}
+              setPage={setMyCommunitiesPage}
+              accessToken={accessToken}
+              isActive={activeTab === Tabs.MY_COMMUNITIES}
+              headerTabs={<CommunitiesTabs activeTab={activeTab} onTabChange={setActiveTab} />}
+            />
+          </>
         )}
       </div>
     </div>

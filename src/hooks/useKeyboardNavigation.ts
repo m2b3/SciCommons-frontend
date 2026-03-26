@@ -54,6 +54,19 @@ export const useKeyboardNavigation = <T>({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        // NOTE(Codex for bsureshkrishna, 2026-02-09): Avoid hijacking arrow keys
+        // when the user is typing in inputs, textareas, or contentEditable fields.
+        const target = event.target as HTMLElement | null;
+        if (target) {
+          const tag = target.tagName?.toLowerCase();
+          const isEditable =
+            target.isContentEditable ||
+            tag === 'input' ||
+            tag === 'textarea' ||
+            tag === 'select' ||
+            target.getAttribute('role') === 'textbox';
+          if (isEditable) return;
+        }
         event.preventDefault();
 
         if (items.length === 0) return;

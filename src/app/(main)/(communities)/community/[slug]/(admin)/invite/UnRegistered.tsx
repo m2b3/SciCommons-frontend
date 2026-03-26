@@ -46,7 +46,7 @@ const UnRegistered = ({ communityId }: { communityId: number }) => {
       reset();
       toast.success('Invitation sent successfully!');
     }
-  }, [isSuccess]);
+  }, [isSuccess, reset]);
 
   const onSubmit = (data: IUnRegisteredProps) => {
     const emails = data.emails.map((email) => email.value);
@@ -84,6 +84,7 @@ const UnRegistered = ({ communityId }: { communityId: number }) => {
           type="text"
           placeholder="Enter the subject"
           register={register}
+          control={control}
           requiredMessage="Subject is required"
           info="Provide a subject for the invitation email."
           errors={errors}
@@ -95,6 +96,7 @@ const UnRegistered = ({ communityId }: { communityId: number }) => {
             type="text"
             placeholder="Enter the content"
             register={register}
+            control={control}
             requiredMessage="Content is required"
             info="Provide the content for the invitation email."
             errors={errors}

@@ -56,6 +56,7 @@ export function convertToDiscussionCommentData(backendComment: DiscussionComment
     is_author: backendComment.is_author || false,
     review_version: false,
     isNew: false,
+    flags: backendComment.flags,
   };
 
   return convertedComment;

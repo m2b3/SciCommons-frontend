@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { UsersCommonApiCheckPermissionParams } from '@/api/schemas';
 import { useUsersCommonApiCheckPermission } from '@/api/users-common-api/users-common-api';
 import Loader from '@/components/common/Loader';
+import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -25,7 +26,8 @@ export function withAuth<P extends WithAuthProps>(
 ) {
   const WithAuthComponent: React.FC<P> = (props) => {
     const router = useRouter();
-    const { isAuthenticated, accessToken, initializeAuth } = useAuthStore();
+    const { isAuthenticated, initializeAuth } = useAuthStore();
+    const authHeaders = useAuthHeaders();
     const [isInitializing, setIsInitializing] = useState(true);
 
     const resourceId = getResourceId ? getResourceId(props) : undefined;
@@ -50,13 +52,9 @@ export function withAuth<P extends WithAuthProps>(
       isError,
     } = useUsersCommonApiCheckPermission(params, {
       query: {
-        enabled: !isInitializing && isAuthenticated && !!accessToken && !!dashboardType,
+        enabled: !isInitializing && isAuthenticated && !!dashboardType,
       },
-      request: {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
+      request: authHeaders,
     });
 
     useEffect(() => {
@@ -64,9 +62,18 @@ export function withAuth<P extends WithAuthProps>(
         return;
       }
 
-      if (!isAuthenticated || !accessToken) {
-        toast.error('You need to be logged in to view this resource');
-        router.replace('/auth/login');
+      if (!isAuthenticated) {
+        /* Fixed by Codex on 2026-03-16
+           Who: Codex
+           What: Switched unauthenticated access handling to silent login replacement.
+           Why: Avoid noisy toasts during automatic stale-session/login redirects.
+           How: Replace route with login + redirect target instead of showing a toast. */
+        if (typeof window !== 'undefined') {
+          const redirectTarget = `${window.location.pathname}${window.location.search || ''}`;
+          router.replace(`/auth/login?redirect=${encodeURIComponent(redirectTarget)}`);
+        } else {
+          router.replace('/auth/login');
+        }
       } else if (!isLoading && !isError && permissionData !== undefined) {
         if (!permissionData.data.has_permission) {
           if (dashboardType === 'article') {
@@ -84,7 +91,6 @@ export function withAuth<P extends WithAuthProps>(
     }, [
       isInitializing,
       isAuthenticated,
-      accessToken,
       isLoading,
       isError,
       permissionData,
@@ -97,7 +103,7 @@ export function withAuth<P extends WithAuthProps>(
       return <Loader />;
     }
 
-    if (!isAuthenticated || !accessToken) {
+    if (!isAuthenticated) {
       return null;
     }
 

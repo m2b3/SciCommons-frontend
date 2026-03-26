@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Plus, Trash2 } from 'lucide-react';
-import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form';
+import { FieldErrors, get, useFieldArray, useFormContext } from 'react-hook-form';
 
 import FormInput from '@/components/common/FormInput';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
@@ -14,14 +14,14 @@ interface ProfessionalStatusProps {
 }
 
 const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMode }) => {
-  const { register, control } = useFormContext();
+  const { register, control, watch } = useFormContext<IProfileForm>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'professionalStatuses',
   });
 
   const addNewStatus = () => {
-    append({ status: '', startYear: '', endYear: '' });
+    append({ status: '', startYear: '', endYear: '', isOngoing: false });
   };
 
   return (
@@ -30,87 +30,126 @@ const ProfessionalStatus: React.FC<ProfessionalStatusProps> = ({ errors, editMod
       <p className="mb-4 pt-2 text-sm text-text-tertiary">
         Provide your academic or professional status to help us ensure relevant content.
       </p>
-      {fields.map((field, index) => (
-        <div key={field.id} className="border-b pb-6 last:border-b-0">
-          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-6">
-            <div className="md:col-span-3">
-              <FormInput
-                label="Status"
-                name={`professionalStatuses.${index}.status`}
-                type="text"
-                register={register}
-                errors={errors}
-                requiredMessage="Status is required"
-                readOnly={!editMode}
-              />
-            </div>
-            <FormInput
-              label="Start Year"
-              name={`professionalStatuses.${index}.startYear`}
-              type="text"
-              register={register}
-              errors={errors}
-              requiredMessage="Start year is required"
-              patternValue={/^\d{4}$/}
-              patternMessage="Invalid year format"
-              readOnly={!editMode}
-            />
-            <FormInput
-              label="End Year"
-              name={`professionalStatuses.${index}.endYear`}
-              type="text"
-              register={register}
-              errors={errors}
-              patternValue={/^\d{4}$|^Present$/i}
-              patternMessage="Invalid year format (use 'Present' for current positions)"
-              readOnly={!editMode}
-            />
-            <div className="flex h-full w-full items-end justify-center">
-              {fields.length < 3 && editMode && (
-                <Button
-                  variant={'blue'}
-                  className="w-full py-2.5"
-                  onClick={addNewStatus}
-                  title="Add new status"
-                  type="button"
-                >
-                  <ButtonIcon>
-                    <Plus size={16} />
-                  </ButtonIcon>
-                  <ButtonTitle>Add Status</ButtonTitle>
-                </Button>
+      {fields.map((field, index) => {
+        const statusFieldName = `professionalStatuses.${index}.status` as keyof IProfileForm;
+        const startYearFieldName = `professionalStatuses.${index}.startYear` as keyof IProfileForm;
+        const endYearFieldName = `professionalStatuses.${index}.endYear` as keyof IProfileForm;
+        const startYearError = get(errors, startYearFieldName);
+        const endYearError = get(errors, endYearFieldName);
+        const statusError = get(errors, statusFieldName);
+
+        const watchedOngoing = watch(`professionalStatuses.${index}.isOngoing`);
+        const isOngoing = watchedOngoing;
+
+        return (
+          <div key={field.id} className="border-b py-4 last:border-b-0">
+            <div className="flex flex-wrap items-end gap-4 md:flex-nowrap">
+              <div className="flex-1">
+                <FormInput
+                  label="Status"
+                  name={statusFieldName}
+                  type="text"
+                  register={register}
+                  errors={errors}
+                  readOnly={!editMode}
+                />
+              </div>
+
+              <div className="w-28">
+                <FormInput
+                  label="Start Year"
+                  name={startYearFieldName}
+                  type="text"
+                  register={register}
+                  errors={errors}
+                  readOnly={!editMode}
+                />
+              </div>
+
+              <div className="w-28">
+                {!isOngoing ? (
+                  <FormInput
+                    label="End Year"
+                    name={endYearFieldName}
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    readOnly={!editMode}
+                  />
+                ) : (
+                  <div className="flex flex-col">
+                    <label className="mb-1 text-sm text-text-secondary">End Year</label>
+                    <input
+                      value="Ongoing"
+                      disabled
+                      className="cursor-not-allowed rounded-md border border-common-contrast bg-common-cardBackground px-3 py-2 text-text-primary opacity-80"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {editMode && (
+                <div className="flex items-center gap-2 pb-1">
+                  <input
+                    type="checkbox"
+                    {...register(`professionalStatuses.${index}.isOngoing`)}
+                    className="h-4 w-4"
+                  />
+                  <label className="text-sm text-text-secondary">Ongoing</label>
+                </div>
               )}
-              {index > 0 && editMode && (
+
+              {editMode && (
                 <Button
                   variant={'danger'}
-                  className="w-full py-2.5"
+                  className="rounded-md bg-red-500/10 p-2 text-red-500 hover:bg-red-500/20"
                   onClick={() => remove(index)}
                   title="Remove this status"
+                  aria-label="Remove this status"
                   type="button"
                 >
                   <ButtonIcon>
                     <Trash2 size={16} />
                   </ButtonIcon>
-                  <ButtonTitle>Remove Status</ButtonTitle>
                 </Button>
               )}
             </div>
+            {(startYearError || endYearError || statusError) && (
+              <div className="mt-2 text-functional-red res-text-xs">
+                {statusError?.message || startYearError?.message || endYearError?.message}
+              </div>
+            )}
           </div>
+        );
+      })}
+
+      {fields.length > 0 && fields.length < 3 && editMode && (
+        <div className="mt-4">
+          <Button
+            variant={'blue'}
+            className="py-2.5"
+            onClick={addNewStatus}
+            title="Add new status"
+            type="button"
+          >
+            <ButtonIcon>
+              <Plus size={16} />
+            </ButtonIcon>
+            <ButtonTitle>Add Status</ButtonTitle>
+          </Button>
         </div>
-      ))}
+      )}
+
       {fields.length === 0 && editMode && (
-        <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-8">
-          <div className="md:col-span-3">
-            <button
-              type="button"
-              onClick={addNewStatus}
-              className="flex items-center text-sm text-functional-blue hover:text-functional-blueContrast"
-              title="Add new status"
-            >
-              <Plus size={14} />
-              &nbsp;Status
-            </button>
-          </div>
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-common-contrast py-10 text-center">
+          <button
+            type="button"
+            onClick={addNewStatus}
+            className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-functional-blue ring-1 ring-functional-blue hover:bg-functional-blue/10"
+          >
+            <Plus size={14} />
+            Add Status
+          </button>
         </div>
       )}
     </div>
