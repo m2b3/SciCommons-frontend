@@ -133,6 +133,13 @@ const nextConfig = withPWA({
       config.devtool = false;
     }
 
+    // 👇 ADDED: Ignore binary files for ONNX Runtime (Transformers.js) and Sharp
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "sharp$": false,
+      "onnxruntime-node$": false,
+    };
+
     return config;
   },
 
