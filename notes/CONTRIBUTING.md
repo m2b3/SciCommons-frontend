@@ -25,6 +25,21 @@ If you want to work on something that there is no GitHub issue for, follow these
 
 **We are very reluctant to accept random pull requests without a related issue created first.**
 
+### 🌿 Branch Strategy
+
+All development work should be based on the `sureshDev` branch:
+
+```bash
+# Ensure you're on sureshDev
+git checkout sureshDev
+git pull origin sureshDev
+
+# Create your feature branch from sureshDev
+git checkout -b feature/your-feature-name
+```
+
+> **Important:** All PRs should target the `sureshDev` branch, not `main`.
+
 ### 📥 Submitting Pull Requests
 
 - Create an issue (if not already present)
