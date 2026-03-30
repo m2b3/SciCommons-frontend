@@ -31,7 +31,7 @@ async function globalSetup() {
   bsLocal = new Local();
 
   return new Promise<void>((resolve, reject) => {
-    bsLocal?.start({ key: bsKey, force: 'true' }, (error?: Error | null) => {
+    bsLocal?.start({ key: bsKey, force: true }, (error?: Error | null) => {
       if (error) return reject(error);
       console.log('BrowserStack Local Tunnel Started');
 

@@ -115,6 +115,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
               onReviewSubmitSuccess={() => setSubmitReview(false)}
               communityId={data?.data.community_article?.community.id}
               isSubmitter={data.data.is_submitter}
+              isCommunityAdmin={data?.data.community_article?.is_admin ?? false}
               reviewFormContainerId="community-article-review-form"
               className="gap-2"
               showHeading={false}
