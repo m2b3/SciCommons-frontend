@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
 import { useMyappFlagsApiAddFlags, useMyappFlagsApiRemoveFlags } from '@/api/flags/flags';
-import { e, FlagType, Message, ReviewOut } from '@/api/schemas';
+import { EntityType, FlagType, Message, ReviewOut } from '@/api/schemas';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
