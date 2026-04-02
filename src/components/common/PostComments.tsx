@@ -109,11 +109,21 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   };
 
   const addNewComment = (content: string) => {
-    createComment({ postId, data: { content } });
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error('Comments cannot be empty');
+      return;
+    }
+    createComment({ postId, data: { content: trimmed } });
   };
 
   const addReply = (parentId: number, content: string) => {
-    createComment({ postId, data: { content, parent_id: parentId } });
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error('Reply cannot be empty');
+      return;
+    }
+    createComment({ postId, data: { content: trimmed, parent_id: parentId } });
 
     // const addReplyToComment = (comment: CommentData): CommentData => {
     //   if (comment.id === parentId && newComment) {
@@ -129,7 +139,12 @@ const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
   };
 
   const updateComment = (commentId: number, updatedContent: string) => {
-    UpdateComment({ commentId, data: { content: updatedContent } });
+    const trimmed = updatedContent.trim();
+    if (!trimmed) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+    UpdateComment({ commentId, data: { content: trimmed } });
 
     const updateCommentInPlace = (comment: CommentData): CommentData => {
       if (comment.id === commentId) {
