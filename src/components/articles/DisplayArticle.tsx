@@ -230,6 +230,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
               How: Replace RenderParsedHTML with the shared wrapper component. */}
           <AbstractText
             text={article.abstract}
+            articleLink={article.article_link}
             isShrinked={true}
             gradientClassName="sm:from-common-background"
           />
