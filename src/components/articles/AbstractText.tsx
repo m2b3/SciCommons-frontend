@@ -1,7 +1,9 @@
 import React from 'react';
 
+import { getArticleSourceFormat } from '@/lib/articleSourceFormat';
 import { cn } from '@/lib/utils';
 
+import { ForwardRefEditor } from '../common/MarkdownEditor/ForwardRefEditor';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 
 /* Fixed by Codex on 2026-02-15
@@ -11,6 +13,8 @@ import RenderParsedHTML from '../common/RenderParsedHTML';
    How: Wrap RenderParsedHTML with fixed flags and controlled whitespace handling. */
 interface AbstractTextProps {
   text: string;
+  /** Pass the article's external link to determine format. Omit if link data unavailable. */
+  articleLink?: string | null;
   className?: string;
   containerClassName?: string;
   isShrinked?: boolean;
@@ -22,7 +26,7 @@ interface AbstractTextProps {
    What: Normalize hard-wrapped abstract text before rendering.
    Why: Imported abstracts often include single line breaks that force a narrow column layout.
    How: Replace single newlines with spaces while preserving consecutive blank lines. */
-const normalizeAbstractText = (input: string) => {
+const normalizePlainText = (input: string) => {
   const normalizedInput = input.replace(/\r\n/g, '\n');
   const preservedBreaks: string[] = [];
   const breakToken = '__SC_ABSTRACT_BREAK__';
@@ -38,25 +42,33 @@ const normalizeAbstractText = (input: string) => {
 
 const AbstractText: React.FC<AbstractTextProps> = ({
   text,
+  articleLink,
   className,
   containerClassName,
   isShrinked,
   gradientClassName,
 }) => {
+  const linkKnown = articleLink !== undefined;
+  const format = getArticleSourceFormat(articleLink, linkKnown);
+
+  // Use MDXEditor for markdown-only content (syntax highlighting, code blocks, etc.)
+  // Fall back to RenderParsedHTML when LaTeX is needed since MDXEditor doesn't support it.
+  if (format.supportMarkdown && !format.supportLatex) {
+    return (
+      <div className={cn('relative', containerClassName)}>
+        <ForwardRefEditor markdown={text} readOnly hideToolbar className={className} />
+      </div>
+    );
+  }
+
   return (
     <RenderParsedHTML
-      rawContent={normalizeAbstractText(text)}
-      supportLatex={true}
-      supportMarkdown={false}
+      rawContent={format.supportMarkdown ? text : normalizePlainText(text)}
+      {...format}
       isShrinked={isShrinked}
       gradientClassName={gradientClassName}
       containerClassName={containerClassName}
-      /* Fixed by Codex on 2026-02-15
-         Who: Codex
-         What: Preserve paragraph breaks without enforcing hard wraps.
-         Why: Abstracts should reflow to window width while keeping intentional blank lines.
-         How: Use pre-line spacing so double newlines render as paragraphs. */
-      contentClassName={cn('whitespace-pre-line', className)}
+      contentClassName={cn({ 'whitespace-pre-line': !format.supportMarkdown }, className)}
     />
   );
 };

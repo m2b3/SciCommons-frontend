@@ -1005,6 +1005,10 @@ body {
   --accentTextContrast: rgb(var(--Common-Background)) !important;
 }
 
+.mdxeditor [class*='_contentEditable_'][contenteditable='false'] {
+  padding: 0;
+}
+
 .mdxeditor [class*='_toolbarRoot_'] {
   border: 1px solid rgb(var(--Common-Contrast));
   border-radius: 0.5rem;
