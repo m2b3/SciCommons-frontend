@@ -347,7 +347,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
                         What: Tokenize NEW badge foreground.
                         Why: Keep unread badges aligned with skin palettes.
                         How: Use primary-foreground instead of hard-coded white. */}
-                    <span className="ml-2 rounded bg-functional-blue px-1 text-[9px] font-semibold uppercase text-primary-foreground">
+                    <span className="ml-2 rounded bg-functional-blue px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
                       New
                     </span>
                   </>

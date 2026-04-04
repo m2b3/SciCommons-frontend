@@ -25,6 +25,15 @@ const config: Config = {
      Solution: Ignore Next.js build output in module resolution
      Result: Tests run without haste-map naming collisions */
   modulePathIgnorePatterns: ['<rootDir>/.next/'],
+  /* Fixed by Codex on 2026-03-16
+     Who: Codex
+     What: Excluded Playwright specs from Jest discovery.
+     Why: Jest automatically picks up *.spec.ts files, which caused it to execute Playwright tests in jsdom and crash.
+     How: Ignore Playwright-style accessibility spec files so they run only via the Playwright runner (`yarn test:ally`). */
+  testPathIgnorePatterns: [
+    '<rootDir>/src/tests/__tests__/accessibility\\.public\\.spec\\.ts$',
+    '<rootDir>/src/tests/__tests__/accessibility\\.protected\\.spec\\.ts$',
+  ],
   coverageProvider: 'v8',
   /* Fixed by Codex on 2026-03-14
      Problem: jsdom probes for canvas during environment startup before Jest setup files run, so a broken local native install aborts the full test suite

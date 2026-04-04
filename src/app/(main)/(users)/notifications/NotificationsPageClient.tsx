@@ -12,9 +12,9 @@ import {
   useCommunitiesApiJoinManageJoinRequest,
 } from '@/api/join-community/join-community';
 import {
-  usersApiGetNotifications,
-  useUsersApiGetNotifications,
   useUsersApiBulkMarkNotificationsAsRead,
+  useUsersApiGetNotifications,
+  usersApiGetNotifications,
 } from '@/api/users/users';
 import { BlockSkeleton, Skeleton } from '@/components/common/Skeleton';
 import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';

@@ -68,6 +68,13 @@
   dependencies:
     "@types/json-schema" "^7.0.11"
 
+"@axe-core/playwright@^4.11.1":
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/@axe-core/playwright/-/playwright-4.11.1.tgz#d6e2b06ddb1b8ff460ca0f6f0bc96f2f03f6d91b"
+  integrity sha512-mKEfoUIB1MkVTht0BGZFXtSAEKXMJoDkyV5YZ9jbBmZCcWDz71tegNsdTkIN8zc/yMi5Gm2kx7Z5YQ9PfWNAWw==
+  dependencies:
+    axe-core "~4.11.1"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.24.7":
   version "7.24.7"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.24.7.tgz"
@@ -2881,24 +2888,24 @@
   resolved "https://registry.yarnpkg.com/@open-draft/deferred-promise/-/deferred-promise-2.2.0.tgz#4a822d10f6f0e316be4d67b4d4f8c9a124b073bd"
   integrity sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==
 
-"@orval/angular@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/angular/-/angular-6.31.0.tgz"
-  integrity sha512-cVV/vh6biGUe5FMR0kaOL+pYkD5lM/oHpyHVU19d2eY/hxKCG58/CagUNVDxbowcSalzGpt7NbZOqpauc2cNOA==
+"@orval/angular@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/angular/-/angular-6.29.1.tgz#1f576453974613fb113d3f12dd0a4ee4696bbcfa"
+  integrity sha512-nxoDP/m5B+Y5hilxbVHDuCb7LP9WPW250iVuxUHiQLCYFfrQiMJVizIHGZoBS1tx911qbHqFHB7XKHFsGqY1Zw==
   dependencies:
-    "@orval/core" "6.31.0"
+    "@orval/core" "6.29.1"
 
-"@orval/axios@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/axios/-/axios-6.31.0.tgz"
-  integrity sha512-OqWFJ6bDKftsSW3VI7Ouqcb3W4hDhkk8XzDkb/iisn3Dn1rkSE/wafdlHCm+62VQps4esYXaP1+7/HSk/2+Y8A==
+"@orval/axios@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/axios/-/axios-6.29.1.tgz#4e783861754b8743db9387ccbed1ce1b548d3675"
+  integrity sha512-qNRfPqSUiuA7m5aUMCBI1+ANJTjHl65ivpLTstfKExf1rvFqZ7gJpGBOGTcxaZdzwBbkN7Zm2CsGBpsWYxDmDg==
   dependencies:
-    "@orval/core" "6.31.0"
+    "@orval/core" "6.29.1"
 
-"@orval/core@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/core/-/core-6.31.0.tgz"
-  integrity sha512-ubOPpxzLgOCGbAQsq/dzfe/MIgB4LYWRyuwgnkV2GkL8Zq7cIWfmZU09GTJZQ6cO35OclFfbbyNve0cRMfSBeA==
+"@orval/core@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/core/-/core-6.29.1.tgz#6c869ca30cf57988548bdf266d892dc533c0efe6"
+  integrity sha512-InWH4heF+2KT2e8Qxoa+w8bourNl/MIr2+camJnGbbX6RzsWmfvGCtfW2kiaYMPc4RnGwTg7Qvfqeung2Dj4GQ==
   dependencies:
     "@apidevtools/swagger-parser" "^10.1.0"
     "@ibm-cloud/openapi-ruleset" "^1.14.2"
@@ -2921,53 +2928,46 @@
     openapi3-ts "4.2.2"
     swagger2openapi "^7.0.8"
 
-"@orval/fetch@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/fetch/-/fetch-6.31.0.tgz"
-  integrity sha512-K4pD0TqRX3n1QgsfdzcCLxZPj4WFr4xd51VS5PhtK7wewy+EwaTp5AZeeMT+o8dL4HQcwLsKaXA1HH1YiAuOrA==
+"@orval/hono@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/hono/-/hono-6.29.1.tgz#2ffe1c5660f85433fb6e58f343feeaf916b026c1"
+  integrity sha512-nA4TpWRtGBzDok+BZl6yA4PZbmrXfaasuV0AfM9vmqlpEWn+X/x3ASzOrMBK2OkXc7oDfOToaaiq7CLIfEP8+g==
   dependencies:
-    "@orval/core" "6.31.0"
-
-"@orval/hono@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/hono/-/hono-6.31.0.tgz"
-  integrity sha512-mM5WISLugu1quNkNUqYwp+StV/Z5/STm33VdPTWkoZyPJtV4NmEUZKPsowk0EN7sBF2kW+aYcp8lsNMXxXfHaw==
-  dependencies:
-    "@orval/core" "6.31.0"
-    "@orval/zod" "6.31.0"
+    "@orval/core" "6.29.1"
+    "@orval/zod" "6.29.1"
     lodash.uniq "^4.5.0"
 
-"@orval/mock@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/mock/-/mock-6.31.0.tgz"
-  integrity sha512-UBag0IyL0eDVdXWgIMS/YxDF57Q3XC4VRDqcuZ1lB77rfBZ4UiVqTJleczQoIqMGkdtJJlBABgWzRRts1K4img==
+"@orval/mock@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/mock/-/mock-6.29.1.tgz#6e967337f771f740f1c213e5a230f53f34beb410"
+  integrity sha512-l8UEtE1EOX40EHcl4qtu2IeQSRExqc63ekX84BqSWUZx0XicqZRzR348dqd3BB5qaPXKal6Y4ChX3qDeiuDJOw==
   dependencies:
-    "@orval/core" "6.31.0"
+    "@orval/core" "6.29.1"
     lodash.get "^4.4.2"
     lodash.omit "^4.5.0"
     openapi3-ts "^4.2.2"
 
-"@orval/query@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/query/-/query-6.31.0.tgz"
-  integrity sha512-aVyvSU5IbpRQnVbhChNlLX2XDnmoT1cDJ59NEFS3byhiJf1EG5XlzVve98je/BHAsVROrUC8+o6XoIjCtYbW5Q==
+"@orval/query@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/query/-/query-6.29.1.tgz#857f9cd626ed2193f9138c33a8c59c2e8fac3ba1"
+  integrity sha512-voJ3WO0AzQmfFxH0iQc2HsKVlzq7cy4Qik8sLT85upehpmJa/UlFjXr23FaW8SKkIG4kS2t80imCmpMfEezTbw==
   dependencies:
-    "@orval/core" "6.31.0"
+    "@orval/core" "6.29.1"
     lodash.omitby "^4.6.0"
 
-"@orval/swr@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/swr/-/swr-6.31.0.tgz"
-  integrity sha512-J9W/kym9jc94GizbTozpuY76yaZRN98rf3ahj+2+eW8+NRW1dVFui32Gew1qj9rcCSA54BwRMONgEn3Xqx6W6A==
+"@orval/swr@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/swr/-/swr-6.29.1.tgz#878c4e4bc41533f13d448d708f3ae3a5267a7048"
+  integrity sha512-/B7czuGVtWZ9GYeq2E7C8JuoOfd4wm94Qtu0E1gNTSFWgD0rLx3ZSEvR4cmt46t3tUbOw17Ra0k8lJg8T1MPAQ==
   dependencies:
-    "@orval/core" "6.31.0"
+    "@orval/core" "6.29.1"
 
-"@orval/zod@6.31.0":
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/@orval/zod/-/zod-6.31.0.tgz"
-  integrity sha512-v6wqGZf4s3tpWrnmMHlEBfhTLeebu5W3HmhP8vQ5BPkm8AB2asiZqzK3Ne9Y19Rvyx6X4FGnhnalKYkz+XxJ8Q==
+"@orval/zod@6.29.1":
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/@orval/zod/-/zod-6.29.1.tgz#7348c518906cd11d49ef0b6d72fc3c628da89c7c"
+  integrity sha512-CPrcB7HnBoEtFKLvHSHB2vB3f1NlvI/eKd3P0wE7DsCn+c7YBXpRoOPxHpxIER+Y2kFUBh3DqKDLlRtYgg4JHA==
   dependencies:
-    "@orval/core" "6.31.0"
+    "@orval/core" "6.29.1"
     lodash.uniq "^4.5.0"
 
 "@pkgjs/parseargs@^0.11.0":
@@ -2979,6 +2979,13 @@
   version "0.1.1"
   resolved "https://registry.npmjs.org/@pkgr/core/-/core-0.1.1.tgz"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
+
+"@playwright/test@^1.58.2":
+  version "1.58.2"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.58.2.tgz#b0ad585d2e950d690ef52424967a42f40c6d2cbd"
+  integrity sha512-akea+6bHYBBfA9uQqSYmlJXn61cTa+jbO87xVLCWbTqbWadRVmhxlXATaOjOgcBaWU4ePo0wB41KMFv3o35IXA==
+  dependencies:
+    playwright "1.58.2"
 
 "@popperjs/core@^2.11.8":
   version "2.11.8"
@@ -5372,7 +5379,7 @@ acorn@^8.15.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.15.0.tgz#a360898bc415edaac46c8241f6383975b930b816"
   integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
 
-agent-base@6:
+agent-base@6, agent-base@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-6.0.2.tgz#49fff58577cfee3f37176feab4c22e00f86d7f77"
   integrity sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==
@@ -5704,6 +5711,11 @@ axe-core@^4.9.1:
   resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.9.1.tgz"
   integrity sha512-QbUdXJVTpvUTHU7871ppZkdOLBeGUKBQWHkHrvN2V9IQWGMt61zf3B45BtzjxEJzYuj0JBjBZP/hmYS/R9pmAw==
 
+axe-core@~4.11.1:
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.11.1.tgz#052ff9b2cbf543f5595028b583e4763b40c78ea7"
+  integrity sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==
+
 axios@^1.7.2:
   version "1.7.2"
   resolved "https://registry.npmjs.org/axios/-/axios-1.7.2.tgz"
@@ -5872,6 +5884,16 @@ browserslist@^4.28.1:
     node-releases "^2.0.27"
     update-browserslist-db "^1.2.0"
 
+browserstack-local@^1.5.12:
+  version "1.5.12"
+  resolved "https://registry.yarnpkg.com/browserstack-local/-/browserstack-local-1.5.12.tgz#2916210d9118978a0380ff1474a045f825755266"
+  integrity sha512-xrdpG4rw6Ktxa/gM8x0esnohFlw0V33bQiUX08rrHWKbnJAG57KTHGvJ4mvgc9eRL63pEKal+WuNDg3vEUz4hA==
+  dependencies:
+    agent-base "^6.0.2"
+    https-proxy-agent "^5.0.1"
+    is-running "^2.1.0"
+    tree-kill "^1.2.2"
+
 bser@2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/bser/-/bser-2.1.1.tgz"
@@ -6033,7 +6055,7 @@ character-reference-invalid@^2.0.0:
   resolved "https://registry.npmjs.org/character-reference-invalid/-/character-reference-invalid-2.0.1.tgz"
   integrity sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==
 
-chokidar@^3.5.3, chokidar@^3.6.0:
+chokidar@^3.5.3:
   version "3.6.0"
   resolved "https://registry.npmjs.org/chokidar/-/chokidar-3.6.0.tgz"
   integrity sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==
@@ -7994,6 +8016,11 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
+fsevents@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
+
 fsevents@^2.3.2, fsevents@~2.3.2:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
@@ -8836,6 +8863,11 @@ is-regexp@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/is-regexp/-/is-regexp-1.0.0.tgz"
   integrity sha512-7zjFAPO4/gwyQAAgRRmqeEeyIICSdmCqa3tsVHMdBzaXXRiqopZL4Cyghg/XulGWrtABTpbnYYzzIRffLkP4oA==
+
+is-running@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-running/-/is-running-2.1.0.tgz#30a73ff5cc3854e4fc25490809e9f5abf8de09e0"
+  integrity sha512-mjJd3PujZMl7j+D395WTIO5tU5RIDBfVSRtRR4VOJou3H66E38UjbjvDGh3slJzPuolsb+yQFqwHNNdyp5jg3w==
 
 is-set@^2.0.2, is-set@^2.0.3:
   version "2.0.3"
@@ -11538,25 +11570,24 @@ optionator@^0.9.3:
     type-check "^0.4.0"
     word-wrap "^1.2.5"
 
-orval@^6.29.1:
-  version "6.31.0"
-  resolved "https://registry.npmjs.org/orval/-/orval-6.31.0.tgz"
-  integrity sha512-515KTDQ4VRJCT+4DsMrK/QROWRq4PXrjgxAoEx3jmP7j+aQBGbx8WhidIF6aX1UgbTxw47Lq7QVp9mbnD0lnWA==
+orval@6.29.1:
+  version "6.29.1"
+  resolved "https://registry.yarnpkg.com/orval/-/orval-6.29.1.tgz#e0651d9072f4a4a5bc9de597d4278c8a67206415"
+  integrity sha512-hYGuPNucbHZeQgSpcoujuR6GzRKbHhl59zFMt6bxZd6XkeEONhGAqOLETAFQ9og/arOlPOMvchy6COCnrEKlRQ==
   dependencies:
     "@apidevtools/swagger-parser" "^10.1.0"
-    "@orval/angular" "6.31.0"
-    "@orval/axios" "6.31.0"
-    "@orval/core" "6.31.0"
-    "@orval/fetch" "6.31.0"
-    "@orval/hono" "6.31.0"
-    "@orval/mock" "6.31.0"
-    "@orval/query" "6.31.0"
-    "@orval/swr" "6.31.0"
-    "@orval/zod" "6.31.0"
+    "@orval/angular" "6.29.1"
+    "@orval/axios" "6.29.1"
+    "@orval/core" "6.29.1"
+    "@orval/hono" "6.29.1"
+    "@orval/mock" "6.29.1"
+    "@orval/query" "6.29.1"
+    "@orval/swr" "6.29.1"
+    "@orval/zod" "6.29.1"
     ajv "^8.12.0"
     cac "^6.7.14"
     chalk "^4.1.2"
-    chokidar "^3.6.0"
+    chokidar "^3.5.3"
     enquirer "^2.4.1"
     execa "^5.1.1"
     find-up "5.0.0"
@@ -11786,6 +11817,20 @@ pkg-dir@^4.2.0:
   integrity sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==
   dependencies:
     find-up "^4.0.0"
+
+playwright-core@1.58.2:
+  version "1.58.2"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.58.2.tgz#ac5f5b4b10d29bcf934415f0b8d133b34b0dcb13"
+  integrity sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==
+
+playwright@1.58.2:
+  version "1.58.2"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.58.2.tgz#afe547164539b0bcfcb79957394a7a3fa8683cfd"
+  integrity sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==
+  dependencies:
+    playwright-core "1.58.2"
+  optionalDependencies:
+    fsevents "2.3.2"
 
 pony-cause@^1.0.0:
   version "1.1.1"
@@ -13487,6 +13532,11 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
+tree-kill@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
+  integrity sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==
 
 trim-lines@^3.0.0:
   version "3.0.1"

@@ -4,7 +4,10 @@ import React from 'react';
 
 import Link from 'next/link';
 
-import { useUsersApiGetNotifications, useUsersApiBulkMarkNotificationsAsRead } from '@/api/users/users';
+import {
+  useUsersApiBulkMarkNotificationsAsRead,
+  useUsersApiGetNotifications,
+} from '@/api/users/users';
 import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { getSafeNavigableUrl } from '@/lib/safeUrl';
 import { useAuthStore } from '@/stores/authStore';

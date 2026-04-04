@@ -42,7 +42,7 @@ export interface CommunityAccessIndicator {
 const roleBadgeClassByCode: Record<CommunityRoleBadge['code'], string> = {
   A: 'border-functional-yellow/60 bg-functional-yellow/10 text-functional-yellow',
   M: 'border-functional-green/60 bg-functional-green/10 text-functional-green',
-  R: 'border-functional-blue/60 bg-functional-blue/10 text-functional-blue',
+  R: 'border-functional-blue/60 bg-functional-blue/10 text-functional-blueContrast',
 };
 
 const accessIndicatorClassByTone: Record<CommunityAccessIndicator['tone'], string> = {
@@ -239,7 +239,7 @@ const CommunityCard: FC<CommunityCardProps> = ({
                How: Replace emerald/indigo/red utilities with functional tokens. */
             'border-functional-green bg-functional-green/10 text-functional-green':
               community.type === 'public',
-            'border-functional-blue bg-functional-blue/10 text-functional-blue':
+            'border-functional-blue bg-functional-blue/10 text-functional-blueContrast':
               community.type === 'private',
             'border-functional-red bg-functional-red/10 text-functional-red':
               community.type === 'hidden',

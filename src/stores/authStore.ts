@@ -132,7 +132,9 @@ const readStoredAuthState = (): StoredAuthState | null => {
 
 // Fixed by Claude Sonnet 4.5 on 2026-02-08
 // Issue 2: Return status code to distinguish network errors from auth failures
-const probeServerSession = async (): Promise<{
+const probeServerSession = async (
+  token?: string | null
+): Promise<{
   ok: boolean;
   user: AuthenticatedUserType | null;
   statusCode?: number;
@@ -142,8 +144,14 @@ const probeServerSession = async (): Promise<{
   if (!backendUrl) return { ok: false, user: null };
 
   try {
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${backendUrl}/api/users/me`, {
       method: 'GET',
+      headers,
       credentials: 'include',
       cache: 'no-store',
     });
@@ -276,6 +284,13 @@ export const useAuthStore = create<AuthState>()(
               expiresAt = getExpiresAtFromToken(token) ?? NaN;
             }
 
+            /* Fixed by Codex on 2026-03-16
+               Who: Codex
+               What: Added a first-bootstrap server validation branch for existing tokens.
+               Why: Persisted tokens can be stale/revoked while still looking valid locally, causing UI flash then delayed 401 redirect.
+               How: When no prior server validation timestamp exists, probe `/users/me` once and resolve auth state before normal app flows continue. */
+            const needsBootstrapServerValidation = lastServerValidation === null;
+
             /* Fixed by Codex on 2026-02-27
                Who: Codex
                What: Split hard-expiry checks from periodic server revalidation.
@@ -292,7 +307,7 @@ export const useAuthStore = create<AuthState>()(
                 hasFiniteExpiry: Number.isFinite(expiresAt),
                 hasToken: !!token,
               });
-              const session = await probeServerSession();
+              const session = await probeServerSession(token);
 
               // Fixed by Claude Sonnet 4.5 on 2026-02-08
               // Issue 2: Only logout on auth failures (401/403), keep session on network errors
@@ -336,12 +351,46 @@ export const useAuthStore = create<AuthState>()(
                 Cookies.set('expiresAt', String(expiresAt), getCookieOptions());
                 user = session.user ?? user ?? null;
               }
+            } else if (needsBootstrapServerValidation) {
+              logAuthDebug('bootstrap_server_validation_started', {
+                action: 'probe_server_session_once',
+              });
+              const session = await probeServerSession(token);
+
+              if (!session.ok) {
+                if (session.statusCode === 401 || session.statusCode === 403) {
+                  logAuthDebug('bootstrap_server_validation_auth_failure', {
+                    statusCode: session.statusCode ?? null,
+                    action: 'logout',
+                  });
+                  clearCookies();
+                  set({
+                    isAuthenticated: false,
+                    isAuthInitialized: true,
+                    accessToken: null,
+                    expiresAt: null,
+                    user: null,
+                  });
+                  return;
+                }
+
+                logAuthDebug('bootstrap_server_validation_non_auth_failure', {
+                  statusCode: session.statusCode ?? null,
+                  isNetworkError: !!session.isNetworkError,
+                  action: 'keep_session',
+                });
+              } else {
+                logAuthDebug('bootstrap_server_validation_success', {
+                  action: 'refresh_user_if_available',
+                });
+                user = session.user ?? user ?? null;
+              }
             } else if (needsPeriodicServerValidation) {
               logAuthDebug('periodic_revalidation_started', {
                 lastServerValidation,
                 intervalMs: SERVER_VALIDATION_INTERVAL_MS,
               });
-              const session = await probeServerSession();
+              const session = await probeServerSession(token);
 
               if (!session.ok) {
                 // Only hard-auth failures should force logout in periodic revalidation.
@@ -373,7 +422,7 @@ export const useAuthStore = create<AuthState>()(
               }
             } else if (!user) {
               // If auth looks valid but user is missing, try to hydrate once.
-              const session = await probeServerSession();
+              const session = await probeServerSession(token);
               if (session.ok && session.user) {
                 user = session.user;
               }

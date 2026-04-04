@@ -1,3 +1,122 @@
+## 2026-03-22 - BrowserStack Optional Dependency Runtime Guidance
+
+Problem: Developers who intentionally ran the BrowserStack Playwright path without `browserstack-local` installed would hit a generic runtime module-load failure.
+
+Root Cause: The BrowserStack setup now lazy-loads the package correctly, but the missing-package path still surfaced the raw dynamic import error.
+
+Solution: Wrapped the lazy `browserstack-local` import in an explicit guard that throws a direct actionable message telling the developer that BrowserStack testing requires the optional package to be installed locally.
+
+Result: BrowserStack remains an opt-in developer-only dependency, while failed BrowserStack attempts now explain exactly what is missing and how to proceed.
+
+Files Modified: `src/tests/global-setup.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-22 - BrowserStack Playwright Type-Check and Lint Cleanup
+
+Problem: Validation on `sureshDev` still failed in the Playwright BrowserStack helpers due to a missing `browserstack-local` type declaration, `unknown` error handling in the public accessibility spec, and leftover `any` usage warnings in setup/teardown and protected accessibility code.
+
+Root Cause: The BrowserStack flow mixed eager module import with no local type declaration, and older catch/global helper code relied on `any` instead of explicit typed handling.
+
+Solution: Added a local `browserstack-local` declaration file, switched BrowserStack Local loading in `global-setup.ts` to a lazy runtime import gated by credentials, typed the shared global tunnel handle, and replaced `any`-based error handling in the accessibility specs with a small `unknown` -> message helper.
+
+Result: The BrowserStack-related Playwright files now pass lint cleanly, and the two repo-wide TypeScript blockers that previously broke `tsc --skipLibCheck --noEmit` are removed.
+
+Files Modified: `src/types/browserstack-local.d.ts`, `src/tests/global-setup.ts`, `src/tests/global-teardown.ts`, `src/tests/__tests__/accessibility.public.spec.ts`, `src/tests/__tests__/accessibility.protected.spec.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-22 - Review Pinning Ported onto sureshDev
+
+Problem: The pinned-review feature existed only on an old stale branch, so `sureshDev` lacked the moderator pin/unpin controls and did not visually surface pinned reviews.
+
+Root Cause: `sureshDev` was behind the newer backend contract for review pinning, and the shared review UI still rendered reviews in plain list order with no pinned-state handling.
+
+Solution: Added frontend pin/unpin support directly in `ReviewCard` using the backend `/api/articles/reviews/{reviewId}/pin/` endpoint via the shared Axios client, corrected permission gating to compare moderator/reviewer access against the logged-in user, added a shared pinned-state helper that works with both legacy `flags` payloads and newer `pinned` payloads, and sorted pinned reviews to the top in `ReviewsTabBody`.
+
+Result: Community moderators can now pin and unpin reviews from `sureshDev`, pinned reviews are clearly marked in the card UI, and pinned entries stay surfaced at the top of the review list instead of getting buried.
+
+Files Modified: `src/components/articles/reviewPinning.ts`, `src/components/articles/ReviewCard.tsx`, `src/components/articles/ReviewsTabBody.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-22 - BrowserStack Playwright Opt-In Gating
+
+Problem: The BrowserStack testing branch made ordinary Playwright accessibility runs fail unless BrowserStack credentials were present, even though the app itself was unchanged.
+
+Root Cause: `playwright.config.ts` unconditionally registered BrowserStack global setup/teardown, and `src/tests/global-setup.ts` threw immediately when `BROWSERSTACK_ACCESS_KEY` was missing.
+
+Solution: Gated BrowserStack tunnel bootstrap and remote Playwright projects behind an explicit `PW_USE_BROWSERSTACK=1` opt-in plus required BrowserStack credentials. Also hardened `global-setup.ts` so missing credentials are treated as a no-op fallback instead of a hard failure.
+
+Result: Local Chromium accessibility runs remain unchanged and do not require BrowserStack secrets, while BrowserStack execution still works when deliberately enabled.
+
+Files Modified: `playwright.config.ts`, `src/tests/global-setup.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-16 - Jest/Playwright Test Discovery Separation
+
+Problem: Running `yarn test` started failing because Jest discovered Playwright accessibility `*.spec.ts` files and attempted to execute them in the Jest/jsdom runtime.
+
+Root Cause: Jest's default test discovery includes `*.spec.ts`, and the new Playwright specs were added under `src/tests/__tests__` without an explicit Jest ignore rule.
+
+Solution: Added explicit Jest `testPathIgnorePatterns` entries in `jest.config.ts` for `accessibility.public.spec.ts` and `accessibility.protected.spec.ts` so those files run only via Playwright (`yarn test:ally`).
+
+Result: Jest test runs no longer import Playwright runtime modules, restoring stable `yarn test` execution while keeping Playwright accessibility checks available through their dedicated command.
+
+Files Modified: `jest.config.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-16 - Playwright Accessibility Audit Hardening (Auth Fail-Fast + Public/Protected Split)
+
+Problem: Accessibility audits could produce false confidence by auditing redirected login pages when protected-route authentication failed, and public audits were unnecessarily coupled to auth setup.
+
+Root Cause: A single `accessibility.spec.ts` mixed public/protected checks with weak auth validation (`Login` link visibility), while Playwright projects globally depended on the auth setup project and shared storage state.
+
+Solution: Split audits into `accessibility.public.spec.ts` and `accessibility.protected.spec.ts`, updated Playwright projects to run public audits without auth dependency and protected audits with explicit setup dependency + storage state, and hardened `auth.setup.ts` to fail immediately on missing `PW_LOGIN`/`PW_PASSWORD` plus assert post-login URL is not `/auth/login`.
+
+Result: Protected audits now fail loudly when authentication is missing/broken instead of silently passing on login redirects, and public audits run independently without requiring auth bootstrap.
+
+Files Modified: `playwright.config.ts`, `src/tests/auth.setup.ts`, `src/tests/__tests__/accessibility.public.spec.ts`, `src/tests/__tests__/accessibility.protected.spec.ts`, `src/tests/__tests__/accessibility.spec.ts` (removed), `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Disable Stored Playwright Workflow and Scope It to sureshDev PRs
+
+Problem: The Playwright GitHub Actions workflow was still active for pushes and PRs targeting `main`/`master`, even though the preferred workflow is manual local accessibility runs with the Actions file kept only for future use.
+
+Root Cause: `.github/workflows/playwright.yml` remained as an active workflow file and still used broad `push` plus `pull_request` triggers.
+
+Solution: Renamed the workflow to `.github/workflows/playwright.yml.disabled` so GitHub Actions ignores it, and updated the saved trigger to `pull_request` on `sureshDev` only for later re-enable.
+
+Result: No Playwright GitHub Actions workflow runs now, but the file remains in-repo and preconfigured for `sureshDev` PRs if re-enabled later.
+
+Files Modified: `.github/workflows/playwright.yml.disabled`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Remove Placeholder Playwright External-Site Spec
+
+Problem: Playwright test discovery still included the default sample spec, which depended on `https://playwright.dev/` instead of exercising SciCommons.
+
+Root Cause: The initial Playwright scaffold file, `src/tests/example.spec.ts`, was left in the repo after accessibility testing was added.
+
+Solution: Deleted the placeholder external-site Playwright sample so only project-relevant specs remain in the Playwright suite.
+
+Result: Manual Playwright runs no longer depend on a third-party site, which removes unnecessary flakiness and keeps the suite focused on SciCommons behavior.
+
+Files Modified: `src/tests/example.spec.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-03-12 - Manual Accessibility Script with Playwright-Managed App Startup
+
+Problem: Accessibility checks were intended to run only at deliberate moments, but Playwright depended on a separately started app server and could also discover Jest files from `src/tests`.
+
+Root Cause: `playwright.config.ts` had no `webServer` block and no Playwright-specific file match restriction, so manual runs required extra setup and the shared test directory created runner ambiguity.
+
+Solution: Added a dedicated manual script, `test:ally`, in `package.json` that targets the accessibility spec directly. Updated `playwright.config.ts` to start or reuse `yarn dev` only when Playwright is invoked, switched the base URL to `127.0.0.1`, and restricted Playwright discovery to `*.spec.ts(x)` files.
+
+Result: Accessibility testing stays opt-in via `yarn test:ally`, does not run during normal test/build/deploy flows, starts the app automatically when needed, and no longer risks picking up Jest `.test.*` files under the Playwright runner.
+
+Files Modified: `playwright.config.ts`, `package.json`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+## 2026-03-15 - Navbar Discussions NEW Badge Subscription Alignment
+
+Problem: The top navbar `Discussions` link could miss `New` even when discussion surfaces (sidebar/tab/cards) were already showing unread activity.
+
+Root Cause: Navbar badge logic depended only on realtime event count and did not include backend subscription unread state (`has_unread_event` with read-state reconciliation).
+
+Solution: Added subscription unread evaluation in `NavBar` using `useArticlesDiscussionApiGetUserSubscriptions` plus `useSubscriptionUnreadStore.isArticleUnread`, and combined it with realtime count fallback before rendering the navbar `New` pill.
+
+Result: The top-of-page `Discussions` link now advertises unread discussion activity more consistently, matching the same unread sources used by discussion panels.
+
+Files Modified: `src/components/common/NavBar.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-14 - Frontend Comment Length Validation Shift to 1000 Words
 
 Problem: Comment entry on the frontend was enforcing an outdated 500-character cap, but product wanted a longer limit expressed in words instead of characters.
@@ -823,3 +942,39 @@ Solution: Added `build` configuration in `docker-compose.dev.yml` with args mapp
 Result: `docker compose` can now rebuild the frontend image using `.env` values consistently, including UI skin selection.
 
 Files Modified: `docker-compose.dev.yml`, `Dockerfile`
+
+## 2026-03-16 - Name Validation Dot-Placement Hardening
+
+Problem: The updated name validation accepted malformed dot placements (for example trailing dots like `A.` and repeated dots like `A..`) and the displayed validation message did not match the actual accepted characters.
+
+Root Cause: `nameSchema` used a single permissive regex that allowed dots in the final character position and did not explicitly block repeated dots; the user-facing message was narrowed to only letters/dots/hyphens while validation also allowed spaces and apostrophes.
+
+Solution: Replaced the name regex with deterministic checks in `superRefine`: validate allowed character set, enforce start/end letter boundaries, and reject leading/trailing/repeated dots. Updated the validation message to include all allowed separators. Added regression tests for leading/trailing/repeated-dot inputs and a valid dotted name format.
+
+Result: Name validation is now stricter and consistent with the user-facing rule text, and test coverage now protects against dot-related regressions.
+
+Files Modified: `src/constants/zod-schema.tsx`, `src/tests/__tests__/zodSchema.test.ts`
+
+## 2026-03-16 - LinkedIn Profile-Only Validation Test Coverage
+
+Problem: LinkedIn URL validation was intentionally narrowed to personal profile paths (`/in/...`), but test coverage did not explicitly lock that behavior.
+
+Root Cause: `zodSchema.test.ts` had no dedicated LinkedIn schema cases for accepted profile URLs versus rejected non-profile URLs.
+
+Solution: Added regression tests for `linkedInUrlSchema` that accept `/in/...` profile URLs and reject `/company/...` and `/pub/...` URLs.
+
+Result: The profile-only LinkedIn requirement is now enforced by tests and less likely to regress silently.
+
+Files Modified: `src/tests/__tests__/zodSchema.test.ts`
+
+## 2026-03-16 - Silent Stale-Session Redirect Flow
+
+Problem: Users with stale/revoked auth sessions could briefly see page activity and an expiry toast before being redirected to login.
+
+Root Cause: Session invalidation was often discovered only after API 401 responses, while route guards and global interceptors still displayed intermediate toast/dialog feedback.
+
+Solution: Added first-bootstrap server session validation in `authStore.initializeAuth`, mounted a global `AuthBootstrap` initializer in root layout so auth resolution starts at app load, and converted automatic unauthenticated redirects in auth HOCs to silent `router.replace` login redirects with redirect targets. Updated global Axios 401 handler to remove the session-expired toast and perform immediate deduplicated login replacement.
+
+Result: Stale sessions now resolve with a smoother, quieter transition directly to login, with less visible intermediate UI churn.
+
+Files Modified: `src/stores/authStore.ts`, `src/components/common/AuthBootstrap.tsx`, `src/app/layout.tsx`, `src/HOCs/withAuthRedirect.tsx`, `src/HOCs/withAuth.tsx`, `src/api/custom-instance.ts`

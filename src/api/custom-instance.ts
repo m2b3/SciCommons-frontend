@@ -39,13 +39,11 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
   return config;
 });
 
-/* Fixed by Claude Sonnet 4.5 on 2026-02-09
-   Problem: Global 403 handler was too aggressive - logged out users on permission errors
-   Original: Caught 401 AND 403, logged out on both
-   Issue: 403 means "no permission" not "not authenticated" - shouldn't logout!
-   Examples: Private community access, admin-only actions, etc.
-   Solution: Only logout on 401 (session expired), let components handle 403 gracefully
-   Result: Users stay logged in when accessing restricted resources */
+/* Fixed by Codex on 2026-03-16
+   Who: Codex
+   What: Hardened global 401 handling for silent session-expiry redirects.
+   Why: Stale-token flows showed an intermediate toast/page activity before redirecting to login.
+   How: Keep global handling scoped to 401 only, remove toast side effects, dedupe redirects, and perform immediate login replace with a redirect query. */
 let isHandlingAuthFailure = false; // Prevent logout loops
 
 AXIOS_INSTANCE.interceptors.response.use(
@@ -64,22 +62,22 @@ AXIOS_INSTANCE.interceptors.response.use(
 
       try {
         // Dynamically import to avoid circular dependencies
-        const { toast } = await import('sonner');
         const { useAuthStore } = await import('@/stores/authStore');
-
-        // Show user-friendly message
-        toast.error('Your session has expired. Please log in again.');
 
         // Log out user and clear state
         const logout = useAuthStore.getState().logout;
         logout();
 
-        // Redirect to login page
+        // Redirect to login page immediately without intermediate toasts.
         if (typeof window !== 'undefined') {
           const currentPath = window.location.pathname;
+          const currentSearch = window.location.search;
           // Only redirect if not already on login page
           if (currentPath !== '/auth/login' && currentPath !== '/auth/register') {
-            window.location.href = '/auth/login';
+            const redirectTarget = `${currentPath}${currentSearch || ''}`;
+            window.location.replace(
+              `/auth/login?redirect=${encodeURIComponent(redirectTarget)}`
+            );
           }
         }
       } catch (importError) {

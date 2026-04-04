@@ -21,6 +21,7 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', 'Noto Sans', system-ui,
     'Helvetica Neue', Arial, sans-serif;
+  --Text-Tertiary: 100, 116, 139;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -174,10 +175,10 @@ body {
        How: Shifted the base teal to a deeper tone and separated the light/contrast variants. */
     --Functional-Green-Green: 15, 118, 110;
     --Functional-Green-GreenLight: 94, 234, 212;
-    --Functional-Green-Greencontrast: 12, 94, 88;
+    --Functional-Green-Greencontrast: 4, 47, 46;
 
     /* Functional Blue */
-    --Functional-Blue-Blue: var(--color-blue-600);
+    --Functional-Blue-Blue: 56, 116, 190;
     --Functional-Blue-BlueLight: var(--color-blue-400);
     --Functional-Blue-Bluecontrast: var(--color-blue-700);
 
@@ -214,14 +215,14 @@ body {
     --Accessory-Accessory7: var(--neutral-400);
 
     /* Text Light */
-    --Text-Primary: 15, 23, 42;
-    --Text-Secondary: 71, 85, 105;
+    --Text-Primary: 2, 6, 23;
+    --Text-Secondary: 30, 41, 59;
     /* Fixed by Codex on 2026-02-15
        Who: Codex
        What: Increase light-mode tertiary text contrast.
        Why: Tertiary copy fell below WCAG AA on white surfaces.
        How: Darkened the tertiary token to a higher-contrast slate tone. */
-    --Text-Tertiary: 100, 116, 139;
+    --Text-Tertiary: 51, 65, 85;
 
     /* Loading */
     --loading: #f2f2f2;
@@ -385,9 +386,9 @@ body {
 
     --Functional-Green-Green: 16, 110, 95;
     --Functional-Green-GreenLight: 142, 220, 202;
-    --Functional-Green-Greencontrast: 12, 88, 76;
+    --Functional-Green-Greencontrast: 5, 46, 38;
 
-    --Functional-Blue-Blue: 56, 116, 190;
+    --Functional-Blue-Blue: 45, 95, 165;
     --Functional-Blue-BlueLight: 133, 182, 226;
     --Functional-Blue-Bluecontrast: 41, 93, 160;
 
@@ -418,9 +419,9 @@ body {
     --Accessory-Accessory6: 210, 218, 212;
     --Accessory-Accessory7: 190, 200, 194;
 
-    --Text-Primary: 18, 30, 26;
-    --Text-Secondary: 74, 92, 86;
-    --Text-Tertiary: 103, 120, 112;
+    --Text-Primary: 6, 18, 14;
+    --Text-Secondary: 20, 35, 30;
+    --Text-Tertiary: 40, 60, 55;
 
     --loading: #eef2ef;
 
@@ -1002,6 +1003,10 @@ body {
   --accentSolidHover: rgb(var(--Functional-Green-Green)) !important;
   --accentText: rgb(var(--Functional-Green-Green)) !important;
   --accentTextContrast: rgb(var(--Common-Background)) !important;
+}
+
+.mdxeditor [class*='_contentEditable_'][contenteditable='false'] {
+  padding: 0;
 }
 
 .mdxeditor [class*='_toolbarRoot_'] {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import type { ReviewOut } from '@/api/schemas';
 import { cn } from '@/lib/utils';
@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import EmptyState from '../common/EmptyState';
 import ReviewCard, { ReviewCardSkeleton } from './ReviewCard';
 import ReviewForm from './ReviewForm';
+import { isReviewPinned } from './reviewPinning';
 
 export const REVIEW_NOTICE_TEXT =
   'For now, only 1 review per person. You may edit your review if you wish, and previous versions will remain saved and visible.';
@@ -48,6 +49,23 @@ const ReviewsTabBody: React.FC<ReviewsTabBodyProps> = ({
   showHeading = true,
   afterReviewFormContent,
 }) => {
+  /* Fixed by Codex on 2026-03-22
+     Who: Codex
+     What: Surface pinned reviews ahead of the rest of the review list.
+     Why: The core value of pinning is lost if pinned reviews remain buried in chronological order.
+     How: Apply a stable client-side sort that keeps existing backend order within the pinned and unpinned groups. */
+  const orderedReviews = useMemo(() => {
+    if (!reviews) return undefined;
+
+    return [...reviews].sort((left, right) => {
+      const leftPinned = isReviewPinned(left);
+      const rightPinned = isReviewPinned(right);
+
+      if (leftPinned === rightPinned) return 0;
+      return leftPinned ? -1 : 1;
+    });
+  }, [reviews]);
+
   return (
     <div className={cn('flex flex-col', className)}>
       {!hasUserReviewed && (
@@ -91,7 +109,9 @@ const ReviewsTabBody: React.FC<ReviewsTabBodyProps> = ({
         <EmptyState content="No reviews yet" subcontent="Be the first to review this article" />
       )}
 
-      {reviews?.map((item) => <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />)}
+      {orderedReviews?.map((item) => (
+        <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
+      ))}
     </div>
   );
 };

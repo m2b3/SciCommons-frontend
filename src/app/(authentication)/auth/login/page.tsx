@@ -179,7 +179,7 @@ const LoginForm: React.FC = () => {
               <div className="">
                 <Link
                   href="/auth/forgotpassword"
-                  className="text-sm text-functional-green hover:text-functional-greenContrast hover:underline"
+                  className="text-sm text-functional-green underline decoration-functional-green/30 underline-offset-4 transition-colors hover:text-functional-greenContrast hover:decoration-functional-green"
                 >
                   Forgot your password?
                 </Link>

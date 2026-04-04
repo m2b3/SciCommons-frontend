@@ -1,5 +1,6 @@
 import {
   emailOrUsernameSchema,
+  linkedInUrlSchema,
   matchPassword,
   nameSchema,
   optionalUrlSchema,
@@ -16,6 +17,7 @@ describe('nameSchema', () => {
       'Jose Alvarez',
       "O'Connor",
       'Anne-Marie',
+      'J. R. R. Tolkien',
       'Zoe',
       'Dvorak',
       '李',
@@ -32,6 +34,18 @@ describe('nameSchema', () => {
     const invalidNames = ['John3', '!!!', '   ', '@name'];
 
     invalidNames.forEach((name) => {
+      expect(nameSchema.safeParse(name).success).toBe(false);
+    });
+  });
+
+  it('rejects malformed dot placement', () => {
+    /* Fixed by Codex on 2026-03-16
+       Problem: Dot-placement regressions were not covered, so invalid names like trailing or repeated dots could pass silently.
+       Solution: Add explicit cases for leading/trailing/repeated dots to lock expected behavior.
+       Result: Tests now guard against dot-related regressions in name validation. */
+    const invalidDotNames = ['A.', '.A', 'A..', 'John..Doe'];
+
+    invalidDotNames.forEach((name) => {
       expect(nameSchema.safeParse(name).success).toBe(false);
     });
   });
@@ -113,6 +127,24 @@ describe('statusSchema', () => {
   it('rejects whitespace-only status values', () => {
     expect(statusSchema.safeParse('   ').success).toBe(false);
     expect(statusSchema.safeParse('Researcher').success).toBe(true);
+  });
+});
+
+describe('linkedInUrlSchema', () => {
+  it('accepts personal LinkedIn profile URLs that use /in/', () => {
+    expect(linkedInUrlSchema.safeParse('https://www.linkedin.com/in/jane-doe').success).toBe(true);
+    expect(linkedInUrlSchema.safeParse('https://in.linkedin.com/in/jane-doe').success).toBe(true);
+  });
+
+  it('rejects non-profile LinkedIn paths', () => {
+    /* Fixed by Codex on 2026-03-16
+       Problem: LinkedIn validation changed to profile-only paths without direct regression tests.
+       Solution: Add negative coverage for non-/in/ LinkedIn URLs.
+       Result: Future edits cannot silently relax profile-only validation intent. */
+    expect(linkedInUrlSchema.safeParse('https://www.linkedin.com/company/openai').success).toBe(
+      false
+    );
+    expect(linkedInUrlSchema.safeParse('https://www.linkedin.com/pub/jane').success).toBe(false);
   });
 });
 

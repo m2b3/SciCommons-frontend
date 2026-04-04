@@ -75,11 +75,11 @@ export const linkedInUrlSchema = z.string().superRefine((url, ctx) => {
       message: "URL must start with 'https://'",
     });
   }
-  const domainMatch = url.match(/^https:\/\/([a-z]{2,3})\.linkedin\.com\/(.*)$/);
+  const domainMatch = url.match(/^https:\/\/([a-z]{2,3})\.linkedin\.com\/in\/(.*)$/);
   if (!domainMatch) {
     ctx.addIssue({
       code: 'custom',
-      message: "Invalid LinkedIn domain format (e.g., 'https://in.linkedin.com/...')",
+      message: "Invalid LinkedIn domain format (e.g., 'https://www.linkedin.com/in/...')",
     });
   } else {
     const [, subdomain, path] = domainMatch;
@@ -339,15 +339,39 @@ export const usernameSchema = z
     message: 'Username must end with a lowercase letter or number.',
   });
 
-const internationalNamePattern = /^[\p{L}\p{M}](?:[\p{L}\p{M}'’ -]*[\p{L}\p{M}])?$/u;
+/* Fixed by Codex on 2026-03-16
+   Who: Codex
+   What: Hardened name validation to reject malformed dot placement while preserving international characters.
+   Why: The previous regex accepted trailing/repeated dots (for example, "A." and "A.."), and the message no longer matched actual allowed characters.
+   How: Switched to deterministic checks: validate allowed character set, enforce leading/trailing letter boundaries, and explicitly block leading/trailing/repeated dots. */
+const internationalNameAllowedCharsPattern = /^[\p{L}\p{M}'’ .-]+$/u;
+const internationalNameStartsWithLetterPattern = /^[\p{L}\p{M}]/u;
+const internationalNameEndsWithLetterPattern = /[\p{L}\p{M}]$/u;
 
 export const nameSchema = z
   .string({ error: 'Name must be a string' })
   .trim()
   .min(1, { message: 'This field is required' })
   .max(50, { message: 'Name is too long' })
-  .regex(internationalNamePattern, {
-    message: 'Name should contain letters only',
+  .superRefine((name, ctx) => {
+    if (!internationalNameAllowedCharsPattern.test(name)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Name should contain letters, spaces, apostrophes, dots, or hyphens only',
+      });
+      return;
+    }
+
+    if (
+      !internationalNameStartsWithLetterPattern.test(name) ||
+      !internationalNameEndsWithLetterPattern.test(name) ||
+      name.includes('..')
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Name cannot start/end with a dot or contain repeated dots',
+      });
+    }
   });
 
 export const researchInterestItemSchema = z

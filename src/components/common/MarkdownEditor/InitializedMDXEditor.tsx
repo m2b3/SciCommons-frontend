@@ -4,8 +4,6 @@
 import type { ForwardedRef } from 'react';
 import React from 'react';
 
-import { useTheme } from 'next-themes';
-
 import {
   AdmonitionDirectiveDescriptor,
   BlockTypeSelect,
@@ -216,7 +214,6 @@ export default function InitializedMDXEditor({
   hideToolbar?: boolean;
   mentionCandidates?: string[];
 } & MDXEditorProps) {
-  const { theme } = useTheme();
   const accessToken = useAuthStore((state) => state.accessToken);
   const authenticatedUserId = useAuthStore((state) => state.user?.id ?? null);
   const editorRootRef = React.useRef<HTMLDivElement>(null);
@@ -749,8 +746,8 @@ export default function InitializedMDXEditor({
           props.onChange?.(markdown, initialMarkdownNormalize);
         }}
         placeholder={props.placeholder || 'Write here...'}
-        className={cn('rounded-lg border border-common-contrast bg-common-background', theme, {
-          'bg-common-cardBackground': props.readOnly,
+        className={cn({
+          'rounded-lg border border-common-contrast bg-common-background': !props.readOnly,
         })}
         contentEditableClassName={markdownStyles}
       />

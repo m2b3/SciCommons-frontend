@@ -288,7 +288,7 @@ const RegisterForm: React.FC = () => {
             Already have an account?{' '}
             <Link
               href="/auth/login"
-              className="hover-text-functional-greenContrast text-functional-green hover:underline"
+              className="text-functional-green underline decoration-functional-green/30 underline-offset-4 transition-colors hover:text-functional-greenContrast hover:decoration-functional-green"
             >
               Login
             </Link>
