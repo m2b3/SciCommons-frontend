@@ -225,11 +225,6 @@ const NavBar: React.FC = () => {
     <header className="sticky top-0 z-[1000] w-full border-b border-common-contrast/40 bg-common-background/70 text-text-primary backdrop-blur-md">
       <nav className="container mx-auto flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
-          {/* Fixed by Codex on 2026-02-15
-              Who: Codex
-              What: Convert the back icon into a real button.
-              Why: Icon-only divs are not keyboard accessible or announced by screen readers.
-              How: Wrap the icon in a button with an aria-label and click handler. */}
           <button
             type="button"
             aria-label="Go back"
