@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 
 import { MDXEditorMethods } from '@mdxeditor/editor';
-import { BookOpen, FileText, X } from 'lucide-react';
+import { BookOpen, FileText, Sparkles, X } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
@@ -42,6 +42,10 @@ const AnnotationSidebar = dynamic(() => import('@/components/pdf/AnnotationSideb
   ssr: false,
 });
 
+const AskAISidebar = dynamic(() => import('@/components/pdf/AskAISidebar'), {
+  ssr: false,
+});
+
 interface Props {
   params: { slug: string };
 }
@@ -56,6 +60,7 @@ function ArticleDisplayPageClientInner({ params }: Props) {
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
   const [showAnnotations, setShowAnnotations] = useState(false);
+  const [activeSidebarTab, setActiveSidebarTab] = useState<'annotations' | 'ask-ai'>('annotations');
   const [pendingQuote, setPendingQuote] = useState<string | null>(null);
   const [jumpToAnnotation, setJumpToAnnotation] = useState<
     | ((area: {
@@ -89,9 +94,6 @@ function ArticleDisplayPageClientInner({ params }: Props) {
   );
 
   // Performance: Fetch reviews in parallel with article content loading
-  // Previously: enabled: !!accessToken && !!data (waited for full article)
-  // Now: enabled: !!accessToken && !!data?.data.id (starts as soon as ID available)
-  // This eliminates the waterfall effect and reduces perceived load time
   const {
     data: reviewsData,
     error: reviewsError,
@@ -126,10 +128,6 @@ function ArticleDisplayPageClientInner({ params }: Props) {
     }
   }, [data?.data.article_pdf_urls, selectedPdfUrl]);
 
-  /* Fixed by Claude Sonnet 4.5 on 2026-02-09
-     Problem: Clicking "View PDF" from sidebar required second click on article page
-     Solution: Detect openPdfViewer=true URL parameter and auto-open PDF viewer
-     Result: PDF viewer opens automatically when navigating from sidebar */
   useEffect(() => {
     const openPdfParam = searchParams?.get('openPdfViewer');
     if (openPdfParam === 'true' && data && isPdfEnabled && !showPdfViewer) {
@@ -154,10 +152,6 @@ function ArticleDisplayPageClientInner({ params }: Props) {
     setShowPdfViewer(true);
   };
 
-  /* Fixed by Claude Sonnet 4.5 on 2026-02-09
-     Problem: Added redundant "Back to Discussions" button when browser back already exists
-     Solution: Removed custom back button and returnTo handling, let browser back handle it naturally
-     Result: Cleaner UI, no duplicate navigation controls */
   const handleClosePdfViewer = () => {
     setShowPdfViewer(false);
   };
@@ -178,22 +172,11 @@ function ArticleDisplayPageClientInner({ params }: Props) {
     []
   );
 
-  // Check if article has PDFs
-  // const hasPdfs = data?.data.article_pdf_urls && data.data.article_pdf_urls.length > 0;
-
-  // Performance: Use function content for lazy loading with TabNavigation
-  // Functions prevent component instantiation until tab is active
-  // Reviews tab loads first (default), Discussions only load when user clicks that tab
   const tabs = data
     ? [
         {
           title: 'Reviews',
           content: () => (
-            /* Fixed by Codex on 2026-02-21
-               Who: Codex
-               What: Switched the article-page review tab to shared ReviewsTabBody.
-               Why: Avoid route-level duplication while preserving PDF quote-specific UX.
-               How: Pass route-specific quote notice via afterReviewFormContent prop. */
             <ReviewsTabBody
               articleId={Number(data.data.id)}
               reviews={reviewsData?.data.items}
@@ -297,7 +280,7 @@ function ArticleDisplayPageClientInner({ params }: Props) {
                     aria-controls="article-annotation-sidebar"
                   >
                     <BookOpen size={14} />
-                    Notes
+                    Sidebar
                   </Button>
                   <Button
                     variant="transparent"
@@ -324,18 +307,52 @@ function ArticleDisplayPageClientInner({ params }: Props) {
                   />
                 </div>
 
-                {/* Annotation Sidebar */}
+                {/* Sidebar (Annotations & AI) */}
                 {showAnnotations && (
                   <div
                     id="article-annotation-sidebar"
-                    className="w-72 overflow-hidden bg-common-cardBackground"
+                    className="flex w-80 shrink-0 flex-col overflow-hidden border-l border-common-minimal bg-common-cardBackground"
                   >
-                    <AnnotationSidebar
-                      articleSlug={params.slug}
-                      pdfUrl={selectedPdfUrl}
-                      onQuoteSelect={handleQuoteSelect}
-                      onJumpToAnnotation={jumpToAnnotation || undefined}
-                    />
+                    {/* Tabs Header */}
+                    <div className="flex shrink-0 border-b border-common-minimal">
+                      <button
+                        onClick={() => setActiveSidebarTab('annotations')}
+                        className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                          activeSidebarTab === 'annotations'
+                            ? 'border-b-2 border-functional-blue text-functional-blue'
+                            : 'bg-common-background/50 text-text-tertiary hover:text-text-secondary'
+                        }`}
+                      >
+                        Annotations
+                      </button>
+                      <button
+                        onClick={() => setActiveSidebarTab('ask-ai')}
+                        className={`flex flex-1 items-center justify-center gap-1 py-3 text-sm font-medium transition-colors ${
+                          activeSidebarTab === 'ask-ai'
+                            ? 'border-b-2 border-functional-blue text-functional-blue'
+                            : 'bg-common-background/50 text-text-tertiary hover:text-text-secondary'
+                        }`}
+                      >
+                        <Sparkles size={14} /> Ask AI
+                      </button>
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="flex-1 overflow-hidden">
+                      {activeSidebarTab === 'annotations' ? (
+                        <AnnotationSidebar
+                          articleSlug={params.slug}
+                          pdfUrl={selectedPdfUrl}
+                          onQuoteSelect={handleQuoteSelect}
+                          onJumpToAnnotation={jumpToAnnotation || undefined}
+                        />
+                      ) : (
+                        <AskAISidebar
+                          articleSlug={params.slug}
+                          articleText={data?.data.abstract || "Abstract not available for this article."}
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
