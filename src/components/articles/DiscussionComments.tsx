@@ -128,15 +128,30 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({
   };
 
   const addNewComment = (content: string) => {
-    createComment({ discussionId, data: { content } });
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error('Comments cannot be empty');
+      return;
+    }
+    createComment({ discussionId, data: { content: trimmed } });
   };
 
   const addReply = (parentId: number, content: string) => {
-    createComment({ discussionId, data: { content, parent_id: parentId } });
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error('Reply cannot be empty');
+      return;
+    }
+    createComment({ discussionId, data: { content: trimmed, parent_id: parentId } });
   };
 
   const updateComment = (commentId: number, updatedContent: string) => {
-    UpdateComment({ commentId, data: { content: updatedContent } });
+    const trimmed = updatedContent.trim();
+    if (!trimmed) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+    UpdateComment({ commentId, data: { content: trimmed } });
   };
 
   const deleteCommentbyId = (commentId: number) => {
