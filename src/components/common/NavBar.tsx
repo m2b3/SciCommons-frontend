@@ -37,6 +37,7 @@ import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
 import useStore from '@/hooks/useStore';
 import { useTabTitleNotification } from '@/hooks/useTabTitleNotification';
 import { useUserSettings } from '@/hooks/useUserSettings';
+import { usePathTracker } from '@/hooks/usePathTracker';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useMentionNotificationsStore } from '@/stores/mentionNotificationsStore';
@@ -52,6 +53,8 @@ const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
   const user = useStore(useAuthStore, (state) => state.user);
   const pathname = usePathname();
+  const { getPreviousPath } = usePathTracker();
+  const previousPath = getPreviousPath();
   const authHeaders = useAuthHeaders();
   const mentionOwnerUserId = useMentionNotificationsStore((state) => state.ownerUserId);
   const mentionItems = useMentionNotificationsStore((state) => state.mentions);
@@ -230,16 +233,18 @@ const NavBar: React.FC = () => {
               What: Convert the back icon into a real button.
               Why: Icon-only divs are not keyboard accessible or announced by screen readers.
               How: Wrap the icon in a button with an aria-label and click handler. */}
-          <button
-            type="button"
-            aria-label="Go back"
-            className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            <MoveLeft className="size-5" strokeWidth={1.5} />
-          </button>
+          {!(pathname === '/' && (!isAuthenticated || previousPath === '/auth/login')) && (
+            <button
+              type="button"
+              aria-label="Go back"
+              className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              <MoveLeft className="size-5" strokeWidth={1.5} />
+            </button>
+          )}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
               <Image

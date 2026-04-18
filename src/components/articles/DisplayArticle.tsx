@@ -3,7 +3,7 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Bookmark, Link2, PanelLeft, Settings } from 'lucide-react';
+import { Bookmark, Link2, PanelLeft, Pencil, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMediaQuery } from 'usehooks-ts';
 
@@ -246,15 +246,16 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
           {/* <div className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
           </div> */}
-          {/* Fixed by Codex on 2026-02-15
-              Who: Codex
-              What: Render the article abstract via AbstractText.
-              Why: Keep newline handling consistent across all abstract displays.
-              How: Replace RenderParsedHTML with the shared wrapper component. */}
+          {/* Fixed by GitHub Copilot on 2026-04-10
+              Who: GitHub Copilot
+              What: Remove mb-10 margin from AbstractText on mobile to eliminate gap.
+              Why: Gap between abstract and author was larger than between authors and article links.
+              How: Pass containerClassName="mb-0" to override RenderParsedHTML's mobile margin. */}
           <AbstractText
             text={article.abstract}
             isShrinked={true}
             gradientClassName="sm:from-common-background"
+            containerClassName="mb-0"
           />
         </div>
         <div className="mb-4">
@@ -317,28 +318,29 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
           </div>
         )}
 
-        <div className="mt-4 w-full">
-          <ArticleStats article={article} />
-        </div>
+        <div className="mt-4 flex w-full items-start justify-between gap-4">
+          <div className="flex-1">
+            <ArticleStats article={article} />
+          </div>
 
-        <div className="mb-2 flex w-full items-center justify-end gap-2 sm:absolute sm:bottom-0 sm:right-0 sm:mb-0 sm:w-fit">
+          <div className="flex items-center gap-2 pt-16">
           {/* Fixed by Codex on 2026-02-15
               Who: Codex
               What: Tokenize article action pill surfaces.
               Why: Keep edit/settings controls aligned with skin palettes.
               How: Replace hard-coded white/black utilities with semantic tokens. */}
           {article.is_submitter && (
-            <Link
-              href={editArticleHref}
-              className="rounded-md border border-common-contrast bg-common-cardBackground px-3 py-1.5 text-xs text-text-primary"
+            <Button
+              asChild
+              variant="outline"
+              size="xs"
+              className="h-9 w-9 p-0"
+              aria-label="Edit Article"
             >
-              {/* Fixed by Codex on 2026-02-15
-                  Who: Codex
-                  What: Use semantic link text for edit action.
-                  Why: Div-wrapped links obscure the interactive element for assistive tech.
-                  How: Move styling onto the Link so the anchor is the focus target. */}
-              Edit Article
-            </Link>
+              <Link href={editArticleHref} title="Edit Article">
+                <Pencil size={16} className="text-text-secondary" />
+              </Link>
+            </Button>
           )}
           {!article.community_article && (
             /* Fixed by Codex on 2026-02-15
@@ -374,10 +376,11 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
             <Suspense
               fallback={
                 <Button
-                  className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
-                  variant={'inverted'}
+                  variant="outline"
+                  size="xs"
+                  className="h-9 w-9 p-0"
                 >
-                  <Settings size={18} className="animate-spin" />
+                  <Settings size={16} className="animate-spin text-text-secondary" />
                 </Button>
               }
             >
@@ -389,13 +392,14 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
               {isDesktop ? (
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                   <SheetTrigger asChild>
-                    <button
-                      type="button"
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      className="h-9 w-9 p-0"
                       aria-label="Open article settings"
-                      className="rounded-lg border border-common-contrast bg-common-cardBackground px-4 py-2 text-text-primary res-text-xs"
                     >
-                      <Settings size={18} />
-                    </button>
+                      <Settings size={16} className="text-text-secondary" />
+                    </Button>
                   </SheetTrigger>
                   <SheetContent
                     isOpen={isSheetOpen}
@@ -431,13 +435,14 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
               ) : (
                 <Drawer>
                   <DrawerTrigger asChild>
-                    <button
-                      type="button"
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      className="h-9 w-9 p-0"
                       aria-label="Open article settings"
-                      className="rounded-lg border border-common-contrast bg-common-cardBackground px-4 py-2 text-text-primary res-text-xs"
                     >
-                      <Settings size={18} />
-                    </button>
+                      <Settings size={16} className="text-text-secondary" />
+                    </Button>
                   </DrawerTrigger>
                   <DrawerContent className="flex flex-col items-center p-0 pt-4">
                     <DrawerHeader className="flex flex-col items-center">
@@ -470,6 +475,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
               )}
             </Suspense>
           )}
+        </div>
         </div>
       </div>
     </div>
