@@ -115,6 +115,7 @@ const CommunityArticleDisplayPage: React.FC = () => {
               onReviewSubmitSuccess={() => setSubmitReview(false)}
               communityId={data?.data.community_article?.community.id}
               isSubmitter={data.data.is_submitter}
+              isCommunityAdmin={data?.data.community_article?.is_admin ?? false}
               reviewFormContainerId="community-article-review-form"
               className="gap-2"
               showHeading={false}
@@ -169,32 +170,17 @@ const CommunityArticleDisplayPage: React.FC = () => {
         articleTitle={data?.data.title}
         isLoading={isPending}
       />
-      {!isPending && (
-        <div className="mb-3 flex justify-end">
-          <Button
-            asChild
-            withTooltip
-            tooltipData="List View"
-            variant="outline"
-            size="xs"
-            className="border border-common-minimal/70 bg-common-cardBackground px-2 hover:bg-common-minimal sm:px-3"
-            aria-label="Switch to community articles list view"
-          >
-            <Link href={communityListHref} onClick={handleGoToListView}>
-              <ButtonIcon>
-                <List size={14} className="text-text-secondary" />
-              </ButtonIcon>
-              <ButtonTitle className="hidden text-text-secondary sm:flex">List View</ButtonTitle>
-            </Link>
-          </Button>
-        </div>
-      )}
+      {/* List View button is now only rendered inside DisplayArticle, in line with the heading */}
       {isPending ? (
         <DisplayArticleSkeleton />
       ) : (
         data && (
           <div className="flex flex-col">
-            <DisplayArticle article={data.data} />
+            <DisplayArticle
+              article={data.data}
+              listViewHref={communityListHref}
+              onListViewClick={handleGoToListView}
+            />
             <div className="mt-3 inline-block rounded-md bg-functional-blue/10 px-2 py-0.5 sm:mt-5 sm:rounded-xl sm:px-3 sm:py-1">
               <span className="block text-xs leading-snug text-functional-blueContrast">
                 {data.data.community_article?.is_pseudonymous
