@@ -7,15 +7,15 @@
 
 /**
  * Available flag types that can be set on entities.
-Keep in sync with UserFlag.VALID_FLAG_TYPES in articles/models.py
+This is the single source of truth — the EntityFlag model stores any string,
+validation happens at the API layer via this enum.
 
+User-specific flags:
 - unread: Entity has not been read by the user
 - pinned: Entity is pinned by the user
-- unread_comment: (Virtual flag) Discussion has unread comments/replies
 
-Future flags (add here and in UserFlag.VALID_FLAG_TYPES when implemented):
-- starred: Entity is starred/favorited by the user
-- muted: Entity notifications are muted by the user
+Virtual flags (computed, not stored):
+- unread_comment: Discussion has unread comments/replies
  */
 export type FlagType = typeof FlagType[keyof typeof FlagType];
 

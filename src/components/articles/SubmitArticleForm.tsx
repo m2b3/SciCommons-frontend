@@ -172,8 +172,9 @@ const SubmitArticleForm: React.FC<SubmitArticleFormProps> = ({
           errors={errors}
           textArea={true}
           readOnly={activeTab === 'search'}
-          supportMarkdown={false}
+          supportMarkdown={activeTab === 'upload'}
           supportLatex={false}
+          control={control}
         />
         {activeTab === 'search' && (
           <p className="mt-2 text-xs italic text-text-tertiary">

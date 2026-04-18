@@ -7,15 +7,8 @@
 
 /**
  * Entity types that can have flags attached.
-Keep in sync with UserFlag.VALID_ENTITY_TYPES in articles/models.py
-
-- discussion: A discussion thread on an article
-- comment: A comment or reply within a discussion
-- notification: A user notification
-- review: A review on an article
-
-Future entity types (add here and in UserFlag.VALID_ENTITY_TYPES when implemented):
-- article: An article
+This is the single source of truth — the EntityFlag model stores any string,
+validation happens at the API layer via this enum.
  */
 export type EntityType = typeof EntityType[keyof typeof EntityType];
 
@@ -26,4 +19,5 @@ export const EntityType = {
   comment: 'comment',
   notification: 'notification',
   review: 'review',
+  article: 'article',
 } as const;

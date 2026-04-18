@@ -253,6 +253,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
               How: Pass containerClassName="mb-0" to override RenderParsedHTML's mobile margin. */}
           <AbstractText
             text={article.abstract}
+            articleLink={article.article_link}
             isShrinked={true}
             gradientClassName="sm:from-common-background"
             containerClassName="mb-0"

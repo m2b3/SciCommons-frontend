@@ -204,6 +204,9 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
         schema={articleAbstractSchema}
         info="Provide a brief summary of your article's content."
         errors={errors}
+        supportMarkdown={true}
+        supportLatex={false}
+        control={control}
       />
       <Controller
         name="authors"
