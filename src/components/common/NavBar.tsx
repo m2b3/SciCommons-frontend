@@ -48,10 +48,20 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import NotificationDropdownContent from './NotificationDropdown';
 import NotificationToast from './NotificationToast';
 
+const internalHistory: string[] = [];
+let isBrowserNavigation = false;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => {
+    isBrowserNavigation = true;
+  });
+}
+
 const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
   const user = useStore(useAuthStore, (state) => state.user);
   const pathname = usePathname();
+  const [canGoBack, setCanGoBack] = useState(false);
   const authHeaders = useAuthHeaders();
   const mentionOwnerUserId = useMentionNotificationsStore((state) => state.ownerUserId);
   const mentionItems = useMentionNotificationsStore((state) => state.mentions);
@@ -175,6 +185,21 @@ const NavBar: React.FC = () => {
     user?.id,
   ]);
 
+  useEffect(() => {
+    if (!pathname) return;
+    if (isBrowserNavigation) {
+      if (internalHistory.length > 1) {
+        internalHistory.pop();
+      }
+      isBrowserNavigation = false;
+    } else {
+      if (internalHistory[internalHistory.length - 1] !== pathname) {
+        internalHistory.push(pathname);
+      }
+    }
+    setCanGoBack(internalHistory.length > 1);
+  }, [pathname]);
+
   const isAshokaUser = user?.email?.endsWith('ashoka.edu.in') ?? false;
   const router = useRouter();
   /* Fixed by Codex on 2026-02-16
@@ -233,9 +258,15 @@ const NavBar: React.FC = () => {
           <button
             type="button"
             aria-label="Go back"
-            className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+            disabled={!canGoBack}
+            className={cn(
+              "mr-4 flex size-8 items-center justify-center rounded-full text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60 transition-all",
+              canGoBack ? "hover:bg-common-minimal/60" : "opacity-30 cursor-not-allowed"
+            )}
             onClick={() => {
-              router.back();
+              if (canGoBack) {
+                router.back();
+              }
             }}
           >
             <MoveLeft className="size-5" strokeWidth={1.5} />
