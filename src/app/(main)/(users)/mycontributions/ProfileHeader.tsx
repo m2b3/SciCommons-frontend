@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { BookOpen, Github, GraduationCap, Link as LinkIcon, Linkedin, Mail } from 'lucide-react';
 
@@ -39,7 +40,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   const safePubMed = getSafeExternalUrl(pubMedUrl);
 
   return (
-    <div className="mb-4 flex items-start gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:mb-6 md:gap-6 md:p-6">
+    <div className="mb-4 flex items-start justify-between gap-4 rounded-xl border border-common-contrast bg-common-cardBackground p-4 md:mb-6 md:gap-6 md:p-6">
       <div className="flex-shrink-0">
         <Image
           src={image}
@@ -50,7 +51,20 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         />
       </div>
       <div className="min-w-0 flex-1 text-left">
-        <h2 className="text-xl font-bold text-text-primary">{name}</h2>
+        {/* Fixed by Codex on 2026-05-04
+            Who: Codex
+            What: Added a direct Edit Profile action beside the profile title.
+            Why: Users on the contributions/profile surface need a faster path into profile editing.
+            How: Wrapped the header row in a spaced flex layout and inserted a keyboard-accessible link styled as a button. */}
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-xl font-bold text-text-primary">{name}</h2>
+          <Link
+            href="/myprofile"
+            className="inline-flex items-center rounded-full border border-common-contrast bg-common-minimal px-3 py-2 text-xs font-semibold text-text-primary transition hover:bg-common-minimal/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/50"
+          >
+            Edit Profile
+          </Link>
+        </div>
         <p className="mt-2 break-words text-sm text-text-tertiary [overflow-wrap:anywhere]">
           {bio}
         </p>

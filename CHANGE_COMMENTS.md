@@ -1,3 +1,15 @@
+## 2026-05-04 - Profile Navigation Simplification and Edit Shortcut
+
+Problem: Profile-related navigation was split between a `Bookmarks` top-nav label, a separate `Contributions` dropdown item, and no direct edit action from the profile header.
+
+Root Cause: The existing navigation evolved around the `/mycontributions` route structure instead of around the user's mental model of "my profile," so related actions ended up scattered across multiple labels and entry points.
+
+Solution: Renamed the authenticated navbar shortcut to `Profile`, removed the duplicate `Contributions` item from the profile dropdown, and added a direct `Edit Profile` action to the profile header on the contributions/profile screen.
+
+Result: Profile discovery is clearer, duplicate navigation is reduced, and users can move from viewing their profile surface to editing it in one click.
+
+Files Modified: `src/components/common/NavBar.tsx`, `src/app/(main)/(users)/mycontributions/ProfileHeader.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-22 - BrowserStack Optional Dependency Runtime Guidance
 
 Problem: Developers who intentionally ran the BrowserStack Playwright path without `browserstack-local` installed would hit a generic runtime module-load failure.

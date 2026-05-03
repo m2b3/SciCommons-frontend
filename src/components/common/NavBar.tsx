@@ -14,7 +14,6 @@ import {
   LogOut,
   MoonIcon,
   MoveLeft,
-  NotebookTabs,
   Plus,
   Settings,
   SunMediumIcon,
@@ -34,6 +33,7 @@ import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
+import { usePathTracker } from '@/hooks/usePathTracker';
 import useStore from '@/hooks/useStore';
 import { useTabTitleNotification } from '@/hooks/useTabTitleNotification';
 import { useUserSettings } from '@/hooks/useUserSettings';
@@ -187,6 +187,11 @@ const NavBar: React.FC = () => {
      What: Add a Bookmarks nav link for authenticated users
      Why: Bookmarks were buried under Contributions and took too many clicks
      How: Link to the contributions page with the bookmarks tab preselected */
+  /* Fixed by Codex on 2026-05-04
+     Who: Codex
+     What: Reframed the authenticated navbar shortcut as Profile and removed the duplicate Contributions entry from the profile dropdown.
+     Why: The profile area was split across two labels and two menu locations, which made navigation feel redundant.
+     How: Retained the existing `/mycontributions` destination as the main profile shortcut and simplified the dropdown to a single profile entry. */
   const navLinks = [
     { href: '/', label: 'Home' },
     // { href: '/articles', label: 'Articles', altHref: '/article' },
@@ -196,7 +201,7 @@ const NavBar: React.FC = () => {
       ? [
           {
             href: '/mycontributions?tab=bookmarks',
-            label: 'Bookmarks',
+            label: 'Profile',
             altHref: '/mycontributions',
           },
         ]
@@ -523,11 +528,6 @@ const ProfileDropdown: React.FC = () => {
         <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/myprofile" className="flex items-center">
             <User size={16} className="mr-2" /> Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
-          <Link href="/mycontributions" className="flex items-center">
-            <NotebookTabs size={16} className="mr-2" /> Contributions
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
