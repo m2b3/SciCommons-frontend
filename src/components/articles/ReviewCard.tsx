@@ -19,8 +19,9 @@ import {
 import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
+import { ErrorType } from '@/api/custom-instance';
 import { useMyappFlagsApiAddFlags, useMyappFlagsApiRemoveFlags } from '@/api/flags/flags';
-import { EntityType, FlagType, Message, ReviewOut } from '@/api/schemas';
+import { EntityType, FlagType, ReviewOut } from '@/api/schemas';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -39,6 +40,10 @@ interface ReviewCardProps {
   isCommunityAdmin?: boolean;
 }
 
+interface FlagMutationErrorResponse {
+  message?: string;
+}
+
 const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommunityAdmin }) => {
   dayjs.extend(relativeTime);
 
@@ -50,19 +55,25 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
   const currentUser = useAuthStore((state) => state.user);
   const isPinned = isReviewPinned(review);
 
+  /* Fixed by Codex on 2026-05-05
+     Who: Codex
+     What: Removed explicit `any` usage from review pin/unpin mutation error handling.
+     Why: ESLint `@typescript-eslint/no-explicit-any` was failing in ReviewCard.
+     How: Use the shared Axios-backed `ErrorType` with the local API message shape so toast fallback logic stays type-safe. */
+  const getFlagMutationErrorMessage = (error: ErrorType<FlagMutationErrorResponse>) =>
+    error.response?.data?.message ||
+    error.message ||
+    'Failed to update review pin status. Please try again later.';
+
   const { mutate: addPinFlag, isPending: addPinPending } = useMyappFlagsApiAddFlags({
     mutation: {
       onSuccess: () => {
         refetch && refetch();
         toast.success('Review pinned successfully');
       },
-      onError: (error: any) => {
+      onError: (error: ErrorType<FlagMutationErrorResponse>) => {
         console.error('Pin error:', error);
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          'Failed to pin review. Please try again later.';
-        toast.error(message);
+        toast.error(getFlagMutationErrorMessage(error));
       },
     },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -74,13 +85,9 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
         refetch && refetch();
         toast.success('Review unpinned successfully');
       },
-      onError: (error: any) => {
+      onError: (error: ErrorType<FlagMutationErrorResponse>) => {
         console.error('Unpin error:', error);
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          'Failed to unpin review. Please try again later.';
-        toast.error(message);
+        toast.error(getFlagMutationErrorMessage(error));
       },
     },
     request: { headers: { Authorization: `Bearer ${accessToken}` } },

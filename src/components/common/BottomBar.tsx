@@ -6,7 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { BookOpenText, Home, NotebookTabs, Plus, Users } from 'lucide-react';
 
+import useStore from '@/hooks/useStore';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
 
 // Dynamically import Drawer components
@@ -21,6 +23,7 @@ const DrawerTrigger = lazy(() =>
 const BottomBar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
 
   // Get count of articles with new realtime events for discussions badge
   const newEventsCount = useSubscriptionUnreadStore((state) => state.getNewEventsCount());
@@ -38,12 +41,16 @@ const BottomBar = () => {
       altRoute: '/community',
       icon: <Users size={20} />,
     },
-    {
-      name: 'Bookmarks',
-      route: '/mycontributions?tab=bookmarks',
-      altRoute: '/mycontributions',
-      icon: <NotebookTabs size={20} />,
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            name: 'Bookmarks',
+            route: '/mycontributions?tab=bookmarks',
+            altRoute: '/mycontributions',
+            icon: <NotebookTabs size={20} />,
+          },
+        ]
+      : []),
     {
       name: 'Discussions',
       route: '/discussions',
@@ -51,7 +58,7 @@ const BottomBar = () => {
       icon: <BookOpenText size={20} />,
     },
   ];
-  // No need for navSlotClassByName, use grid-cols-5 for even spacing
+  const navLinksAfterCreate = isAuthenticated ? navLinks.slice(2) : navLinks.slice(1);
 
   const hideBottomBarPaths = ['login', 'register', 'forgotpassword', 'resetpassword'];
 
@@ -67,9 +74,17 @@ const BottomBar = () => {
 
   return (
     <>
-      {/* Fixed by Copilot on 2026-03-30
-          What: Move the + (CreateDropdown) button back to the center column between Communities and Bookmarks, as previously. */}
-      <main className="fixed bottom-0 left-0 z-[1000] grid h-16 w-screen select-none grid-cols-5 border-t border-common-minimal bg-common-background/70 text-text-secondary backdrop-blur-md md:hidden">
+      {/* Fixed by Codex on 2026-05-05
+          Who: Codex
+          What: Restore auth-aware mobile nav composition while preserving centered create affordance.
+          Why: PR #353 exposed Bookmarks to signed-out mobile users and made mobile IA diverge from the desktop navbar.
+          How: Gate Bookmarks on auth and switch between 5-column/authenticated and 4-column/guest layouts without leaving empty nav slots. */}
+      <main
+        className={cn(
+          'fixed bottom-0 left-0 z-[1000] grid h-16 w-screen select-none border-t border-common-minimal bg-common-background/70 text-text-secondary backdrop-blur-md md:hidden',
+          isAuthenticated ? 'grid-cols-5' : 'grid-cols-4'
+        )}
+      >
         {/* Home */}
         <button
           type="button"
@@ -110,51 +125,35 @@ const BottomBar = () => {
         <div className="flex flex-col items-center justify-center">
           <CreateDropdown />
         </div>
-        {/* Bookmarks */}
-        <button
-          type="button"
-          aria-current={isLinkActive(navLinks[2]) ? 'page' : undefined}
-          className={cn(
-            'relative flex flex-col items-center justify-center',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60',
-            {
-              'border-t-2 border-functional-green/70 bg-gradient-to-b from-functional-green/10 to-transparent text-functional-green':
-                isLinkActive(navLinks[2]),
-              'text-text-tertiary': !isLinkActive(navLinks[2]),
-            }
-          )}
-          onClick={() => router.push(navLinks[2].route)}
-        >
-          <div className="relative">{navLinks[2].icon}</div>
-          <span className="mt-1 select-none text-[10px]">{navLinks[2].name}</span>
-        </button>
-        {/* Discussions */}
-        <button
-          type="button"
-          aria-current={isLinkActive(navLinks[3]) ? 'page' : undefined}
-          className={cn(
-            'relative flex flex-col items-center justify-center',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60',
-            {
-              'border-t-2 border-functional-green/70 bg-gradient-to-b from-functional-green/10 to-transparent text-functional-green':
-                isLinkActive(navLinks[3]),
-              'text-text-tertiary': !isLinkActive(navLinks[3]),
-            }
-          )}
-          onClick={() => router.push(navLinks[3].route)}
-        >
-          <div className="relative">
-            {navLinks[3].icon}
-            {navLinks[3].name === 'Discussions' &&
-              newEventsCount > 0 &&
-              !pathname?.startsWith('/discussion') && (
-                <span className="absolute -right-3 -top-2 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-functional-red">
-                  New
-                </span>
-              )}
-          </div>
-          <span className="mt-1 select-none text-[10px]">{navLinks[3].name}</span>
-        </button>
+        {navLinksAfterCreate.map((link) => (
+          <button
+            key={link.name}
+            type="button"
+            aria-current={isLinkActive(link) ? 'page' : undefined}
+            className={cn(
+              'relative flex flex-col items-center justify-center',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60',
+              {
+                'border-t-2 border-functional-green/70 bg-gradient-to-b from-functional-green/10 to-transparent text-functional-green':
+                  isLinkActive(link),
+                'text-text-tertiary': !isLinkActive(link),
+              }
+            )}
+            onClick={() => router.push(link.route)}
+          >
+            <div className="relative">
+              {link.icon}
+              {link.name === 'Discussions' &&
+                newEventsCount > 0 &&
+                !pathname?.startsWith('/discussion') && (
+                  <span className="absolute -right-3 -top-2 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-functional-red">
+                    New
+                  </span>
+                )}
+            </div>
+            <span className="mt-1 select-none text-[10px]">{link.name}</span>
+          </button>
+        ))}
       </main>
     </>
   );

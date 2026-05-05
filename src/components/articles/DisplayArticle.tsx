@@ -325,158 +325,156 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
           </div>
 
           <div className="flex items-center gap-2 pt-16">
-          {/* Fixed by Codex on 2026-02-15
+            {/* Fixed by Codex on 2026-02-15
               Who: Codex
               What: Tokenize article action pill surfaces.
               Why: Keep edit/settings controls aligned with skin palettes.
               How: Replace hard-coded white/black utilities with semantic tokens. */}
-          {article.is_submitter && (
-            <Button
-              asChild
-              variant="outline"
-              size="xs"
-              className="h-9 w-9 p-0"
-              aria-label="Edit Article"
-            >
-              <Link href={editArticleHref} title="Edit Article">
-                <Pencil size={16} className="text-text-secondary" />
-              </Link>
-            </Button>
-          )}
-          {!article.community_article && (
-            /* Fixed by Codex on 2026-02-15
+            {article.is_submitter && (
+              <Button
+                asChild
+                variant="outline"
+                size="xs"
+                className="h-9 w-9 p-0"
+                aria-label="Edit Article"
+              >
+                <Link href={editArticleHref} title="Edit Article">
+                  <Pencil size={16} className="text-text-secondary" />
+                </Link>
+              </Button>
+            )}
+            {!article.community_article && (
+              /* Fixed by Codex on 2026-02-15
                Who: Codex
                What: Add ARIA labels and pressed state to the bookmark toggle.
                Why: Icon-only buttons need accessible names and state feedback.
                How: Provide aria-label/aria-pressed on the Button element. */
-            <Button
-              variant="outline"
-              size="xs"
-              className="aspect-square p-1.5"
-              aria-label={isBookmarked ? 'Remove bookmark for article' : 'Add bookmark for article'}
-              aria-pressed={isBookmarked}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.nativeEvent.stopImmediatePropagation();
-                handleBookmarkToggle();
-              }}
-              disabled={isBookmarkPending}
-              withTooltip
-              tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
-            >
-              <Bookmark
-                className={cn('size-4 transition-colors', {
-                  'fill-functional-yellow text-functional-yellow': isBookmarked,
-                  'text-text-tertiary hover:text-text-secondary': !isBookmarked,
-                })}
-              />
-            </Button>
-          )}
-          {article.community_article && article.community_article?.is_admin && (
-            <Suspense
-              fallback={
-                <Button
-                  variant="outline"
-                  size="xs"
-                  className="h-9 w-9 p-0"
-                >
-                  <Settings size={16} className="animate-spin text-text-secondary" />
-                </Button>
-              }
-            >
-              {/* Fixed by Codex on 2026-02-15
+              <Button
+                variant="outline"
+                size="xs"
+                className="aspect-square p-1.5"
+                aria-label={
+                  isBookmarked ? 'Remove bookmark for article' : 'Add bookmark for article'
+                }
+                aria-pressed={isBookmarked}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  handleBookmarkToggle();
+                }}
+                disabled={isBookmarkPending}
+                withTooltip
+                tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+              >
+                <Bookmark
+                  className={cn('size-4 transition-colors', {
+                    'fill-functional-yellow text-functional-yellow': isBookmarked,
+                    'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+                  })}
+                />
+              </Button>
+            )}
+            {article.community_article && article.community_article?.is_admin && (
+              <Suspense
+                fallback={
+                  <Button variant="outline" size="xs" className="h-9 w-9 p-0">
+                    <Settings size={16} className="animate-spin text-text-secondary" />
+                  </Button>
+                }
+              >
+                {/* Fixed by Codex on 2026-02-15
                   Who: Codex
                   What: Make settings triggers accessible buttons with labels.
                   Why: Icon-only sheet/drawer triggers were unlabeled for screen readers.
                   How: Use asChild buttons with aria-labels and explicit types. */}
-              {isDesktop ? (
-                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      className="h-9 w-9 p-0"
-                      aria-label="Open article settings"
+                {isDesktop ? (
+                  <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                    <SheetTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        className="h-9 w-9 p-0"
+                        aria-label="Open article settings"
+                      >
+                        <Settings size={16} className="text-text-secondary" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent
+                      isOpen={isSheetOpen}
+                      className="flex flex-col items-center p-0 pt-4"
                     >
-                      <Settings size={16} className="text-text-secondary" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent
-                    isOpen={isSheetOpen}
-                    className="flex flex-col items-center p-0 pt-4"
-                  >
-                    <SheetHeader className="flex flex-col items-center">
-                      <SheetTitle className="text-2xl font-bold">Settings</SheetTitle>
-                    </SheetHeader>
-                    <div className="flex h-full w-full flex-col items-center p-4">
-                      <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
-                        <div className="flex w-full items-center justify-between">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-base text-text-secondary">
-                              Make article reviews and discussion <strong>Pseudomynous</strong>
-                            </span>
-                            <span className="text-xs text-text-tertiary">
-                              (If enabled, all reviews and discussions will remain pseudonymous.)
-                            </span>
+                      <SheetHeader className="flex flex-col items-center">
+                        <SheetTitle className="text-2xl font-bold">Settings</SheetTitle>
+                      </SheetHeader>
+                      <div className="flex h-full w-full flex-col items-center p-4">
+                        <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
+                          <div className="flex w-full items-center justify-between">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-base text-text-secondary">
+                                Make article reviews and discussion <strong>Pseudomynous</strong>
+                              </span>
+                              <span className="text-xs text-text-tertiary">
+                                (If enabled, all reviews and discussions will remain pseudonymous.)
+                              </span>
+                            </div>
+                            <Switch
+                              className="data-[state=checked]:bg-functional-blue"
+                              checked={isPseudonymous}
+                              onCheckedChange={(value) => {
+                                setIsPseudonymous(value);
+                                debouncedIsPseudonymous(value);
+                              }}
+                            />
                           </div>
-                          <Switch
-                            className="data-[state=checked]:bg-functional-blue"
-                            checked={isPseudonymous}
-                            onCheckedChange={(value) => {
-                              setIsPseudonymous(value);
-                              debouncedIsPseudonymous(value);
-                            }}
-                          />
                         </div>
                       </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              ) : (
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      className="h-9 w-9 p-0"
-                      aria-label="Open article settings"
-                    >
-                      <Settings size={16} className="text-text-secondary" />
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent className="flex flex-col items-center p-0 pt-4">
-                    <DrawerHeader className="flex flex-col items-center">
-                      <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
-                    </DrawerHeader>
-                    <div className="flex h-full w-full flex-col items-center p-4">
-                      <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
-                        <div className="flex w-full items-center justify-between">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-base text-text-secondary">
-                              Make article reviews and discussion <strong>Pseudomynous</strong>
-                            </span>
-                            <span className="text-xs text-text-tertiary">
-                              (If enabled, all reviews and discussions will remain pseudonymous.)
-                            </span>
+                    </SheetContent>
+                  </Sheet>
+                ) : (
+                  <Drawer>
+                    <DrawerTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        className="h-9 w-9 p-0"
+                        aria-label="Open article settings"
+                      >
+                        <Settings size={16} className="text-text-secondary" />
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="flex flex-col items-center p-0 pt-4">
+                      <DrawerHeader className="flex flex-col items-center">
+                        <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
+                      </DrawerHeader>
+                      <div className="flex h-full w-full flex-col items-center p-4">
+                        <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
+                          <div className="flex w-full items-center justify-between">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-base text-text-secondary">
+                                Make article reviews and discussion <strong>Pseudomynous</strong>
+                              </span>
+                              <span className="text-xs text-text-tertiary">
+                                (If enabled, all reviews and discussions will remain pseudonymous.)
+                              </span>
+                            </div>
+                            <Switch
+                              className="data-[state=checked]:bg-functional-blue"
+                              checked={isPseudonymous}
+                              onCheckedChange={(value) => {
+                                setIsPseudonymous(value);
+                                debouncedIsPseudonymous(value);
+                              }}
+                            />
                           </div>
-                          <Switch
-                            className="data-[state=checked]:bg-functional-blue"
-                            checked={isPseudonymous}
-                            onCheckedChange={(value) => {
-                              setIsPseudonymous(value);
-                              debouncedIsPseudonymous(value);
-                            }}
-                          />
                         </div>
                       </div>
-                    </div>
-                  </DrawerContent>
-                </Drawer>
-              )}
-            </Suspense>
-          )}
-        </div>
+                    </DrawerContent>
+                  </Drawer>
+                )}
+              </Suspense>
+            )}
+          </div>
         </div>
       </div>
     </div>

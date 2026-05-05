@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
-
-import { List } from 'lucide-react';
 
 import { withAuthRedirect } from '@/HOCs/withAuthRedirect';
 import { useArticlesApiGetArticle } from '@/api/articles/articles';
@@ -14,7 +11,6 @@ import DiscussionForum from '@/components/articles/DiscussionForum';
 import DisplayArticle, { DisplayArticleSkeleton } from '@/components/articles/DisplayArticle';
 import ReviewsTabBody from '@/components/articles/ReviewsTabBody';
 import CommunityBreadcrumb from '@/components/communities/CommunityBreadcrumb';
-import { Button, ButtonIcon, ButtonTitle } from '@/components/ui/button';
 import TabNavigation from '@/components/ui/tab-navigation';
 import { FIFTEEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { buildSciCommonsTitle } from '@/lib/pageTitle';
