@@ -2,7 +2,6 @@ import { FC, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
-import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -20,8 +19,9 @@ import {
 import { toast } from 'sonner';
 
 import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-articles/community-articles';
-import { customInstance } from '@/api/custom-instance';
-import { Message, ReviewOut } from '@/api/schemas';
+import { ErrorType } from '@/api/custom-instance';
+import { useMyappFlagsApiAddFlags, useMyappFlagsApiRemoveFlags } from '@/api/flags/flags';
+import { EntityType, FlagType, ReviewOut } from '@/api/schemas';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -36,21 +36,15 @@ import { isReviewPinned } from './reviewPinning';
 interface ReviewCardProps {
   review: ReviewOut;
   refetch?: () => void;
+  isSubmitter?: boolean;
+  isCommunityAdmin?: boolean;
 }
 
-const pinReviewRequest = (reviewId: number, accessToken: string | null) =>
-  customInstance<Message>(
-    { url: `/api/articles/reviews/${reviewId}/pin/`, method: 'POST' },
-    accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}
-  );
+interface FlagMutationErrorResponse {
+  message?: string;
+}
 
-const unpinReviewRequest = (reviewId: number, accessToken: string | null) =>
-  customInstance<Message>(
-    { url: `/api/articles/reviews/${reviewId}/pin/`, method: 'DELETE' },
-    accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}
-  );
-
-const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
+const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommunityAdmin }) => {
   dayjs.extend(relativeTime);
 
   const [edit, setEdit] = useState(false);
@@ -61,26 +55,43 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
   const currentUser = useAuthStore((state) => state.user);
   const isPinned = isReviewPinned(review);
 
-  // COMMENTED OUT BCOZ WE ARE NOT SHOWING REACTIONS IN REVIEW CARD
-  // const { data, refetch: refetchReactions } = useUsersCommonApiGetReactionCount(
-  //   'articles.review',
-  //   Number(review.id),
-  //   {
-  //     request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  //   }
-  // );
+  /* Fixed by Codex on 2026-05-05
+     Who: Codex
+     What: Removed explicit `any` usage from review pin/unpin mutation error handling.
+     Why: ESLint `@typescript-eslint/no-explicit-any` was failing in ReviewCard.
+     How: Use the shared Axios-backed `ErrorType` with the local API message shape so toast fallback logic stays type-safe. */
+  const getFlagMutationErrorMessage = (error: ErrorType<FlagMutationErrorResponse>) =>
+    error.response?.data?.message ||
+    error.message ||
+    'Failed to update review pin status. Please try again later.';
 
-  // const { mutate } = useUsersCommonApiPostReaction({
-  //   request: { headers: { Authorization: `Bearer ${accessToken}` } },
-  //   mutation: {
-  //     onSuccess: () => {
-  //       refetchReactions();
-  //     },
-  //     onError: (error) => {
-  //       showErrorToast(error);
-  //     },
-  //   },
-  // });
+  const { mutate: addPinFlag, isPending: addPinPending } = useMyappFlagsApiAddFlags({
+    mutation: {
+      onSuccess: () => {
+        refetch && refetch();
+        toast.success('Review pinned successfully');
+      },
+      onError: (error: ErrorType<FlagMutationErrorResponse>) => {
+        console.error('Pin error:', error);
+        toast.error(getFlagMutationErrorMessage(error));
+      },
+    },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
+
+  const { mutate: removePinFlag, isPending: removePinPending } = useMyappFlagsApiRemoveFlags({
+    mutation: {
+      onSuccess: () => {
+        refetch && refetch();
+        toast.success('Review unpinned successfully');
+      },
+      onError: (error: ErrorType<FlagMutationErrorResponse>) => {
+        console.error('Unpin error:', error);
+        toast.error(getFlagMutationErrorMessage(error));
+      },
+    },
+    request: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
 
   const { mutate: approveArticle, isPending: approveArticlePending } =
     useCommunitiesArticlesApiApproveArticle({
@@ -95,33 +106,6 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
         },
       },
     });
-
-  /* Fixed by Codex on 2026-03-22
-     Who: Codex
-     What: Added manual review pin/unpin mutations on sureshDev.
-     Why: This branch's generated client predates the dedicated review pin hooks, but the backend pin endpoint is still the feature we need to surface.
-     How: Call the pin endpoint directly through the shared Axios instance, then refetch the review list so both sort order and pinned UI refresh from server state. */
-  const { mutate: pinReview, isPending: pinPending } = useMutation({
-    mutationFn: (reviewId: number) => pinReviewRequest(reviewId, accessToken),
-    onSuccess: () => {
-      refetch && refetch();
-      toast.success('Review pinned successfully');
-    },
-    onError: (error) => {
-      showErrorToast(error as Parameters<typeof showErrorToast>[0]);
-    },
-  });
-
-  const { mutate: unpinReview, isPending: unpinPending } = useMutation({
-    mutationFn: (reviewId: number) => unpinReviewRequest(reviewId, accessToken),
-    onSuccess: () => {
-      refetch && refetch();
-      toast.success('Review unpinned successfully');
-    },
-    onError: (error) => {
-      showErrorToast(error as Parameters<typeof showErrorToast>[0]);
-    },
-  });
 
   // const handleReaction = (reaction: Reaction) => {
   //   if (reaction === 'upvote')
@@ -177,7 +161,13 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
     !!currentUser &&
     (review.community_article?.reviewer_ids?.includes(currentUser.id) ||
       review.community_article?.moderator_id === currentUser.id);
-  const canPin = !!currentUser && review.community_article?.moderator_id === currentUser.id;
+
+  const canPin =
+    !!currentUser &&
+    (review.community_article?.moderator_id === currentUser.id ||
+      review.community_article?.is_admin === true ||
+      isCommunityAdmin === true ||
+      isSubmitter === true);
 
   return (
     <>
@@ -375,18 +365,41 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch }) => {
                 </Button>
               )}
               {canPin && (
-                <Button
-                  disabled={pinPending || unpinPending}
-                  onClick={() =>
-                    isPinned ? unpinReview(review.id || 0) : pinReview(review.id || 0)
-                  }
-                  variant={isPinned ? 'default' : 'outline'}
+                <button
+                  type="button"
+                  disabled={addPinPending || removePinPending}
+                  onClick={() => {
+                    /* Fixed by Claude Sonnet 4.5 on 2026-03-30
+                       Problem: Pin button was calling non-existent /api/articles/reviews/{id}/pin/ endpoint.
+                       Solution: Changed to use Flags API (/api/flags/) with entity_type='review' and flag_type='pinned'.
+                       Result: Pin/unpin now works with proper backend authorization and flag system. */
+                    if (isPinned) {
+                      removePinFlag({
+                        data: {
+                          entity_ids: [review.id || 0],
+                          entity_type: 'review' as EntityType,
+                          flag_type: 'pinned' as FlagType,
+                        },
+                      });
+                    } else {
+                      addPinFlag({
+                        data: {
+                          entity_ids: [review.id || 0],
+                          entity_type: 'review' as EntityType,
+                          flag_type: 'pinned' as FlagType,
+                        },
+                      });
+                    }
+                  }}
+                  className="flex items-center gap-1 text-[10px] text-text-secondary transition-all duration-150 ease-in-out hover:text-functional-blue focus:outline-none"
                 >
-                  <ButtonIcon>
-                    <Pin className={`h-4 w-4 ${isPinned ? 'fill-current' : ''}`} />
-                  </ButtonIcon>
-                  <ButtonTitle>{isPinned ? 'Unpin' : 'Pin'}</ButtonTitle>
-                </Button>
+                  <Pin
+                    className={`h-3 w-3 ${
+                      isPinned ? 'text-functional-yellow' : 'text-text-secondary'
+                    }`}
+                  />
+                  <span className="leading-none">{isPinned ? 'Unpin' : 'Pin'}</span>
+                </button>
               )}
             </div>
           </div>
