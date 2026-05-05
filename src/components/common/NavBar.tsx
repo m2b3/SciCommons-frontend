@@ -33,7 +33,6 @@ import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
-import { usePathTracker } from '@/hooks/usePathTracker';
 import useStore from '@/hooks/useStore';
 import { useTabTitleNotification } from '@/hooks/useTabTitleNotification';
 import { useUserSettings } from '@/hooks/useUserSettings';
@@ -191,7 +190,7 @@ const NavBar: React.FC = () => {
      Who: Codex
      What: Reframed the authenticated navbar shortcut as Profile and removed the duplicate Contributions entry from the profile dropdown.
      Why: The profile area was split across two labels and two menu locations, which made navigation feel redundant.
-     How: Retained the existing `/mycontributions` destination as the main profile shortcut and simplified the dropdown to a single profile entry. */
+     How: Point the top-nav shortcut to the `/mycontributions` landing page and simplify the dropdown to a single edit-profile entry. */
   const navLinks = [
     { href: '/', label: 'Home' },
     // { href: '/articles', label: 'Articles', altHref: '/article' },
@@ -200,7 +199,7 @@ const NavBar: React.FC = () => {
     ...(isAuthenticated
       ? [
           {
-            href: '/mycontributions?tab=bookmarks',
+            href: '/mycontributions',
             label: 'Profile',
             altHref: '/mycontributions',
           },
