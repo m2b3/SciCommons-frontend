@@ -33,6 +33,7 @@ import { useAuthHeaders } from '@/hooks/useAuthHeaders';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import useIdenticon from '@/hooks/useIdenticons';
 import usePWAInstallPrompt from '@/hooks/usePWAInstallPrompt';
+import { usePathTracker } from '@/hooks/usePathTracker';
 import useStore from '@/hooks/useStore';
 import { useTabTitleNotification } from '@/hooks/useTabTitleNotification';
 import { useUserSettings } from '@/hooks/useUserSettings';
@@ -51,6 +52,8 @@ const NavBar: React.FC = () => {
   const isAuthenticated = useStore(useAuthStore, (state) => state.isAuthenticated);
   const user = useStore(useAuthStore, (state) => state.user);
   const pathname = usePathname();
+  const { getPreviousPath } = usePathTracker();
+  const previousPath = getPreviousPath();
   const authHeaders = useAuthHeaders();
   const mentionOwnerUserId = useMentionNotificationsStore((state) => state.ownerUserId);
   const mentionItems = useMentionNotificationsStore((state) => state.mentions);
@@ -234,16 +237,18 @@ const NavBar: React.FC = () => {
               What: Convert the back icon into a real button.
               Why: Icon-only divs are not keyboard accessible or announced by screen readers.
               How: Wrap the icon in a button with an aria-label and click handler. */}
-          <button
-            type="button"
-            aria-label="Go back"
-            className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            <MoveLeft className="size-5" strokeWidth={1.5} />
-          </button>
+          {!(pathname === '/' && (!isAuthenticated || previousPath === '/auth/login')) && (
+            <button
+              type="button"
+              aria-label="Go back"
+              className="mr-4 flex size-8 items-center justify-center rounded-full text-primary hover:bg-common-minimal/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              <MoveLeft className="size-5" strokeWidth={1.5} />
+            </button>
+          )}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
               <Image
@@ -304,12 +309,20 @@ const NavBar: React.FC = () => {
             <div className="hidden md:block">
               <CreateDropdown />
             </div>
-            <NotificationBell
-              hasNewActivity={showNewBadge}
-              onBellClick={handleNotificationsClick}
-              notifications={systemNotificationsData?.data ?? []}
-            />
-            <ThemeSwitch iconSize={20} />
+            {/* Fixed by GitHub Copilot on 2026-03-16
+                Problem: Notification bell and theme button were not perfectly aligned due to inconsistent sizing and padding.
+                Solution: Wrap both in flex containers with matching size, remove extra padding, and enforce consistent alignment. */}
+            <div className="flex h-10 items-center">
+              <NotificationBell
+                hasNewActivity={showNewBadge}
+                onBellClick={handleNotificationsClick}
+                notifications={systemNotificationsData?.data ?? []}
+                // Ensures bell is vertically centered and matches theme button height
+              />
+            </div>
+            <div className="flex h-10 items-center">
+              <ThemeSwitch iconSize={20} />
+            </div>
             <ProfileDropdown />
           </div>
         ) : (
@@ -382,9 +395,9 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
           <button
             type="button"
             aria-label="Notifications"
-            className="relative rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
           >
-            <Bell className="hover:animate-wiggle h-9 w-9 cursor-pointer rounded-full p-2 text-text-secondary hover:text-functional-yellow" />
+            <Bell className="hover:animate-wiggle h-full w-full cursor-pointer rounded-full text-text-secondary hover:text-functional-yellow" />
             {hasNewActivity && (
               <span className="pointer-events-none absolute -right-2 -top-1 rounded-full border border-functional-red/50 bg-functional-red/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-functional-red">
                 New
@@ -602,24 +615,17 @@ const ThemeSwitch = ({
   const currentTheme = resolvedTheme || theme;
 
   return (
-    /* Fixed by Codex on 2026-02-15
-       Who: Codex
-       What: Make the theme toggle keyboard and screen-reader accessible.
-       Why: A clickable div is not focusable and lacks a programmatic label.
-       How: Swap to a button with aria-label and aria-pressed state. */
     <button
       type="button"
-      className="flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
+      className="flex h-9 w-9 items-center justify-center rounded-full p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-functional-green/60"
       aria-label="Toggle color theme"
       aria-pressed={currentTheme === 'dark'}
       onClick={() => setTheme(currentTheme === 'light' ? 'dark' : 'light')}
     >
-      {currentTheme === 'light' ? (
-        <MoonIcon size={iconSize} className="mr-2" />
-      ) : (
-        <SunMediumIcon size={iconSize} className="mr-2" />
+      {currentTheme === 'light' ? <MoonIcon size={iconSize} /> : <SunMediumIcon size={iconSize} />}
+      {showTitle && (
+        <span className="ml-2">{currentTheme === 'light' ? 'Dark' : 'Light'} Mode</span>
       )}
-      {showTitle && <>{currentTheme === 'light' ? 'Dark' : 'Light'} Mode</>}
     </button>
   );
 };

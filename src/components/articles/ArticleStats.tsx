@@ -58,7 +58,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
           <span>{formatDate(article.updated_at)}</span>
         </div>
       </div>
-      <div className="mt-4 flex w-4/5 flex-wrap">
+      <div className="mt-4 flex w-full flex-wrap">
         {/* <Button
           variant={'transparent'}
           className={cn(
@@ -76,7 +76,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
             {data?.data.likes} likes
           </ButtonTitle>
         </Button> */}
-        <div className="flex items-center p-1 px-2 text-xs">
+        <div className="flex w-full items-center text-xs">
           <Star
             className="mr-1 size-4 text-functional-yellow"
             fill="currentColor"
@@ -87,7 +87,7 @@ const ArticleStats: FC<ArticleStatsProps> = ({ article }) => {
             {article.total_reviews}
           </span>
         </div>
-        <div className="flex items-center p-1 px-2 text-xs">
+        <div className="flex items-center text-xs">
           <MessageCircle className="mr-1 size-4 text-text-secondary" />
           <span className="text-text-secondary">Comments: {article.total_comments}</span>
         </div>
