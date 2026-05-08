@@ -45,8 +45,9 @@ const ResendVerificationForm: React.FC = () => {
   });
 
   const onSubmit = (data: IResendForm) => {
-    mutate({ identifier: data.login });
-    setSentEmail(data.login);
+    const identifier = data.login.trim();
+    mutate({ identifier });
+    setSentEmail(identifier);
   };
 
   const SuccessMessage = () => (

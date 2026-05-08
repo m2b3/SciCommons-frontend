@@ -72,7 +72,7 @@ const EditCommunityDetails: React.FC<EditCommunityDetailsProps> = ({
   const onSubmit = (formData: FormValues) => {
     if (data) {
       const dataToSend: UpdateCommunityDetails = {
-        description: formData.description,
+        description: formData.description.trim(),
         type: formData.type,
         rules: data.data?.rules || [],
         community_settings: formData.community_settings,

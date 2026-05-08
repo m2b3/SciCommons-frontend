@@ -137,8 +137,8 @@ const EditArticleDetails: React.FC<EditArticleDetailsProps> = (props) => {
   const onSubmit = (formData: FormValues) => {
     const dataToSend: ArticleUpdateSchema = {
       payload: {
-        title: formData.title,
-        abstract: formData.abstract,
+        title: formData.title.trim(),
+        abstract: formData.abstract.trim(),
         authors: formData.authors.map((author) => ({
           value: author.value,
           label: author.label,

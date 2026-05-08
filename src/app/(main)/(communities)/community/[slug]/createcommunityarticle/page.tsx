@@ -173,8 +173,8 @@ const CommunityArticleForm: NextPage = () => {
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = (formData) => {
     const dataToSend: ArticleCreateSchema = {
       payload: {
-        title: formData.title,
-        abstract: formData.abstract,
+        title: formData.title.trim(),
+        abstract: formData.abstract.trim(),
         authors: formData.authors.map((author) => ({
           value: author.value,
           label: author.label,

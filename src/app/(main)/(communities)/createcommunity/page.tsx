@@ -122,8 +122,8 @@ const CreateCommunity: React.FC = () => {
 
   const onSubmit = (data: FormValues) => {
     const dataToSend: CreateCommunityDetails = {
-      name: data.name,
-      description: data.description,
+      name: data.name.trim(),
+      description: data.description.trim(),
       // tags: data.tags?.map((tag) => tag.value),
       type: data.type,
       community_settings: data.type == 'public' ? data.community_settings : undefined,

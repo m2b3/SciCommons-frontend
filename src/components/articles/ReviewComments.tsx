@@ -119,22 +119,27 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
     setIsAllCollapsed(!isAllCollapsed);
   };
 
-  const addNewComment = (content: string, rating?: number) => {
+  const addNewComment = (content: string, rating?: number): boolean => {
     const trimmed = content.trim();
     if (!trimmed) {
       toast.error('Comments cannot be empty');
-      return;
+      return false;
     }
     createComment({ reviewId, data: { content: trimmed, rating: rating || 0 } });
+    return true;
   };
 
-  const addReply = (parentId: number, content: string, rating?: number) => {
+  const addReply = (parentId: number, content: string, rating?: number): boolean => {
     const trimmed = content.trim();
     if (!trimmed) {
       toast.error('Reply cannot be empty');
-      return;
+      return false;
     }
-    createComment({ reviewId, data: { content: trimmed, rating: rating || 0, parent_id: parentId } });
+    createComment({
+      reviewId,
+      data: { content: trimmed, rating: rating || 0, parent_id: parentId },
+    });
+    return true;
 
     // const addReplyToComment = (comment: CommentData): CommentData => {
     //   if (comment.id === parentId && newComment) {
@@ -149,14 +154,14 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
     // setComments(comments.map(addReplyToComment));
   };
 
-  const updateComment = (commentId: number, updatedContent: string, rating?: number) => {
+  const updateComment = (commentId: number, updatedContent: string, rating?: number): boolean => {
     const trimmed = updatedContent.trim();
     if (!trimmed) {
       toast.error('Comment cannot be empty');
-      return;
+      return false;
     }
     UpdateComment({ commentId, data: { content: trimmed, rating: rating || 0 } });
-    
+
     const updateCommentInPlace = (comment: CommentData): CommentData => {
       if (comment.id === commentId) {
         return { ...comment, ...updatedComment, isNew: true };
@@ -168,6 +173,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
     };
 
     setComments(comments.map(updateCommentInPlace));
+    return true;
   };
 
   const deleteCommentbyId = (commentId: number) => {

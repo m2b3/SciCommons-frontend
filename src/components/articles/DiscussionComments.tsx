@@ -127,31 +127,34 @@ const DiscussionComments: React.FC<DiscussionCommentsProps> = ({
     setIsAllCollapsed(!isAllCollapsed);
   };
 
-  const addNewComment = (content: string) => {
+  const addNewComment = (content: string): boolean => {
     const trimmed = content.trim();
     if (!trimmed) {
       toast.error('Comments cannot be empty');
-      return;
+      return false;
     }
     createComment({ discussionId, data: { content: trimmed } });
+    return true;
   };
 
-  const addReply = (parentId: number, content: string) => {
+  const addReply = (parentId: number, content: string): boolean => {
     const trimmed = content.trim();
     if (!trimmed) {
       toast.error('Reply cannot be empty');
-      return;
+      return false;
     }
     createComment({ discussionId, data: { content: trimmed, parent_id: parentId } });
+    return true;
   };
 
-  const updateComment = (commentId: number, updatedContent: string) => {
+  const updateComment = (commentId: number, updatedContent: string): boolean => {
     const trimmed = updatedContent.trim();
     if (!trimmed) {
       toast.error('Comment cannot be empty');
-      return;
+      return false;
     }
     UpdateComment({ commentId, data: { content: trimmed } });
+    return true;
   };
 
   const deleteCommentbyId = (commentId: number) => {

@@ -57,6 +57,8 @@ export interface CommentData {
   flags?: FlagType[];
 }
 
+type CommentSubmitResult = boolean | void;
+
 export interface CommentProps extends CommentData {
   depth: number;
   maxDepth: number;
@@ -65,8 +67,8 @@ export interface CommentProps extends CommentData {
   mentionCandidates?: string[];
   targetCommentId?: number | null;
   onTargetCommentHandled?: () => void;
-  onAddReply: (parentId: number, content: string, rating?: number) => void;
-  onUpdateComment: (id: number, content: string, rating?: number) => void;
+  onAddReply: (parentId: number, content: string, rating?: number) => CommentSubmitResult;
+  onUpdateComment: (id: number, content: string, rating?: number) => CommentSubmitResult;
   onDeleteComment: (id: number) => void;
   contentType: ContentTypeEnum;
   flags?: FlagType[];
@@ -302,17 +304,17 @@ const Comment: React.FC<CommentProps> = ({
   }, [isNew]);
 
   const handleAddReply = (replyContent: string, rating?: number) => {
-    if (id) {
-      onAddReply(id, replyContent, rating);
-      setIsReplying(false);
-    }
+    if (!id) return;
+
+    const accepted = onAddReply(id, replyContent, rating);
+    if (accepted !== false) setIsReplying(false);
   };
 
   const handleUpdateComment = (updatedContent: string, rating?: number) => {
-    if (id) {
-      onUpdateComment(id, updatedContent, rating);
-      setIsEditing(false);
-    }
+    if (!id) return;
+
+    const accepted = onUpdateComment(id, updatedContent, rating);
+    if (accepted !== false) setIsEditing(false);
   };
 
   const handleDeleteComment = () => {

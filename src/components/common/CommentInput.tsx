@@ -12,8 +12,10 @@ import CustomTooltip from './CustomTooltip';
 import RenderParsedHTML from './RenderParsedHTML';
 import { BlockSkeleton, Skeleton } from './Skeleton';
 
+type CommentSubmitResult = boolean | void;
+
 interface CommentInputProps {
-  onSubmit: (content: string, rating?: number) => void;
+  onSubmit: (content: string, rating?: number) => CommentSubmitResult;
   placeholder: string;
   buttonText: string;
   initialContent?: string;
@@ -212,7 +214,9 @@ const CommentInput: React.FC<CommentInputProps> = ({
   );
 
   const onSubmitForm: SubmitHandler<FormInputs> = (data) => {
-    onSubmit(data.content, data.rating);
+    const accepted = onSubmit(data.content, data.rating);
+    if (accepted === false) return;
+
     reset({ content: '', rating: 0 });
     setIsMarkdownPreview(false);
     clearMentionMenu();
