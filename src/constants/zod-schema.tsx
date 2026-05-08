@@ -262,6 +262,7 @@ export const emailSchema = z.string().superRefine((email, ctx) => {
 
 export const emailOrUsernameSchema = z
   .string({ error: 'Must be a string' })
+  .trim()
   .min(1, { message: 'This field is required' })
   /* Fixed by Codex on 2026-03-01
      Who: Codex
@@ -326,6 +327,7 @@ export const emailOrUsernameSchema = z
 
 export const usernameSchema = z
   .string({ error: 'Username must be a string' })
+  .trim()
   .min(1, { message: 'Username is required' })
   .min(3, { message: 'Username must be at least 3 characters' })
   .max(30, { message: 'Username cannot exceed 30 characters' })
@@ -386,31 +388,37 @@ export const statusSchema = z
 
 export const communityNameSchema = z
   .string({ error: 'Name must be a string' })
+  .trim()
   .min(1, { message: 'Name is required' })
   .max(100, { message: 'Name must not exceed 100 characters' });
 
 export const communityDescriptionSchema = z
   .string({ error: 'Description must be a string' })
+  .trim()
   .min(1, { message: 'Description is required' })
   .max(500, { message: 'Description must not exceed 500 characters' });
 
 export const articleTitleSchema = z
   .string({ error: 'Title must be a string' })
+  .trim()
   .min(1, { message: 'Title is required' })
   .max(150, { message: 'Title must not exceed 150 characters' });
 
 export const articleAbstractSchema = z
   .string({ error: 'Abstract must be a string' })
+  .trim()
   .min(10, { message: 'Abstract must be at least 10 characters' });
 
 export const reviewSubjectSchema = z
   .string({ error: 'Subject must be a string' })
+  .trim()
   .min(1, { message: 'Subject is required' })
   .min(10, { message: 'Subject must be at least 10 characters' })
   .max(100, { message: 'Subject must not exceed 100 characters' });
 
 export const bioSchema = z
   .string({ error: 'Bio must be a string' })
+  .trim()
   .max(500, { message: 'Bio must not exceed 500 characters' })
   .optional();
 
@@ -464,11 +472,11 @@ export const profileMasterSchema = z.object({
      What: Keep read-only username validation aligned with existing profile UX.
      Why: Applying full signup username constraints here can block profile saves for immutable legacy usernames.
      How: Require non-empty username in profile form while leaving strict format rules to signup/update-username flows. */
-  username: z.string().min(1, { message: 'Username is required' }),
+  username: z.string().trim().min(1, { message: 'Username is required' }),
   firstName: nameSchema,
   lastName: nameSchema,
   email: emailSchema,
-  bio: z.string().max(500, 'Bio must not exceed 500 characters'),
+  bio: z.string().trim().max(500, 'Bio must not exceed 500 characters'),
   homePage: optionalUrlSchema,
   linkedIn: optionalLinkedInUrlSchema,
   github: optionalGithubUrlSchema,
@@ -477,7 +485,7 @@ export const profileMasterSchema = z.object({
   researchInterests: z.array(
     z.object({
       label: researchInterestItemSchema,
-      value: z.string(),
+      value: z.string().trim().min(1),
     })
   ),
   profilePicture: z.any().optional(),

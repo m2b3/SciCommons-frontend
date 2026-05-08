@@ -120,11 +120,21 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
   };
 
   const addNewComment = (content: string, rating?: number) => {
-    createComment({ reviewId, data: { content, rating: rating || 0 } });
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error('Comments cannot be empty');
+      return;
+    }
+    createComment({ reviewId, data: { content: trimmed, rating: rating || 0 } });
   };
 
   const addReply = (parentId: number, content: string, rating?: number) => {
-    createComment({ reviewId, data: { content, rating: rating || 0, parent_id: parentId } });
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error('Reply cannot be empty');
+      return;
+    }
+    createComment({ reviewId, data: { content: trimmed, rating: rating || 0, parent_id: parentId } });
 
     // const addReplyToComment = (comment: CommentData): CommentData => {
     //   if (comment.id === parentId && newComment) {
@@ -140,8 +150,13 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
   };
 
   const updateComment = (commentId: number, updatedContent: string, rating?: number) => {
-    UpdateComment({ commentId, data: { content: updatedContent, rating: rating || 0 } });
-
+    const trimmed = updatedContent.trim();
+    if (!trimmed) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+    UpdateComment({ commentId, data: { content: trimmed, rating: rating || 0 } });
+    
     const updateCommentInPlace = (comment: CommentData): CommentData => {
       if (comment.id === commentId) {
         return { ...comment, ...updatedComment, isNew: true };
