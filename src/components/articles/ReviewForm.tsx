@@ -122,6 +122,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
     const reviewData = {
       ...data,
+      subject: data.subject.trim(),
       article_id: articleId,
       content: normalizedMarkdown,
     };

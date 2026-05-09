@@ -83,7 +83,7 @@ const LoginForm: React.FC = () => {
   });
 
   const onSubmit = (data: ILoginForm) => {
-    logInUser({ data });
+    logInUser({ data: { ...data, login: data.login.trim() } });
   };
 
   const formRef = React.useRef<HTMLFormElement>(null);

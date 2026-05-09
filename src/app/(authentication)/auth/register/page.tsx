@@ -66,7 +66,7 @@ const RegisterForm: React.FC = () => {
   });
 
   const onSubmit = (data: IFormInput) => {
-    signUp({ data });
+    signUp({ data: { ...data, username: data.username.trim() } });
   };
 
   const password = watch('password') || '';

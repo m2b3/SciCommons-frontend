@@ -197,8 +197,8 @@ const ArticleForm: React.FC = () => {
   const onSubmit: SubmitHandler<SubmitArticleFormValues> = async (formData) => {
     const dataToSend: ArticleCreateSchema = {
       payload: {
-        title: formData.title,
-        abstract: formData.abstract,
+        title: formData.title.trim(),
+        abstract: formData.abstract.trim(),
         authors: formData.authors.map((author) => ({
           value: author.value,
           label: author.label,
