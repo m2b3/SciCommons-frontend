@@ -34,6 +34,54 @@ Result: Profile discovery is clearer, the top-nav label now matches its destinat
 
 Files Modified: `src/components/common/NavBar.tsx`, `src/app/(main)/(users)/mycontributions/ProfileHeader.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
 
+## 2026-06-03 - Help Page Video Link Refresh
+
+Problem: The Help page in the navbar flow still embedded the older YouTube walkthrough video.
+
+Root Cause: The iframe source in `src/app/(main)/help/page.tsx` was pointing at the previous embed ID.
+
+Solution: Updated the Help page iframe `src` to the new YouTube video link so the existing embedded player now loads the requested walkthrough.
+
+Result: Users opening Help from the navbar now see the refreshed embedded video without any layout or behavior changes.
+
+Files Modified: `src/app/(main)/help/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-05-25 - Public PubMed Feed with 24-Hour Rolling Import Flow
+
+Problem: SciCommons could import a PubMed article only when a user already knew a specific `PMID`, but it had no discovery surface for browsing the newest PubMed papers and turning them into SciCommons submissions.
+
+Root Cause: The frontend had only a manual `PMID:` lookup path inside the submit form, no PubMed browsing endpoint, no normalized feed contract, and no redirect-safe way to resume an import after login.
+
+Solution: Added a new public `/pubmed-feed` route with curated topic filters, search refinement, preview dialogs, and import CTAs; implemented a frontend-owned `/api/pubmed-feed` proxy that returns normalized PubMed data for both last-24-hours feed pages and single PMID lookups; extended the shared external-article store plus submit route to preload PubMed metadata from URL query params; and preserved auth redirects with full query strings so signed-out users can resume the same import target after login.
+
+Result: Users can now browse newest-first PubMed papers published within the last 24 hours, inspect abstracts, jump to PubMed, and carry a selected paper straight into the existing SciCommons article submission workflow with its metadata prefilled.
+
+Files Modified: `src/app/api/pubmed-feed/route.ts`, `src/app/(main)/pubmed-feed/page.tsx`, `src/app/(main)/pubmed-feed/PubMedFeedClient.tsx`, `src/components/pubmed/PubMedFeedCard.tsx`, `src/hooks/usePubMedFeed.ts`, `src/constants/pubmedFeedTopics.ts`, `src/lib/pubmed.ts`, `src/types/pubmed.ts`, `src/stores/useFetchExternalArticleStore.ts`, `src/app/(main)/(articles)/submitarticle/page.tsx`, `src/HOCs/withAuthRedirect.tsx`, `src/components/common/NavBar.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-05-25 - Upstream Parent Repo Sync and Merge Conflict Resolution
+
+Problem: This working branch needed the latest parent-repo updates from GitHub, but pulling `upstream/main` into the branch produced conflicts in the new issue-template files and the contribution guide.
+
+Root Cause: Both this branch and the parent repo had added overlapping `.github/ISSUE_TEMPLATE/*` files and had edited the contributor documentation independently, so Git could not decide which version to keep automatically.
+
+Solution: Fetched the latest `upstream/main` changes, resolved the three issue-template conflicts by keeping the current canonical template formatting, and merged the contribution-guide branch-target note so the repo now documents that contributors should target `sureshDev`.
+
+Result: The branch now carries the latest parent-repo documentation additions without losing the local contribution-guide context, and the merge can be completed cleanly.
+
+Files Modified: `.github/ISSUE_TEMPLATE/bug_report.md`, `.github/ISSUE_TEMPLATE/enhancement.md`, `.github/ISSUE_TEMPLATE/feature_request.md`, `notes/CONTRIBUTING.md`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-05-04 - Profile Navigation Simplification and Edit Shortcut
+
+Problem: Profile-related navigation was split between a `Bookmarks` top-nav label, a separate `Contributions` dropdown item, and no direct edit action from the profile header.
+
+Root Cause: The existing navigation evolved around the `/mycontributions` route structure instead of around the user's mental model of "my profile," so related actions ended up scattered across multiple labels and entry points.
+
+Solution: Renamed the authenticated navbar shortcut to `Profile`, removed the duplicate `Contributions` item from the profile dropdown, and added a direct `Edit Profile` action to the profile header on the contributions/profile screen.
+
+Result: Profile discovery is clearer, duplicate navigation is reduced, and users can move from viewing their profile surface to editing it in one click.
+
+Files Modified: `src/components/common/NavBar.tsx`, `src/app/(main)/(users)/mycontributions/ProfileHeader.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-22 - BrowserStack Optional Dependency Runtime Guidance
 
 Problem: Developers who intentionally ran the BrowserStack Playwright path without `browserstack-local` installed would hit a generic runtime module-load failure.

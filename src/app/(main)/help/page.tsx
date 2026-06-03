@@ -18,7 +18,7 @@ const HelpPage = () => {
                 <iframe
                   width="100%"
                   height="100%"
-                  src="https://www.youtube.com/embed/6U-XS_kjvmc"
+                  src="https://www.youtube.com/embed/Tafr1k0ynYs"
                   title="YouTube video player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
