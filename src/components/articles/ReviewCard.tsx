@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -50,6 +50,8 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
   const [edit, setEdit] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState<number>(review.versions.length);
   const [displayComments, setDisplayComments] = useState<boolean>(false);
+  const latestVersionIndex = review.versions.length;
+  const previousLatestVersionIndexRef = useRef(latestVersionIndex);
 
   const accessToken = useAuthStore((state) => state.accessToken);
   const currentUser = useAuthStore((state) => state.user);
@@ -118,8 +120,16 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
     approveArticle({ communityArticleId: review.community_article?.id || 0 });
   };
 
+  useEffect(() => {
+    const previousLatestVersionIndex = previousLatestVersionIndexRef.current;
+    if (selectedVersion === previousLatestVersionIndex) {
+      setSelectedVersion(latestVersionIndex);
+    }
+    previousLatestVersionIndexRef.current = latestVersionIndex;
+  }, [latestVersionIndex, selectedVersion]);
+
   const currentVersion = useMemo(() => {
-    if (selectedVersion === review.versions.length) {
+    if (selectedVersion === latestVersionIndex) {
       return {
         rating: review.rating,
         content: review.content,
@@ -127,9 +137,9 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
         created_at: review.updated_at,
       };
     } else {
-      return review.versions[review.versions.length - 1 - selectedVersion];
+      return review.versions[latestVersionIndex - 1 - selectedVersion];
     }
-  }, [review, selectedVersion]);
+  }, [latestVersionIndex, review, selectedVersion]);
 
   /* Fixed by Codex on 2026-02-15
      Who: Codex
@@ -247,10 +257,10 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
                   onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
                   className="rounded border border-common-minimal bg-common-background p-1 text-[10px]"
                 >
-                  <option value={review.versions.length}>Latest</option>
+                  <option value={latestVersionIndex}>Latest</option>
                   {review.versions
                     .map((version, index) => (
-                      <option key={index} value={review.versions.length - 1 - index}>
+                      <option key={index} value={latestVersionIndex - 1 - index}>
                         {dayjs(version.created_at).format('MMM D, YYYY ')}
                       </option>
                     ))

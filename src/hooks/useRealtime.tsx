@@ -23,6 +23,12 @@ type RealtimeEventType =
   | 'updated_comment'
   | 'deleted_discussion'
   | 'deleted_comment'
+  | 'new_review'
+  | 'updated_review'
+  | 'deleted_review'
+  | 'new_review_comment'
+  | 'updated_review_comment'
+  | 'deleted_review_comment'
   | 'new_notification';
 
 /* Updated by Claude on 2026-03-15
@@ -35,6 +41,8 @@ type RealtimeDiscussionCommentEvent = {
     article_id: number;
     community_id: number;
     discussion_id?: number;
+    review_id?: number;
+    comment_id?: number;
     parent_id?: number | null;
     is_reply?: boolean;
     reply_depth?: number;
@@ -47,6 +55,23 @@ type RealtimeDiscussionCommentEvent = {
       [key: string]: unknown;
     };
     comment?: {
+      id?: number;
+      author?: {
+        username: string;
+      };
+      content?: string;
+      [key: string]: unknown;
+    };
+    review?: {
+      id?: number;
+      user?: {
+        username: string;
+      };
+      subject?: string;
+      content?: string;
+      [key: string]: unknown;
+    };
+    review_comment?: {
       id?: number;
       author?: {
         username: string;
@@ -101,6 +126,18 @@ const STORAGE_KEYS = {
   LEADER: 'realtime_leader',
 };
 
+const REVIEW_EVENT_TYPES: RealtimeEventType[] = ['new_review', 'updated_review', 'deleted_review'];
+
+const REVIEW_COMMENT_EVENT_TYPES: RealtimeEventType[] = [
+  'new_review_comment',
+  'updated_review_comment',
+  'deleted_review_comment',
+];
+
+function isReviewRealtimeEvent(type: RealtimeEventType): boolean {
+  return REVIEW_EVENT_TYPES.includes(type) || REVIEW_COMMENT_EVENT_TYPES.includes(type);
+}
+
 // Generate a unique tab ID to prevent processing our own broadcasts
 const TAB_ID =
   typeof window !== 'undefined' ? `${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
@@ -121,6 +158,106 @@ function matchesQueryKey(queryKey: readonly unknown[], pattern: string | RegExp)
     return keyStr.includes(pattern);
   }
   return pattern.test(keyStr);
+}
+
+function hasExactQueryKey(queryKey: readonly unknown[], key: string): boolean {
+  return Array.isArray(queryKey) && queryKey[0] === key;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getNumericId(value: unknown): number | undefined {
+  if (!isRecord(value)) return undefined;
+  return typeof value.id === 'number' ? value.id : undefined;
+}
+
+function normalizeReviewComment(comment: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ...comment,
+    replies: Array.isArray(comment.replies) ? comment.replies : [],
+  };
+}
+
+function updateReviewCommentTree(
+  comments: unknown[],
+  eventType: RealtimeEventType,
+  incomingComment: Record<string, unknown>,
+  parentId?: number | null
+): unknown[] {
+  const commentId = getNumericId(incomingComment);
+  if (!commentId) return comments;
+
+  const normalizedComment = normalizeReviewComment(incomingComment);
+
+  if (eventType === 'new_review_comment') {
+    if (!parentId) {
+      const exists = comments.some((comment) => getNumericId(comment) === commentId);
+      return exists ? comments : [...comments, normalizedComment];
+    }
+
+    return comments.map((comment) => {
+      if (!isRecord(comment)) return comment;
+
+      if (getNumericId(comment) === parentId) {
+        const replies = Array.isArray(comment.replies) ? comment.replies : [];
+        const exists = replies.some((reply) => getNumericId(reply) === commentId);
+        return exists
+          ? comment
+          : {
+              ...comment,
+              replies: [...replies, normalizedComment],
+            };
+      }
+
+      if (Array.isArray(comment.replies)) {
+        return {
+          ...comment,
+          replies: updateReviewCommentTree(comment.replies, eventType, incomingComment, parentId),
+        };
+      }
+
+      return comment;
+    });
+  }
+
+  return comments.map((comment) => {
+    if (!isRecord(comment)) return comment;
+
+    const mergedComment =
+      getNumericId(comment) === commentId
+        ? {
+            ...comment,
+            ...normalizedComment,
+          }
+        : comment;
+
+    if (Array.isArray(mergedComment.replies)) {
+      return {
+        ...mergedComment,
+        replies: updateReviewCommentTree(
+          mergedComment.replies,
+          eventType,
+          incomingComment,
+          parentId
+        ),
+      };
+    }
+
+    return mergedComment;
+  });
+}
+
+function applyReviewCommentCountDelta(review: unknown, reviewId: number, delta: number): unknown {
+  if (!isRecord(review) || getNumericId(review) !== reviewId) return review;
+
+  const currentCount = typeof review.comments_count === 'number' ? review.comments_count : 0;
+
+  return {
+    ...review,
+    comments_count: Math.max(0, currentCount + delta),
+  };
 }
 
 export function useRealtime() {
@@ -266,7 +403,9 @@ export function useRealtime() {
           if (!data?.items) return oldData;
 
           const discussion = event.data.discussion;
-          if (!discussion?.id) return oldData;
+          const discussionId = discussion?.id ?? event.data.discussion_id;
+          if (!discussionId) return oldData;
+          if (event.type !== 'deleted_discussion' && !discussion) return oldData;
 
           const items = data.items;
 
@@ -278,7 +417,7 @@ export function useRealtime() {
                   typeof item === 'object' &&
                   item !== null &&
                   'id' in item &&
-                  item.id === discussion.id
+                  item.id === discussionId
               );
               if (exists) return oldData;
 
@@ -300,7 +439,7 @@ export function useRealtime() {
                     typeof item === 'object' &&
                     item !== null &&
                     'id' in item &&
-                    item.id === discussion.id
+                    item.id === discussionId
                       ? { ...item, ...discussion }
                       : item
                   ),
@@ -319,7 +458,7 @@ export function useRealtime() {
                         typeof item === 'object' &&
                         item !== null &&
                         'id' in item &&
-                        item.id === discussion.id
+                        item.id === discussionId
                       )
                   ),
                 },
@@ -355,7 +494,9 @@ export function useRealtime() {
           if (!Array.isArray((oldData as { data?: unknown }).data)) return oldData;
 
           const comment = event.data.comment;
-          if (!comment?.id) return oldData;
+          const commentId = comment?.id ?? event.data.comment_id;
+          if (!commentId) return oldData;
+          if (event.type !== 'deleted_comment' && !comment) return oldData;
 
           const parentId = event.data.parent_id;
 
@@ -368,11 +509,11 @@ export function useRealtime() {
                   // Top-level comment
                   const exists = comments.some(
                     (c: unknown) =>
-                      typeof c === 'object' && c !== null && 'id' in c && c.id === comment.id
+                      typeof c === 'object' && c !== null && 'id' in c && c.id === commentId
                   );
                   if (exists) return comments;
 
-                  return [...comments, { ...comment, replies: [] }];
+                  return [...comments, { ...(comment ?? { id: commentId }), replies: [] }];
                 } else {
                   // Reply to existing comment
                   return comments.map((c: unknown) => {
@@ -381,11 +522,14 @@ export function useRealtime() {
                       const replies = 'replies' in c && Array.isArray(c.replies) ? c.replies : [];
                       const exists = replies.some(
                         (r: unknown) =>
-                          typeof r === 'object' && r !== null && 'id' in r && r.id === comment.id
+                          typeof r === 'object' && r !== null && 'id' in r && r.id === commentId
                       );
                       if (exists) return c;
 
-                      return { ...c, replies: [...replies, { ...comment, replies: [] }] };
+                      return {
+                        ...c,
+                        replies: [...replies, { ...(comment ?? { id: commentId }), replies: [] }],
+                      };
                     } else if ('replies' in c && Array.isArray(c.replies)) {
                       // Recursively check nested replies
                       return { ...c, replies: updateCommentsArray(c.replies) };
@@ -398,7 +542,7 @@ export function useRealtime() {
               case 'updated_comment': {
                 return comments.map((c: unknown) => {
                   if (typeof c !== 'object' || c === null || !('id' in c)) return c;
-                  if (c.id === comment.id) {
+                  if (c.id === commentId) {
                     return { ...c, ...comment };
                   } else if ('replies' in c && Array.isArray(c.replies)) {
                     return { ...c, replies: updateCommentsArray(c.replies) };
@@ -410,7 +554,7 @@ export function useRealtime() {
               case 'deleted_comment': {
                 const filtered = comments.filter(
                   (c: unknown) =>
-                    !(typeof c === 'object' && c !== null && 'id' in c && c.id === comment.id)
+                    !(typeof c === 'object' && c !== null && 'id' in c && c.id === commentId)
                 );
                 return filtered.map((c: unknown) =>
                   typeof c === 'object' && c !== null && 'replies' in c && Array.isArray(c.replies)
@@ -478,6 +622,205 @@ export function useRealtime() {
       }
     },
     [queryClient]
+  );
+
+  const invalidateReviewCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const { article_id: articleId, review_id: reviewId } = event.data;
+
+      if (articleId) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+        });
+      }
+
+      if (reviewId) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/`),
+        });
+      }
+    },
+    [queryClient]
+  );
+
+  const updateReviewCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const { article_id: articleId, review_id: reviewId, review } = event.data;
+      const resolvedReviewId = getNumericId(review) ?? reviewId;
+
+      if (!articleId || !resolvedReviewId || !review) {
+        invalidateReviewCaches(event);
+        return;
+      }
+
+      queryClient.setQueriesData(
+        {
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+        },
+        (oldData: unknown) => {
+          if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+          const data = oldData.data;
+          if (!isRecord(data) || !Array.isArray(data.items)) return oldData;
+
+          const exists = data.items.some(
+            (item: unknown) => getNumericId(item) === resolvedReviewId
+          );
+
+          if (event.type === 'new_review') {
+            if (exists) return oldData;
+
+            return {
+              ...oldData,
+              data: {
+                ...data,
+                items: [review, ...data.items],
+                total: typeof data.total === 'number' ? data.total + 1 : data.total,
+              },
+            };
+          }
+
+          if (!exists) return oldData;
+
+          return {
+            ...oldData,
+            data: {
+              ...data,
+              items: data.items.map((item: unknown) => {
+                if (isRecord(item) && getNumericId(item) === resolvedReviewId) {
+                  return { ...item, ...review };
+                }
+                return item;
+              }),
+            },
+          };
+        }
+      );
+
+      queryClient.setQueriesData(
+        {
+          predicate: (query) =>
+            hasExactQueryKey(query.queryKey, `/api/articles/reviews/${resolvedReviewId}/`),
+        },
+        (oldData: unknown) => {
+          if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+          const data = oldData.data;
+          if (!isRecord(data)) return oldData;
+
+          return {
+            ...oldData,
+            data: {
+              ...data,
+              ...review,
+            },
+          };
+        }
+      );
+    },
+    [queryClient, invalidateReviewCaches]
+  );
+
+  const invalidateReviewCommentCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const { article_id: articleId, review_id: reviewId } = event.data;
+
+      if (articleId) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+        });
+      }
+
+      if (reviewId) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/comments/`) ||
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/rating/`),
+        });
+      }
+    },
+    [queryClient]
+  );
+
+  const updateReviewCommentCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const { article_id: articleId, review_id: reviewId, parent_id: parentId } = event.data;
+      const reviewComment = event.data.review_comment ?? event.data.comment;
+      const resolvedCommentId = getNumericId(reviewComment);
+
+      if (!reviewId || !reviewComment || !resolvedCommentId) {
+        invalidateReviewCommentCaches(event);
+        return;
+      }
+
+      queryClient.setQueriesData(
+        {
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/comments/`),
+        },
+        (oldData: unknown) => {
+          if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+          if (!Array.isArray(oldData.data)) return oldData;
+
+          return {
+            ...oldData,
+            data: updateReviewCommentTree(oldData.data, event.type, reviewComment, parentId),
+          };
+        }
+      );
+
+      const commentCountDelta =
+        event.type === 'new_review_comment' ? 1 : event.type === 'deleted_review_comment' ? -1 : 0;
+
+      if (commentCountDelta !== 0) {
+        if (articleId) {
+          queryClient.setQueriesData(
+            {
+              predicate: (query) =>
+                matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+            },
+            (oldData: unknown) => {
+              if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+              const data = oldData.data;
+              if (!isRecord(data) || !Array.isArray(data.items)) return oldData;
+
+              return {
+                ...oldData,
+                data: {
+                  ...data,
+                  items: data.items.map((item) =>
+                    applyReviewCommentCountDelta(item, reviewId, commentCountDelta)
+                  ),
+                },
+              };
+            }
+          );
+        }
+
+        queryClient.setQueriesData(
+          {
+            predicate: (query) =>
+              hasExactQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/`),
+          },
+          (oldData: unknown) => {
+            if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+
+            return {
+              ...oldData,
+              data: applyReviewCommentCountDelta(oldData.data, reviewId, commentCountDelta),
+            };
+          }
+        );
+      }
+
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/rating/`),
+      });
+    },
+    [queryClient, invalidateReviewCommentCaches]
   );
 
   const fetchPoll = useCallback(async (): Promise<PollResponse> => {
@@ -554,6 +897,11 @@ export function useRealtime() {
       const eventsToQueue: RealtimeEvent[] = [];
 
       for (const event of newEvents) {
+        if (isReviewRealtimeEvent(event.type)) {
+          eventsToProcess.push(event);
+          continue;
+        }
+
         const { article_id: articleId, community_id: communityId } = event.data;
         const contextKey = `${communityId}:${articleId}`;
         const lastSeq = eventSequenceRef.current.get(contextKey) ?? 0;
@@ -776,6 +1124,14 @@ export function useRealtime() {
           }
         }
 
+        if (REVIEW_EVENT_TYPES.includes(event.type)) {
+          updateReviewCaches(discCommentEvent);
+        }
+
+        if (REVIEW_COMMENT_EVENT_TYPES.includes(event.type)) {
+          updateReviewCommentCaches(discCommentEvent);
+        }
+
         // Fixed by Claude Sonnet 4.5 on 2026-02-08
         // Issue 4: After processing each event, check if any queued events are now ready
         const contextKey = `${discCommentEvent.data.community_id}:${discCommentEvent.data.article_id}`;
@@ -789,6 +1145,8 @@ export function useRealtime() {
       isContextFresh,
       updateDiscussionsCache,
       updateCommentsCache,
+      updateReviewCaches,
+      updateReviewCommentCaches,
     ]
   );
 
@@ -884,11 +1242,12 @@ export function useRealtime() {
         // Check if registration succeeded and we're not stopped (auth failure)
         if (registered && queueIdRef.current && !stoppedRef.current) {
           retryCountRef.current = 0;
-          // Invalidate all discussion and comment caches
+          // Invalidate discussion, review, and comment caches after a missed-event catchup.
           queryClient.invalidateQueries({
             predicate: (query) =>
               matchesQueryKey(query.queryKey, '/api/articles/') &&
               (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/reviews') ||
                 matchesQueryKey(query.queryKey, '/comments')),
           });
           /* Fixed by Codex on 2026-02-15
@@ -972,6 +1331,7 @@ export function useRealtime() {
             predicate: (query) =>
               matchesQueryKey(query.queryKey, '/api/articles/') &&
               (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/reviews') ||
                 matchesQueryKey(query.queryKey, '/comments')),
           });
           /* Fixed by Codex on 2026-02-15
