@@ -20,7 +20,7 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
-import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { FIVE_MINUTES_IN_MS, TEN_MINUTES_IN_MS } from '@/constants/common.constants';
 import { useMarkAsReadOnView } from '@/hooks/useMarkAsReadOnView';
 import { hasUnreadFlag } from '@/hooks/useUnreadFlags';
 import { cn } from '@/lib/utils';
@@ -151,6 +151,7 @@ const Comment: React.FC<CommentProps> = ({
   const hasHandledTargetFocusRef = useRef(false);
   const wasAllCollapsedRef = useRef(isAllCollapsed);
   const isEphemeralUnread = useEphemeralUnreadStore((s) => s.isItemUnread);
+  const isDiscussionComment = contentType === ContentTypeEnum.articlesdiscussioncomment;
 
   // Check if this comment has the unread flag from API response
   const hasUnread = hasUnreadFlag(flags);
@@ -161,6 +162,10 @@ const Comment: React.FC<CommentProps> = ({
     entityType: depth === 0 ? 'comment' : 'reply',
     hasUnreadFlag: hasUnread,
     articleContext,
+    newTagRemovalDelayMs: isDiscussionComment ? FIVE_MINUTES_IN_MS : undefined,
+    newTagRetentionKey: isDiscussionComment
+      ? `discussion-${depth === 0 ? 'comment' : 'reply'}:${id}`
+      : undefined,
   });
 
   /* Fixed by Codex on 2026-02-16

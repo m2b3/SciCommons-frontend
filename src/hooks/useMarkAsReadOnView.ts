@@ -1,6 +1,7 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useEphemeralUnreadStore } from '@/stores/ephemeralUnreadStore';
+import { useNewTagRetentionStore } from '@/stores/newTagRetentionStore';
 import { useReadItemsStore } from '@/stores/readItemsStore';
 import { useSubscriptionUnreadStore } from '@/stores/subscriptionUnreadStore';
 
@@ -25,6 +26,10 @@ interface UseMarkAsReadOnViewOptions {
   };
   /** Delay before starting the mark-as-read process (visibility threshold) */
   visibilityDelay?: number;
+  /** Delay before hiding the NEW tag after the item has been marked read on view */
+  newTagRemovalDelayMs?: number;
+  /** Optional persistent retention key so NEW tag grace periods survive component remounts */
+  newTagRetentionKey?: string;
 }
 
 interface UseMarkAsReadOnViewReturn {
@@ -41,8 +46,9 @@ interface UseMarkAsReadOnViewReturn {
  * 2. If unread (from API) and not in local read list, show NEW tag
  * 3. When element becomes visible for `visibilityDelay` ms (default 2s):
  *    - Mark as read in local storage (immediate)
- *    - After NEW_TAG_REMOVAL_DELAY_MS (now 1s), hide the NEW tag
- * 4. Backend sync happens every 2 minutes via the sync manager
+ *    - After `newTagRemovalDelayMs`, hide the NEW tag
+ * 4. If `newTagRetentionKey` is provided, preserve that display grace period across remounts
+ * 5. Backend sync happens every 2 minutes via the sync manager
  *
  * @param ref - React ref to the DOM element to observe
  * @param options - Configuration options
@@ -59,6 +65,8 @@ export function useMarkAsReadOnView(
     hasUnreadCommentFlag = false,
     articleContext,
     visibilityDelay = 2000,
+    newTagRemovalDelayMs = NEW_TAG_REMOVAL_DELAY_MS,
+    newTagRetentionKey,
   } = options;
 
   const markItemRead = useReadItemsStore((s) => s.markItemRead);
@@ -66,6 +74,15 @@ export function useMarkAsReadOnView(
   const clearNewEvent = useSubscriptionUnreadStore((s) => s.clearNewEvent);
   const clearEphemeralUnread = useEphemeralUnreadStore((s) => s.clearItemUnread);
   const cleanupEphemeralUnread = useEphemeralUnreadStore((s) => s.cleanupExpired);
+  const retainNewTag = useNewTagRetentionStore((s) => s.retainNewTag);
+  const clearRetention = useNewTagRetentionStore((s) => s.clearRetention);
+  const clearExpiredRetentions = useNewTagRetentionStore((s) => s.clearExpiredRetentions);
+  const retainedUntil = useNewTagRetentionStore(
+    useCallback(
+      (s) => (newTagRetentionKey ? (s.retainedUntilByKey[newTagRetentionKey] ?? 0) : 0),
+      [newTagRetentionKey]
+    )
+  );
   const isEphemeralUnread = useEphemeralUnreadStore(
     useCallback((s) => s.isItemUnread(entityType, entityId), [entityType, entityId])
   );
@@ -73,15 +90,6 @@ export function useMarkAsReadOnView(
   // Check if item is already read locally
   const apiEntityType = getEntityType(entityType);
   const isAlreadyRead = isItemRead(entityId, apiEntityType);
-
-  /* Fixed by Codex on 2026-02-15
-     Who: Codex
-     What: Include ephemeral realtime unread state when deciding to show NEW tags.
-     Why: Realtime events can arrive before backend unread flags, so NEW badges would be delayed.
-     How: Overlay ephemeral unread checks on top of API flags and clear them on read. */
-  useEffect(() => {
-    cleanupEphemeralUnread();
-  }, [cleanupEphemeralUnread]);
 
   /* Fixed by Codex on 2026-02-17
      Who: Codex
@@ -102,30 +110,83 @@ export function useMarkAsReadOnView(
 
   // State for NEW tag visibility
   const [showNewTag, setShowNewTag] = useState(isUnread);
+  const [isPersistedRetentionActive, setIsPersistedRetentionActive] = useState(
+    () => retainedUntil > Date.now()
+  );
 
   const visibilityTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tagRemovalTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasProcessedRef = useRef(false);
+  const isRetainingNewTagAfterReadRef = useRef(false);
 
-  // Update showNewTag when isUnread changes
-  useEffect(() => {
-    setShowNewTag(isUnread);
-    if (isUnread) {
-      hasProcessedRef.current = false;
-    }
-  }, [isUnread]);
-
-  // Cleanup timeouts
-  const clearTimeouts = useCallback(() => {
+  const clearVisibilityTimeout = useCallback(() => {
     if (visibilityTimeoutRef.current) {
       clearTimeout(visibilityTimeoutRef.current);
       visibilityTimeoutRef.current = null;
     }
+  }, []);
+
+  const clearTagRemovalTimeout = useCallback(() => {
     if (tagRemovalTimeoutRef.current) {
       clearTimeout(tagRemovalTimeoutRef.current);
       tagRemovalTimeoutRef.current = null;
     }
   }, []);
+
+  const clearTimeouts = useCallback(() => {
+    clearVisibilityTimeout();
+    clearTagRemovalTimeout();
+  }, [clearTagRemovalTimeout, clearVisibilityTimeout]);
+
+  /* Fixed by Codex on 2026-02-15
+     Who: Codex
+     What: Include ephemeral realtime unread state when deciding to show NEW tags.
+     Why: Realtime events can arrive before backend unread flags, so NEW badges would be delayed.
+     How: Overlay ephemeral unread checks on top of API flags and clear them on read. */
+  useEffect(() => {
+    cleanupEphemeralUnread();
+  }, [cleanupEphemeralUnread]);
+
+  useEffect(() => {
+    clearExpiredRetentions();
+  }, [clearExpiredRetentions]);
+
+  useEffect(() => {
+    if (!newTagRetentionKey || retainedUntil <= 0) {
+      setIsPersistedRetentionActive(false);
+      return;
+    }
+
+    const remainingMs = retainedUntil - Date.now();
+    if (remainingMs <= 0) {
+      clearRetention(newTagRetentionKey);
+      setIsPersistedRetentionActive(false);
+      return;
+    }
+
+    setIsPersistedRetentionActive(true);
+    const timeoutId = window.setTimeout(() => {
+      clearRetention(newTagRetentionKey);
+      setIsPersistedRetentionActive(false);
+    }, remainingMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [clearRetention, newTagRetentionKey, retainedUntil]);
+
+  // Update showNewTag when isUnread changes
+  useEffect(() => {
+    if (isUnread) {
+      hasProcessedRef.current = false;
+      isRetainingNewTagAfterReadRef.current = false;
+      clearTagRemovalTimeout();
+      setShowNewTag(true);
+      return;
+    }
+
+    if (!isRetainingNewTagAfterReadRef.current && !isPersistedRetentionActive) {
+      setShowNewTag(false);
+    }
+  }, [clearTagRemovalTimeout, isPersistedRetentionActive, isUnread]);
 
   useEffect(() => {
     if (!isUnread || !ref.current || hasProcessedRef.current) return;
@@ -139,6 +200,7 @@ export function useMarkAsReadOnView(
           visibilityTimeoutRef.current = setTimeout(() => {
             if (!hasProcessedRef.current) {
               hasProcessedRef.current = true;
+              isRetainingNewTagAfterReadRef.current = !newTagRetentionKey;
 
               // Mark as read in local storage (immediate)
               /* Updated by Claude on 2026-03-07
@@ -170,17 +232,21 @@ export function useMarkAsReadOnView(
               clearEphemeralUnread(entityType, entityId);
 
               // Start timer to hide NEW tag
-              tagRemovalTimeoutRef.current = setTimeout(() => {
-                setShowNewTag(false);
-              }, NEW_TAG_REMOVAL_DELAY_MS);
+              if (newTagRetentionKey) {
+                const nextRetainedUntil = Date.now() + newTagRemovalDelayMs;
+                retainNewTag(newTagRetentionKey, nextRetainedUntil);
+                setIsPersistedRetentionActive(true);
+              } else {
+                tagRemovalTimeoutRef.current = setTimeout(() => {
+                  isRetainingNewTagAfterReadRef.current = false;
+                  setShowNewTag(false);
+                }, newTagRemovalDelayMs);
+              }
             }
           }, visibilityDelay);
         } else {
           // Clear visibility timer if element leaves viewport before delay completes
-          if (visibilityTimeoutRef.current) {
-            clearTimeout(visibilityTimeoutRef.current);
-            visibilityTimeoutRef.current = null;
-          }
+          clearVisibilityTimeout();
         }
       },
       {
@@ -193,7 +259,7 @@ export function useMarkAsReadOnView(
 
     return () => {
       observer.disconnect();
-      clearTimeouts();
+      clearVisibilityTimeout();
     };
   }, [
     ref,
@@ -202,7 +268,7 @@ export function useMarkAsReadOnView(
     apiEntityType,
     isUnread,
     visibilityDelay,
-    clearTimeouts,
+    clearVisibilityTimeout,
     articleContext,
     markItemRead,
     clearNewEvent,
@@ -210,6 +276,9 @@ export function useMarkAsReadOnView(
     isEphemeralUnread,
     hasUnreadFlag,
     hasUnreadCommentFlag,
+    newTagRemovalDelayMs,
+    newTagRetentionKey,
+    retainNewTag,
   ]);
 
   // Cleanup on unmount
@@ -219,7 +288,7 @@ export function useMarkAsReadOnView(
     };
   }, [clearTimeouts]);
 
-  return { showNewTag };
+  return { showNewTag: showNewTag || isPersistedRetentionActive };
 }
 
 /**
