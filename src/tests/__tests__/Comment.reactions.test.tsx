@@ -57,6 +57,10 @@ describe('Comment reaction query behavior', () => {
     });
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('disables eager reaction-count query and falls back to upvotes', () => {
     render(
       <Comment
@@ -79,5 +83,107 @@ describe('Comment reaction query behavior', () => {
     const hookArgs = mockGetReactionCount.mock.calls[0];
     expect(hookArgs[2].query.enabled).toBe(false);
     expect(screen.getByText('7')).toBeInTheDocument();
+  });
+
+  it('shows author delete action inside the five-minute window', () => {
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2026-07-14T10:04:00.000Z').getTime());
+
+    render(
+      <Comment
+        id={11}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content="fresh"
+        upvotes={0}
+        replies={[]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        is_author
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={jest.fn()}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    expect(screen.getByLabelText('Delete comment')).toBeInTheDocument();
+  });
+
+  it('hides author delete action after the five-minute window', () => {
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2026-07-14T10:06:00.000Z').getTime());
+
+    render(
+      <Comment
+        id={12}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content="old"
+        upvotes={0}
+        replies={[]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        is_author
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={jest.fn()}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    expect(screen.queryByLabelText('Delete comment')).not.toBeInTheDocument();
+  });
+
+  it('does not render deleted comment content or mutation controls', () => {
+    render(
+      <Comment
+        id={13}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content="[deleted]"
+        upvotes={0}
+        replies={[]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        is_author
+        is_deleted
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={jest.fn()}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    expect(screen.queryByText('[deleted]')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Edit comment')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Delete comment')).not.toBeInTheDocument();
+    expect(screen.queryByText('Reply')).not.toBeInTheDocument();
+  });
+
+  it('treats cleared comment content as deleted even without is_deleted flag', () => {
+    render(
+      <Comment
+        id={14}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content=""
+        upvotes={0}
+        replies={[]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        is_author
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={jest.fn()}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    expect(screen.queryByLabelText('Edit comment')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Delete comment')).not.toBeInTheDocument();
+    expect(screen.queryByText('Reply')).not.toBeInTheDocument();
   });
 });

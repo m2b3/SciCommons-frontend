@@ -21,6 +21,7 @@ import {
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
 import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { useDeleteWindow } from '@/hooks/useDeleteWindow';
 import { useMarkAsReadOnView } from '@/hooks/useMarkAsReadOnView';
 import { hasUnreadFlag } from '@/hooks/useUnreadFlags';
 import { cn } from '@/lib/utils';
@@ -77,6 +78,16 @@ export interface CommentProps extends CommentData {
   };
 }
 
+export const isCommentDeleted = (comment: {
+  content?: string | null;
+  is_deleted?: boolean;
+}): boolean => {
+  const normalizedContent = comment.content?.trim().toLowerCase() ?? '';
+  return Boolean(
+    comment.is_deleted || normalizedContent === '' || normalizedContent === '[deleted]'
+  );
+};
+
 type Reaction = 'upvote' | 'downvote' | 'award';
 
 const Comment: React.FC<CommentProps> = ({
@@ -107,6 +118,8 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const isDeleted = isCommentDeleted({ content, is_deleted });
+  const canDeleteComment = useDeleteWindow(created_at, Boolean(is_author && !isDeleted));
 
   /* Fixed by Codex on 2026-02-15
      Who: Codex
@@ -386,7 +399,7 @@ const Comment: React.FC<CommentProps> = ({
               </span>
               <span className="text-xxs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
             </div>
-            {!is_deleted && depth == 0 && (rating != undefined || rating != null) && !isEditing && (
+            {!isDeleted && depth == 0 && (rating != undefined || rating != null) && !isEditing && (
               <div className="mt-1">
                 <Ratings rating={rating} size={12} variant="yellow" readonly />
               </div>
@@ -407,7 +420,7 @@ const Comment: React.FC<CommentProps> = ({
             )}
           </div>
         </div>
-        {isEditing ? (
+        {!isDeleted && isEditing ? (
           <div className="mt-2 pl-2">
             <CommentInput
               onSubmit={handleUpdateComment}
@@ -419,7 +432,7 @@ const Comment: React.FC<CommentProps> = ({
               mentionCandidates={mentionCandidates}
             />
           </div>
-        ) : (
+        ) : !isDeleted ? (
           <div className="pl-2">
             <RenderParsedHTML
               rawContent={content}
@@ -430,8 +443,8 @@ const Comment: React.FC<CommentProps> = ({
               containerClassName="mb-0"
             />
           </div>
-        )}
-        {!is_deleted && (
+        ) : null}
+        {!isDeleted && (
           <div className="mt-2 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
             {/* Fixed by Codex on 2026-02-15
                Who: Codex
@@ -502,14 +515,16 @@ const Comment: React.FC<CommentProps> = ({
                     <Edit size={16} />
                   </button>
                 )}
-                <button
-                  type="button"
-                  aria-label="Delete comment"
-                  className="text-text-tertiary hover:text-functional-red"
-                  onClick={handleDeleteComment}
-                >
-                  <Trash2 size={16} />
-                </button>
+                {canDeleteComment && (
+                  <button
+                    type="button"
+                    aria-label="Delete comment"
+                    className="text-text-tertiary hover:text-functional-red"
+                    onClick={handleDeleteComment}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </>
             )}
             <div className="flex items-center space-x-2 sm:hidden">
@@ -539,7 +554,7 @@ const Comment: React.FC<CommentProps> = ({
           </button> */}
           </div>
         )}
-        {isReplying && (
+        {!isDeleted && isReplying && (
           <div className="mt-4" id={`comment-${id}-reply`}>
             <CommentInput
               onSubmit={handleAddReply}
