@@ -1,6 +1,6 @@
 import React, { ComponentType, useEffect, useState } from 'react';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import Loader from '@/components/common/Loader';
 import { usePathTracker } from '@/hooks/usePathTracker';
@@ -21,6 +21,7 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
   const WithAuthRedirectComponent: React.FC<P> = (props) => {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { isAuthenticated, initializeAuth } = useAuthStore();
     const [isInitializing, setIsInitializing] = useState(true);
     const { getPreviousPath } = usePathTracker();
@@ -56,9 +57,11 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
       } else if (isAuthenticated && pathname && pathname.startsWith('/auth')) {
         // toast.info('You are already logged in');
         // Redirect authenticated users away from auth pages
-        router.replace(redirectPath);
+        const requestedRedirect = searchParams?.get('redirect');
+        const isExtensionAuthRedirect = requestedRedirect?.startsWith('/auth/extension');
+        router.replace(isExtensionAuthRedirect ? requestedRedirect : redirectPath);
       }
-    }, [isInitializing, isAuthenticated, router, requireAuth, getPreviousPath, pathname]);
+    }, [isInitializing, isAuthenticated, router, requireAuth, getPreviousPath, pathname, searchParams]);
 
     if (isInitializing) {
       return <Loader />;

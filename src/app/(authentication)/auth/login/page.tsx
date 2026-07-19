@@ -59,10 +59,11 @@ const LoginForm: React.FC = () => {
           }
         );
         const requestedRedirect = searchParams?.get('redirect');
+        const isExtensionAuthRedirect = requestedRedirect?.startsWith('/auth/extension');
         const safeRedirect =
           requestedRedirect &&
           requestedRedirect.startsWith('/') &&
-          !requestedRedirect.startsWith('/auth')
+          (!requestedRedirect.startsWith('/auth') || isExtensionAuthRedirect)
             ? requestedRedirect
             : null;
         const previousPath = getPreviousPath();
