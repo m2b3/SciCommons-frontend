@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import Loader from '@/components/common/Loader';
 import { usePathTracker } from '@/hooks/usePathTracker';
+import { isSafePostLoginRedirect } from '@/lib/integrationAuth';
 import { useAuthStore } from '@/stores/authStore';
 
 interface WithAuthRedirectProps {
@@ -42,7 +43,12 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
       }
 
       const previousPath = getPreviousPath();
-      const redirectPath = previousPath && !previousPath.startsWith('/auth') ? previousPath : '/';
+      const requestedRedirect = searchParams?.get('redirect');
+      const redirectPath = isSafePostLoginRedirect(requestedRedirect)
+        ? requestedRedirect
+        : previousPath && !previousPath.startsWith('/auth')
+          ? previousPath
+          : '/';
 
       if (requireAuth) {
         if (!isAuthenticated) {
@@ -57,12 +63,7 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
       } else if (isAuthenticated && pathname && pathname.startsWith('/auth')) {
         // toast.info('You are already logged in');
         // Redirect authenticated users away from auth pages
-        const requestedRedirect = searchParams?.get('redirect');
-        // `searchParams.get` returns string | null, so the null has to be eliminated here or
-        // `yarn check-types` fails: router.replace does not accept null.
-        const isExtensionAuthRedirect =
-          !!requestedRedirect && requestedRedirect.startsWith('/auth/extension');
-        router.replace(isExtensionAuthRedirect ? requestedRedirect : redirectPath);
+        router.replace(redirectPath);
       }
     }, [
       isInitializing,
