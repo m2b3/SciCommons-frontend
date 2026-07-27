@@ -207,6 +207,7 @@ function ArticleDisplayPageClientInner({ params }: Props) {
                 setPendingQuote(null);
               }}
               isSubmitter={data.data.is_submitter}
+              isCommunityAdmin={data?.data.community_article?.is_admin ?? false}
               reviewFormContainerId="article-review-form"
               afterReviewFormContent={
                 pendingQuote && submitReview ? (

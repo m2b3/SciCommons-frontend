@@ -1,3 +1,39 @@
+## 2026-05-05 - ReviewCard Lint Typing and BrowserStack Local Declaration Alignment
+
+Problem: Validation was failing because `ReviewCard.tsx` still used explicit `any` in two mutation error handlers, and `src/tests/global-setup.ts` no longer matched the local `browserstack-local` declaration for the `force` option.
+
+Root Cause: The review pin/unpin flow kept older untyped error callbacks after the flags API refactor, and the handwritten BrowserStack declaration drifted from the runtime API by typing `force` as `string` instead of a boolean-compatible value.
+
+Solution: Replaced the `any` error handlers in `ReviewCard` with the shared Axios-based `ErrorType` plus a narrow response-message shape, and centralized the toast fallback message logic. Updated `src/types/browserstack-local.d.ts` so `Local.start()` accepts the boolean `force` value used by `global-setup.ts`.
+
+Result: The reported `@typescript-eslint/no-explicit-any` warnings are removed, and `tsc --skipLibCheck --noEmit` no longer fails on the BrowserStack local setup path.
+
+Files Modified: `src/components/articles/ReviewCard.tsx`, `src/types/browserstack-local.d.ts`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-05-05 - PR 353 Mobile Bookmark Gating and Community Article Cleanup
+
+Problem: PR #353 introduced a mobile-only navigation regression by showing `Bookmarks` to signed-out users in the bottom bar, and it left stale imports in the community article detail page after moving the List View button into `DisplayArticle`.
+
+Root Cause: `BottomBar.tsx` hard-coded the new `Bookmarks` entry without the auth gating already present in `NavBar.tsx`, and the community article page refactor removed JSX that still had corresponding imports at the top of the file.
+
+Solution: Added auth-aware bottom-bar composition so `Bookmarks` appears only for authenticated users and the mobile layout switches cleanly between guest/authenticated column counts while keeping the create action centered. Removed the unused imports from the community article route file.
+
+Result: Mobile navigation now matches desktop auth behavior, signed-out users no longer get a stray `Bookmarks` destination, and the community article page is back to a lint-clean import set.
+
+Files Modified: `src/components/common/BottomBar.tsx`, `src/app/(main)/(communities)/community/[slug]/articles/[articleSlug]/page.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-05-04 - Profile Navigation Simplification and Edit Shortcut
+
+Problem: Profile-related navigation was split between a `Bookmarks` top-nav label, a separate `Contributions` dropdown item, and no direct edit action from the profile header.
+
+Root Cause: The existing navigation evolved around the `/mycontributions` route structure instead of around the user's mental model of "my profile," so related actions ended up scattered across multiple labels and entry points.
+
+Solution: Renamed the authenticated navbar shortcut to `Profile`, repointed it to the `/mycontributions` landing page instead of the bookmarks deep-link, removed the duplicate `Contributions` item from the profile dropdown, and added a direct `Edit Profile` action to the profile header on the contributions/profile screen.
+
+Result: Profile discovery is clearer, the top-nav label now matches its destination, duplicate navigation is reduced, and users can move from viewing their profile surface to editing it in one click.
+
+Files Modified: `src/components/common/NavBar.tsx`, `src/app/(main)/(users)/mycontributions/ProfileHeader.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-03-22 - BrowserStack Optional Dependency Runtime Guidance
 
 Problem: Developers who intentionally ran the BrowserStack Playwright path without `browserstack-local` installed would hit a generic runtime module-load failure.

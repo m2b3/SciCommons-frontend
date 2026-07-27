@@ -22,6 +22,7 @@ interface ReviewsTabBodyProps {
   onReviewSubmitSuccess?: () => void;
   communityId?: number | null;
   isSubmitter?: boolean;
+  isCommunityAdmin?: boolean;
   reviewFormContainerId: string;
   className?: string;
   showHeading?: boolean;
@@ -44,6 +45,7 @@ const ReviewsTabBody: React.FC<ReviewsTabBodyProps> = ({
   onReviewSubmitSuccess,
   communityId,
   isSubmitter = false,
+  isCommunityAdmin = false,
   reviewFormContainerId,
   className,
   showHeading = true,
@@ -110,7 +112,13 @@ const ReviewsTabBody: React.FC<ReviewsTabBodyProps> = ({
       )}
 
       {orderedReviews?.map((item) => (
-        <ReviewCard key={item.id} review={item} refetch={reviewsRefetch} />
+        <ReviewCard
+          key={item.id}
+          review={item}
+          refetch={reviewsRefetch}
+          isSubmitter={isSubmitter}
+          isCommunityAdmin={isCommunityAdmin}
+        />
       ))}
     </div>
   );

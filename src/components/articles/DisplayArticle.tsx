@@ -3,7 +3,7 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Bookmark, Link2, PanelLeft, Settings } from 'lucide-react';
+import { Bookmark, Link2, PanelLeft, Pencil, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMediaQuery } from 'usehooks-ts';
 
@@ -20,7 +20,7 @@ import { useAuthStore } from '@/stores/authStore';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import PdfIcon from '../ui/Icons/PdfIcon';
-import { Button, ButtonTitle } from '../ui/button';
+import { Button, ButtonIcon, ButtonTitle } from '../ui/button';
 import { Switch } from '../ui/switch';
 import AbstractText from './AbstractText';
 import ArticleStats from './ArticleStats';
@@ -58,6 +58,8 @@ interface DisplayArticleProps {
   editReturnPath?: string | null;
   showPdfViewerButton?: boolean;
   handleOpenPdfViewer?: () => void;
+  listViewHref?: string;
+  onListViewClick?: () => void;
 }
 
 const DisplayArticle: React.FC<DisplayArticleProps> = ({
@@ -67,6 +69,8 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
   editReturnPath = null,
   showPdfViewerButton = false,
   handleOpenPdfViewer = () => {},
+  listViewHref,
+  onListViewClick,
 }) => {
   const hasImage = !!article.article_image_url;
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -207,32 +211,52 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
         </div>
       )}
       <div className={`relative flex-1 ${hasImage ? '' : 'w-full'}`}>
-        {/* <h2 className="mb-4 font-bold text-text-primary res-text-xl">
-          <TruncateText text={article.title} maxLines={2} />
-        </h2> */}
-        <RenderParsedHTML
-          rawContent={article.title}
-          isShrinked={false}
-          supportMarkdown={false}
-          supportLatex={true}
-          contentClassName="res-text-xl font-bold"
-          containerClassName="mb-4 sm:mb-4"
-        />
+        {/* Title row with List View button */}
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <RenderParsedHTML
+            rawContent={article.title}
+            isShrinked={false}
+            supportMarkdown={false}
+            supportLatex={true}
+            contentClassName="res-text-xl font-bold"
+            containerClassName="mb-0"
+          />
+          {listViewHref && (
+            <Button
+              asChild
+              withTooltip
+              tooltipData="List View"
+              variant="outline"
+              size="xs"
+              className="ml-2 border border-common-minimal/70 bg-common-cardBackground px-2 hover:bg-common-minimal sm:px-3"
+              aria-label="Switch to community articles list view"
+              onClick={onListViewClick}
+            >
+              <Link href={listViewHref}>
+                <ButtonIcon>
+                  <PanelLeft size={14} className="text-text-secondary" />
+                </ButtonIcon>
+                <ButtonTitle className="hidden text-text-secondary sm:flex">List View</ButtonTitle>
+              </Link>
+            </Button>
+          )}
+        </div>
         <div className="mb-4">
           <h3 className="mb-1 text-xs font-semibold text-text-secondary">Abstract</h3>
           {/* <div className="text-base text-text-primary">
             <TruncateText text={article.abstract} maxLines={2} />
           </div> */}
-          {/* Fixed by Codex on 2026-02-15
-              Who: Codex
-              What: Render the article abstract via AbstractText.
-              Why: Keep newline handling consistent across all abstract displays.
-              How: Replace RenderParsedHTML with the shared wrapper component. */}
+          {/* Fixed by GitHub Copilot on 2026-04-10
+              Who: GitHub Copilot
+              What: Remove mb-10 margin from AbstractText on mobile to eliminate gap.
+              Why: Gap between abstract and author was larger than between authors and article links.
+              How: Pass containerClassName="mb-0" to override RenderParsedHTML's mobile margin. */}
           <AbstractText
             text={article.abstract}
             articleLink={article.article_link}
             isShrinked={true}
             gradientClassName="sm:from-common-background"
+            containerClassName="mb-0"
           />
         </div>
         <div className="mb-4">
@@ -295,159 +319,162 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({
           </div>
         )}
 
-        <div className="mt-4 w-full">
-          <ArticleStats article={article} />
-        </div>
+        <div className="mt-4 flex w-full items-start justify-between gap-4">
+          <div className="flex-1">
+            <ArticleStats article={article} />
+          </div>
 
-        <div className="mb-2 flex w-full items-center justify-end gap-2 sm:absolute sm:bottom-0 sm:right-0 sm:mb-0 sm:w-fit">
-          {/* Fixed by Codex on 2026-02-15
+          <div className="flex items-center gap-2 pt-16">
+            {/* Fixed by Codex on 2026-02-15
               Who: Codex
               What: Tokenize article action pill surfaces.
               Why: Keep edit/settings controls aligned with skin palettes.
               How: Replace hard-coded white/black utilities with semantic tokens. */}
-          {article.is_submitter && (
-            <Link
-              href={editArticleHref}
-              className="rounded-md border border-common-contrast bg-common-cardBackground px-3 py-1.5 text-xs text-text-primary"
-            >
-              {/* Fixed by Codex on 2026-02-15
-                  Who: Codex
-                  What: Use semantic link text for edit action.
-                  Why: Div-wrapped links obscure the interactive element for assistive tech.
-                  How: Move styling onto the Link so the anchor is the focus target. */}
-              Edit Article
-            </Link>
-          )}
-          {!article.community_article && (
-            /* Fixed by Codex on 2026-02-15
+            {article.is_submitter && (
+              <Button
+                asChild
+                variant="outline"
+                size="xs"
+                className="h-9 w-9 p-0"
+                aria-label="Edit Article"
+              >
+                <Link href={editArticleHref} title="Edit Article">
+                  <Pencil size={16} className="text-text-secondary" />
+                </Link>
+              </Button>
+            )}
+            {!article.community_article && (
+              /* Fixed by Codex on 2026-02-15
                Who: Codex
                What: Add ARIA labels and pressed state to the bookmark toggle.
                Why: Icon-only buttons need accessible names and state feedback.
                How: Provide aria-label/aria-pressed on the Button element. */
-            <Button
-              variant="outline"
-              size="xs"
-              className="aspect-square p-1.5"
-              aria-label={isBookmarked ? 'Remove bookmark for article' : 'Add bookmark for article'}
-              aria-pressed={isBookmarked}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.nativeEvent.stopImmediatePropagation();
-                handleBookmarkToggle();
-              }}
-              disabled={isBookmarkPending}
-              withTooltip
-              tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
-            >
-              <Bookmark
-                className={cn('size-4 transition-colors', {
-                  'fill-functional-yellow text-functional-yellow': isBookmarked,
-                  'text-text-tertiary hover:text-text-secondary': !isBookmarked,
-                })}
-              />
-            </Button>
-          )}
-          {article.community_article && article.community_article?.is_admin && (
-            <Suspense
-              fallback={
-                <Button
-                  className="rounded-lg border border-common-contrast px-4 py-2 res-text-xs"
-                  variant={'inverted'}
-                >
-                  <Settings size={18} className="animate-spin" />
-                </Button>
-              }
-            >
-              {/* Fixed by Codex on 2026-02-15
+              <Button
+                variant="outline"
+                size="xs"
+                className="aspect-square p-1.5"
+                aria-label={
+                  isBookmarked ? 'Remove bookmark for article' : 'Add bookmark for article'
+                }
+                aria-pressed={isBookmarked}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  handleBookmarkToggle();
+                }}
+                disabled={isBookmarkPending}
+                withTooltip
+                tooltipData={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+              >
+                <Bookmark
+                  className={cn('size-4 transition-colors', {
+                    'fill-functional-yellow text-functional-yellow': isBookmarked,
+                    'text-text-tertiary hover:text-text-secondary': !isBookmarked,
+                  })}
+                />
+              </Button>
+            )}
+            {article.community_article && article.community_article?.is_admin && (
+              <Suspense
+                fallback={
+                  <Button variant="outline" size="xs" className="h-9 w-9 p-0">
+                    <Settings size={16} className="animate-spin text-text-secondary" />
+                  </Button>
+                }
+              >
+                {/* Fixed by Codex on 2026-02-15
                   Who: Codex
                   What: Make settings triggers accessible buttons with labels.
                   Why: Icon-only sheet/drawer triggers were unlabeled for screen readers.
                   How: Use asChild buttons with aria-labels and explicit types. */}
-              {isDesktop ? (
-                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                  <SheetTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label="Open article settings"
-                      className="rounded-lg border border-common-contrast bg-common-cardBackground px-4 py-2 text-text-primary res-text-xs"
+                {isDesktop ? (
+                  <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                    <SheetTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        className="h-9 w-9 p-0"
+                        aria-label="Open article settings"
+                      >
+                        <Settings size={16} className="text-text-secondary" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent
+                      isOpen={isSheetOpen}
+                      className="flex flex-col items-center p-0 pt-4"
                     >
-                      <Settings size={18} />
-                    </button>
-                  </SheetTrigger>
-                  <SheetContent
-                    isOpen={isSheetOpen}
-                    className="flex flex-col items-center p-0 pt-4"
-                  >
-                    <SheetHeader className="flex flex-col items-center">
-                      <SheetTitle className="text-2xl font-bold">Settings</SheetTitle>
-                    </SheetHeader>
-                    <div className="flex h-full w-full flex-col items-center p-4">
-                      <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
-                        <div className="flex w-full items-center justify-between">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-base text-text-secondary">
-                              Make article reviews and discussion <strong>Pseudomynous</strong>
-                            </span>
-                            <span className="text-xs text-text-tertiary">
-                              (If enabled, all reviews and discussions will remain pseudonymous.)
-                            </span>
+                      <SheetHeader className="flex flex-col items-center">
+                        <SheetTitle className="text-2xl font-bold">Settings</SheetTitle>
+                      </SheetHeader>
+                      <div className="flex h-full w-full flex-col items-center p-4">
+                        <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
+                          <div className="flex w-full items-center justify-between">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-base text-text-secondary">
+                                Make article reviews and discussion <strong>Pseudomynous</strong>
+                              </span>
+                              <span className="text-xs text-text-tertiary">
+                                (If enabled, all reviews and discussions will remain pseudonymous.)
+                              </span>
+                            </div>
+                            <Switch
+                              className="data-[state=checked]:bg-functional-blue"
+                              checked={isPseudonymous}
+                              onCheckedChange={(value) => {
+                                setIsPseudonymous(value);
+                                debouncedIsPseudonymous(value);
+                              }}
+                            />
                           </div>
-                          <Switch
-                            className="data-[state=checked]:bg-functional-blue"
-                            checked={isPseudonymous}
-                            onCheckedChange={(value) => {
-                              setIsPseudonymous(value);
-                              debouncedIsPseudonymous(value);
-                            }}
-                          />
                         </div>
                       </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              ) : (
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label="Open article settings"
-                      className="rounded-lg border border-common-contrast bg-common-cardBackground px-4 py-2 text-text-primary res-text-xs"
-                    >
-                      <Settings size={18} />
-                    </button>
-                  </DrawerTrigger>
-                  <DrawerContent className="flex flex-col items-center p-0 pt-4">
-                    <DrawerHeader className="flex flex-col items-center">
-                      <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
-                    </DrawerHeader>
-                    <div className="flex h-full w-full flex-col items-center p-4">
-                      <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
-                        <div className="flex w-full items-center justify-between">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-base text-text-secondary">
-                              Make article reviews and discussion <strong>Pseudomynous</strong>
-                            </span>
-                            <span className="text-xs text-text-tertiary">
-                              (If enabled, all reviews and discussions will remain pseudonymous.)
-                            </span>
+                    </SheetContent>
+                  </Sheet>
+                ) : (
+                  <Drawer>
+                    <DrawerTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        className="h-9 w-9 p-0"
+                        aria-label="Open article settings"
+                      >
+                        <Settings size={16} className="text-text-secondary" />
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="flex flex-col items-center p-0 pt-4">
+                      <DrawerHeader className="flex flex-col items-center">
+                        <DrawerTitle className="text-2xl font-bold">Settings</DrawerTitle>
+                      </DrawerHeader>
+                      <div className="flex h-full w-full flex-col items-center p-4">
+                        <div className="flex w-full max-w-[720px] flex-col gap-4 rounded-xl bg-common-cardBackground p-4 md:p-4">
+                          <div className="flex w-full items-center justify-between">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-base text-text-secondary">
+                                Make article reviews and discussion <strong>Pseudomynous</strong>
+                              </span>
+                              <span className="text-xs text-text-tertiary">
+                                (If enabled, all reviews and discussions will remain pseudonymous.)
+                              </span>
+                            </div>
+                            <Switch
+                              className="data-[state=checked]:bg-functional-blue"
+                              checked={isPseudonymous}
+                              onCheckedChange={(value) => {
+                                setIsPseudonymous(value);
+                                debouncedIsPseudonymous(value);
+                              }}
+                            />
                           </div>
-                          <Switch
-                            className="data-[state=checked]:bg-functional-blue"
-                            checked={isPseudonymous}
-                            onCheckedChange={(value) => {
-                              setIsPseudonymous(value);
-                              debouncedIsPseudonymous(value);
-                            }}
-                          />
                         </div>
                       </div>
-                    </div>
-                  </DrawerContent>
-                </Drawer>
-              )}
-            </Suspense>
-          )}
+                    </DrawerContent>
+                  </Drawer>
+                )}
+              </Suspense>
+            )}
+          </div>
         </div>
       </div>
     </div>

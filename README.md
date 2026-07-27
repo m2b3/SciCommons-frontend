@@ -61,4 +61,3 @@ docker compose -f docker-compose.dev.yml --env-file .env up --build
 # detached mode
 docker compose -f docker-compose.dev.yml --env-file .env up -d --build
 ```
-

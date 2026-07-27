@@ -411,7 +411,7 @@ const DiscussionForum: React.FC<DiscussionForumProps> = ({
         <DiscussionSummary communityArticleId={communityArticleId} isAdmin={isAdmin} />
       )}
 
-      <div className="mb-4 flex flex-wrap items-center justify-between text-sm">
+      <div className="mb-4 flex flex-wrap items-center justify-between border-b-0 text-sm">
         <h1 className="text-xl font-bold text-text-primary">Discussions</h1>
         <div className="flex items-center gap-2">
           <Button onClick={handleNewDiscussion} className="p-2">
