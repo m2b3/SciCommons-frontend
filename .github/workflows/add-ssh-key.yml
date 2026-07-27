@@ -1,0 +1,25 @@
+ name: Add SSH Public Key
+
+  on:
+    workflow_dispatch:
+
+  jobs:
+    add-key:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Setup SSH
+          run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+        - name: Add public key to server
+          run: |
+            ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+              mkdir -p ~/.ssh
+              grep -qxF 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9JRy9wrAEG/+m6FvTEK4tdeNpGtKpEVJLS/C9JHfJE openstack-rescue' ~/.ssh/authorized_keys || echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9JRy9wrAEG/+m6FvTEK4tdeNpGtKpEVJLS/C9JHfJE openstack-rescue' >> ~/.ssh/authorized_keys
+              chmod 700 ~/.ssh
+              chmod 600 ~/.ssh/authorized_keys
+            EOF
