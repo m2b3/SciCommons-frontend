@@ -1,0 +1,26 @@
+name: Deploy Landing Page
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-landing
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environment: landing
+      source_ref: landing-page
+      build_context: ./landing-page
+      image_tag: landing-page
+      service: landing
+      public_hostname: scicommons.org
+      env_file: none
+    secrets:
+      ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

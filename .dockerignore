@@ -5,3 +5,8 @@ npm-debug.log
 README.md
 .next
 .git
+.env*
+!.env.example
+**/acme.json
+*.pem
+*.key

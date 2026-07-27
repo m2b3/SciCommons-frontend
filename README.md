@@ -5,12 +5,11 @@
 ---
 
 ## 📢 Feature List for SciCommons GSoC 2025 is Now Available!
+
 > You can access it here:  
 > 🔗 [GSoC 2025 Feature List](https://github.com/m2b3/SciCommons-frontend/blob/main/gsoc/GSoC_2025_Feature_List.md)
 
-
 ### **Please follow our [Contribution guide](https://github.com/m2b3/SciCommons-frontend/blob/main/CONTRIBUTING.md) to start contributing to this repo.**
-
 
 ## Getting Started
 
@@ -44,7 +43,13 @@ docker compose -f docker-compose.dev.yml up
 docker compose -f docker-compose.dev.yml up -d
 ```
 
+## Deployment
+
+The test, alpha-test, static landing-page, and Traefik workflows are documented
+in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Server deployments use the
+canonical [compose.yml](compose.yml); each deployment workflow builds an
+explicit image tag and updates only its own service.
+
 # Theming
+
 ![SciCommons_Design_Pattern](https://github.com/user-attachments/assets/f8b57cd7-6488-487a-b06f-b5775dc86891)
-
-

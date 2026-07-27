@@ -1,0 +1,71 @@
+name: scicommons
+
+services:
+  traefik:
+    image: traefik:v3.6.2
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/ubuntu/traefik/traefik.yml:/traefik.yml:ro
+      - /home/ubuntu/traefik/acme.json:/acme.json
+    networks:
+      - proxy
+
+  landing:
+    image: ghcr.io/m2b3/scicommons-frontend:landing-page
+    container_name: scicommons-landing
+    restart: unless-stopped
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.landing.rule: Host(`scicommons.org`)
+      traefik.http.routers.landing.entrypoints: https
+      traefik.http.routers.landing.tls: 'true'
+      traefik.http.routers.landing.tls.certresolver: cloudflare
+      traefik.http.services.landing.loadbalancer.server.port: '80'
+    networks:
+      - proxy
+
+  test:
+    image: ghcr.io/m2b3/scicommons-frontend:test
+    container_name: scicommons-test
+    restart: always
+    env_file:
+      - .env.test
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.test.rule: Host(`test.scicommons.org`)
+      traefik.http.routers.test.entrypoints: https
+      traefik.http.routers.test.tls: 'true'
+      traefik.http.routers.test.tls.certresolver: cloudflare
+      traefik.http.services.test.loadbalancer.server.port: '3000'
+    networks:
+      - proxy
+
+  alphatest:
+    image: ghcr.io/m2b3/scicommons-frontend:alphatest
+    container_name: scicommons-alpha-test
+    restart: always
+    env_file:
+      - .env.alphatest
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.alphatest.rule: Host(`alphatest.scicommons.org`)
+      traefik.http.routers.alphatest.entrypoints: https
+      traefik.http.routers.alphatest.tls: 'true'
+      traefik.http.routers.alphatest.tls.certresolver: cloudflare
+      traefik.http.services.alphatest.loadbalancer.server.port: '3000'
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: scicommons_proxy

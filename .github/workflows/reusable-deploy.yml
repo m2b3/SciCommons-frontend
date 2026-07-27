@@ -1,0 +1,218 @@
+name: Reusable Frontend Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      source_ref:
+        required: true
+        type: string
+      build_context:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+      service:
+        required: true
+        type: string
+      public_hostname:
+        required: true
+        type: string
+      env_file:
+        required: true
+        type: string
+    secrets:
+      ssh_private_key:
+        required: true
+      backend_url:
+        required: false
+      realtime_url:
+        required: false
+      ui_skin:
+        required: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: m2b3/scicommons-frontend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Validate deployment configuration
+        env:
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$SERVER_HOST"
+          test -n "$SERVER_USER"
+          test -n "$SSH_KNOWN_HOSTS"
+
+      - name: Checkout deployment source
+        id: source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ inputs.build_context }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}
+          labels: |
+            org.opencontainers.image.revision=${{ steps.source.outputs.commit }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          build-args: |
+            NEXT_PUBLIC_BACKEND_URL=${{ secrets.backend_url }}
+            NEXT_PUBLIC_REALTIME_URL=${{ secrets.realtime_url }}
+            NEXT_PUBLIC_UI_SKIN=${{ secrets.ui_skin }}
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ssh_private_key }}
+          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+
+      - name: Create runtime environment file
+        if: inputs.env_file != 'none'
+        env:
+          BACKEND_URL: ${{ secrets.backend_url }}
+          REALTIME_URL: ${{ secrets.realtime_url }}
+          UI_SKIN: ${{ secrets.ui_skin }}
+          ENV_FILE: ${{ inputs.env_file }}
+        run: |
+          set -euo pipefail
+          umask 077
+          : > "$ENV_FILE"
+          if [ -n "$BACKEND_URL" ]; then
+            printf 'NEXT_PUBLIC_BACKEND_URL=%s\n' "$BACKEND_URL" >> "$ENV_FILE"
+          fi
+          if [ -n "$REALTIME_URL" ]; then
+            printf 'NEXT_PUBLIC_REALTIME_URL=%s\n' "$REALTIME_URL" >> "$ENV_FILE"
+          fi
+          if [ -n "$UI_SKIN" ]; then
+            printf 'NEXT_PUBLIC_UI_SKIN=%s\n' "$UI_SKIN" >> "$ENV_FILE"
+          fi
+
+      - name: Transfer runtime environment file
+        if: inputs.env_file != 'none'
+        env:
+          ENV_FILE: ${{ inputs.env_file }}
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          scp -i ~/.ssh/id_deploy \
+            "$ENV_FILE" \
+            "$SERVER_USER@$SERVER_HOST:/home/ubuntu/deployment/$ENV_FILE"
+
+      - name: Authenticate deployment host with GHCR
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GHCR_TOKEN" |
+            ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" \
+              "docker login ghcr.io -u '${{ github.actor }}' --password-stdin"
+
+      - name: Deploy service
+        env:
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+          SERVICE: ${{ inputs.service }}
+          PUBLIC_HOSTNAME: ${{ inputs.public_hostname }}
+          ENV_FILE: ${{ inputs.env_file }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" \
+            bash -s -- \
+            "$SERVICE" "$PUBLIC_HOSTNAME" "$ENV_FILE" "$IMAGE_TAG" <<'REMOTE'
+          set -euo pipefail
+
+          service="$1"
+          public_hostname="$2"
+          env_file="$3"
+          image_tag="$4"
+          image_ref="ghcr.io/m2b3/scicommons-frontend:$image_tag"
+          rollback_ref="ghcr.io/m2b3/scicommons-frontend:rollback-$service"
+
+          cd /home/ubuntu/deployment
+
+          if [ "$env_file" != "none" ]; then
+            chmod 600 "$env_file"
+          fi
+
+          compose=(docker compose --env-file .env.traefik -f compose.yml)
+
+          previous_container="$("${compose[@]}" ps -q "$service" 2>/dev/null || true)"
+          previous_image=""
+          if [ -n "$previous_container" ]; then
+            previous_image="$(docker inspect --format '{{.Image}}' "$previous_container")"
+          fi
+          if [ -n "$previous_image" ]; then
+            docker image tag "$previous_image" "$rollback_ref"
+          fi
+
+          "${compose[@]}" pull "$service"
+
+          "${compose[@]}" up -d --no-deps "$service"
+
+          healthy=false
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error \
+              --resolve "$public_hostname:443:127.0.0.1" \
+              "https://$public_hostname/" > /dev/null
+            then
+              healthy=true
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$healthy" != true ]; then
+            "${compose[@]}" logs --tail 100 "$service" || true
+
+            "${compose[@]}" stop "$service" || true
+
+            if [ -n "$previous_image" ]; then
+              docker image tag "$rollback_ref" "$image_ref"
+              "${compose[@]}" up -d --no-deps --force-recreate "$service"
+            fi
+
+            exit 1
+          fi
+
+          "${compose[@]}" ps "$service"
+          docker image rm "$rollback_ref" 2>/dev/null || true
+          docker image prune -f
+          REMOTE

@@ -1,0 +1,29 @@
+name: Deploy Alpha-Test Frontend
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-alphatest
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environment: alphatest
+      source_ref: alphatest
+      build_context: .
+      image_tag: alphatest
+      service: alphatest
+      public_hostname: alphatest.scicommons.org
+      env_file: .env.alphatest
+    secrets:
+      ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      backend_url: ${{ secrets.NEXT_PUBLIC_BACKEND_URL_ALPHA_TEST }}
+      realtime_url: ${{ secrets.NEXT_PUBLIC_REALTIME_URL_ALPHA_TEST }}
+      ui_skin: ${{ secrets.NEXT_PUBLIC_UI_SKIN_ALPHA_TEST }}

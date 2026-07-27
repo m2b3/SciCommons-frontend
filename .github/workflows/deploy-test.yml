@@ -1,0 +1,29 @@
+name: Deploy Test Frontend
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environment: test
+      source_ref: test
+      build_context: .
+      image_tag: test
+      service: test
+      public_hostname: test.scicommons.org
+      env_file: .env.test
+    secrets:
+      ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      backend_url: ${{ secrets.NEXT_PUBLIC_BACKEND_URL_TEST }}
+      realtime_url: ${{ secrets.NEXT_PUBLIC_REALTIME_URL_TEST }}
+      ui_skin: ${{ secrets.NEXT_PUBLIC_UI_SKIN_TEST }}

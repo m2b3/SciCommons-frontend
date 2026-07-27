@@ -1,0 +1,94 @@
+name: Deploy Frontend Infrastructure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-frontend-infrastructure
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: infrastructure
+
+    steps:
+      - name: Validate deployment configuration
+        env:
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$SERVER_HOST"
+          test -n "$SERVER_USER"
+          test -n "$SSH_KNOWN_HOSTS"
+          test -n "$CF_DNS_API_TOKEN"
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+
+      - name: Create Traefik environment file
+        env:
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          umask 077
+          printf 'CF_DNS_API_TOKEN=%s\n' "$CF_DNS_API_TOKEN" > .env.traefik
+
+      - name: Transfer infrastructure configuration
+        env:
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" \
+            'mkdir -p /home/ubuntu/deployment /home/ubuntu/traefik'
+          scp -i ~/.ssh/id_deploy \
+            compose.yml \
+            "$SERVER_USER@$SERVER_HOST:/home/ubuntu/deployment/compose.yml"
+          scp -i ~/.ssh/id_deploy \
+            traefik/traefik.yml \
+            "$SERVER_USER@$SERVER_HOST:/home/ubuntu/traefik/traefik.yml"
+          scp -i ~/.ssh/id_deploy \
+            .env.traefik \
+            "$SERVER_USER@$SERVER_HOST:/home/ubuntu/deployment/.env.traefik"
+
+      - name: Deploy Traefik
+        env:
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" 'bash -se' <<'REMOTE'
+          set -euo pipefail
+          cd /home/ubuntu/deployment
+
+          chmod 600 .env.traefik
+          touch /home/ubuntu/traefik/acme.json
+          chmod 600 /home/ubuntu/traefik/acme.json
+
+          docker compose --env-file .env.traefik -f compose.yml pull traefik
+          docker compose --env-file .env.traefik -f compose.yml \
+            up -d --no-deps traefik
+
+          curl --fail --silent --show-error \
+            -H 'Host: scicommons.org' \
+            http://127.0.0.1/ > /dev/null
+          docker compose --env-file .env.traefik -f compose.yml ps traefik
+          REMOTE
