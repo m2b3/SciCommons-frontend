@@ -1,4 +1,4 @@
-name: CI
+name: Validate Deployment Configuration
 
 on:
   push:
@@ -7,68 +7,113 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: '0 0 * * 1' # Runs every Monday at midnight UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.11.1
+      - name: Lint GitHub Actions workflows
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+        run: |
+          set -euo pipefail
 
-      - name: Install dependencies
-        run: yarn install
+          actionlint_dir="$(mktemp -d)"
+          archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          base_url="https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}"
 
-      - name: Run ESLint
-        run: yarn lint
+          curl --fail --silent --show-error --location \
+            "$base_url/$archive" \
+            --output "$actionlint_dir/$archive"
+          curl --fail --silent --show-error --location \
+            "$base_url/actionlint_${ACTIONLINT_VERSION}_checksums.txt" \
+            --output "$actionlint_dir/checksums.txt"
 
-      - name: Run Prettier
-        run: yarn prettier -- --check .
+          (
+            cd "$actionlint_dir"
+            grep "  $archive$" checksums.txt | sha256sum --check
+            tar -xzf "$archive"
+          )
 
-      - name: Check for TypeScript errors
-        run: yarn tsc --noEmit
+          "$actionlint_dir/actionlint" -color=false
 
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
+      - name: Check required deployment files
+        run: |
+          set -euo pipefail
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+          required_files=(
+            compose.yml
+            traefik/traefik.yml
+            .github/workflows/deploy-test.yml
+            .github/workflows/deploy-alphatest.yml
+            .github/workflows/deploy-landing.yml
+            .github/workflows/deploy-infrastructure.yml
+            .github/workflows/reusable-deploy.yml
+            docs/DEPLOYMENT.md
+          )
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.11.1
+          for path in "${required_files[@]}"; do
+            test -f "$path"
+          done
 
-      - name: Install dependencies
-        run: yarn install
+          obsolete_files=(
+            docker-compose.staging.yml
+            docker-compose.alphatest.yml
+            docker-compose.prod.yml
+            docker-compose.traefik.yml
+            .github/workflows/add-ssh-key.yml
+            .github/workflows/test-deploy.yml
+            .github/workflows/alphatest-deploy.yml
+            .github/workflows/landing-page-deploy.yml
+            .github/workflows/traefik-deploy.yml
+          )
 
-      - name: Run tests
-        run: yarn test
+          for path in "${obsolete_files[@]}"; do
+            test ! -e "$path"
+          done
 
-  build:
-    runs-on: ubuntu-latest
-    needs: [lint, test]
+      - name: Validate canonical Compose configuration
+        run: |
+          set -euo pipefail
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+          trap 'rm -f .env.traefik .env.test .env.alphatest' EXIT
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.11.1
+          printf 'CF_DNS_API_TOKEN=ci-placeholder\n' > .env.traefik
+          printf '%s\n' \
+            'NEXT_PUBLIC_BACKEND_URL=https://example.invalid' \
+            'NEXT_PUBLIC_REALTIME_URL=https://example.invalid' \
+            'NEXT_PUBLIC_UI_SKIN=default' > .env.test
+          cp .env.test .env.alphatest
 
-      - name: Install dependencies
-        run: yarn install
+          docker compose \
+            --env-file .env.traefik \
+            -f compose.yml \
+            config --quiet
 
-      - name: Build project
-        run: yarn build
+      - name: Check secret-file hygiene
+        run: |
+          set -euo pipefail
+
+          tracked_sensitive="$(
+            git ls-files |
+              grep -E '(^|/)(\.env([^/]*)?|acme\.json|.*\.(pem|key))$' |
+              grep -v '^\.env\.example$' || true
+          )"
+
+          if [ -n "$tracked_sensitive" ]; then
+            printf 'Sensitive files are tracked:\n%s\n' "$tracked_sensitive"
+            exit 1
+          fi
+
+          if git grep -n -E 'BEGIN (OPENSSH|RSA|EC|DSA) PRIVATE KEY'; then
+            echo 'A private key appears to be committed.'
+            exit 1
+          fi

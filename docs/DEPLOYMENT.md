@@ -6,6 +6,11 @@ application and Traefik deployments. The migrated host is already running; the
 workflow changes in this repository make future deployments use the same
 layout.
 
+`main` is the deployment control branch. CI on `main` validates the GitHub
+Actions workflows, canonical Compose configuration, required deployment files,
+and secret-file hygiene. It intentionally does not run Jest or build the stale
+application snapshot on `main`.
+
 Development and promotion follow this path:
 
 1. Active frontend development happens on `sureshDev`.

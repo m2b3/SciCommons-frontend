@@ -45,6 +45,10 @@ docker compose -f docker-compose.dev.yml up -d
 
 ## Deployment
 
+`main` is the deployment control branch; its application snapshot is not the
+source for a deployed frontend. Application development happens on
+`sureshDev`, then is promoted to `test` and `alphatest`.
+
 The test, alpha-test, static landing-page, and Traefik workflows are documented
 in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Server deployments use the
 canonical [compose.yml](compose.yml); each deployment workflow builds an
