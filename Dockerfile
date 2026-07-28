@@ -7,23 +7,23 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# Install dependencies based on the preferred package manager. The extended
+# Yarn timeout makes clean Docker builds resilient to slow public registries.
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile --network-timeout 600000; \
   elif [ -f package-lock.json ]; then npm ci; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# Accept build arguments
-ARG NEXT_PUBLIC_BACKEND_URL
-
 # 2. Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 
-# Declare ARG again here
+# Changed by Codex GPT-5 on 2026-07-28.
+# All three public browser settings are explicit build inputs so standalone
+# images behave consistently in local, test, and alpha-test builds.
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_REALTIME_URL
 ARG NEXT_PUBLIC_UI_SKIN
@@ -31,9 +31,15 @@ ARG NEXT_PUBLIC_UI_SKIN
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN echo "NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL" >> .env
-RUN echo "NEXT_PUBLIC_REALTIME_URL=$NEXT_PUBLIC_REALTIME_URL" >> .env
-RUN echo "NEXT_PUBLIC_UI_SKIN=$NEXT_PUBLIC_UI_SKIN" >> .env
+# Fail with variable names only so a malformed build cannot silently produce a
+# browser bundle with unusable public endpoints.
+RUN test -n "$NEXT_PUBLIC_BACKEND_URL" \
+  && test -n "$NEXT_PUBLIC_REALTIME_URL" \
+  && test -n "$NEXT_PUBLIC_UI_SKIN" \
+  && printf '%s\n' \
+  "NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL" \
+  "NEXT_PUBLIC_REALTIME_URL=$NEXT_PUBLIC_REALTIME_URL" \
+  "NEXT_PUBLIC_UI_SKIN=$NEXT_PUBLIC_UI_SKIN" > .env
 RUN npm run build
 
 # 3. Production image, copy all the files and run next

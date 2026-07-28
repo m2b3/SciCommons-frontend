@@ -1,24 +1,18 @@
+name: scicommons-frontend-local
+
 services:
-  scicommons:
-    container_name: scicommons
-    # Fixed by Codex GPT-5 on 2026-02-16
-    # Problem: Compose used only a pre-tagged image and could not read build args from .env.
-    # Solution: Add local build config and map required NEXT_PUBLIC_* args from .env.
-    # Result: `docker compose up --build` rebuilds image with backend, realtime, and skin values.
+  frontend:
+    # Changed by Codex GPT-5 on 2026-07-28.
+    # Build the current checkout with public browser configuration so local
+    # testing remains independent of GHCR and the infrastructure repository.
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
-        NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL}
-        NEXT_PUBLIC_UI_SKIN: ${NEXT_PUBLIC_UI_SKIN}
-    image: scicommons-frontend:latest
-    restart: always
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:?Copy .env.example to .env.local and pass --env-file .env.local}
+        NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL:?Copy .env.example to .env.local and pass --env-file .env.local}
+        NEXT_PUBLIC_UI_SKIN: ${NEXT_PUBLIC_UI_SKIN:?Copy .env.example to .env.local and pass --env-file .env.local}
+    image: scicommons-frontend:local
+    restart: unless-stopped
     ports:
-      - 3000:3000
-    networks:
-      - docker_network
-
-networks:
-  docker_network:
-    driver: bridge
+      - "${FRONTEND_PORT:-3000}:3000"
