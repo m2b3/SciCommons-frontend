@@ -1,3 +1,29 @@
+## 2026-07-28 - Self-Contained Public Frontend Development
+
+Problem: Contributor setup referenced incomplete local environment
+configuration and did not explicitly distinguish public frontend development
+from private production infrastructure.
+
+Root Cause: The environment example listed only the backend URL even though
+the application image also requires realtime and UI-skin values, while the
+README used a tracked-looking `.env` workflow and left infrastructure access
+requirements ambiguous.
+
+Solution: Replaced the README entry point with a numbered contributor path,
+pointed the safe public environment template at the test backend, documented
+host and standalone-container workflows using ignored `.env.local`, hardened
+Compose/build validation for all public build arguments, made the local port
+configurable, extended Yarn's clean-container network timeout, and stated that
+private infra, GHCR, Cloudflare, SSH, and server access are unnecessary.
+
+Result: A contributor can clone `sureshDev`, install dependencies or use
+Docker, and test against the public test backend using only public files in the
+frontend repository.
+
+Files Modified: `.env.example`, `README.md`, `docs/LOCAL_DEVELOPMENT.md`,
+`docker-compose.dev.yml`, `Dockerfile`, `CHANGE_COMMENTS.md` (commit reference:
+pending local commit)
+
 ## 2026-05-05 - ReviewCard Lint Typing and BrowserStack Local Declaration Alignment
 
 Problem: Validation was failing because `ReviewCard.tsx` still used explicit `any` in two mutation error handlers, and `src/tests/global-setup.ts` no longer matched the local `browserstack-local` declaration for the `force` option.
