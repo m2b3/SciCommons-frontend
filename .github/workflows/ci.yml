@@ -45,26 +45,32 @@ jobs:
 
           "$actionlint_dir/actionlint" -color=false
 
-      - name: Check required deployment files
+      # Changed by Codex GPT-5 on 2026-07-28.
+      # Frontend CI now enforces the repository boundary: app-release files
+      # are required, while server Compose and Traefik must remain in infra.
+      - name: Check deployment ownership boundary
         run: |
           set -euo pipefail
 
           required_files=(
-            compose.yml
-            traefik/traefik.yml
             .github/workflows/deploy-test.yml
             .github/workflows/deploy-alphatest.yml
             .github/workflows/deploy-landing.yml
-            .github/workflows/deploy-infrastructure.yml
             .github/workflows/reusable-deploy.yml
             docs/DEPLOYMENT.md
+            Dockerfile
+            docker-compose.dev.yml
+            .env.example
           )
 
           for path in "${required_files[@]}"; do
             test -f "$path"
           done
 
-          obsolete_files=(
+          forbidden_files=(
+            compose.yml
+            traefik
+            .github/workflows/deploy-infrastructure.yml
             docker-compose.staging.yml
             docker-compose.alphatest.yml
             docker-compose.prod.yml
@@ -76,26 +82,34 @@ jobs:
             .github/workflows/traefik-deploy.yml
           )
 
-          for path in "${obsolete_files[@]}"; do
+          for path in "${forbidden_files[@]}"; do
             test ! -e "$path"
           done
 
-      - name: Validate canonical Compose configuration
+          grep -F 'source_ref: test' .github/workflows/deploy-test.yml
+          grep -F 'source_ref: alphatest' .github/workflows/deploy-alphatest.yml
+          grep -F 'source_ref: landing-page' .github/workflows/deploy-landing.yml
+          grep -F '/usr/local/bin/deploy-frontend' .github/workflows/reusable-deploy.yml
+
+          deployment_workflows=(
+            .github/workflows/deploy-test.yml
+            .github/workflows/deploy-alphatest.yml
+            .github/workflows/deploy-landing.yml
+            .github/workflows/reusable-deploy.yml
+          )
+
+          if grep -n -E 'docker compose|ansible-playbook|traefik/traefik\.yml' \
+            "${deployment_workflows[@]}"; then
+            echo 'Frontend workflows still contain infrastructure operations.'
+            exit 1
+          fi
+
+      - name: Validate local frontend Compose configuration
         run: |
           set -euo pipefail
-
-          trap 'rm -f .env.traefik .env.test .env.alphatest' EXIT
-
-          printf 'CF_DNS_API_TOKEN=ci-placeholder\n' > .env.traefik
-          printf '%s\n' \
-            'NEXT_PUBLIC_BACKEND_URL=https://example.invalid' \
-            'NEXT_PUBLIC_REALTIME_URL=https://example.invalid' \
-            'NEXT_PUBLIC_UI_SKIN=default' > .env.test
-          cp .env.test .env.alphatest
-
           docker compose \
-            --env-file .env.traefik \
-            -f compose.yml \
+            --env-file .env.example \
+            --file docker-compose.dev.yml \
             config --quiet
 
       - name: Check secret-file hygiene

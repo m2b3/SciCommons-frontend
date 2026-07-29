@@ -18,9 +18,6 @@ on:
       service:
         required: true
         type: string
-      public_hostname:
-        required: true
-        type: string
       env_file:
         required: true
         type: string
@@ -53,11 +50,27 @@ jobs:
           SERVER_HOST: ${{ vars.SERVER_HOST }}
           SERVER_USER: ${{ vars.SERVER_USER }}
           SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+          SERVICE: ${{ inputs.service }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+          ENV_FILE: ${{ inputs.env_file }}
         run: |
           set -euo pipefail
           test -n "$SERVER_HOST"
           test -n "$SERVER_USER"
           test -n "$SSH_KNOWN_HOSTS"
+
+          # Changed by Codex GPT-5 on 2026-07-28.
+          # Keep caller metadata aligned with the infra command's allowlist so
+          # a deployment cannot push one environment's image under another tag.
+          case "$SERVICE:$IMAGE_TAG:$ENV_FILE" in
+            test:test:.env.test) ;;
+            alphatest:alphatest:.env.alphatest) ;;
+            landing:landing-page:none) ;;
+            *)
+              echo "Unsupported deployment contract: $SERVICE" >&2
+              exit 64
+              ;;
+          esac
 
       - name: Checkout deployment source
         id: source
@@ -129,9 +142,12 @@ jobs:
           SERVER_USER: ${{ vars.SERVER_USER }}
         run: |
           set -euo pipefail
+          remote_path="/home/ubuntu/deployment/$ENV_FILE"
           scp -i ~/.ssh/id_deploy \
             "$ENV_FILE" \
-            "$SERVER_USER@$SERVER_HOST:/home/ubuntu/deployment/$ENV_FILE"
+            "$SERVER_USER@$SERVER_HOST:$remote_path"
+          ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" \
+            "chmod 600 '$remote_path'"
 
       - name: Authenticate deployment host with GHCR
         env:
@@ -144,75 +160,15 @@ jobs:
             ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" \
               "docker login ghcr.io -u '${{ github.actor }}' --password-stdin"
 
-      - name: Deploy service
+      # Changed by Codex GPT-5 on 2026-07-28.
+      # Compose paths, service health checks, locking, and rollback are now
+      # implemented by scicomm_infra instead of duplicated in this workflow.
+      - name: Deploy service through the infrastructure contract
         env:
           SERVER_HOST: ${{ vars.SERVER_HOST }}
           SERVER_USER: ${{ vars.SERVER_USER }}
           SERVICE: ${{ inputs.service }}
-          PUBLIC_HOSTNAME: ${{ inputs.public_hostname }}
-          ENV_FILE: ${{ inputs.env_file }}
-          IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
           ssh -i ~/.ssh/id_deploy "$SERVER_USER@$SERVER_HOST" \
-            bash -s -- \
-            "$SERVICE" "$PUBLIC_HOSTNAME" "$ENV_FILE" "$IMAGE_TAG" <<'REMOTE'
-          set -euo pipefail
-
-          service="$1"
-          public_hostname="$2"
-          env_file="$3"
-          image_tag="$4"
-          image_ref="ghcr.io/m2b3/scicommons-frontend:$image_tag"
-          rollback_ref="ghcr.io/m2b3/scicommons-frontend:rollback-$service"
-
-          cd /home/ubuntu/deployment
-
-          if [ "$env_file" != "none" ]; then
-            chmod 600 "$env_file"
-          fi
-
-          compose=(docker compose --env-file .env.traefik -f compose.yml)
-
-          previous_container="$("${compose[@]}" ps -q "$service" 2>/dev/null || true)"
-          previous_image=""
-          if [ -n "$previous_container" ]; then
-            previous_image="$(docker inspect --format '{{.Image}}' "$previous_container")"
-          fi
-          if [ -n "$previous_image" ]; then
-            docker image tag "$previous_image" "$rollback_ref"
-          fi
-
-          "${compose[@]}" pull "$service"
-
-          "${compose[@]}" up -d --no-deps "$service"
-
-          healthy=false
-          for attempt in $(seq 1 30); do
-            if curl --fail --silent --show-error \
-              --resolve "$public_hostname:443:127.0.0.1" \
-              "https://$public_hostname/" > /dev/null
-            then
-              healthy=true
-              break
-            fi
-            sleep 2
-          done
-
-          if [ "$healthy" != true ]; then
-            "${compose[@]}" logs --tail 100 "$service" || true
-
-            "${compose[@]}" stop "$service" || true
-
-            if [ -n "$previous_image" ]; then
-              docker image tag "$rollback_ref" "$image_ref"
-              "${compose[@]}" up -d --no-deps --force-recreate "$service"
-            fi
-
-            exit 1
-          fi
-
-          "${compose[@]}" ps "$service"
-          docker image rm "$rollback_ref" 2>/dev/null || true
-          docker image prune -f
-          REMOTE
+            /usr/local/bin/deploy-frontend "$SERVICE"

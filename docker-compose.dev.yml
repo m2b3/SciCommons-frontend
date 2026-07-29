@@ -1,13 +1,18 @@
-services:
-  scicommons:
-    container_name: scicommons
-    image: ghcr.io/m2b3/scicommons-frontend:main # Change this to your image name
-    restart: always
-    ports:
-      - 3000:3000
-    networks:
-      - docker_network
+name: scicommons-frontend-local
 
-networks:
-  docker_network:
-    driver: bridge
+services:
+  frontend:
+    # Changed by Codex GPT-5 on 2026-07-28.
+    # Build the current checkout with public browser configuration so local
+    # testing remains independent of GHCR and the infrastructure repository.
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:?Copy .env.example to .env.local and pass --env-file .env.local}
+        NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL:?Copy .env.example to .env.local and pass --env-file .env.local}
+        NEXT_PUBLIC_UI_SKIN: ${NEXT_PUBLIC_UI_SKIN:?Copy .env.example to .env.local and pass --env-file .env.local}
+    image: scicommons-frontend:local
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"

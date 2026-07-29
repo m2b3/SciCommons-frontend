@@ -20,7 +20,6 @@ jobs:
       build_context: .
       image_tag: test
       service: test
-      public_hostname: test.scicommons.org
       env_file: .env.test
     secrets:
       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

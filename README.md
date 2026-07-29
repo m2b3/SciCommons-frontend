@@ -13,35 +13,33 @@
 
 ## Getting Started
 
-Create .env file with following environments:
+Application development happens on `sureshDev`; `main` controls deployments.
+Create feature branches from `sureshDev` and target pull requests there unless a
+maintainer requests otherwise.
 
-```bash
-NEXT_PUBLIC_BACKEND_URL="http://127.0.0.1:8000"
-NEXT_PUBLIC_REALTIME_URL="http://localhost:8888"
-```
-
-Run the development server:
-
-```bash
-# Install dependencies
-yarn install
-
-# Run server
+```powershell
+git clone https://github.com/m2b3/SciCommons-frontend.git
+cd SciCommons-frontend
+git switch sureshDev
+git switch -c feature/my-change
+Copy-Item .env.example .env.local
+yarn install --frozen-lockfile
 yarn dev
 ```
 
-OR Running app in docker container
+The committed example points to the public test backend. Open
+<http://localhost:3000> after the development server starts.
 
-```bash
-# Build docker image locally
-docker build . --build-arg NEXT_PUBLIC_BACKEND_URL=http://localhost:8000 -t scicommons-frontend:latest
+To test the production-style standalone container instead:
 
-# Before running docker compose, update the docker image name in docker-compose.dev.yml file
-docker compose -f docker-compose.dev.yml up
-
-# detached mode
-docker compose -f docker-compose.dev.yml up -d
+```powershell
+docker compose --env-file .env.local -f docker-compose.dev.yml up --build
 ```
+
+Neither workflow requires the private `scicomm_infra` repository, GHCR
+credentials, Cloudflare credentials, SSH keys, or access to a SciCommons
+server. See [Local frontend development](docs/LOCAL_DEVELOPMENT.md) for
+prerequisites, tests, Docker teardown, configuration, and troubleshooting.
 
 ## Deployment
 
