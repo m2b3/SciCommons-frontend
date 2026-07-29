@@ -23,6 +23,28 @@ frontend repository.
 Files Modified: `.env.example`, `README.md`, `docs/LOCAL_DEVELOPMENT.md`,
 `docker-compose.dev.yml`, `Dockerfile`, `CHANGE_COMMENTS.md` (commit reference:
 pending local commit)
+## 2026-07-25 - AlphaXiv-style article feed (demo)
+
+Problem: The front page was a static marketing hero ("Personalized feeds coming soon"). We want to move to an AlphaXiv-style, feed-first front page: a scannable list of paper cards, communities as left-hand navigation that filters the feed, and per-article private notes + public comments on the right — ahead of the real feed backend (lands end of next week).
+
+Root Cause: N/A (new feature). The real article feed API is not ready yet, so a self-contained demo is needed that can later swap onto it.
+
+Solution:
+- New `(feed)` route group with its own AlphaXiv-style shell (`src/app/(feed)/layout.tsx`): slim left icon rail (Explore / classic-app / theme toggle) + top search placeholder.
+- `/feed` (`src/app/(feed)/feed/page.tsx`): 3 columns — communities sidebar, single-column paper feed, notes/comments info panel. `?community=` filters the feed.
+- `/feed/article/[pmid]` (`.../article/[pmid]/page.tsx`): reader with Blog/Paper tabs on the left, and My Notes / Comments / Similar on the right.
+- Data source: 100 real PubMed articles fetched via E-utilities, bundled as `src/data/pubmedFeed.json`, exposed through pure accessors in `src/lib/feed/mockFeed.ts` (single swap-point for the real feed API).
+- Private notes + public comments + like/bookmark persist client-side in `src/stores/demoFeedStore.ts` (Zustand + localStorage), keyed by pmid. To be swapped for a backend private-Notes model + Reviews/Discussions APIs later.
+- Components under `src/components/feed/*` (CommunitySidebar, FeedList, FeedArticleCard, ArticleReader, RightPanel, NotesTab, CommentsTab). Reuses `RenderParsedHTML` (LaTeX/markdown), `AbstractText`, `TabNavigation`, `Button`, and existing theme tokens (light + dark).
+- `src/app/(home)/page.tsx` now redirects to `/feed`; the classic app (`/articles`, `/communities`, article detail) is untouched and reachable from the feed nav.
+- Merges ideas from `notes/Possibilities.md`: feed-first front page, color-coded multi-source groundwork (source badge), preprint-viewer pattern, private notes, and a Zotero hook (disabled "Connect Zotero" stub).
+- Fixed the feed theme toggle to use next-themes `resolvedTheme` so one click always flips the visible theme even when the stored preference is `system`.
+
+Result: A runnable, self-contained AlphaXiv-style front page. Verified end-to-end in-browser: feed renders 99 PubMed cards, community filter scopes the list, article reader shows Blog/Paper, private notes render LaTeX+markdown and persist across reload, comments (General/Research/Anonymous) and Similar work, and light/dark themes both render correctly.
+
+Files Modified/Added: src/data/pubmedFeed.json (new), src/lib/feed/mockFeed.ts (new), src/stores/demoFeedStore.ts (new), src/app/(feed)/layout.tsx (new), src/app/(feed)/feed/page.tsx (new), src/app/(feed)/feed/article/[pmid]/page.tsx (new), src/components/feed/{feedFormat.ts,CommunitySidebar,FeedList,FeedArticleCard,ArticleReader,RightPanel,NotesTab,CommentsTab}.tsx (new), src/app/(home)/page.tsx (redirect). No `src/api/**` files were touched.
+
+Note: `RenderParsedHTML` logs a benign "Content sanitization failed" warning during SSR (DOMPurify has no DOM server-side); it falls back to escaped text on the server and renders fully on the client. Pre-existing shared-component behavior, not introduced here.
 
 ## 2026-05-05 - ReviewCard Lint Typing and BrowserStack Local Declaration Alignment
 

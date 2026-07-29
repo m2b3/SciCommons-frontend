@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 
-interface ErrorResponse {
+export interface ErrorResponse {
   response?: {
     data?: {
       message?: string;
