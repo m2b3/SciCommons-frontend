@@ -19,6 +19,10 @@ const mockQueryClient = {
   invalidateQueries: jest.fn(),
 };
 
+// Hoisted so tests can assert on it. Returning a fresh jest.fn() from getState() would
+// discard the calls before an assertion could see them.
+const mockMarkArticleHasNewEvent = jest.fn();
+
 const mockAuthState = {
   accessToken: null as string | null,
   isAuthenticated: false,
@@ -91,7 +95,7 @@ jest.mock('@/stores/ephemeralUnreadStore', () => ({
 jest.mock('@/stores/subscriptionUnreadStore', () => ({
   useSubscriptionUnreadStore: {
     getState: () => ({
-      markArticleHasNewEvent: jest.fn(),
+      markArticleHasNewEvent: mockMarkArticleHasNewEvent,
     }),
   },
 }));
@@ -320,6 +324,153 @@ describe('useRealtime', () => {
       content: '[deleted]',
       deleted_at: '2026-06-27T00:00:00Z',
     });
+
+    unmount();
+  });
+
+  it('updates review caches stored under the custom [reviews, articleId, communityId] key', () => {
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'new_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: 'New review', content: 'New content', rating: 5 },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:00Z',
+        event_id: 1,
+      },
+    ]);
+
+    const updater = getMatchingSetQueriesDataUpdater(['reviews', 42, 7]);
+    const updated = updater({
+      data: { items: [{ id: 101, subject: 'Existing review' }], total: 1 },
+    }) as { data: { items: Array<{ id: number }>; total: number } };
+
+    expect(updated.data.items.map((review) => review.id)).toEqual([202, 101]);
+    expect(updated.data.total).toBe(2);
+
+    unmount();
+  });
+
+  it('does not treat another article’s custom reviews key as a match', () => {
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'new_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: 'New review' },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:00Z',
+        event_id: 1,
+      },
+    ]);
+
+    // Different article, and same article in a different community.
+    expect(() => getMatchingSetQueriesDataUpdater(['reviews', 99, 7])).toThrow();
+    expect(() => getMatchingSetQueriesDataUpdater(['reviews', 42, 8])).toThrow();
+
+    unmount();
+  });
+
+
+  it('marks the article as having a new event for review and review-comment creates', () => {
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'new_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: 'New review' },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:00Z',
+        event_id: 1,
+      },
+    ]);
+
+    expect(mockMarkArticleHasNewEvent).toHaveBeenCalledWith(7, 42);
+
+    mockMarkArticleHasNewEvent.mockClear();
+
+    emitRealtimeEvents([
+      {
+        type: 'new_review_comment',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          comment_id: 303,
+          parent_id: null,
+          review_comment: { id: 303, content: 'Nice work', replies: [] },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:01Z',
+        event_id: 2,
+      },
+    ]);
+
+    expect(mockMarkArticleHasNewEvent).toHaveBeenCalledWith(7, 42);
+
+    unmount();
+  });
+
+  it('does not mark the article unread for review updates or deletions', () => {
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'updated_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: 'Edited' },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:00Z',
+        event_id: 1,
+      },
+      {
+        type: 'deleted_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: '[deleted]' },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:01Z',
+        event_id: 2,
+      },
+      {
+        type: 'deleted_review_comment',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          comment_id: 303,
+          review_comment: { id: 303, content: '[deleted]', replies: [] },
+        },
+        community_ids: [7],
+        timestamp: '2026-07-29T00:00:02Z',
+        event_id: 3,
+      },
+    ]);
+
+    expect(mockMarkArticleHasNewEvent).not.toHaveBeenCalled();
 
     unmount();
   });

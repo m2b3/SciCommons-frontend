@@ -164,6 +164,22 @@ function hasExactQueryKey(queryKey: readonly unknown[], key: string): boolean {
   return Array.isArray(queryKey) && queryKey[0] === key;
 }
 
+function matchesReviewListQueryKey(
+  queryKey: readonly unknown[],
+  articleId: number,
+  communityId?: number
+): boolean {
+  if (matchesQueryKey(queryKey, `/api/articles/${articleId}/reviews/`)) {
+    return true;
+  }
+
+  if (!Array.isArray(queryKey) || queryKey.length < 2) return false;
+  if (queryKey[0] !== 'reviews' || queryKey[1] !== articleId) return false;
+
+  // Only compare community when the event carries one, so a key that omits it still matches.
+  return communityId === undefined || queryKey[2] === undefined || queryKey[2] === communityId;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
@@ -626,12 +642,11 @@ export function useRealtime() {
 
   const invalidateReviewCaches = useCallback(
     (event: RealtimeDiscussionCommentEvent) => {
-      const { article_id: articleId, review_id: reviewId } = event.data;
+      const { article_id: articleId, review_id: reviewId, community_id: communityId } = event.data;
 
       if (articleId) {
         queryClient.invalidateQueries({
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+          predicate: (query) => matchesReviewListQueryKey(query.queryKey, articleId, communityId),
         });
       }
 
@@ -647,7 +662,12 @@ export function useRealtime() {
 
   const updateReviewCaches = useCallback(
     (event: RealtimeDiscussionCommentEvent) => {
-      const { article_id: articleId, review_id: reviewId, review } = event.data;
+      const {
+        article_id: articleId,
+        review_id: reviewId,
+        community_id: communityId,
+        review,
+      } = event.data;
       const resolvedReviewId = getNumericId(review) ?? reviewId;
 
       if (!articleId || !resolvedReviewId || !review) {
@@ -657,8 +677,7 @@ export function useRealtime() {
 
       queryClient.setQueriesData(
         {
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+          predicate: (query) => matchesReviewListQueryKey(query.queryKey, articleId, communityId),
         },
         (oldData: unknown) => {
           if (!isRecord(oldData) || !('data' in oldData)) return oldData;
@@ -724,12 +743,11 @@ export function useRealtime() {
 
   const invalidateReviewCommentCaches = useCallback(
     (event: RealtimeDiscussionCommentEvent) => {
-      const { article_id: articleId, review_id: reviewId } = event.data;
+      const { article_id: articleId, review_id: reviewId, community_id: communityId } = event.data;
 
       if (articleId) {
         queryClient.invalidateQueries({
-          predicate: (query) =>
-            matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+          predicate: (query) => matchesReviewListQueryKey(query.queryKey, articleId, communityId),
         });
       }
 
@@ -746,7 +764,12 @@ export function useRealtime() {
 
   const updateReviewCommentCaches = useCallback(
     (event: RealtimeDiscussionCommentEvent) => {
-      const { article_id: articleId, review_id: reviewId, parent_id: parentId } = event.data;
+      const {
+        article_id: articleId,
+        review_id: reviewId,
+        parent_id: parentId,
+        community_id: communityId,
+      } = event.data;
       const reviewComment = event.data.review_comment ?? event.data.comment;
       const resolvedCommentId = getNumericId(reviewComment);
 
@@ -779,7 +802,7 @@ export function useRealtime() {
           queryClient.setQueriesData(
             {
               predicate: (query) =>
-                matchesQueryKey(query.queryKey, `/api/articles/${articleId}/reviews/`),
+                matchesReviewListQueryKey(query.queryKey, articleId, communityId),
             },
             (oldData: unknown) => {
               if (!isRecord(oldData) || !('data' in oldData)) return oldData;
@@ -1130,6 +1153,25 @@ export function useRealtime() {
 
         if (REVIEW_COMMENT_EVENT_TYPES.includes(event.type)) {
           updateReviewCommentCaches(discCommentEvent);
+        }
+
+        /* Fixed by Claude on 2026-07-29
+           Who: Claude
+           What: Mark the article as having a new event when a review or review comment is
+                 created, matching what the discussion and comment branches already do.
+           Why: Review realtime events updated the caches but never touched the unread store,
+                 so a new review in a private community produced no unread dot in the sidebar,
+                 nav bar or tab title while a new discussion on the same article did.
+           How: Creates only — updates and deletions are not new activity, mirroring the
+                 `new_discussion` / `new_comment` conditions above. The ephemeral NEW badge is
+                 deliberately not set: EphemeralEntityType has no review variant and no review
+                 component reads that store, so it would be dead code. */
+        if (
+          (event.type === 'new_review' || event.type === 'new_review_comment') &&
+          communityId &&
+          articleId
+        ) {
+          useSubscriptionUnreadStore.getState().markArticleHasNewEvent(communityId, articleId);
         }
 
         // Fixed by Claude Sonnet 4.5 on 2026-02-08
