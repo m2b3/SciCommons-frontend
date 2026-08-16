@@ -131,6 +131,108 @@ The private `scicomm_infra` repository remains the source of truth for host
 provisioning, Compose, Traefik, certificates, routing, and the host-side
 deployment command.
 
+## How to continue frontend development
+
+Do normal development on a workstation or dedicated development environment,
+not on the old frontend host and not on `newfrontend`. The production host
+should remain a deployment target containing no development checkout.
+
+### 1. Start from the active development branch
+
+For a new checkout:
+
+```bash
+git clone https://github.com/m2b3/SciCommons-frontend.git
+cd SciCommons-frontend
+git switch sureshDev
+git pull --ff-only origin sureshDev
+git switch -c feature/describe-the-change
+```
+
+For an existing clean development checkout:
+
+```bash
+git fetch origin --prune
+git switch sureshDev
+git pull --ff-only origin sureshDev
+git switch -c feature/describe-the-change
+```
+
+Do not start application features from `main`. `main` is the trusted release
+workflow and documentation branch; `sureshDev` is the active application
+development branch.
+
+### 2. Configure and run the frontend locally
+
+Use Node.js 20 and Yarn, then create the ignored local environment file:
+
+```bash
+cp .env.example .env.local
+yarn install --frozen-lockfile
+yarn dev
+```
+
+Open `http://localhost:3000`. The committed example uses the public Test
+backend, so ordinary frontend work does not require a local backend, production
+credentials, the private infrastructure repository, or access to either
+frontend server.
+
+Never commit `.env.local`, tokens, passwords, private keys, ACME data, or
+production configuration. `NEXT_PUBLIC_*` values are browser-visible build
+configuration and must not contain secrets.
+
+### 3. Validate and publish the feature branch
+
+Before opening a pull request, run:
+
+```bash
+yarn test
+yarn lint
+yarn check-types
+git status
+git diff --check
+```
+
+Commit only the intended files and push the feature branch:
+
+```bash
+git add <the-files-you-changed>
+git commit -m "Describe the frontend change"
+git push -u origin feature/describe-the-change
+```
+
+Open a pull request with:
+
+```text
+base:    sureshDev
+compare: feature/describe-the-change
+```
+
+Review and merge normally. Do not force-push shared release branches.
+
+### 4. Promote an accepted change through the environments
+
+Development and deployment are separate operations:
+
+1. Open and merge a reviewed pull request from `sureshDev` into `test`.
+2. In GitHub Actions, dispatch **Deploy Test Frontend** using the workflow from
+   `main`.
+3. Verify the Test site and its backend/realtime behavior.
+4. When that exact Test release is accepted, open and merge a reviewed pull
+   request from `test` into `alphatest`.
+5. Dispatch **Deploy Alpha-Test Frontend** using the workflow from `main`.
+6. Verify Alpha-test, including login, realtime behavior, comments, reviews,
+   notifications, and its configured UI skin.
+
+Dispatching a workflow does not promote or merge code. Merge the intended
+branch first, then dispatch the corresponding release workflow from `main`.
+Landing-page development and deployment remain independent and may be handled
+only when landing changes are needed.
+
+For more local setup and troubleshooting detail, see
+[`docs/LOCAL_DEVELOPMENT.md`](LOCAL_DEVELOPMENT.md). For release ownership and
+workflow behavior, see [`docs/DEPLOYMENT.md`](DEPLOYMENT.md).
+
 ## Recovery material that must leave the old host
 
 Before the old server is retired, preserve these in secure off-server storage,
