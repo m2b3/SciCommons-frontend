@@ -129,6 +129,40 @@ NEXT_PUBLIC_REALTIME_URL=http://host.docker.internal:8888
 Linux Docker Engine may require an explicit host-gateway mapping. That
 optional integration is outside the default test-backend workflow.
 
+## Access a remote development stack through SSH
+
+When the frontend and local backend run on a remote development server, do
+not publish the development services directly to the internet. Forward their
+loopback ports through SSH instead. From the developer's computer, run:
+
+```bash
+ssh \
+  -L 3000:127.0.0.1:3000 \
+  -L 8000:127.0.0.1:8000 \
+  -L 8888:127.0.0.1:8888 \
+  SERVER_USER@SERVER_PUBLIC_IP
+```
+
+Keep that SSH session open and browse to <http://localhost:3000> on the
+developer's computer. Configure the remote frontend with:
+
+```dotenv
+NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
+NEXT_PUBLIC_REALTIME_URL=http://127.0.0.1:8888
+NEXT_PUBLIC_UI_SKIN=default
+FRONTEND_PORT=3000
+```
+
+These loopback URLs work because the browser reaches ports 8000 and 8888
+through the SSH forwards. Without the forwards, `127.0.0.1` in browser code
+refers to the developer's computer, not the remote server.
+
+Only SSH must be reachable through the server's cloud firewall or security
+group. Do not open the development ports to the public internet. In
+particular, PostgreSQL (normally 5432) and Redis (normally 6379) must remain
+private. Prefer binding published development ports to `127.0.0.1` on the
+remote host as an additional safeguard.
+
 ## Troubleshooting
 
 - **Compose reports a missing variable:** recreate `.env.local` from
