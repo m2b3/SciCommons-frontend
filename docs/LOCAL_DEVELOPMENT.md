@@ -1,5 +1,10 @@
 # Local frontend development
 
+For the complete path from an already-running local backend/database through
+frontend setup, tests, GitHub pull requests, releases, and the separate
+operator-only Ansible workflow, see
+[`NEW_DEVELOPER_SETUP.md`](NEW_DEVELOPER_SETUP.md).
+
 SciCommons frontend development is self-contained in this public repository.
 The default contributor configuration uses the public test backend, so a
 frontend contributor does not need to run a backend locally.

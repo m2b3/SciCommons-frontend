@@ -39,7 +39,9 @@ docker compose --env-file .env.local -f docker-compose.dev.yml up --build
 Neither workflow requires the private `scicomm_infra` repository, GHCR
 credentials, Cloudflare credentials, SSH keys, or access to a SciCommons
 server. See [Local frontend development](docs/LOCAL_DEVELOPMENT.md) for
-prerequisites, tests, Docker teardown, configuration, and troubleshooting.
+prerequisites, tests, Docker teardown, configuration, and troubleshooting. New
+contributors who already have the backend and database running should follow
+the complete [developer setup and release guide](docs/NEW_DEVELOPER_SETUP.md).
 
 ## Deployment
 
@@ -47,10 +49,11 @@ prerequisites, tests, Docker teardown, configuration, and troubleshooting.
 source for a deployed frontend. Application development happens on
 `sureshDev`, then is promoted to `test` and `alphatest`.
 
-The test, alpha-test, static landing-page, and Traefik workflows are documented
-in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Server deployments use the
-canonical [compose.yml](compose.yml); each deployment workflow builds an
-explicit image tag and updates only its own service.
+The Test, Alpha-test, and static Landing workflows are documented in
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Production Compose, Traefik, host
+provisioning, and the host-side deployment command belong exclusively to the
+private `scicomm_infra` repository. Routine frontend releases update only the
+selected application service and never run Ansible.
 
 # Theming
 
