@@ -253,20 +253,32 @@ git log -1 --oneline
 Do not provision from an old frontend checkout or migration archive. Read the
 current private README and workflow definitions first; they are authoritative.
 
-Where the current private repository retains `requirements.yml`,
-`inventory.yml`, and `provision.yml`, the local validation shape is:
+Its current non-mutating validation commands are:
 
 ```bash
-ansible-galaxy collection install -r requirements.yml
-ansible-playbook --syntax-check provision.yml
-ansible-playbook provision.yml --check --diff
+ansible-playbook -i localhost, -c local provision.yml --syntax-check
+ansible-lint provision.yml
+docker compose --env-file .env.traefik -f files/compose.yml config --quiet
 ```
+
+The Compose check requires the placeholder environment files documented in
+the private repository; never commit those files or real values. A check-mode
+review of a real host uses a direct inventory and the Cloudflare token via the
+environment, following the private README exactly.
 
 Before a real apply, verify the exact inventory target and SSH host key,
 review every check-mode difference, confirm protected secret delivery, and
 obtain required approval. The supported production path is the private
 repository's protected **Apply Frontend Infrastructure** workflow from its
-current default branch.
+current default branch. An authorized operator may dispatch it with:
+
+```bash
+gh workflow run apply.yml --repo m2b3/scicomm_infra --ref main
+```
+
+For optional sibling-repository integration testing, use the private repo's
+`scripts/dev-up.sh` or `scripts/dev-up.ps1`; these build the local frontend and
+do not contact the production server.
 
 After apply, operators should confirm the deployment command and containers:
 
