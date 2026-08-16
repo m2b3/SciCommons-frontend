@@ -58,10 +58,21 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
         // toast.info('You are already logged in');
         // Redirect authenticated users away from auth pages
         const requestedRedirect = searchParams?.get('redirect');
-        const isExtensionAuthRedirect = requestedRedirect?.startsWith('/auth/extension');
+        // `searchParams.get` returns string | null, so the null has to be eliminated here or
+        // `yarn check-types` fails: router.replace does not accept null.
+        const isExtensionAuthRedirect =
+          !!requestedRedirect && requestedRedirect.startsWith('/auth/extension');
         router.replace(isExtensionAuthRedirect ? requestedRedirect : redirectPath);
       }
-    }, [isInitializing, isAuthenticated, router, requireAuth, getPreviousPath, pathname, searchParams]);
+    }, [
+      isInitializing,
+      isAuthenticated,
+      router,
+      requireAuth,
+      getPreviousPath,
+      pathname,
+      searchParams,
+    ]);
 
     if (isInitializing) {
       return <Loader />;
