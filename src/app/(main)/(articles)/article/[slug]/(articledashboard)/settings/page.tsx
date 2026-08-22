@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { useSearchParams } from 'next/navigation';
+
 import { Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMediaQuery } from 'usehooks-ts';
@@ -20,7 +22,9 @@ const ArticleSettings = ({ params }: { params: { slug: string } }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const axiosConfig = { headers: { Authorization: `Bearer ${accessToken}` } };
   // const [activeTab, setActiveTab] = React.useState<ActiveTab>('Details');
-  const [isEditEnabled, setIsEditEnabled] = useState(false);
+  const searchParams = useSearchParams();
+  const isEditRequested = searchParams?.get('edit') === 'true';
+  const [isEditEnabled, setIsEditEnabled] = useState(isEditRequested);
   const isDesktop = useMediaQuery(`(min-width: ${SCREEN_WIDTH_SM}px)`);
 
   const { data, isPending, error } = useArticlesApiGetArticle(
