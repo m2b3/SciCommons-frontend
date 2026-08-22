@@ -164,20 +164,39 @@ function hasExactQueryKey(queryKey: readonly unknown[], key: string): boolean {
   return Array.isArray(queryKey) && queryKey[0] === key;
 }
 
+// A review list cache only ever holds one community's reviews: list_reviews filters to
+// `community_id` when it is given and to community=None when it is not
+// (SciCommons-backend/articles/review_api.py). So an event may only touch a cached list whose
+// community is exactly the event's - matching on the article alone let a private community's
+// review land in a sibling community's list and in the no-community list.
+function reviewListCommunityId(value: unknown): number | undefined {
+  return typeof value === 'number' && value > 0 ? value : undefined;
+}
+
 function matchesReviewListQueryKey(
   queryKey: readonly unknown[],
   articleId: number,
   communityId?: number
 ): boolean {
-  if (matchesQueryKey(queryKey, `/api/articles/${articleId}/reviews/`)) {
-    return true;
+  if (!Array.isArray(queryKey) || queryKey.length < 1) return false;
+
+  const eventCommunityId = reviewListCommunityId(communityId);
+
+  // Generated key: [`/api/articles/<id>/reviews/`, params?] - params carries community_id.
+  if (queryKey[0] === `/api/articles/${articleId}/reviews/`) {
+    const params = queryKey[1];
+    return (
+      reviewListCommunityId(isRecord(params) ? params.community_id : undefined) ===
+      eventCommunityId
+    );
   }
 
-  if (!Array.isArray(queryKey) || queryKey.length < 2) return false;
-  if (queryKey[0] !== 'reviews' || queryKey[1] !== articleId) return false;
+  // Custom key from ArticlePreviewSection: ['reviews', articleId, communityId].
+  if (queryKey.length >= 2 && queryKey[0] === 'reviews' && queryKey[1] === articleId) {
+    return reviewListCommunityId(queryKey[2]) === eventCommunityId;
+  }
 
-  // Only compare community when the event carries one, so a key that omits it still matches.
-  return communityId === undefined || queryKey[2] === undefined || queryKey[2] === communityId;
+  return false;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -253,7 +253,10 @@ describe('useRealtime', () => {
       },
     ]);
 
-    const updater = getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/']);
+    const updater = getMatchingSetQueriesDataUpdater([
+      '/api/articles/42/reviews/',
+      { community_id: 7 },
+    ]);
     const updated = updater({
       data: {
         items: [
@@ -302,7 +305,10 @@ describe('useRealtime', () => {
       },
     ]);
 
-    const updater = getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/']);
+    const updater = getMatchingSetQueriesDataUpdater([
+      '/api/articles/42/reviews/',
+      { community_id: 7 },
+    ]);
     const updated = updater({
       data: {
         items: [
@@ -378,6 +384,56 @@ describe('useRealtime', () => {
     // Different article, and same article in a different community.
     expect(() => getMatchingSetQueriesDataUpdater(['reviews', 99, 7])).toThrow();
     expect(() => getMatchingSetQueriesDataUpdater(['reviews', 42, 8])).toThrow();
+
+    unmount();
+  });
+
+  it('does not leak a community review into another community or the no-community list', () => {
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'new_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: 'Private community review' },
+        },
+        community_ids: [7],
+        timestamp: '2026-08-22T00:00:00Z',
+        event_id: 1,
+      },
+    ]);
+
+    // The generated key carries the community in its params object. Matching on the article
+    // portion of the URL alone let this event rewrite every cached list for the article.
+    expect(() =>
+      getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/', { community_id: 8 }])
+    ).toThrow();
+
+    // list_reviews serves community=None reviews when community_id is omitted, so neither of
+    // these caches may receive a community review.
+    expect(() =>
+      getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/', {}])
+    ).toThrow();
+    expect(() => getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/'])).toThrow();
+
+    // Same article id embedded in a different endpoint must not match either.
+    expect(() =>
+      getMatchingSetQueriesDataUpdater(['/api/articles/420/reviews/', { community_id: 7 }])
+    ).toThrow();
+
+    // The correctly scoped cache still updates.
+    const updater = getMatchingSetQueriesDataUpdater([
+      '/api/articles/42/reviews/',
+      { community_id: 7 },
+    ]);
+    const updated = updater({
+      data: { items: [{ id: 101 }], total: 1 },
+    }) as { data: { items: Array<{ id: number }>; total: number } };
+
+    expect(updated.data.items.map((review) => review.id)).toEqual([202, 101]);
 
     unmount();
   });
@@ -560,7 +616,10 @@ describe('useRealtime', () => {
       is_deleted: true,
     });
 
-    const reviewListUpdater = getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/']);
+    const reviewListUpdater = getMatchingSetQueriesDataUpdater([
+      '/api/articles/42/reviews/',
+      { community_id: 7 },
+    ]);
     const updatedReviews = reviewListUpdater({
       data: {
         items: [{ id: 202, comments_count: 3 }],
