@@ -184,7 +184,7 @@ const DisplayArticle: React.FC<DisplayArticleProps> = ({ article }) => {
 
         <div className="mb-2 flex w-full items-center justify-end gap-2 sm:absolute sm:bottom-0 sm:right-0 sm:mb-0 sm:w-fit">
           {article.is_submitter && (
-            <Link href={`/article/${article.slug}/settings`}>
+            <Link href={`/article/${article.slug}/settings?edit=true`}>
               <div className="rounded-lg border border-common-contrast bg-white px-4 py-2 text-black res-text-xs dark:bg-black dark:text-white">
                 Edit Article
               </div>

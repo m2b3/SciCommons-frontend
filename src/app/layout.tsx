@@ -49,29 +49,34 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryClientProvider>
-      <html lang="en">
+      <html lang="en" className="bg-black">
         <head>
           {/* Preload commonly used assets */}
           <link rel="preload" href="/images/assets/user-icon.png" as="image" type="image/png" />
         </head>
-        <body className={cn(inter.className, 'relative bg-common-background')}>
-          <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
-          <SessionExpirationDialog />
-          <PathTracker />
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <TooltipProvider delayDuration={10}>
-              <main className="flex-grow">{children}</main>
-            </TooltipProvider>
-          </ThemeProvider>
-          <RealtimeStatus className="fixed left-1/2 top-4 z-[1000] -translate-x-1/2 bg-common-cardBackground md:bottom-4 md:left-auto md:right-2 md:top-auto md:translate-x-0" />
-          <BottomBar />
-          <SonnerToaster
-            richColors
-            position="top-center"
-            className="top-16"
-            closeButton
-            duration={3000}
-          />
+        <body className={cn(inter.className, 'relative bg-black')}>
+          <div
+            vaul-drawer-wrapper=""
+            className="relative flex min-h-screen flex-col bg-common-background"
+          >
+            <NextTopLoader showSpinner={false} color="#64e466" shadow={false} />
+            <SessionExpirationDialog />
+            <PathTracker />
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <TooltipProvider delayDuration={10}>
+                <main className="flex-grow">{children}</main>
+              </TooltipProvider>
+            </ThemeProvider>
+            <RealtimeStatus className="fixed left-1/2 top-4 z-[1000] -translate-x-1/2 bg-common-cardBackground md:bottom-4 md:left-auto md:right-2 md:top-auto md:translate-x-0" />
+            <BottomBar />
+            <SonnerToaster
+              richColors
+              position="top-center"
+              className="top-16"
+              closeButton
+              duration={3000}
+            />
+          </div>
         </body>
       </html>
     </ReactQueryClientProvider>
