@@ -87,6 +87,11 @@ const nextConfig = withPWA({
         protocol: 'http',
         hostname: 'cdn.scicommons.org',
       },
+      {
+        protocol: 'https',
+        hostname: 'object-arbutus.alliancecan.ca',
+        pathname: '/56ef6dfb16b64243bb362f8bb7a23da2:cdn.scicommons.org/**',
+      },
       // Do not allow loopback hosts here; Next image optimizer would create an SSRF path.
     ],
     // Modern image formats for better compression
