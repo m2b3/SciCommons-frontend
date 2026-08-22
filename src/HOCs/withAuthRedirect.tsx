@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import Loader from '@/components/common/Loader';
 import { usePathTracker } from '@/hooks/usePathTracker';
-import { isSafePostLoginRedirect } from '@/lib/integrationAuth';
 import { useAuthStore } from '@/stores/authStore';
 
 interface WithAuthRedirectProps {
@@ -42,19 +41,7 @@ export function withAuthRedirect<P extends WithAuthRedirectProps>(
       }
 
       const previousPath = getPreviousPath();
-      /* Fixed by Claude on 2026-08-22
-         What: Read the redirect param from location instead of useSearchParams().
-         Why: This HOC wraps 16 routes and returns <Loader /> while initializing, so the hook ran
-              during prerender on every one of them and Next bailed out of static rendering -
-              `yarn build` failed export on 10 routes. The value is only used inside this effect,
-              so the render-time hook was never needed.
-         How: Parse window.location.search here; effects are client-only, so window is safe. */
-      const requestedRedirect = new URLSearchParams(window.location.search).get('redirect');
-      const redirectPath = isSafePostLoginRedirect(requestedRedirect)
-        ? requestedRedirect
-        : previousPath && !previousPath.startsWith('/auth')
-          ? previousPath
-          : '/';
+      const redirectPath = previousPath && !previousPath.startsWith('/auth') ? previousPath : '/';
 
       if (requireAuth) {
         if (!isAuthenticated) {

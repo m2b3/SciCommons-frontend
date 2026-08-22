@@ -18,7 +18,6 @@ import { Button } from '@/components/ui/button';
 import { emailOrUsernameSchema } from '@/constants/zod-schema';
 import { usePathTracker } from '@/hooks/usePathTracker';
 import { useSubmitOnCtrlEnter } from '@/hooks/useSubmitOnCtrlEnter';
-import { isSafePostLoginRedirect } from '@/lib/integrationAuth';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -60,7 +59,12 @@ const LoginForm: React.FC = () => {
           }
         );
         const requestedRedirect = searchParams?.get('redirect');
-        const safeRedirect = isSafePostLoginRedirect(requestedRedirect) ? requestedRedirect : null;
+        const safeRedirect =
+          requestedRedirect &&
+          requestedRedirect.startsWith('/') &&
+          !requestedRedirect.startsWith('/auth')
+            ? requestedRedirect
+            : null;
         const previousPath = getPreviousPath();
 
         // Redirect logic
