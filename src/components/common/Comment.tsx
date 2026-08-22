@@ -31,6 +31,7 @@ import { useEphemeralUnreadStore } from '@/stores/ephemeralUnreadStore';
 import { Button, ButtonTitle } from '../ui/button';
 import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
+import DeletedTombstone from './DeletedTombstone';
 import RenderComments from './RenderComments';
 import RenderParsedHTML from './RenderParsedHTML';
 
@@ -443,7 +444,16 @@ const Comment: React.FC<CommentProps> = ({
               containerClassName="mb-0"
             />
           </div>
-        ) : null}
+        ) : (
+          /* Added by Claude on 2026-08-22
+             What: Tombstone for a deleted comment that is still on screen.
+             Why: RenderComments keeps a deleted comment whose replies are still live, and it
+                  rendered as a blank author row with an orphaned reply thread beneath it.
+             How: Reuse the shared placeholder so the node reads as deliberately removed. */
+          <div className="pl-2">
+            <DeletedTombstone message="This comment was deleted." />
+          </div>
+        )}
         {!isDeleted && (
           <div className="mt-2 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
             {/* Fixed by Codex on 2026-02-15

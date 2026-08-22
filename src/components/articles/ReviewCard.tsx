@@ -26,6 +26,7 @@ import { useDeleteWindow } from '@/hooks/useDeleteWindow';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
+import DeletedTombstone from '../common/DeletedTombstone';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import TruncateText from '../common/TruncateText';
@@ -286,7 +287,16 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
             </h3>
           )}
 
-          {!isDeleted && (
+          {/* Added by Claude on 2026-08-22
+              What: Render a tombstone in place of a deleted review's subject and body.
+              Why: The backend blanks subject/content but keeps returning the review, so without
+                   this the card collapsed to a bare author row.
+              How: Swap the subject heading and content block for a single explanatory line. */}
+          {isDeleted ? (
+            <div className="mt-2">
+              <DeletedTombstone message="This review was deleted by its author." />
+            </div>
+          ) : (
             <div>
               {/* <TruncateText
               text={currentVersion.content}
@@ -305,124 +315,127 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
               />
             </div>
           )}
-          {!isDeleted && (
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              {/* <div className="flex space-x-4 text-text-secondary">
-              <div className="flex items-center">
-                {data?.data.user_reaction === 1 ? (
-                  <button
-                    onClick={() => handleReaction('upvote')}
-                    className="text-functional-green hover:text-functional-greenContrast"
-                  >
-                    <ThumbsUp className="mr-1 h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleReaction('upvote')}
-                    className="text-text-secondary hover:text-functional-green"
-                  >
-                    <ThumbsUp className="mr-1 h-4 w-4" />
-                  </button>
-                )}
-                <span>{data?.data.likes}</span>
-              </div>
+          {/* Added by Claude on 2026-08-22
+              What: Keep the review action row mounted for deleted reviews.
+              Why: The row holds the comments toggle, so hiding it made the still-live comment
+                   thread of a deleted review unreachable.
+              How: Render the row unconditionally and gate only approve/pin on !isDeleted. */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            {/* <div className="flex space-x-4 text-text-secondary">
+            <div className="flex items-center">
+              {data?.data.user_reaction === 1 ? (
+                <button
+                  onClick={() => handleReaction('upvote')}
+                  className="text-functional-green hover:text-functional-greenContrast"
+                >
+                  <ThumbsUp className="mr-1 h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleReaction('upvote')}
+                  className="text-text-secondary hover:text-functional-green"
+                >
+                  <ThumbsUp className="mr-1 h-4 w-4" />
+                </button>
+              )}
+              <span>{data?.data.likes}</span>
+            </div>
 
-              <div className="flex items-center">
-                {data?.data.user_reaction === -1 ? (
-                  <button
-                    onClick={() => handleReaction('downvote')}
-                    className="text-functional-red hover:text-functional-redContrast"
-                  >
-                    <ThumbsDown className="mr-1 h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleReaction('downvote')}
-                    className="text-text-secondary hover:text-functional-red"
-                  >
-                    <ThumbsDown className="mr-1 h-4 w-4" />
-                  </button>
+            <div className="flex items-center">
+              {data?.data.user_reaction === -1 ? (
+                <button
+                  onClick={() => handleReaction('downvote')}
+                  className="text-functional-red hover:text-functional-redContrast"
+                >
+                  <ThumbsDown className="mr-1 h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleReaction('downvote')}
+                  className="text-text-secondary hover:text-functional-red"
+                >
+                  <ThumbsDown className="mr-1 h-4 w-4" />
+                </button>
+              )}
+              <span>{data?.data.dislikes}</span>
+            </div>
+          </div> */}
+            <div className="ml-auto flex items-center space-x-2 text-text-secondary">
+              <button
+                type="button"
+                aria-expanded={displayComments}
+                aria-controls={`review-${review.id}-comments`}
+                onClick={() => setDisplayComments((prev) => !prev)}
+                className="flex items-center gap-2 text-[10px] hover:underline focus:outline-none"
+              >
+                {typeof review?.comments_ratings === 'number' && review.comments_ratings > 0 && (
+                  <div className="flex items-center gap-1 text-functional-yellow">
+                    <StarIcon className="h-3 w-3 shrink-0" fill="currentColor" />
+                    <span>{review.comments_ratings}</span>
+                  </div>
                 )}
-                <span>{data?.data.dislikes}</span>
-              </div>
-            </div> */}
-              <div className="ml-auto flex items-center space-x-2 text-text-secondary">
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="h-3 w-3 shrink-0" />
+                  {review.comments_count} comments
+                  {displayComments ? (
+                    <ChevronUp className="h-3 w-3 shrink-0 text-text-tertiary" />
+                  ) : (
+                    <ChevronDown className="h-3 w-3 shrink-0 text-text-tertiary" />
+                  )}
+                </div>
+              </button>
+              {!isDeleted && canApprove && (
+                <Button
+                  disabled={review.is_approved || approveArticlePending}
+                  onClick={handleApprove}
+                  variant={review.is_approved ? 'default' : 'blue'}
+                >
+                  <ButtonIcon>
+                    <CheckCircle className="h-4 w-4" />
+                  </ButtonIcon>
+                  <ButtonTitle>{review.is_approved ? 'Approved' : 'Approve'}</ButtonTitle>
+                </Button>
+              )}
+              {!isDeleted && canPin && (
                 <button
                   type="button"
-                  aria-expanded={displayComments}
-                  aria-controls={`review-${review.id}-comments`}
-                  onClick={() => setDisplayComments((prev) => !prev)}
-                  className="flex items-center gap-2 text-[10px] hover:underline focus:outline-none"
+                  disabled={addPinPending || removePinPending}
+                  onClick={() => {
+                    /* Fixed by Claude Sonnet 4.5 on 2026-03-30
+                     Problem: Pin button was calling non-existent /api/articles/reviews/{id}/pin/ endpoint.
+                     Solution: Changed to use Flags API (/api/flags/) with entity_type='review' and flag_type='pinned'.
+                     Result: Pin/unpin now works with proper backend authorization and flag system. */
+                    if (isPinned) {
+                      removePinFlag({
+                        data: {
+                          entity_ids: [review.id || 0],
+                          entity_type: 'review' as EntityType,
+                          flag_type: 'pinned' as FlagType,
+                        },
+                      });
+                    } else {
+                      addPinFlag({
+                        data: {
+                          entity_ids: [review.id || 0],
+                          entity_type: 'review' as EntityType,
+                          flag_type: 'pinned' as FlagType,
+                        },
+                      });
+                    }
+                  }}
+                  className="flex items-center gap-1 text-[10px] text-text-secondary transition-all duration-150 ease-in-out hover:text-functional-blue focus:outline-none"
                 >
-                  {typeof review?.comments_ratings === 'number' && review.comments_ratings > 0 && (
-                    <div className="flex items-center gap-1 text-functional-yellow">
-                      <StarIcon className="h-3 w-3 shrink-0" fill="currentColor" />
-                      <span>{review.comments_ratings}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    <MessageCircle className="h-3 w-3 shrink-0" />
-                    {review.comments_count} comments
-                    {displayComments ? (
-                      <ChevronUp className="h-3 w-3 shrink-0 text-text-tertiary" />
-                    ) : (
-                      <ChevronDown className="h-3 w-3 shrink-0 text-text-tertiary" />
-                    )}
-                  </div>
+                  <Pin
+                    className={`h-3 w-3 ${
+                      isPinned ? 'text-functional-yellow' : 'text-text-secondary'
+                    }`}
+                  />
+                  <span className="leading-none">{isPinned ? 'Unpin' : 'Pin'}</span>
                 </button>
-                {canApprove && (
-                  <Button
-                    disabled={review.is_approved || approveArticlePending}
-                    onClick={handleApprove}
-                    variant={review.is_approved ? 'default' : 'blue'}
-                  >
-                    <ButtonIcon>
-                      <CheckCircle className="h-4 w-4" />
-                    </ButtonIcon>
-                    <ButtonTitle>{review.is_approved ? 'Approved' : 'Approve'}</ButtonTitle>
-                  </Button>
-                )}
-                {canPin && (
-                  <button
-                    type="button"
-                    disabled={addPinPending || removePinPending}
-                    onClick={() => {
-                      /* Fixed by Claude Sonnet 4.5 on 2026-03-30
-                       Problem: Pin button was calling non-existent /api/articles/reviews/{id}/pin/ endpoint.
-                       Solution: Changed to use Flags API (/api/flags/) with entity_type='review' and flag_type='pinned'.
-                       Result: Pin/unpin now works with proper backend authorization and flag system. */
-                      if (isPinned) {
-                        removePinFlag({
-                          data: {
-                            entity_ids: [review.id || 0],
-                            entity_type: 'review' as EntityType,
-                            flag_type: 'pinned' as FlagType,
-                          },
-                        });
-                      } else {
-                        addPinFlag({
-                          data: {
-                            entity_ids: [review.id || 0],
-                            entity_type: 'review' as EntityType,
-                            flag_type: 'pinned' as FlagType,
-                          },
-                        });
-                      }
-                    }}
-                    className="flex items-center gap-1 text-[10px] text-text-secondary transition-all duration-150 ease-in-out hover:text-functional-blue focus:outline-none"
-                  >
-                    <Pin
-                      className={`h-3 w-3 ${
-                        isPinned ? 'text-functional-yellow' : 'text-text-secondary'
-                      }`}
-                    />
-                    <span className="leading-none">{isPinned ? 'Unpin' : 'Pin'}</span>
-                  </button>
-                )}
-              </div>
+              )}
             </div>
-          )}
-          {!isDeleted && displayComments && (
+          </div>
+          {displayComments && (
             /* Fixed by Codex on 2026-02-17
                Who: Codex
                What: Add a small vertical gap above expanded review comments.

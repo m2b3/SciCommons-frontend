@@ -186,4 +186,64 @@ describe('Comment reaction query behavior', () => {
     expect(screen.queryByLabelText('Delete comment')).not.toBeInTheDocument();
     expect(screen.queryByText('Reply')).not.toBeInTheDocument();
   });
+
+  /* Added by Claude on 2026-08-22
+     What: A deleted comment that stays on screen must say so.
+     Why: RenderComments keeps a deleted comment whose replies are still live, and it rendered
+          as a blank author row above an orphaned thread. */
+  it('renders a tombstone in place of deleted comment content', () => {
+    render(
+      <Comment
+        id={15}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content="[deleted]"
+        upvotes={0}
+        replies={[]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        is_deleted
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={jest.fn()}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    expect(screen.getByText('This comment was deleted.')).toBeInTheDocument();
+    // Attribution survives so the surviving reply thread still has a parent to hang from.
+    expect(screen.getByText('alice')).toBeInTheDocument();
+  });
+
+  it('keeps a deleted comment visible when it still has replies', () => {
+    render(
+      <Comment
+        id={16}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content=""
+        upvotes={0}
+        replies={[
+          {
+            id: 17,
+            author: { id: 2, username: 'bob', profile_pic_url: null },
+            created_at: '2026-07-14T10:05:00.000Z',
+            content: 'Still a fair point.',
+            upvotes: 0,
+            replies: [],
+          },
+        ]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={jest.fn()}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    expect(screen.getByText('This comment was deleted.')).toBeInTheDocument();
+  });
 });
