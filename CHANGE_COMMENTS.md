@@ -1,3 +1,27 @@
+## 2026-08-10 - Feed Preferences page (profile dropdown -> /feed-preferences)
+
+Problem: Users had nowhere to declare what their feed should contain. The `/feed` surface is driven entirely by `src/lib/feed/mockFeed.ts`, and there was no per-user record of topics, authors, keywords, or "similar to" papers anywhere in the product.
+
+Root Cause: N/A (new feature).
+
+Solution:
+- New backend Django app `feeds` (SciCommons-backend) with a `FeedPreference` model - one row per user in table `feed_preference`, holding `topics`, `authors`, `keywords`, and `similar_to` as JSON lists. `user_id` is a plain integer rather than a ForeignKey so the table can be moved to a separate database later without a schema change.
+- Endpoints `GET`/`PUT /api/feeds/preferences` (JWT auth). GET returns empty lists with `has_saved_preferences: false` until the first save; PUT is an upsert of the full preference set, so editing one field on the form keeps the stored row in sync. Values are trimmed, de-duplicated case-insensitively, and capped (100 entries per field, 500 chars per entry).
+- Frontend: "Feed Preferences" entry added to the profile dropdown (`src/components/common/NavBar.tsx`) next to Settings, pointing at the new auth-gated page `src/app/(main)/(users)/feed-preferences/page.tsx`.
+- Four chip-style list inputs (`src/components/feed/PreferenceChipInput.tsx`) - Enter adds an entry, Backspace on an empty input removes the last one. Free text throughout, so a keyword can be a whole boolean expression.
+- Template upload: "Upload filled template" reads a CSV/JSON/TXT file and fills the form; "Download template" hands out a blank CSV. Parsing happens client-side (`src/lib/feedPreferences/template.ts`) so the parsed values land in the form for review - nothing is stored until the user hits Save, and the backend re-validates whatever is finally submitted.
+- API client regenerated with `yarn generate-api` (adds `src/api/feeds/*` and the three `feedPreference*` schemas); no generated file was hand-edited.
+
+Result: Verified end-to-end. 7 backend tests pass (`manage.py test feeds`), 7 frontend parser tests pass, and the flow was exercised in-browser against the running dev stack: chips added by hand save to a single `feed_preference` row, a second save updates that same row rather than inserting another, and uploading a filled CSV repopulated all four fields (including a quoted keyword containing a comma and a `pubmed:22878719` identifier). Unauthenticated requests get 401. Test data was removed from the dev database afterwards.
+
+Not included: nothing consumes these preferences yet - `/feed` still reads `mockFeed.ts`.
+
+Files Modified/Added:
+- Backend (new): `feeds/{__init__,models,schemas,api}.py`, `feeds/migrations/0001_initial.py`, `feeds/tests/test_feed_preferences_api.py`
+- Backend (modified): `myapp/settings.py` (INSTALLED_APPS), `myapp/api.py` (router registration)
+- Frontend (new): `src/app/(main)/(users)/feed-preferences/{page,layout}.tsx`, `src/components/feed/PreferenceChipInput.tsx`, `src/lib/feedPreferences/template.ts`, `src/tests/__tests__/feedPreferencesTemplate.test.ts`, `src/api/feeds/*` + `src/api/schemas/feedPreference*.ts` (Orval-generated)
+- Frontend (modified): `src/components/common/NavBar.tsx`, `src/api/schemas/index.ts` (Orval-generated)
+
 ## 2026-07-28 - Self-Contained Public Frontend Development
 
 Problem: Contributor setup referenced incomplete local environment
