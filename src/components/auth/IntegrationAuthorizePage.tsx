@@ -51,6 +51,22 @@ export default function IntegrationAuthorizePage() {
 
   const clientName = clientNames[params.clientId] || params.clientId || 'An integration';
 
+  /* Added by Claude on 2026-08-22
+     What: Identify which required authorization parameter is absent.
+     Why: #362's extension page named the missing parameter before doing anything else; this
+          rewrite only reported a generic message, and only after the user clicked Allow on a
+          request that could never succeed.
+     How: Check the parameters the backend requires - `state` stays optional, matching
+          IntegrationAuthorizeIn - and surface the first one missing. */
+  const missingParam = useMemo(() => {
+    const required: [string, string][] = [
+      ['client_id', params.clientId],
+      ['redirect_uri', params.redirectUri],
+      ['code_challenge', params.codeChallenge],
+    ];
+    return required.find(([, value]) => !value)?.[0] ?? null;
+  }, [params]);
+
   useEffect(() => {
     const run = async () => {
       await initializeAuth();
@@ -60,18 +76,18 @@ export default function IntegrationAuthorizePage() {
   }, [initializeAuth]);
 
   useEffect(() => {
-    if (isInitializing || isAuthenticated) {
+    if (isInitializing || isAuthenticated || missingParam) {
       return;
     }
     const queryString = searchParams?.toString();
     const redirectTarget = `${pathname}${queryString ? `?${queryString}` : ''}`;
     router.replace(`/auth/login?redirect=${encodeURIComponent(redirectTarget)}`);
-  }, [isInitializing, isAuthenticated, pathname, router, searchParams]);
+  }, [isInitializing, isAuthenticated, missingParam, pathname, router, searchParams]);
 
   const approve = async () => {
     setError(null);
-    if (!params.clientId || !params.redirectUri || !params.codeChallenge) {
-      setError('The authorization request is missing required values.');
+    if (missingParam) {
+      setError(`Missing required authorization parameter: ${missingParam}.`);
       return;
     }
     if (!backendBaseUrl()) {
@@ -110,7 +126,41 @@ export default function IntegrationAuthorizePage() {
     }
   };
 
-  if (isInitializing || (!isAuthenticated && !error)) {
+  if (isInitializing) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-common-background p-6 text-text-primary">
+        <div className="text-sm text-text-secondary">Checking your SciCommons session...</div>
+      </main>
+    );
+  }
+
+  /* Added by Claude on 2026-08-22
+     What: Report a malformed authorization request instead of a consent card.
+     Why: Naming the absent parameter is what #362's page did, and asking someone to approve a
+          request that cannot succeed - or bouncing them through login first - is worse.
+     How: Render the named error with a way out, before any authentication branch. */
+  if (missingParam) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-common-background p-6 text-text-primary">
+        <section className="w-full max-w-md rounded-lg border border-common-minimal bg-common-cardBackground p-8 shadow-common">
+          <h1 className="text-2xl font-semibold">Connect {clientName}</h1>
+          <div className="mt-5 rounded-md border border-functional-red/50 bg-functional-red/10 p-3 text-sm text-functional-red">
+            Missing required authorization parameter: {missingParam}.
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-8 w-full"
+            onClick={() => router.push('/')}
+          >
+            Go to SciCommons
+          </Button>
+        </section>
+      </main>
+    );
+  }
+
+  if (!isAuthenticated && !error) {
     return (
       <main className="flex min-h-dvh items-center justify-center bg-common-background p-6 text-text-primary">
         <div className="text-sm text-text-secondary">Checking your SciCommons session...</div>
