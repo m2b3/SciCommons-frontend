@@ -4,6 +4,7 @@ import { EntityType } from '@/api/schemas';
 import { FIVE_MINUTES_IN_MS } from '@/constants/common.constants';
 import { useMarkAsReadOnView } from '@/hooks/useMarkAsReadOnView';
 import { NEW_TAG_REMOVAL_DELAY_MS } from '@/hooks/useUnreadFlags';
+import { useAuthStore } from '@/stores/authStore';
 import { useEphemeralUnreadStore } from '@/stores/ephemeralUnreadStore';
 import { useNewTagRetentionStore } from '@/stores/newTagRetentionStore';
 import { useReadItemsStore } from '@/stores/readItemsStore';
@@ -126,6 +127,62 @@ describe('newTagRetentionStore', () => {
     expect(useNewTagRetentionStore.getState().retainedUntilByKey).toEqual({
       [RETENTION_KEY]: retainedUntil,
     });
+  });
+
+  it('drops every retention and its stored copy when the user logs out', () => {
+    const retainedUntil = Date.now() + FIVE_MINUTES_IN_MS;
+
+    act(() => {
+      useNewTagRetentionStore.getState().retainNewTag(RETENTION_KEY, retainedUntil);
+      useNewTagRetentionStore.getState().retainNewTag('discussion-reply:777', retainedUntil);
+    });
+    expect(readPersistedRetentions()).not.toEqual({});
+
+    // Retention is persisted, so without this the next account on this browser inherits the badges.
+    act(() => useAuthStore.getState().logout());
+
+    expect(useNewTagRetentionStore.getState().retainedUntilByKey).toEqual({});
+    expect(readPersistedRetentions()).toEqual({});
+  });
+});
+
+describe('expiry sweeps', () => {
+  it('sweeps once for a thread of comments rather than once per comment', () => {
+    const retentionStore = useNewTagRetentionStore.getState();
+    const ephemeralStore = useEphemeralUnreadStore.getState();
+    const originalRetentionSweep = retentionStore.clearExpiredRetentions;
+    const originalEphemeralSweep = ephemeralStore.cleanupExpired;
+
+    const retentionSweep = jest.fn(originalRetentionSweep);
+    const ephemeralSweep = jest.fn(originalEphemeralSweep);
+    useNewTagRetentionStore.setState({ clearExpiredRetentions: retentionSweep });
+    useEphemeralUnreadStore.setState({ cleanupExpired: ephemeralSweep });
+
+    try {
+      const thread = [201, 202, 203, 204, 205].map((entityId) =>
+        renderNewTagHook(
+          retentionOptions({
+            entityId,
+            hasUnreadFlag: false,
+            newTagRetentionKey: `discussion-comment:${entityId}`,
+          })
+        )
+      );
+
+      expect(retentionSweep).toHaveBeenCalledTimes(1);
+      expect(ephemeralSweep).toHaveBeenCalledTimes(1);
+
+      // The sweep belongs to the thread, not to any one comment: it runs again only once every
+      // observer has gone away.
+      act(() => thread.forEach(({ unmount }) => unmount()));
+      renderNewTagHook(retentionOptions({ entityId: 206, hasUnreadFlag: false }));
+
+      expect(retentionSweep).toHaveBeenCalledTimes(2);
+      expect(ephemeralSweep).toHaveBeenCalledTimes(2);
+    } finally {
+      useNewTagRetentionStore.setState({ clearExpiredRetentions: originalRetentionSweep });
+      useEphemeralUnreadStore.setState({ cleanupExpired: originalEphemeralSweep });
+    }
   });
 });
 

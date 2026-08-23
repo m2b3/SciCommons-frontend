@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { clearRegisteredQueryCache } from '@/api/queryClientRegistry';
 
+import { useNewTagRetentionStore } from './newTagRetentionStore';
 import { useReadItemsStore } from './readItemsStore';
 import { useSubscriptionUnreadStore } from './subscriptionUnreadStore';
 import { useUserSettingsStore } from './userSettingsStore';
@@ -216,6 +217,9 @@ export const useAuthStore = create<AuthState>()(
         // Clear read items and subscription unread state on logout
         useReadItemsStore.getState().reset();
         useSubscriptionUnreadStore.getState().reset();
+        // Persisted NEW-badge retention outlives the session, so a second account signing in on
+        // this browser would otherwise inherit the previous user's badges.
+        useNewTagRetentionStore.getState().reset();
         // NOTE(Codex for bsureshkrishna, 2026-02-09): Clear persisted settings
         // to avoid showing a prior user's preferences after logout.
         useUserSettingsStore.getState().clearSettings();

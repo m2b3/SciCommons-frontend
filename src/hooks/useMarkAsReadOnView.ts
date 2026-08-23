@@ -37,6 +37,9 @@ interface UseMarkAsReadOnViewReturn {
   showNewTag: boolean;
 }
 
+/** Live useMarkAsReadOnView instances, so a thread of N comments sweeps expiries once, not N times. */
+let liveUnreadObservers = 0;
+
 /**
  * Hook that uses Intersection Observer to mark an item as read
  * after it has been visible in the viewport for a specified duration.
@@ -138,18 +141,30 @@ export function useMarkAsReadOnView(
     clearTagRemovalTimeout();
   }, [clearTagRemovalTimeout, clearVisibilityTimeout]);
 
-  /* Fixed by Codex on 2026-02-15
-     Who: Codex
-     What: Include ephemeral realtime unread state when deciding to show NEW tags.
-     Why: Realtime events can arrive before backend unread flags, so NEW badges would be delayed.
-     How: Overlay ephemeral unread checks on top of API flags and clear them on read. */
-  useEffect(() => {
-    cleanupEphemeralUnread();
-  }, [cleanupEphemeralUnread]);
+  /* Fixed by Claude on 2026-08-23
+     What: Run the two expiry sweeps when the first observer mounts rather than once per hook.
+     Why: A discussion mounts this hook once per comment, so both sweeps ran N times on every
+          thread render. Each ephemeral sweep rebuilds its map and notifies every subscriber, and
+          each retention sweep that finds an expired key writes localStorage synchronously.
+     How: A module-scoped live count sweeps only on the 0 -> 1 transition. Both stores check
+          expiry when they are read (ephemeralUnreadStore.isItemUnread, and the per-key retention
+          timeout below), so these sweeps are garbage collection - skipping them for later mounts
+          cannot make a stale badge visible.
 
+     Retains the intent of Codex's 2026-02-15 change: ephemeral realtime unread state still
+     overlays the API flags, since realtime events can arrive before backend unread flags. */
   useEffect(() => {
-    clearExpiredRetentions();
-  }, [clearExpiredRetentions]);
+    liveUnreadObservers += 1;
+
+    if (liveUnreadObservers === 1) {
+      cleanupEphemeralUnread();
+      clearExpiredRetentions();
+    }
+
+    return () => {
+      liveUnreadObservers -= 1;
+    };
+  }, [cleanupEphemeralUnread, clearExpiredRetentions]);
 
   useEffect(() => {
     if (!newTagRetentionKey || retainedUntil <= 0) {

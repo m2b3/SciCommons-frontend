@@ -6,6 +6,7 @@ interface NewTagRetentionState {
   retainNewTag: (key: string, retainedUntil: number) => void;
   clearRetention: (key: string) => void;
   clearExpiredRetentions: (now?: number) => void;
+  reset: () => void;
 }
 
 /* Added by Codex on 2026-07-08
@@ -53,6 +54,16 @@ export const useNewTagRetentionStore = create<NewTagRetentionState>()(
 
           return changed ? { retainedUntilByKey: nextRetentions } : state;
         });
+      },
+
+      /* Added by Claude on 2026-08-23
+         What: Drop every retained badge, including the localStorage projection.
+         Why: These entries outlive the session that created them, so without a logout reset the
+              next account signing in on the same browser inherits the previous user's NEW badges.
+         How: Called from useAuthStore.logout alongside the readItems/subscriptionUnread resets;
+              the persist middleware writes the emptied map straight back out. */
+      reset: () => {
+        set({ retainedUntilByKey: {} });
       },
     }),
     {
