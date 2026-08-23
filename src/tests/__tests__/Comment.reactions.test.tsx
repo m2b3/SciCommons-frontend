@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import Comment from '@/components/common/Comment';
 
@@ -245,5 +245,49 @@ describe('Comment reaction query behavior', () => {
     );
 
     expect(screen.getByText('This comment was deleted.')).toBeInTheDocument();
+  });
+  /* Added by Claude on 2026-08-23
+     What: The delete confirmation dialog must not outlive the five-minute window.
+     Why: The trash button disappears at expiry, but an already-open dialog stayed mounted and
+          its Delete button still fired a request the backend answers with 403.
+     How: Open the dialog with time left, then let the hook's own expiry timer fire. */
+  it('closes an open delete dialog when the five-minute window expires', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-07-14T10:04:30.000Z'));
+    const onDeleteComment = jest.fn();
+
+    render(
+      <Comment
+        id={13}
+        author={{ id: 1, username: 'alice', profile_pic_url: null }}
+        created_at="2026-07-14T10:00:00.000Z"
+        content="about to expire"
+        upvotes={0}
+        replies={[]}
+        depth={0}
+        maxDepth={2}
+        isAllCollapsed={false}
+        is_author
+        onAddReply={jest.fn()}
+        onUpdateComment={jest.fn()}
+        onDeleteComment={onDeleteComment}
+        contentType="articles.discussioncomment"
+      />
+    );
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText('Delete comment'));
+    });
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    // 30s left on the window; useDeleteWindow re-checks at remainingMs + 1.
+    act(() => {
+      jest.advanceTimersByTime(30_001);
+    });
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(onDeleteComment).not.toHaveBeenCalled();
+
+    jest.useRealTimers();
   });
 });

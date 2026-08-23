@@ -154,6 +154,11 @@ const Comment: React.FC<CommentProps> = ({
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  // The render guard below already hides the dialog once the window closes; drop the flag too so
+  // no stale "pending confirmation" survives to be re-shown by a later state change.
+  useEffect(() => {
+    if (!canDeleteComment) setShowConfirm(false);
+  }, [canDeleteComment]);
   const commentDeleteDialogTitleId = React.useId();
   const commentDeleteDialogDescriptionId = React.useId();
   const [highlight, setHighlight] = useState(isNew);
@@ -613,7 +618,14 @@ const Comment: React.FC<CommentProps> = ({
           What: Normalized comment-delete confirmation modal semantics and styling.
           Why: The modal sat below fixed navigation on mobile and used non-tokenized raw buttons.
           How: Raised z-index above nav, added dialog ARIA attributes, and switched actions to shared Button variants. */}
-      {showConfirm && (
+      {/* Fixed by Claude on 2026-08-23
+          What: Gate the confirmation dialog on the delete window, not just on showConfirm.
+          Why: The trash button disappears the moment the five-minute window closes, but a
+               dialog opened just before that stayed mounted and its Delete button still fired -
+               the backend rejected it with a 403 the user never asked for.
+          How: Same guard ReviewForm already uses for its own dialog (canDelete &&
+               showDeleteConfirm), so the two delete flows behave alike. */}
+      {canDeleteComment && showConfirm && (
         <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50">
           <div
             role="dialog"
