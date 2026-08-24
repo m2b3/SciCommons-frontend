@@ -180,8 +180,16 @@ describe('expiry sweeps', () => {
       expect(retentionSweep).toHaveBeenCalledTimes(2);
       expect(ephemeralSweep).toHaveBeenCalledTimes(2);
     } finally {
-      useNewTagRetentionStore.setState({ clearExpiredRetentions: originalRetentionSweep });
-      useEphemeralUnreadStore.setState({ cleanupExpired: originalEphemeralSweep });
+      /* Fixed by Codex on 2026-08-24
+         Who: Codex
+         What: Restore mocked Zustand actions inside React's act boundary.
+         Why: A replacement hook is still subscribed here, so bare store writes generated false
+              asynchronous-update warnings even though the production behavior was correct.
+         How: Batch both test-only action restorations through act before Testing Library cleanup. */
+      act(() => {
+        useNewTagRetentionStore.setState({ clearExpiredRetentions: originalRetentionSweep });
+        useEphemeralUnreadStore.setState({ cleanupExpired: originalEphemeralSweep });
+      });
     }
   });
 });

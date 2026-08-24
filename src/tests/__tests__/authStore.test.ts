@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 
 import { useAuthStore } from '@/stores/authStore';
+import { useNewTagRetentionStore } from '@/stores/newTagRetentionStore';
 
 jest.mock('js-cookie', () => ({
   get: jest.fn(),
@@ -24,6 +25,7 @@ describe('authStore', () => {
       expiresAt: null,
       user: null,
     });
+    useNewTagRetentionStore.getState().reset();
     jest.clearAllMocks();
   });
 
@@ -78,6 +80,7 @@ describe('authStore', () => {
 
     mockedGet.mockReturnValueOnce('token-2');
     mockedGet.mockReturnValueOnce('not-a-number');
+    useNewTagRetentionStore.getState().retainNewTag('discussion-comment:88', Date.now() + 60_000);
 
     try {
       await useAuthStore.getState().initializeAuth();
@@ -95,6 +98,40 @@ describe('authStore', () => {
       secure: false,
     });
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    expect(useNewTagRetentionStore.getState().retainedUntilByKey).toEqual({});
+  });
+
+  it('clears retained badges when a different account replaces the active account', () => {
+    /* Fixed by Codex on 2026-08-24
+       Who: Codex
+       What: Added regression coverage for direct account replacement without an explicit logout.
+       Why: A second user could otherwise inherit the first user's persisted NEW badges.
+       How: Seed a prior authenticated identity and retained badge, set a token for another user,
+            and require the account-scoped store to be empty afterward. */
+    useAuthStore.setState({
+      isAuthenticated: true,
+      accessToken: 'old-token',
+      expiresAt: Date.now() + 60_000,
+      user: {
+        id: 1,
+        username: 'first-user',
+        email: 'first@example.com',
+        first_name: 'First',
+        last_name: 'User',
+      },
+    });
+    useNewTagRetentionStore.getState().retainNewTag('discussion-comment:99', Date.now() + 60_000);
+
+    useAuthStore.getState().setAccessToken('new-token', {
+      id: 2,
+      username: 'second-user',
+      email: 'second@example.com',
+      first_name: 'Second',
+      last_name: 'User',
+    });
+
+    expect(useAuthStore.getState().user?.id).toBe(2);
+    expect(useNewTagRetentionStore.getState().retainedUntilByKey).toEqual({});
   });
 
   it('keeps session when expiry is invalid but server is unreachable', async () => {
