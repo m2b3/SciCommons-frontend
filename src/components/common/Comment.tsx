@@ -20,7 +20,8 @@ import {
   useUsersCommonApiGetReactionCount,
   useUsersCommonApiPostReaction,
 } from '@/api/users-common-api/users-common-api';
-import { TEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { FIVE_MINUTES_IN_MS, TEN_MINUTES_IN_MS } from '@/constants/common.constants';
+import { useDeleteWindow } from '@/hooks/useDeleteWindow';
 import { useMarkAsReadOnView } from '@/hooks/useMarkAsReadOnView';
 import { hasUnreadFlag } from '@/hooks/useUnreadFlags';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ import { useEphemeralUnreadStore } from '@/stores/ephemeralUnreadStore';
 import { Button, ButtonTitle } from '../ui/button';
 import { Ratings } from '../ui/ratings';
 import CommentInput from './CommentInput';
+import DeletedTombstone from './DeletedTombstone';
 import RenderComments from './RenderComments';
 import RenderParsedHTML from './RenderParsedHTML';
 
@@ -77,6 +79,16 @@ export interface CommentProps extends CommentData {
   };
 }
 
+export const isCommentDeleted = (comment: {
+  content?: string | null;
+  is_deleted?: boolean;
+}): boolean => {
+  const normalizedContent = comment.content?.trim().toLowerCase() ?? '';
+  return Boolean(
+    comment.is_deleted || normalizedContent === '' || normalizedContent === '[deleted]'
+  );
+};
+
 type Reaction = 'upvote' | 'downvote' | 'award';
 
 const Comment: React.FC<CommentProps> = ({
@@ -107,6 +119,8 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   dayjs.extend(relativeTime);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const isDeleted = isCommentDeleted({ content, is_deleted });
+  const canDeleteComment = useDeleteWindow(created_at, Boolean(is_author && !isDeleted));
 
   /* Fixed by Codex on 2026-02-15
      Who: Codex
@@ -140,6 +154,11 @@ const Comment: React.FC<CommentProps> = ({
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  // The render guard below already hides the dialog once the window closes; drop the flag too so
+  // no stale "pending confirmation" survives to be re-shown by a later state change.
+  useEffect(() => {
+    if (!canDeleteComment) setShowConfirm(false);
+  }, [canDeleteComment]);
   const commentDeleteDialogTitleId = React.useId();
   const commentDeleteDialogDescriptionId = React.useId();
   const [highlight, setHighlight] = useState(isNew);
@@ -151,6 +170,7 @@ const Comment: React.FC<CommentProps> = ({
   const hasHandledTargetFocusRef = useRef(false);
   const wasAllCollapsedRef = useRef(isAllCollapsed);
   const isEphemeralUnread = useEphemeralUnreadStore((s) => s.isItemUnread);
+  const isDiscussionComment = contentType === ContentTypeEnum.articlesdiscussioncomment;
 
   // Check if this comment has the unread flag from API response
   const hasUnread = hasUnreadFlag(flags);
@@ -161,6 +181,10 @@ const Comment: React.FC<CommentProps> = ({
     entityType: depth === 0 ? 'comment' : 'reply',
     hasUnreadFlag: hasUnread,
     articleContext,
+    newTagRemovalDelayMs: isDiscussionComment ? FIVE_MINUTES_IN_MS : undefined,
+    newTagRetentionKey: isDiscussionComment
+      ? `discussion-${depth === 0 ? 'comment' : 'reply'}:${id}`
+      : undefined,
   });
 
   /* Fixed by Codex on 2026-02-16
@@ -386,7 +410,7 @@ const Comment: React.FC<CommentProps> = ({
               </span>
               <span className="text-xxs text-text-tertiary">• {dayjs(created_at).fromNow()}</span>
             </div>
-            {!is_deleted && depth == 0 && (rating != undefined || rating != null) && !isEditing && (
+            {!isDeleted && depth == 0 && (rating != undefined || rating != null) && !isEditing && (
               <div className="mt-1">
                 <Ratings rating={rating} size={12} variant="yellow" readonly />
               </div>
@@ -407,7 +431,7 @@ const Comment: React.FC<CommentProps> = ({
             )}
           </div>
         </div>
-        {isEditing ? (
+        {!isDeleted && isEditing ? (
           <div className="mt-2 pl-2">
             <CommentInput
               onSubmit={handleUpdateComment}
@@ -419,7 +443,7 @@ const Comment: React.FC<CommentProps> = ({
               mentionCandidates={mentionCandidates}
             />
           </div>
-        ) : (
+        ) : !isDeleted ? (
           <div className="pl-2">
             <RenderParsedHTML
               rawContent={content}
@@ -430,8 +454,17 @@ const Comment: React.FC<CommentProps> = ({
               containerClassName="mb-0"
             />
           </div>
+        ) : (
+          /* Added by Claude on 2026-08-22
+             What: Tombstone for a deleted comment that is still on screen.
+             Why: RenderComments keeps a deleted comment whose replies are still live, and it
+                  rendered as a blank author row with an orphaned reply thread beneath it.
+             How: Reuse the shared placeholder so the node reads as deliberately removed. */
+          <div className="pl-2">
+            <DeletedTombstone message="This comment was deleted." />
+          </div>
         )}
-        {!is_deleted && (
+        {!isDeleted && (
           <div className="mt-2 flex flex-wrap items-center gap-4 pl-2 text-text-secondary">
             {/* Fixed by Codex on 2026-02-15
                Who: Codex
@@ -502,14 +535,16 @@ const Comment: React.FC<CommentProps> = ({
                     <Edit size={16} />
                   </button>
                 )}
-                <button
-                  type="button"
-                  aria-label="Delete comment"
-                  className="text-text-tertiary hover:text-functional-red"
-                  onClick={handleDeleteComment}
-                >
-                  <Trash2 size={16} />
-                </button>
+                {canDeleteComment && (
+                  <button
+                    type="button"
+                    aria-label="Delete comment"
+                    className="text-text-tertiary hover:text-functional-red"
+                    onClick={handleDeleteComment}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </>
             )}
             <div className="flex items-center space-x-2 sm:hidden">
@@ -539,7 +574,7 @@ const Comment: React.FC<CommentProps> = ({
           </button> */}
           </div>
         )}
-        {isReplying && (
+        {!isDeleted && isReplying && (
           <div className="mt-4" id={`comment-${id}-reply`}>
             <CommentInput
               onSubmit={handleAddReply}
@@ -588,7 +623,14 @@ const Comment: React.FC<CommentProps> = ({
           What: Normalized comment-delete confirmation modal semantics and styling.
           Why: The modal sat below fixed navigation on mobile and used non-tokenized raw buttons.
           How: Raised z-index above nav, added dialog ARIA attributes, and switched actions to shared Button variants. */}
-      {showConfirm && (
+      {/* Fixed by Claude on 2026-08-23
+          What: Gate the confirmation dialog on the delete window, not just on showConfirm.
+          Why: The trash button disappears the moment the five-minute window closes, but a
+               dialog opened just before that stayed mounted and its Delete button still fired -
+               the backend rejected it with a 403 the user never asked for.
+          How: Same guard ReviewForm already uses for its own dialog (canDelete &&
+               showDeleteConfirm), so the two delete flows behave alike. */}
+      {canDeleteComment && showConfirm && (
         <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50">
           <div
             role="dialog"

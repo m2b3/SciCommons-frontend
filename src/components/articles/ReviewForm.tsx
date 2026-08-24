@@ -40,6 +40,7 @@ interface ReviewFormProps {
   communityId?: number | null;
   is_submitter?: boolean; // Todo: Remove this after testing
   onSubmitSuccess?: () => void;
+  canDelete?: boolean;
 }
 
 type ActionType = 'create' | 'edit';
@@ -56,6 +57,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   communityId,
   is_submitter = false,
   onSubmitSuccess,
+  canDelete = false,
 }) => {
   const queryClient = useQueryClient();
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -288,14 +290,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 >
                   <ButtonTitle>{editPending ? 'Updating...' : 'Update'}</ButtonTitle>
                 </Button>
-                <Button
-                  variant={'danger'}
-                  onClick={() => setShowDeleteConfirm(true)}
-                  loading={deletePending}
-                  type="button"
-                >
-                  <ButtonTitle>{deletePending ? 'Deleting...' : 'Delete'}</ButtonTitle>
-                </Button>
+                {canDelete && (
+                  <Button
+                    variant={'danger'}
+                    onClick={() => setShowDeleteConfirm(true)}
+                    loading={deletePending}
+                    type="button"
+                  >
+                    <ButtonTitle>{deletePending ? 'Deleting...' : 'Delete'}</ButtonTitle>
+                  </Button>
+                )}
                 <Button variant={'gray'} onClick={() => setEdit && setEdit(false)} type="button">
                   <ButtonTitle>Cancel</ButtonTitle>
                 </Button>
@@ -330,7 +334,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               What: Hardened review-delete confirmation modal accessibility and layering.
               Why: z-50 can render behind fixed mobile nav (z-[1000]), and dialog semantics were missing.
               How: Raised overlay z-index and added role/aria labelling for assistive technology. */}
-          {showDeleteConfirm && (
+          {canDelete && showDeleteConfirm && (
             <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50">
               <div
                 role="dialog"
