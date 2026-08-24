@@ -22,9 +22,11 @@ import { useCommunitiesArticlesApiApproveArticle } from '@/api/community-article
 import { ErrorType } from '@/api/custom-instance';
 import { useMyappFlagsApiAddFlags, useMyappFlagsApiRemoveFlags } from '@/api/flags/flags';
 import { EntityType, FlagType, ReviewOut } from '@/api/schemas';
+import { useDeleteWindow } from '@/hooks/useDeleteWindow';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
 
+import DeletedTombstone from '../common/DeletedTombstone';
 import RenderParsedHTML from '../common/RenderParsedHTML';
 import { BlockSkeleton, Skeleton, TextSkeleton } from '../common/Skeleton';
 import TruncateText from '../common/TruncateText';
@@ -56,6 +58,11 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
   const accessToken = useAuthStore((state) => state.accessToken);
   const currentUser = useAuthStore((state) => state.user);
   const isPinned = isReviewPinned(review);
+  const isDeleted = Boolean(review.deleted_at);
+  const canDeleteReview = useDeleteWindow(
+    review.created_at,
+    Boolean(review.is_author && !isDeleted)
+  );
 
   /* Fixed by Codex on 2026-05-05
      Who: Codex
@@ -181,7 +188,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
 
   return (
     <>
-      {edit ? (
+      {edit && !isDeleted ? (
         <ReviewForm
           reviewId={review.id || 0}
           articleId={review.article_id}
@@ -191,6 +198,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
           content={currentVersion.content}
           rating={currentVersion.rating}
           refetch={refetch}
+          canDelete={canDeleteReview}
         />
       ) : (
         <div className="mb-4 border-b border-common-minimal pb-4 text-xs">
@@ -215,7 +223,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
               <div className="flex flex-col">
                 <span className="flex items-center gap-2 text-sm font-bold text-text-secondary">
                   {review.user.username}
-                  {review.is_author && (
+                  {review.is_author && !isDeleted && (
                     <>
                       <span className="text-[10px] font-normal text-text-tertiary">(You)</span>
                       {/* Fixed by Codex on 2026-02-15
@@ -235,109 +243,133 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
                   )}
                   {getReviewTypeTag(review.review_type || '')}
                 </span>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={12}
-                      fill="currentColor"
-                      className={`${
-                        i < currentVersion.rating ? 'text-functional-yellow' : 'text-text-tertiary'
-                      }`}
-                    />
-                  ))}
+                {!isDeleted && (
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={12}
+                        fill="currentColor"
+                        className={`${
+                          i < currentVersion.rating
+                            ? 'text-functional-yellow'
+                            : 'text-text-tertiary'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            {!isDeleted && (
+              <div className="flex flex-wrap items-center justify-end gap-2 text-[10px] text-text-tertiary">
+                <div className="">
+                  <select
+                    id="version-select"
+                    value={selectedVersion}
+                    onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
+                    className="rounded border border-common-minimal bg-common-background p-1 text-[10px]"
+                  >
+                    <option value={latestVersionIndex}>Latest</option>
+                    {review.versions
+                      .map((version, index) => (
+                        <option key={index} value={latestVersionIndex - 1 - index}>
+                          {dayjs(version.created_at).format('MMM D, YYYY ')}
+                        </option>
+                      ))
+                      .reverse()}
+                  </select>
                 </div>
+                ({dayjs(currentVersion.created_at).fromNow()})
               </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-end gap-2 text-[10px] text-text-tertiary">
-              <div className="">
-                <select
-                  id="version-select"
-                  value={selectedVersion}
-                  onChange={(e) => setSelectedVersion(parseInt(e.target.value))}
-                  className="rounded border border-common-minimal bg-common-background p-1 text-[10px]"
-                >
-                  <option value={latestVersionIndex}>Latest</option>
-                  {review.versions
-                    .map((version, index) => (
-                      <option key={index} value={latestVersionIndex - 1 - index}>
-                        {dayjs(version.created_at).format('MMM D, YYYY ')}
-                      </option>
-                    ))
-                    .reverse()}
-                </select>
-              </div>
-              ({dayjs(currentVersion.created_at).fromNow()})
-            </div>
+            )}
           </div>
-          <h3 className="mt-2 text-sm font-semibold">
-            <div className="flex items-center gap-2">
-              {isPinned && <Pin className="h-4 w-4 fill-current text-functional-yellow" />}
-              <TruncateText
-                text={currentVersion.subject}
-                maxLines={2}
-                textClassName="text-text-primary text-base"
-              />
-            </div>
-          </h3>
+          {!isDeleted && (
+            <h3 className="mt-2 text-sm font-semibold">
+              <div className="flex items-center gap-2">
+                {isPinned && <Pin className="h-4 w-4 fill-current text-functional-yellow" />}
+                <TruncateText
+                  text={currentVersion.subject}
+                  maxLines={2}
+                  textClassName="text-text-primary text-base"
+                />
+              </div>
+            </h3>
+          )}
 
-          <div>
-            {/* <TruncateText
+          {/* Added by Claude on 2026-08-22
+              What: Render a tombstone in place of a deleted review's subject and body.
+              Why: The backend blanks subject/content but keeps returning the review, so without
+                   this the card collapsed to a bare author row.
+              How: Swap the subject heading and content block for a single explanatory line. */}
+          {isDeleted ? (
+            <div className="mt-2">
+              <DeletedTombstone message="This review was deleted by its author." />
+            </div>
+          ) : (
+            <div>
+              {/* <TruncateText
               text={currentVersion.content}
               maxLines={4}
               isHTML
               textClassName="text-text-primary"
             /> */}
-            <RenderParsedHTML
-              rawContent={currentVersion.content}
-              isShrinked={true}
-              supportMarkdown={true}
-              supportLatex={true}
-              containerClassName="mb-0"
-              contentClassName="text-xs sm:text-sm"
-              gradientClassName="sm:from-common-background"
-            />
-          </div>
+              <RenderParsedHTML
+                rawContent={currentVersion.content}
+                isShrinked={true}
+                supportMarkdown={true}
+                supportLatex={true}
+                containerClassName="mb-0"
+                contentClassName="text-xs sm:text-sm"
+                gradientClassName="sm:from-common-background"
+              />
+            </div>
+          )}
+          {/* Added by Claude on 2026-08-22
+              What: Keep the review action row mounted for deleted reviews.
+              Why: The row holds the comments toggle, so hiding it made the still-live comment
+                   thread of a deleted review unreachable.
+              How: Render the row unconditionally and gate only approve/pin on !isDeleted. */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             {/* <div className="flex space-x-4 text-text-secondary">
-              <div className="flex items-center">
-                {data?.data.user_reaction === 1 ? (
-                  <button
-                    onClick={() => handleReaction('upvote')}
-                    className="text-functional-green hover:text-functional-greenContrast"
-                  >
-                    <ThumbsUp className="mr-1 h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleReaction('upvote')}
-                    className="text-text-secondary hover:text-functional-green"
-                  >
-                    <ThumbsUp className="mr-1 h-4 w-4" />
-                  </button>
-                )}
-                <span>{data?.data.likes}</span>
-              </div>
+            <div className="flex items-center">
+              {data?.data.user_reaction === 1 ? (
+                <button
+                  onClick={() => handleReaction('upvote')}
+                  className="text-functional-green hover:text-functional-greenContrast"
+                >
+                  <ThumbsUp className="mr-1 h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleReaction('upvote')}
+                  className="text-text-secondary hover:text-functional-green"
+                >
+                  <ThumbsUp className="mr-1 h-4 w-4" />
+                </button>
+              )}
+              <span>{data?.data.likes}</span>
+            </div>
 
-              <div className="flex items-center">
-                {data?.data.user_reaction === -1 ? (
-                  <button
-                    onClick={() => handleReaction('downvote')}
-                    className="text-functional-red hover:text-functional-redContrast"
-                  >
-                    <ThumbsDown className="mr-1 h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleReaction('downvote')}
-                    className="text-text-secondary hover:text-functional-red"
-                  >
-                    <ThumbsDown className="mr-1 h-4 w-4" />
-                  </button>
-                )}
-                <span>{data?.data.dislikes}</span>
-              </div>
-            </div> */}
+            <div className="flex items-center">
+              {data?.data.user_reaction === -1 ? (
+                <button
+                  onClick={() => handleReaction('downvote')}
+                  className="text-functional-red hover:text-functional-redContrast"
+                >
+                  <ThumbsDown className="mr-1 h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleReaction('downvote')}
+                  className="text-text-secondary hover:text-functional-red"
+                >
+                  <ThumbsDown className="mr-1 h-4 w-4" />
+                </button>
+              )}
+              <span>{data?.data.dislikes}</span>
+            </div>
+          </div> */}
             <div className="ml-auto flex items-center space-x-2 text-text-secondary">
               <button
                 type="button"
@@ -362,7 +394,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
                   )}
                 </div>
               </button>
-              {canApprove && (
+              {!isDeleted && canApprove && (
                 <Button
                   disabled={review.is_approved || approveArticlePending}
                   onClick={handleApprove}
@@ -374,15 +406,15 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, refetch, isSubmitter, isCommu
                   <ButtonTitle>{review.is_approved ? 'Approved' : 'Approve'}</ButtonTitle>
                 </Button>
               )}
-              {canPin && (
+              {!isDeleted && canPin && (
                 <button
                   type="button"
                   disabled={addPinPending || removePinPending}
                   onClick={() => {
                     /* Fixed by Claude Sonnet 4.5 on 2026-03-30
-                       Problem: Pin button was calling non-existent /api/articles/reviews/{id}/pin/ endpoint.
-                       Solution: Changed to use Flags API (/api/flags/) with entity_type='review' and flag_type='pinned'.
-                       Result: Pin/unpin now works with proper backend authorization and flag system. */
+                     Problem: Pin button was calling non-existent /api/articles/reviews/{id}/pin/ endpoint.
+                     Solution: Changed to use Flags API (/api/flags/) with entity_type='review' and flag_type='pinned'.
+                     Result: Pin/unpin now works with proper backend authorization and flag system. */
                     if (isPinned) {
                       removePinFlag({
                         data: {

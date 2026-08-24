@@ -1,3 +1,24 @@
+## 2026-08-24 - PR 359-361 Integration Conflict Resolution
+
+Problem: PR 361 overlapped PR 359 in `ReviewCard` and PR 360 in `Comment`, so a mechanical conflict
+choice could discard realtime latest-version tracking, deleted-review hiding, five-minute NEW-tag
+retention, or five-minute delete-window enforcement.
+
+Root Cause: Each feature changed the same version selector and comment imports/options from an
+older shared base.
+
+Solution: Combined PR 359's dynamic latest-version index with PR 361's deleted-review guards and
+tombstone UI. Combined PR 360's discussion NEW-tag retention constants with PR 361's delete-window
+hook. Added a rerender regression proving a realtime review update keeps the selector and content
+on Latest after a new historical version appears.
+
+Result: The three features coexist after integration without silently losing either side of the
+two known source conflicts.
+
+Files Modified: `src/components/articles/ReviewCard.tsx`, `src/components/common/Comment.tsx`,
+`src/tests/__tests__/ReviewCard.test.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local
+integration commit)
+
 ## 2026-08-24 - PR 360 Account-Scoped Retention Cleanup
 
 Problem: Persisted NEW-tag retention was reset by explicit logout, but automatic 401/403 session
@@ -45,6 +66,28 @@ viewers keep the full reply thread anchored to a deleted-comment tombstone until
 next server refetch.
 
 Files Modified: `src/hooks/useRealtime.tsx`, `src/tests/__tests__/useRealtime.test.tsx`,
+`CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-08-24 - PR 361 Deleted-Thread Regression Coverage
+
+Problem: PR 361's component tests passed, but the ReviewForm markdown-editor mock emitted a React
+ref warning, and the deleted-comment test rendered `Comment` directly without proving that
+`RenderComments` retained a deleted parent with live replies.
+
+Root Cause: The test double did not mirror the production editor's `forwardRef` contract, and the
+parent renderer's deleted-leaf filter had no direct coverage.
+
+Solution: Replaced the editor double with a lightweight `forwardRef` mock and added a focused
+renderer regression containing a live node, a deleted leaf, and a deleted parent that anchors a
+surviving reply. Applied the repository's required formatter to the pre-existing `ReviewComments`
+lines touched by the branch.
+
+Result: PR 361's frontend suite runs without the ref warning and directly protects the tombstone
+tree behavior needed to keep replies reachable after parent deletion. API-level redaction of
+deleted review versions remains a backend responsibility.
+
+Files Modified: `src/components/articles/ReviewComments.tsx`,
+`src/tests/__tests__/ReviewForm.test.tsx`, `src/tests/__tests__/RenderComments.test.tsx`,
 `CHANGE_COMMENTS.md` (commit reference: pending local commit)
 
 ## 2026-07-28 - Self-Contained Public Frontend Development
