@@ -1,3 +1,20 @@
+## 2026-08-24 - Restore Arbutus-Hosted Profile Images
+
+Problem: Logged-in users whose profile picture is stored behind the Arbutus object-storage URL saw
+a missing avatar in the frontend, including the navigation profile menu.
+
+Root Cause: Next.js routes remote `Image` sources through its optimizer and rejects hosts or paths
+that are absent from `images.remotePatterns`. The profile API now returns the Arbutus object host,
+while the frontend only permitted the legacy SciCommons CDN and older image hosts.
+
+Solution: Added an HTTPS-only remote pattern for `object-arbutus.alliancecan.ca`, narrowed to the
+exact SciCommons CDN container prefix. The shared host is not permitted outside that namespace.
+
+Result: Next.js can optimize and render the current Arbutus-hosted profile URLs without expanding
+the optimizer's SSRF surface to unrelated objects on that host.
+
+Files Modified: `next.config.mjs`, `CHANGE_COMMENTS.md` (commit reference: pending merge commit)
+
 ## 2026-08-24 - PR 359-361 Integration Conflict Resolution
 
 Problem: PR 361 overlapped PR 359 in `ReviewCard` and PR 360 in `Comment`, so a mechanical conflict
