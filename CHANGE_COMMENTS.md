@@ -1,3 +1,112 @@
+## 2026-08-24 - Restore Arbutus-Hosted Profile Images
+
+Problem: Logged-in users whose profile picture is stored behind the Arbutus object-storage URL saw
+a missing avatar in the frontend, including the navigation profile menu.
+
+Root Cause: Next.js routes remote `Image` sources through its optimizer and rejects hosts or paths
+that are absent from `images.remotePatterns`. The profile API now returns the Arbutus object host,
+while the frontend only permitted the legacy SciCommons CDN and older image hosts.
+
+Solution: Added an HTTPS-only remote pattern for `object-arbutus.alliancecan.ca`, narrowed to the
+exact SciCommons CDN container prefix. The shared host is not permitted outside that namespace.
+
+Result: Next.js can optimize and render the current Arbutus-hosted profile URLs without expanding
+the optimizer's SSRF surface to unrelated objects on that host.
+
+Files Modified: `next.config.mjs`, `CHANGE_COMMENTS.md` (commit reference: pending merge commit)
+
+## 2026-08-24 - PR 359-361 Integration Conflict Resolution
+
+Problem: PR 361 overlapped PR 359 in `ReviewCard` and PR 360 in `Comment`, so a mechanical conflict
+choice could discard realtime latest-version tracking, deleted-review hiding, five-minute NEW-tag
+retention, or five-minute delete-window enforcement.
+
+Root Cause: Each feature changed the same version selector and comment imports/options from an
+older shared base.
+
+Solution: Combined PR 359's dynamic latest-version index with PR 361's deleted-review guards and
+tombstone UI. Combined PR 360's discussion NEW-tag retention constants with PR 361's delete-window
+hook. Added a rerender regression proving a realtime review update keeps the selector and content
+on Latest after a new historical version appears.
+
+Result: The three features coexist after integration without silently losing either side of the
+two known source conflicts.
+
+Files Modified: `src/components/articles/ReviewCard.tsx`, `src/components/common/Comment.tsx`,
+`src/tests/__tests__/ReviewCard.test.tsx`, `CHANGE_COMMENTS.md` (commit reference: pending local
+integration commit)
+
+## 2026-08-24 - PR 360 Account-Scoped Retention Cleanup
+
+Problem: Persisted NEW-tag retention was reset by explicit logout, but automatic 401/403 session
+rejection and direct replacement with a different authenticated account could leave the prior
+user's badges and other account-scoped browser state behind. The retention sweep test also emitted
+React update warnings while restoring mocked store actions.
+
+Root Cause: Auth cleanup was duplicated instead of shared, so several session-ending branches only
+cleared cookies and auth fields. The test restored subscribed Zustand actions outside React's
+`act()` boundary.
+
+Solution: Centralized query-cache, read-state, unread-state, NEW-retention, settings, and validation
+cleanup and invoked it for logout, logged-out bootstrap, server-rejected sessions, and detected
+account changes. Added automatic-logout and account-switch regressions, and batched the test-only
+store restoration through `act()`. Applied the repository's required formatter to the pre-existing
+`ReviewComments` lines touched by the branch.
+
+Result: User-scoped badge/cache state cannot cross the covered account/session boundaries, while
+the existing once-per-thread expiry sweep remains intact and warning-free.
+
+Files Modified: `src/stores/authStore.ts`, `src/components/articles/ReviewComments.tsx`,
+`src/tests/__tests__/authStore.test.ts`, `src/tests/__tests__/newTagRetention.test.tsx`,
+`CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-08-24 - PR 359 Realtime Ordering and Deleted-Thread Preservation
+
+Problem: PR 359 could permanently queue valid discussion/comment events after an interleaved
+review event, and a realtime discussion-comment deletion removed the deleted parent together
+with all live replies below it.
+
+Root Cause: Tornado assigns one global event counter while routing only relevant subsets into
+each user queue, but the frontend incorrectly required contiguous event IDs independently for
+each community/article context. Review events bypassed that tracker without advancing it. The
+discussion deletion path separately filtered the matching cache node instead of applying the
+backend's logical-delete representation.
+
+Solution: Removed the invalid per-context gap queue and now process each delivered batch in
+ascending server event-ID order while retaining processed-ID deduplication. Changed discussion
+comment deletion to blank and mark the cached node while preserving its reply array. Added
+regression coverage for an ordinary-review-ordinary event sequence and a deleted parent with a
+live reply subtree.
+
+Result: Routed event-ID gaps can no longer stall realtime updates, and other private-community
+viewers keep the full reply thread anchored to a deleted-comment tombstone until or after the
+next server refetch.
+
+Files Modified: `src/hooks/useRealtime.tsx`, `src/tests/__tests__/useRealtime.test.tsx`,
+`CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
+## 2026-08-24 - PR 361 Deleted-Thread Regression Coverage
+
+Problem: PR 361's component tests passed, but the ReviewForm markdown-editor mock emitted a React
+ref warning, and the deleted-comment test rendered `Comment` directly without proving that
+`RenderComments` retained a deleted parent with live replies.
+
+Root Cause: The test double did not mirror the production editor's `forwardRef` contract, and the
+parent renderer's deleted-leaf filter had no direct coverage.
+
+Solution: Replaced the editor double with a lightweight `forwardRef` mock and added a focused
+renderer regression containing a live node, a deleted leaf, and a deleted parent that anchors a
+surviving reply. Applied the repository's required formatter to the pre-existing `ReviewComments`
+lines touched by the branch.
+
+Result: PR 361's frontend suite runs without the ref warning and directly protects the tombstone
+tree behavior needed to keep replies reachable after parent deletion. API-level redaction of
+deleted review versions remains a backend responsibility.
+
+Files Modified: `src/components/articles/ReviewComments.tsx`,
+`src/tests/__tests__/ReviewForm.test.tsx`, `src/tests/__tests__/RenderComments.test.tsx`,
+`CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-07-28 - Self-Contained Public Frontend Development
 
 Problem: Contributor setup referenced incomplete local environment

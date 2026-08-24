@@ -1,6 +1,6 @@
 import { ContentTypeEnum } from '@/api/schemas';
 
-import Comment, { CommentData } from './Comment';
+import Comment, { CommentData, isCommentDeleted } from './Comment';
 
 interface RenderCommentsProps {
   comments: CommentData[];
@@ -37,12 +37,16 @@ const RenderComments: React.FC<RenderCommentsProps> = ({
   contentType,
   articleContext,
 }) => {
+  const visibleComments = comments.filter(
+    (comment) => !isCommentDeleted(comment) || (comment.replies?.length ?? 0) > 0
+  );
+
   /* Fixed by Codex on 2026-02-16
      Who: Codex
      What: Use stable comment keys based on comment IDs.
      Why: Index-coupled keys can remount items during realtime inserts and make thread state feel unreliable.
      How: Prefer `comment.id` as the React key with an index fallback only when ID is unavailable. */
-  return comments.map((comment, index) => (
+  return visibleComments.map((comment, index) => (
     <div className="relative" key={comment.id ? String(comment.id) : `comment_${index}`}>
       {depth > 0 && (
         <div className="absolute -left-3.5 aspect-square size-5 rounded-bl-xl border-b-[1.5px] border-l-[1.5px] border-common-heavyContrast md:-left-4" />
