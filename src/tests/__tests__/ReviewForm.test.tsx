@@ -27,9 +27,17 @@ jest.mock('@/stores/authStore', () => ({
     selector({ accessToken: 'token-1' }),
 }));
 
-jest.mock('@/components/common/MarkdownEditor/ForwardRefEditor', () => ({
-  ForwardRefEditor: () => <div>MarkdownEditor</div>,
-}));
+jest.mock('@/components/common/MarkdownEditor/ForwardRefEditor', () => {
+  const actualReact = jest.requireActual<typeof import('react')>('react');
+  /* Fixed by Codex on 2026-08-24
+     Who: Codex
+     What: Made the markdown-editor test double accept ReviewForm's imperative ref.
+     Why: A plain function mock produced a React ref warning on every ReviewForm render.
+     How: Mirror the production component's forwardRef boundary while keeping the mock lightweight. */
+  const MockForwardRefEditor = actualReact.forwardRef(() => <div>MarkdownEditor</div>);
+  MockForwardRefEditor.displayName = 'MockForwardRefEditor';
+  return { ForwardRefEditor: MockForwardRefEditor };
+});
 
 // ReviewForm imports ReviewCardSkeleton from ReviewCard; stubbing it keeps that tree out.
 jest.mock('@/components/articles/ReviewCard', () => ({

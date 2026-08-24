@@ -134,7 +134,10 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
       toast.error('Reply cannot be empty');
       return;
     }
-    createComment({ reviewId, data: { content: trimmed, rating: rating || 0, parent_id: parentId } });
+    createComment({
+      reviewId,
+      data: { content: trimmed, rating: rating || 0, parent_id: parentId },
+    });
 
     // const addReplyToComment = (comment: CommentData): CommentData => {
     //   if (comment.id === parentId && newComment) {
@@ -156,7 +159,7 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
       return;
     }
     UpdateComment({ commentId, data: { content: trimmed, rating: rating || 0 } });
-    
+
     const updateCommentInPlace = (comment: CommentData): CommentData => {
       if (comment.id === commentId) {
         return { ...comment, ...updatedComment, isNew: true };
