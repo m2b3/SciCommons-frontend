@@ -16,6 +16,7 @@ import { ContentTypeEnum, ReviewCommentOut } from '@/api/schemas';
 import { CommentData } from '@/components/common/Comment';
 import CommentInput from '@/components/common/CommentInput';
 import RenderComments from '@/components/common/RenderComments';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import convertToCommentData from '@/lib/convertReviewCommentData';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -30,7 +31,6 @@ interface ReviewCommentsProps {
 
 // Todo 1: Fix the issue with highlighting new comments
 // Todo 2: Add Generic Types for the comments
-// Todo 3: Add ToolTip for depth select
 
 const ReviewComments: React.FC<ReviewCommentsProps> = ({
   reviewId,
@@ -238,19 +238,26 @@ const ReviewComments: React.FC<ReviewCommentsProps> = ({
               <Layers size={12} className="mr-1" />
               <span>Depth:</span>
             </label>
-            <select
-              id={depthSelectId}
-              className="rounded border border-common-minimal bg-common-background p-1 text-[10px]"
-              onChange={handleDepthChange}
-              value={maxDepth === Infinity ? 0 : maxDepth}
-            >
-              <option value="0">All</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <select
+                  id={depthSelectId}
+                  className="rounded border border-common-minimal bg-common-background p-1 text-[10px]"
+                  onChange={handleDepthChange}
+                  value={maxDepth === Infinity ? 0 : maxDepth}
+                >
+                  <option value="0">All</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={4} className="px-2">
+                Choose how many nested reply levels to show
+              </TooltipContent>
+            </Tooltip>
             <button
               onClick={toggleAllComments}
               className="flex items-center text-[10px] text-functional-blue transition-colors duration-200 hover:text-functional-blueContrast"

@@ -22,6 +22,31 @@ Files Modified: `src/stores/authStore.ts`, `src/components/articles/ReviewCommen
 `src/tests/__tests__/authStore.test.ts`, `src/tests/__tests__/newTagRetention.test.tsx`,
 `CHANGE_COMMENTS.md` (commit reference: pending local commit)
 
+## 2026-08-24 - PR 359 Realtime Ordering and Deleted-Thread Preservation
+
+Problem: PR 359 could permanently queue valid discussion/comment events after an interleaved
+review event, and a realtime discussion-comment deletion removed the deleted parent together
+with all live replies below it.
+
+Root Cause: Tornado assigns one global event counter while routing only relevant subsets into
+each user queue, but the frontend incorrectly required contiguous event IDs independently for
+each community/article context. Review events bypassed that tracker without advancing it. The
+discussion deletion path separately filtered the matching cache node instead of applying the
+backend's logical-delete representation.
+
+Solution: Removed the invalid per-context gap queue and now process each delivered batch in
+ascending server event-ID order while retaining processed-ID deduplication. Changed discussion
+comment deletion to blank and mark the cached node while preserving its reply array. Added
+regression coverage for an ordinary-review-ordinary event sequence and a deleted parent with a
+live reply subtree.
+
+Result: Routed event-ID gaps can no longer stall realtime updates, and other private-community
+viewers keep the full reply thread anchored to a deleted-comment tombstone until or after the
+next server refetch.
+
+Files Modified: `src/hooks/useRealtime.tsx`, `src/tests/__tests__/useRealtime.test.tsx`,
+`CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-07-28 - Self-Contained Public Frontend Development
 
 Problem: Contributor setup referenced incomplete local environment
