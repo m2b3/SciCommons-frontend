@@ -134,10 +134,6 @@ const REVIEW_COMMENT_EVENT_TYPES: RealtimeEventType[] = [
   'deleted_review_comment',
 ];
 
-function isReviewRealtimeEvent(type: RealtimeEventType): boolean {
-  return REVIEW_EVENT_TYPES.includes(type) || REVIEW_COMMENT_EVENT_TYPES.includes(type);
-}
-
 // Generate a unique tab ID to prevent processing our own broadcasts
 const TAB_ID =
   typeof window !== 'undefined' ? `${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
@@ -186,8 +182,7 @@ function matchesReviewListQueryKey(
   if (queryKey[0] === `/api/articles/${articleId}/reviews/`) {
     const params = queryKey[1];
     return (
-      reviewListCommunityId(isRecord(params) ? params.community_id : undefined) ===
-      eventCommunityId
+      reviewListCommunityId(isRecord(params) ? params.community_id : undefined) === eventCommunityId
     );
   }
 
@@ -325,14 +320,6 @@ export function useRealtime() {
   const registerQueueRef = useRef<((force?: boolean) => Promise<boolean>) | null>(null);
   // Track processed event IDs to prevent duplicate processing
   const processedEventIdsRef = useRef<Set<number>>(new Set());
-
-  // Fixed by Claude Sonnet 4.5 on 2026-02-08
-  // Issue 4: Track event sequences to ensure ordering
-  // Map key format: "communityId:articleId" -> last processed event_id
-  const eventSequenceRef = useRef<Map<string, number>>(new Map());
-  // Queue for out-of-order events that arrived too early
-  // Map key format: "communityId:articleId" -> array of pending events
-  const pendingEventsRef = useRef<Map<string, RealtimeEvent[]>>(new Map());
 
   // Fixed by Claude Sonnet 4.5 on 2026-02-08
   // Issue 6: Track poll timeout to prevent zombie polls after unmount
@@ -587,15 +574,30 @@ export function useRealtime() {
               }
 
               case 'deleted_comment': {
-                const filtered = comments.filter(
-                  (c: unknown) =>
-                    !(typeof c === 'object' && c !== null && 'id' in c && c.id === commentId)
-                );
-                return filtered.map((c: unknown) =>
-                  typeof c === 'object' && c !== null && 'replies' in c && Array.isArray(c.replies)
+                /* Fixed by Codex on 2026-08-24
+                   Who: Codex
+                   What: Preserve logically deleted discussion comments in the realtime cache.
+                   Why: Removing the matched node also removed every live reply nested beneath it,
+                        so other viewers lost the thread until a full refetch.
+                   How: Blank and mark the cached node as deleted while recursively retaining its
+                        existing replies; PR 361's renderer can then show the intended tombstone. */
+                return comments.map((c: unknown) => {
+                  if (typeof c !== 'object' || c === null || !('id' in c)) return c;
+
+                  if (c.id === commentId) {
+                    return {
+                      ...c,
+                      content: '',
+                      is_deleted: true,
+                      upvotes: 0,
+                      replies: 'replies' in c && Array.isArray(c.replies) ? c.replies : [],
+                    };
+                  }
+
+                  return 'replies' in c && Array.isArray(c.replies)
                     ? { ...c, replies: updateCommentsArray(c.replies) }
-                    : c
-                );
+                    : c;
+                });
               }
 
               default:
@@ -933,82 +935,16 @@ export function useRealtime() {
         bc?.postMessage({ type: 'realtime:events', payload: newEvents, senderId: TAB_ID });
       }
 
-      // Fixed by Claude Sonnet 4.5 on 2026-02-08
-      // Issue 4: Process events in sequence, queue out-of-order events
-      const eventsToProcess: RealtimeEvent[] = [];
-      const eventsToQueue: RealtimeEvent[] = [];
-
+      /* Fixed by Codex on 2026-08-24
+         Who: Codex
+         What: Process every received realtime event in ascending server event-id order.
+         Why: Tornado assigns one global counter but each user queue receives only its routed
+              subset, so gaps are normal and cannot be interpreted as missing per-context events.
+              The old per-community/article tracker permanently queued valid events after such a
+              gap, and review events made that stall deterministic by bypassing the tracker.
+         How: Trust the ordered per-user queue payload, sort each delivered batch, and use the
+              existing processed-id set solely for cross-tab/retry deduplication. */
       for (const event of newEvents) {
-        if (isReviewRealtimeEvent(event.type)) {
-          eventsToProcess.push(event);
-          continue;
-        }
-
-        const { article_id: articleId, community_id: communityId } = event.data;
-        const contextKey = `${communityId}:${articleId}`;
-        const lastSeq = eventSequenceRef.current.get(contextKey) ?? 0;
-
-        // Check if this event is in sequence
-        if (event.event_id === lastSeq + 1 || lastSeq === 0) {
-          // In sequence - process immediately
-          eventsToProcess.push(event);
-          eventSequenceRef.current.set(contextKey, event.event_id);
-        } else if (event.event_id > lastSeq + 1) {
-          // Out of order - queue for later
-          eventsToQueue.push(event);
-        }
-        // If event.event_id <= lastSeq, it's already processed (skip)
-      }
-
-      // Queue out-of-order events
-      for (const event of eventsToQueue) {
-        const { article_id: articleId, community_id: communityId } = event.data;
-        const contextKey = `${communityId}:${articleId}`;
-        const pending = pendingEventsRef.current.get(contextKey) ?? [];
-        pending.push(event);
-        pendingEventsRef.current.set(contextKey, pending);
-      }
-
-      // Helper to process pending events that are now ready
-      const processPendingEvents = (contextKey: string) => {
-        const pending = pendingEventsRef.current.get(contextKey);
-        if (!pending?.length) return;
-
-        const lastSeq = eventSequenceRef.current.get(contextKey) ?? 0;
-        const readyEvents: RealtimeEvent[] = [];
-        const stillPending: RealtimeEvent[] = [];
-
-        for (const event of pending) {
-          if (event.event_id === lastSeq + 1) {
-            readyEvents.push(event);
-          } else {
-            stillPending.push(event);
-          }
-        }
-
-        if (readyEvents.length > 0) {
-          // Sort ready events by event_id
-          readyEvents.sort((a, b) => a.event_id - b.event_id);
-
-          // Update sequence tracker
-          for (const event of readyEvents) {
-            eventSequenceRef.current.set(contextKey, event.event_id);
-          }
-
-          // Update pending queue
-          if (stillPending.length > 0) {
-            pendingEventsRef.current.set(contextKey, stillPending);
-          } else {
-            pendingEventsRef.current.delete(contextKey);
-          }
-
-          // Recursively process newly ready events
-          eventsToProcess.push(...readyEvents);
-          processPendingEvents(contextKey);
-        }
-      };
-
-      for (const event of eventsToProcess) {
         // Handle new_notification events separately as they have different data structure
         if (event.type === 'new_notification') {
           const notificationEvent = event as RealtimeNotificationEvent;
@@ -1192,11 +1128,6 @@ export function useRealtime() {
         ) {
           useSubscriptionUnreadStore.getState().markArticleHasNewEvent(communityId, articleId);
         }
-
-        // Fixed by Claude Sonnet 4.5 on 2026-02-08
-        // Issue 4: After processing each event, check if any queued events are now ready
-        const contextKey = `${discCommentEvent.data.community_id}:${discCommentEvent.data.article_id}`;
-        processPendingEvents(contextKey);
       }
     },
     [
@@ -1681,48 +1612,6 @@ export function useRealtime() {
     }, LEADER_TTL_MS);
     return () => clearInterval(id);
   }, [isLeader, tryBecomeLeader, isAuthenticated, accessToken]);
-
-  // Fixed by Claude Sonnet 4.5 on 2026-02-08
-  // Issue 5: Periodic cleanup of event tracking structures to prevent memory leaks
-  useEffect(() => {
-    const CLEANUP_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
-    const SEQUENCE_TRACKER_MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
-
-    const cleanupTimestamp = new Map<string, number>();
-
-    const id = window.setInterval(() => {
-      const now = Date.now();
-
-      // Clean processed event IDs aggressively
-      if (processedEventIdsRef.current.size > 250) {
-        const idsArray = Array.from(processedEventIdsRef.current);
-        processedEventIdsRef.current = new Set(idsArray.slice(-250));
-      }
-
-      // Clean old sequence trackers (contexts not seen in 1 hour)
-      const sequenceKeysToDelete: string[] = [];
-      for (const key of eventSequenceRef.current.keys()) {
-        const lastSeen = cleanupTimestamp.get(key) ?? now;
-        if (now - lastSeen > SEQUENCE_TRACKER_MAX_AGE_MS) {
-          sequenceKeysToDelete.push(key);
-        }
-      }
-      for (const key of sequenceKeysToDelete) {
-        eventSequenceRef.current.delete(key);
-        pendingEventsRef.current.delete(key);
-        cleanupTimestamp.delete(key);
-      }
-
-      // Update cleanup timestamps for active keys
-      for (const key of eventSequenceRef.current.keys()) {
-        if (!cleanupTimestamp.has(key)) {
-          cleanupTimestamp.set(key, now);
-        }
-      }
-    }, CLEANUP_INTERVAL_MS);
-
-    return () => clearInterval(id);
-  }, []);
 
   // Fixed by Claude Sonnet 4.5 on 2026-02-08
   // Issue 6: Cleanup poll timeout on unmount to prevent zombie polls

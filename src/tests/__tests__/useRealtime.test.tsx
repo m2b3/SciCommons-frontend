@@ -414,9 +414,7 @@ describe('useRealtime', () => {
 
     // list_reviews serves community=None reviews when community_id is omitted, so neither of
     // these caches may receive a community review.
-    expect(() =>
-      getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/', {}])
-    ).toThrow();
+    expect(() => getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/', {}])).toThrow();
     expect(() => getMatchingSetQueriesDataUpdater(['/api/articles/42/reviews/'])).toThrow();
 
     // Same article id embedded in a different endpoint must not match either.
@@ -437,7 +435,6 @@ describe('useRealtime', () => {
 
     unmount();
   });
-
 
   it('marks the article as having a new event for review and review-comment creates', () => {
     const { unmount } = renderHook(() => useRealtime());
@@ -628,6 +625,136 @@ describe('useRealtime', () => {
     }) as { data: { items: Array<{ comments_count: number }> } };
 
     expect(updatedReviews.data.items[0].comments_count).toBe(2);
+
+    unmount();
+  });
+
+  /* Fixed by Codex on 2026-08-24
+     Who: Codex
+     What: Cover normal events that follow a review event across globally assigned event IDs.
+     Why: User queues contain routed subsets of Tornado's global sequence, so gaps are expected;
+          the old context tracker queued the later comment forever after a review bypassed it.
+     How: Prime the old tracker with event 10, interleave review 11, then require comment 12 to
+          update its cache during the same mounted realtime session. */
+  it('processes ordinary events after interleaved review events without waiting on a gap', () => {
+    mockRealtimeContext.activeArticleId = 42;
+    mockRealtimeContext.activeCommunityId = 7;
+
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'new_comment',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          discussion_id: 501,
+          comment_id: 301,
+          comment: { id: 301, content: 'First delivered event', replies: [] },
+        },
+        community_ids: [7],
+        timestamp: '2026-08-24T00:00:00Z',
+        event_id: 10,
+      },
+    ]);
+    mockQueryClient.setQueriesData.mockClear();
+
+    emitRealtimeEvents([
+      {
+        type: 'new_review',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          review_id: 202,
+          review: { id: 202, subject: 'Interleaved review' },
+        },
+        community_ids: [7],
+        timestamp: '2026-08-24T00:00:01Z',
+        event_id: 11,
+      },
+      {
+        type: 'updated_comment',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          discussion_id: 501,
+          comment_id: 301,
+          comment: { id: 301, content: 'Still processed', replies: [] },
+        },
+        community_ids: [7],
+        timestamp: '2026-08-24T00:00:02Z',
+        event_id: 12,
+      },
+    ]);
+
+    const updater = getMatchingSetQueriesDataUpdater(['/api/articles/discussions/501/comments/']);
+    const updated = updater({
+      data: [{ id: 301, content: 'Before update', replies: [] }],
+    }) as { data: Array<{ id: number; content: string }> };
+
+    expect(updated.data[0].content).toBe('Still processed');
+
+    unmount();
+  });
+
+  /* Fixed by Codex on 2026-08-24
+     Who: Codex
+     What: Pin the realtime representation of a logically deleted discussion-comment parent.
+     Why: Filtering the parent out also discarded its still-live reply subtree for every viewer.
+     How: Assert that deletion blanks/marks the parent while preserving the nested replies. */
+  it('keeps replies attached to a realtime-deleted discussion comment tombstone', () => {
+    mockRealtimeContext.activeArticleId = 42;
+    mockRealtimeContext.activeCommunityId = 7;
+
+    const { unmount } = renderHook(() => useRealtime());
+
+    emitRealtimeEvents([
+      {
+        type: 'deleted_comment',
+        data: {
+          article_id: 42,
+          community_id: 7,
+          discussion_id: 501,
+          comment_id: 301,
+          parent_id: null,
+        },
+        community_ids: [7],
+        timestamp: '2026-08-24T00:00:00Z',
+        event_id: 20,
+      },
+    ]);
+
+    const updater = getMatchingSetQueriesDataUpdater(['/api/articles/discussions/501/comments/']);
+    const updated = updater({
+      data: [
+        {
+          id: 301,
+          content: 'Parent being deleted',
+          upvotes: 4,
+          is_deleted: false,
+          replies: [{ id: 302, content: 'Reply that must survive', replies: [] }],
+        },
+      ],
+    }) as {
+      data: Array<{
+        id: number;
+        content: string;
+        upvotes: number;
+        is_deleted: boolean;
+        replies: Array<{ id: number; content: string }>;
+      }>;
+    };
+
+    expect(updated.data).toHaveLength(1);
+    expect(updated.data[0]).toMatchObject({
+      id: 301,
+      content: '',
+      upvotes: 0,
+      is_deleted: true,
+    });
+    expect(updated.data[0].replies).toEqual([
+      { id: 302, content: 'Reply that must survive', replies: [] },
+    ]);
 
     unmount();
   });
