@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { clearRegisteredQueryCache } from '@/api/queryClientRegistry';
 
+import { useNewTagRetentionStore } from './newTagRetentionStore';
 import { useReadItemsStore } from './readItemsStore';
 import { useSubscriptionUnreadStore } from './subscriptionUnreadStore';
 import { useUserSettingsStore } from './userSettingsStore';
@@ -184,6 +185,22 @@ const clearCookies = () => {
   Cookies.remove('expiresAt', cookieOptions);
 };
 
+/* Fixed by Codex on 2026-08-24
+   Who: Codex
+   What: Centralized cleanup for all browser state that belongs to the authenticated user.
+   Why: Only explicit logout cleared persisted NEW badges and other account-scoped caches; automatic
+        401/403 session invalidation and direct account replacement could leak the prior user's UI state.
+   How: Route logout, unauthenticated bootstrap, rejected server validation, and detected account
+        changes through the same synchronous store/cache reset before publishing the next auth state. */
+const clearUserScopedClientState = () => {
+  clearRegisteredQueryCache();
+  useReadItemsStore.getState().reset();
+  useSubscriptionUnreadStore.getState().reset();
+  useNewTagRetentionStore.getState().reset();
+  useUserSettingsStore.getState().clearSettings();
+  lastServerValidation = null;
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -193,6 +210,11 @@ export const useAuthStore = create<AuthState>()(
       expiresAt: null,
       user: null,
       setAccessToken: (token: string, user: AuthenticatedUserType) => {
+        const previousUserId = get().user?.id;
+        if (previousUserId !== undefined && previousUserId !== user.id) {
+          clearUserScopedClientState();
+        }
+
         const expiresAt = getExpiresAtFromToken(token) ?? Date.now() + TOKEN_EXPIRATION_TIME;
         const cookieOptions = getCookieOptions();
         Cookies.set(AUTH_COOKIE_NAME, token, cookieOptions);
@@ -212,17 +234,7 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => {
         clearCookies();
-        clearRegisteredQueryCache();
-        // Clear read items and subscription unread state on logout
-        useReadItemsStore.getState().reset();
-        useSubscriptionUnreadStore.getState().reset();
-        // NOTE(Codex for bsureshkrishna, 2026-02-09): Clear persisted settings
-        // to avoid showing a prior user's preferences after logout.
-        useUserSettingsStore.getState().clearSettings();
-
-        // Fixed by Claude Sonnet 4.5 on 2026-02-08
-        // Issue 3: Clear server validation timestamp on logout
-        lastServerValidation = null;
+        clearUserScopedClientState();
 
         set(() => ({
           isAuthenticated: false,
@@ -270,6 +282,7 @@ export const useAuthStore = create<AuthState>()(
             }
 
             if (!token) {
+              clearUserScopedClientState();
               set({
                 isAuthenticated: false,
                 isAuthInitialized: true,
@@ -326,6 +339,7 @@ export const useAuthStore = create<AuthState>()(
                   });
                   // Auth failure - clear session
                   clearCookies();
+                  clearUserScopedClientState();
                   set({
                     isAuthenticated: false,
                     isAuthInitialized: true,
@@ -364,6 +378,7 @@ export const useAuthStore = create<AuthState>()(
                     action: 'logout',
                   });
                   clearCookies();
+                  clearUserScopedClientState();
                   set({
                     isAuthenticated: false,
                     isAuthInitialized: true,
@@ -400,6 +415,7 @@ export const useAuthStore = create<AuthState>()(
                     action: 'logout',
                   });
                   clearCookies();
+                  clearUserScopedClientState();
                   set({
                     isAuthenticated: false,
                     isAuthInitialized: true,
