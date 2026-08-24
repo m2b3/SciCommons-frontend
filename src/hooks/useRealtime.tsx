@@ -23,6 +23,12 @@ type RealtimeEventType =
   | 'updated_comment'
   | 'deleted_discussion'
   | 'deleted_comment'
+  | 'new_review'
+  | 'updated_review'
+  | 'deleted_review'
+  | 'new_review_comment'
+  | 'updated_review_comment'
+  | 'deleted_review_comment'
   | 'new_notification';
 
 /* Updated by Claude on 2026-03-15
@@ -35,6 +41,8 @@ type RealtimeDiscussionCommentEvent = {
     article_id: number;
     community_id: number;
     discussion_id?: number;
+    review_id?: number;
+    comment_id?: number;
     parent_id?: number | null;
     is_reply?: boolean;
     reply_depth?: number;
@@ -47,6 +55,23 @@ type RealtimeDiscussionCommentEvent = {
       [key: string]: unknown;
     };
     comment?: {
+      id?: number;
+      author?: {
+        username: string;
+      };
+      content?: string;
+      [key: string]: unknown;
+    };
+    review?: {
+      id?: number;
+      user?: {
+        username: string;
+      };
+      subject?: string;
+      content?: string;
+      [key: string]: unknown;
+    };
+    review_comment?: {
       id?: number;
       author?: {
         username: string;
@@ -101,6 +126,14 @@ const STORAGE_KEYS = {
   LEADER: 'realtime_leader',
 };
 
+const REVIEW_EVENT_TYPES: RealtimeEventType[] = ['new_review', 'updated_review', 'deleted_review'];
+
+const REVIEW_COMMENT_EVENT_TYPES: RealtimeEventType[] = [
+  'new_review_comment',
+  'updated_review_comment',
+  'deleted_review_comment',
+];
+
 // Generate a unique tab ID to prevent processing our own broadcasts
 const TAB_ID =
   typeof window !== 'undefined' ? `${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
@@ -121,6 +154,140 @@ function matchesQueryKey(queryKey: readonly unknown[], pattern: string | RegExp)
     return keyStr.includes(pattern);
   }
   return pattern.test(keyStr);
+}
+
+function hasExactQueryKey(queryKey: readonly unknown[], key: string): boolean {
+  return Array.isArray(queryKey) && queryKey[0] === key;
+}
+
+// A review list cache only ever holds one community's reviews: list_reviews filters to
+// `community_id` when it is given and to community=None when it is not
+// (SciCommons-backend/articles/review_api.py). So an event may only touch a cached list whose
+// community is exactly the event's - matching on the article alone let a private community's
+// review land in a sibling community's list and in the no-community list.
+function reviewListCommunityId(value: unknown): number | undefined {
+  return typeof value === 'number' && value > 0 ? value : undefined;
+}
+
+function matchesReviewListQueryKey(
+  queryKey: readonly unknown[],
+  articleId: number,
+  communityId?: number
+): boolean {
+  if (!Array.isArray(queryKey) || queryKey.length < 1) return false;
+
+  const eventCommunityId = reviewListCommunityId(communityId);
+
+  // Generated key: [`/api/articles/<id>/reviews/`, params?] - params carries community_id.
+  if (queryKey[0] === `/api/articles/${articleId}/reviews/`) {
+    const params = queryKey[1];
+    return (
+      reviewListCommunityId(isRecord(params) ? params.community_id : undefined) === eventCommunityId
+    );
+  }
+
+  // Custom key from ArticlePreviewSection: ['reviews', articleId, communityId].
+  if (queryKey.length >= 2 && queryKey[0] === 'reviews' && queryKey[1] === articleId) {
+    return reviewListCommunityId(queryKey[2]) === eventCommunityId;
+  }
+
+  return false;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getNumericId(value: unknown): number | undefined {
+  if (!isRecord(value)) return undefined;
+  return typeof value.id === 'number' ? value.id : undefined;
+}
+
+function normalizeReviewComment(comment: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ...comment,
+    replies: Array.isArray(comment.replies) ? comment.replies : [],
+  };
+}
+
+function updateReviewCommentTree(
+  comments: unknown[],
+  eventType: RealtimeEventType,
+  incomingComment: Record<string, unknown>,
+  parentId?: number | null
+): unknown[] {
+  const commentId = getNumericId(incomingComment);
+  if (!commentId) return comments;
+
+  const normalizedComment = normalizeReviewComment(incomingComment);
+
+  if (eventType === 'new_review_comment') {
+    if (!parentId) {
+      const exists = comments.some((comment) => getNumericId(comment) === commentId);
+      return exists ? comments : [...comments, normalizedComment];
+    }
+
+    return comments.map((comment) => {
+      if (!isRecord(comment)) return comment;
+
+      if (getNumericId(comment) === parentId) {
+        const replies = Array.isArray(comment.replies) ? comment.replies : [];
+        const exists = replies.some((reply) => getNumericId(reply) === commentId);
+        return exists
+          ? comment
+          : {
+              ...comment,
+              replies: [...replies, normalizedComment],
+            };
+      }
+
+      if (Array.isArray(comment.replies)) {
+        return {
+          ...comment,
+          replies: updateReviewCommentTree(comment.replies, eventType, incomingComment, parentId),
+        };
+      }
+
+      return comment;
+    });
+  }
+
+  return comments.map((comment) => {
+    if (!isRecord(comment)) return comment;
+
+    const mergedComment =
+      getNumericId(comment) === commentId
+        ? {
+            ...comment,
+            ...normalizedComment,
+          }
+        : comment;
+
+    if (Array.isArray(mergedComment.replies)) {
+      return {
+        ...mergedComment,
+        replies: updateReviewCommentTree(
+          mergedComment.replies,
+          eventType,
+          incomingComment,
+          parentId
+        ),
+      };
+    }
+
+    return mergedComment;
+  });
+}
+
+function applyReviewCommentCountDelta(review: unknown, reviewId: number, delta: number): unknown {
+  if (!isRecord(review) || getNumericId(review) !== reviewId) return review;
+
+  const currentCount = typeof review.comments_count === 'number' ? review.comments_count : 0;
+
+  return {
+    ...review,
+    comments_count: Math.max(0, currentCount + delta),
+  };
 }
 
 export function useRealtime() {
@@ -153,14 +320,6 @@ export function useRealtime() {
   const registerQueueRef = useRef<((force?: boolean) => Promise<boolean>) | null>(null);
   // Track processed event IDs to prevent duplicate processing
   const processedEventIdsRef = useRef<Set<number>>(new Set());
-
-  // Fixed by Claude Sonnet 4.5 on 2026-02-08
-  // Issue 4: Track event sequences to ensure ordering
-  // Map key format: "communityId:articleId" -> last processed event_id
-  const eventSequenceRef = useRef<Map<string, number>>(new Map());
-  // Queue for out-of-order events that arrived too early
-  // Map key format: "communityId:articleId" -> array of pending events
-  const pendingEventsRef = useRef<Map<string, RealtimeEvent[]>>(new Map());
 
   // Fixed by Claude Sonnet 4.5 on 2026-02-08
   // Issue 6: Track poll timeout to prevent zombie polls after unmount
@@ -266,7 +425,9 @@ export function useRealtime() {
           if (!data?.items) return oldData;
 
           const discussion = event.data.discussion;
-          if (!discussion?.id) return oldData;
+          const discussionId = discussion?.id ?? event.data.discussion_id;
+          if (!discussionId) return oldData;
+          if (event.type !== 'deleted_discussion' && !discussion) return oldData;
 
           const items = data.items;
 
@@ -278,7 +439,7 @@ export function useRealtime() {
                   typeof item === 'object' &&
                   item !== null &&
                   'id' in item &&
-                  item.id === discussion.id
+                  item.id === discussionId
               );
               if (exists) return oldData;
 
@@ -300,7 +461,7 @@ export function useRealtime() {
                     typeof item === 'object' &&
                     item !== null &&
                     'id' in item &&
-                    item.id === discussion.id
+                    item.id === discussionId
                       ? { ...item, ...discussion }
                       : item
                   ),
@@ -319,7 +480,7 @@ export function useRealtime() {
                         typeof item === 'object' &&
                         item !== null &&
                         'id' in item &&
-                        item.id === discussion.id
+                        item.id === discussionId
                       )
                   ),
                 },
@@ -355,7 +516,9 @@ export function useRealtime() {
           if (!Array.isArray((oldData as { data?: unknown }).data)) return oldData;
 
           const comment = event.data.comment;
-          if (!comment?.id) return oldData;
+          const commentId = comment?.id ?? event.data.comment_id;
+          if (!commentId) return oldData;
+          if (event.type !== 'deleted_comment' && !comment) return oldData;
 
           const parentId = event.data.parent_id;
 
@@ -368,11 +531,11 @@ export function useRealtime() {
                   // Top-level comment
                   const exists = comments.some(
                     (c: unknown) =>
-                      typeof c === 'object' && c !== null && 'id' in c && c.id === comment.id
+                      typeof c === 'object' && c !== null && 'id' in c && c.id === commentId
                   );
                   if (exists) return comments;
 
-                  return [...comments, { ...comment, replies: [] }];
+                  return [...comments, { ...(comment ?? { id: commentId }), replies: [] }];
                 } else {
                   // Reply to existing comment
                   return comments.map((c: unknown) => {
@@ -381,11 +544,14 @@ export function useRealtime() {
                       const replies = 'replies' in c && Array.isArray(c.replies) ? c.replies : [];
                       const exists = replies.some(
                         (r: unknown) =>
-                          typeof r === 'object' && r !== null && 'id' in r && r.id === comment.id
+                          typeof r === 'object' && r !== null && 'id' in r && r.id === commentId
                       );
                       if (exists) return c;
 
-                      return { ...c, replies: [...replies, { ...comment, replies: [] }] };
+                      return {
+                        ...c,
+                        replies: [...replies, { ...(comment ?? { id: commentId }), replies: [] }],
+                      };
                     } else if ('replies' in c && Array.isArray(c.replies)) {
                       // Recursively check nested replies
                       return { ...c, replies: updateCommentsArray(c.replies) };
@@ -398,7 +564,7 @@ export function useRealtime() {
               case 'updated_comment': {
                 return comments.map((c: unknown) => {
                   if (typeof c !== 'object' || c === null || !('id' in c)) return c;
-                  if (c.id === comment.id) {
+                  if (c.id === commentId) {
                     return { ...c, ...comment };
                   } else if ('replies' in c && Array.isArray(c.replies)) {
                     return { ...c, replies: updateCommentsArray(c.replies) };
@@ -408,15 +574,30 @@ export function useRealtime() {
               }
 
               case 'deleted_comment': {
-                const filtered = comments.filter(
-                  (c: unknown) =>
-                    !(typeof c === 'object' && c !== null && 'id' in c && c.id === comment.id)
-                );
-                return filtered.map((c: unknown) =>
-                  typeof c === 'object' && c !== null && 'replies' in c && Array.isArray(c.replies)
+                /* Fixed by Codex on 2026-08-24
+                   Who: Codex
+                   What: Preserve logically deleted discussion comments in the realtime cache.
+                   Why: Removing the matched node also removed every live reply nested beneath it,
+                        so other viewers lost the thread until a full refetch.
+                   How: Blank and mark the cached node as deleted while recursively retaining its
+                        existing replies; PR 361's renderer can then show the intended tombstone. */
+                return comments.map((c: unknown) => {
+                  if (typeof c !== 'object' || c === null || !('id' in c)) return c;
+
+                  if (c.id === commentId) {
+                    return {
+                      ...c,
+                      content: '',
+                      is_deleted: true,
+                      upvotes: 0,
+                      replies: 'replies' in c && Array.isArray(c.replies) ? c.replies : [],
+                    };
+                  }
+
+                  return 'replies' in c && Array.isArray(c.replies)
                     ? { ...c, replies: updateCommentsArray(c.replies) }
-                    : c
-                );
+                    : c;
+                });
               }
 
               default:
@@ -478,6 +659,212 @@ export function useRealtime() {
       }
     },
     [queryClient]
+  );
+
+  const invalidateReviewCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const { article_id: articleId, review_id: reviewId, community_id: communityId } = event.data;
+
+      if (articleId) {
+        queryClient.invalidateQueries({
+          predicate: (query) => matchesReviewListQueryKey(query.queryKey, articleId, communityId),
+        });
+      }
+
+      if (reviewId) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/`),
+        });
+      }
+    },
+    [queryClient]
+  );
+
+  const updateReviewCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const {
+        article_id: articleId,
+        review_id: reviewId,
+        community_id: communityId,
+        review,
+      } = event.data;
+      const resolvedReviewId = getNumericId(review) ?? reviewId;
+
+      if (!articleId || !resolvedReviewId || !review) {
+        invalidateReviewCaches(event);
+        return;
+      }
+
+      queryClient.setQueriesData(
+        {
+          predicate: (query) => matchesReviewListQueryKey(query.queryKey, articleId, communityId),
+        },
+        (oldData: unknown) => {
+          if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+          const data = oldData.data;
+          if (!isRecord(data) || !Array.isArray(data.items)) return oldData;
+
+          const exists = data.items.some(
+            (item: unknown) => getNumericId(item) === resolvedReviewId
+          );
+
+          if (event.type === 'new_review') {
+            if (exists) return oldData;
+
+            return {
+              ...oldData,
+              data: {
+                ...data,
+                items: [review, ...data.items],
+                total: typeof data.total === 'number' ? data.total + 1 : data.total,
+              },
+            };
+          }
+
+          if (!exists) return oldData;
+
+          return {
+            ...oldData,
+            data: {
+              ...data,
+              items: data.items.map((item: unknown) => {
+                if (isRecord(item) && getNumericId(item) === resolvedReviewId) {
+                  return { ...item, ...review };
+                }
+                return item;
+              }),
+            },
+          };
+        }
+      );
+
+      queryClient.setQueriesData(
+        {
+          predicate: (query) =>
+            hasExactQueryKey(query.queryKey, `/api/articles/reviews/${resolvedReviewId}/`),
+        },
+        (oldData: unknown) => {
+          if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+          const data = oldData.data;
+          if (!isRecord(data)) return oldData;
+
+          return {
+            ...oldData,
+            data: {
+              ...data,
+              ...review,
+            },
+          };
+        }
+      );
+    },
+    [queryClient, invalidateReviewCaches]
+  );
+
+  const invalidateReviewCommentCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const { article_id: articleId, review_id: reviewId, community_id: communityId } = event.data;
+
+      if (articleId) {
+        queryClient.invalidateQueries({
+          predicate: (query) => matchesReviewListQueryKey(query.queryKey, articleId, communityId),
+        });
+      }
+
+      if (reviewId) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/comments/`) ||
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/rating/`),
+        });
+      }
+    },
+    [queryClient]
+  );
+
+  const updateReviewCommentCaches = useCallback(
+    (event: RealtimeDiscussionCommentEvent) => {
+      const {
+        article_id: articleId,
+        review_id: reviewId,
+        parent_id: parentId,
+        community_id: communityId,
+      } = event.data;
+      const reviewComment = event.data.review_comment ?? event.data.comment;
+      const resolvedCommentId = getNumericId(reviewComment);
+
+      if (!reviewId || !reviewComment || !resolvedCommentId) {
+        invalidateReviewCommentCaches(event);
+        return;
+      }
+
+      queryClient.setQueriesData(
+        {
+          predicate: (query) =>
+            matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/comments/`),
+        },
+        (oldData: unknown) => {
+          if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+          if (!Array.isArray(oldData.data)) return oldData;
+
+          return {
+            ...oldData,
+            data: updateReviewCommentTree(oldData.data, event.type, reviewComment, parentId),
+          };
+        }
+      );
+
+      const commentCountDelta =
+        event.type === 'new_review_comment' ? 1 : event.type === 'deleted_review_comment' ? -1 : 0;
+
+      if (commentCountDelta !== 0) {
+        if (articleId) {
+          queryClient.setQueriesData(
+            {
+              predicate: (query) =>
+                matchesReviewListQueryKey(query.queryKey, articleId, communityId),
+            },
+            (oldData: unknown) => {
+              if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+              const data = oldData.data;
+              if (!isRecord(data) || !Array.isArray(data.items)) return oldData;
+
+              return {
+                ...oldData,
+                data: {
+                  ...data,
+                  items: data.items.map((item) =>
+                    applyReviewCommentCountDelta(item, reviewId, commentCountDelta)
+                  ),
+                },
+              };
+            }
+          );
+        }
+
+        queryClient.setQueriesData(
+          {
+            predicate: (query) =>
+              hasExactQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/`),
+          },
+          (oldData: unknown) => {
+            if (!isRecord(oldData) || !('data' in oldData)) return oldData;
+
+            return {
+              ...oldData,
+              data: applyReviewCommentCountDelta(oldData.data, reviewId, commentCountDelta),
+            };
+          }
+        );
+      }
+
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          matchesQueryKey(query.queryKey, `/api/articles/reviews/${reviewId}/rating/`),
+      });
+    },
+    [queryClient, invalidateReviewCommentCaches]
   );
 
   const fetchPoll = useCallback(async (): Promise<PollResponse> => {
@@ -548,77 +935,16 @@ export function useRealtime() {
         bc?.postMessage({ type: 'realtime:events', payload: newEvents, senderId: TAB_ID });
       }
 
-      // Fixed by Claude Sonnet 4.5 on 2026-02-08
-      // Issue 4: Process events in sequence, queue out-of-order events
-      const eventsToProcess: RealtimeEvent[] = [];
-      const eventsToQueue: RealtimeEvent[] = [];
-
+      /* Fixed by Codex on 2026-08-24
+         Who: Codex
+         What: Process every received realtime event in ascending server event-id order.
+         Why: Tornado assigns one global counter but each user queue receives only its routed
+              subset, so gaps are normal and cannot be interpreted as missing per-context events.
+              The old per-community/article tracker permanently queued valid events after such a
+              gap, and review events made that stall deterministic by bypassing the tracker.
+         How: Trust the ordered per-user queue payload, sort each delivered batch, and use the
+              existing processed-id set solely for cross-tab/retry deduplication. */
       for (const event of newEvents) {
-        const { article_id: articleId, community_id: communityId } = event.data;
-        const contextKey = `${communityId}:${articleId}`;
-        const lastSeq = eventSequenceRef.current.get(contextKey) ?? 0;
-
-        // Check if this event is in sequence
-        if (event.event_id === lastSeq + 1 || lastSeq === 0) {
-          // In sequence - process immediately
-          eventsToProcess.push(event);
-          eventSequenceRef.current.set(contextKey, event.event_id);
-        } else if (event.event_id > lastSeq + 1) {
-          // Out of order - queue for later
-          eventsToQueue.push(event);
-        }
-        // If event.event_id <= lastSeq, it's already processed (skip)
-      }
-
-      // Queue out-of-order events
-      for (const event of eventsToQueue) {
-        const { article_id: articleId, community_id: communityId } = event.data;
-        const contextKey = `${communityId}:${articleId}`;
-        const pending = pendingEventsRef.current.get(contextKey) ?? [];
-        pending.push(event);
-        pendingEventsRef.current.set(contextKey, pending);
-      }
-
-      // Helper to process pending events that are now ready
-      const processPendingEvents = (contextKey: string) => {
-        const pending = pendingEventsRef.current.get(contextKey);
-        if (!pending?.length) return;
-
-        const lastSeq = eventSequenceRef.current.get(contextKey) ?? 0;
-        const readyEvents: RealtimeEvent[] = [];
-        const stillPending: RealtimeEvent[] = [];
-
-        for (const event of pending) {
-          if (event.event_id === lastSeq + 1) {
-            readyEvents.push(event);
-          } else {
-            stillPending.push(event);
-          }
-        }
-
-        if (readyEvents.length > 0) {
-          // Sort ready events by event_id
-          readyEvents.sort((a, b) => a.event_id - b.event_id);
-
-          // Update sequence tracker
-          for (const event of readyEvents) {
-            eventSequenceRef.current.set(contextKey, event.event_id);
-          }
-
-          // Update pending queue
-          if (stillPending.length > 0) {
-            pendingEventsRef.current.set(contextKey, stillPending);
-          } else {
-            pendingEventsRef.current.delete(contextKey);
-          }
-
-          // Recursively process newly ready events
-          eventsToProcess.push(...readyEvents);
-          processPendingEvents(contextKey);
-        }
-      };
-
-      for (const event of eventsToProcess) {
         // Handle new_notification events separately as they have different data structure
         if (event.type === 'new_notification') {
           const notificationEvent = event as RealtimeNotificationEvent;
@@ -776,10 +1102,32 @@ export function useRealtime() {
           }
         }
 
-        // Fixed by Claude Sonnet 4.5 on 2026-02-08
-        // Issue 4: After processing each event, check if any queued events are now ready
-        const contextKey = `${discCommentEvent.data.community_id}:${discCommentEvent.data.article_id}`;
-        processPendingEvents(contextKey);
+        if (REVIEW_EVENT_TYPES.includes(event.type)) {
+          updateReviewCaches(discCommentEvent);
+        }
+
+        if (REVIEW_COMMENT_EVENT_TYPES.includes(event.type)) {
+          updateReviewCommentCaches(discCommentEvent);
+        }
+
+        /* Fixed by Claude on 2026-07-29
+           Who: Claude
+           What: Mark the article as having a new event when a review or review comment is
+                 created, matching what the discussion and comment branches already do.
+           Why: Review realtime events updated the caches but never touched the unread store,
+                 so a new review in a private community produced no unread dot in the sidebar,
+                 nav bar or tab title while a new discussion on the same article did.
+           How: Creates only — updates and deletions are not new activity, mirroring the
+                 `new_discussion` / `new_comment` conditions above. The ephemeral NEW badge is
+                 deliberately not set: EphemeralEntityType has no review variant and no review
+                 component reads that store, so it would be dead code. */
+        if (
+          (event.type === 'new_review' || event.type === 'new_review_comment') &&
+          communityId &&
+          articleId
+        ) {
+          useSubscriptionUnreadStore.getState().markArticleHasNewEvent(communityId, articleId);
+        }
       }
     },
     [
@@ -789,6 +1137,8 @@ export function useRealtime() {
       isContextFresh,
       updateDiscussionsCache,
       updateCommentsCache,
+      updateReviewCaches,
+      updateReviewCommentCaches,
     ]
   );
 
@@ -884,11 +1234,12 @@ export function useRealtime() {
         // Check if registration succeeded and we're not stopped (auth failure)
         if (registered && queueIdRef.current && !stoppedRef.current) {
           retryCountRef.current = 0;
-          // Invalidate all discussion and comment caches
+          // Invalidate discussion, review, and comment caches after a missed-event catchup.
           queryClient.invalidateQueries({
             predicate: (query) =>
               matchesQueryKey(query.queryKey, '/api/articles/') &&
               (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/reviews') ||
                 matchesQueryKey(query.queryKey, '/comments')),
           });
           /* Fixed by Codex on 2026-02-15
@@ -972,6 +1323,7 @@ export function useRealtime() {
             predicate: (query) =>
               matchesQueryKey(query.queryKey, '/api/articles/') &&
               (matchesQueryKey(query.queryKey, '/discussions') ||
+                matchesQueryKey(query.queryKey, '/reviews') ||
                 matchesQueryKey(query.queryKey, '/comments')),
           });
           /* Fixed by Codex on 2026-02-15
@@ -1260,48 +1612,6 @@ export function useRealtime() {
     }, LEADER_TTL_MS);
     return () => clearInterval(id);
   }, [isLeader, tryBecomeLeader, isAuthenticated, accessToken]);
-
-  // Fixed by Claude Sonnet 4.5 on 2026-02-08
-  // Issue 5: Periodic cleanup of event tracking structures to prevent memory leaks
-  useEffect(() => {
-    const CLEANUP_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
-    const SEQUENCE_TRACKER_MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
-
-    const cleanupTimestamp = new Map<string, number>();
-
-    const id = window.setInterval(() => {
-      const now = Date.now();
-
-      // Clean processed event IDs aggressively
-      if (processedEventIdsRef.current.size > 250) {
-        const idsArray = Array.from(processedEventIdsRef.current);
-        processedEventIdsRef.current = new Set(idsArray.slice(-250));
-      }
-
-      // Clean old sequence trackers (contexts not seen in 1 hour)
-      const sequenceKeysToDelete: string[] = [];
-      for (const key of eventSequenceRef.current.keys()) {
-        const lastSeen = cleanupTimestamp.get(key) ?? now;
-        if (now - lastSeen > SEQUENCE_TRACKER_MAX_AGE_MS) {
-          sequenceKeysToDelete.push(key);
-        }
-      }
-      for (const key of sequenceKeysToDelete) {
-        eventSequenceRef.current.delete(key);
-        pendingEventsRef.current.delete(key);
-        cleanupTimestamp.delete(key);
-      }
-
-      // Update cleanup timestamps for active keys
-      for (const key of eventSequenceRef.current.keys()) {
-        if (!cleanupTimestamp.has(key)) {
-          cleanupTimestamp.set(key, now);
-        }
-      }
-    }, CLEANUP_INTERVAL_MS);
-
-    return () => clearInterval(id);
-  }, []);
 
   // Fixed by Claude Sonnet 4.5 on 2026-02-08
   // Issue 6: Cleanup poll timeout on unmount to prevent zombie polls

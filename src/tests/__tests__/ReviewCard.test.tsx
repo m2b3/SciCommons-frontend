@@ -123,6 +123,42 @@ describe('ReviewCard for a live review', () => {
 
     expect(screen.getByRole('button', { name: 'Edit review' })).toBeInTheDocument();
   });
+
+  /* Fixed by Codex on 2026-08-24
+     Who: Codex
+     What: Added a regression for the PR 359/361 ReviewCard conflict resolution.
+     Why: Choosing PR 361's static version indexes would make a realtime update that appends a
+          history entry move a user who selected Latest onto the now-previous version.
+     How: Rerender with the former latest content moved into versions and require the selector and
+          visible body to continue following the new latest review. */
+  it('keeps Latest selected when a realtime refresh appends a review version', () => {
+    const { rerender } = render(<ReviewCard review={buildReview()} />);
+
+    expect(screen.getByRole('combobox')).toHaveValue('0');
+
+    rerender(
+      <ReviewCard
+        review={buildReview({
+          subject: 'Updated methodology',
+          content: 'The revised controls are convincing.',
+          updated_at: isoAgo(30_000),
+          versions: [
+            {
+              content: 'The controls are convincing.',
+              subject: 'Solid methodology',
+              rating: 4,
+              version: 1,
+              created_at: isoAgo(60_000),
+            },
+          ],
+        })}
+      />
+    );
+
+    expect(screen.getByRole('combobox')).toHaveValue('1');
+    expect(screen.getByText('Updated methodology')).toBeInTheDocument();
+    expect(screen.getByText('The revised controls are convincing.')).toBeInTheDocument();
+  });
 });
 
 describe('ReviewCard for a deleted review', () => {
