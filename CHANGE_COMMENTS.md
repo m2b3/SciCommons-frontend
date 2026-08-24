@@ -1,3 +1,27 @@
+## 2026-08-24 - PR 360 Account-Scoped Retention Cleanup
+
+Problem: Persisted NEW-tag retention was reset by explicit logout, but automatic 401/403 session
+rejection and direct replacement with a different authenticated account could leave the prior
+user's badges and other account-scoped browser state behind. The retention sweep test also emitted
+React update warnings while restoring mocked store actions.
+
+Root Cause: Auth cleanup was duplicated instead of shared, so several session-ending branches only
+cleared cookies and auth fields. The test restored subscribed Zustand actions outside React's
+`act()` boundary.
+
+Solution: Centralized query-cache, read-state, unread-state, NEW-retention, settings, and validation
+cleanup and invoked it for logout, logged-out bootstrap, server-rejected sessions, and detected
+account changes. Added automatic-logout and account-switch regressions, and batched the test-only
+store restoration through `act()`. Applied the repository's required formatter to the pre-existing
+`ReviewComments` lines touched by the branch.
+
+Result: User-scoped badge/cache state cannot cross the covered account/session boundaries, while
+the existing once-per-thread expiry sweep remains intact and warning-free.
+
+Files Modified: `src/stores/authStore.ts`, `src/components/articles/ReviewComments.tsx`,
+`src/tests/__tests__/authStore.test.ts`, `src/tests/__tests__/newTagRetention.test.tsx`,
+`CHANGE_COMMENTS.md` (commit reference: pending local commit)
+
 ## 2026-08-24 - PR 359 Realtime Ordering and Deleted-Thread Preservation
 
 Problem: PR 359 could permanently queue valid discussion/comment events after an interleaved
