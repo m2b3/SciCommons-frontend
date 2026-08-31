@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC } from 'react';
@@ -8,14 +7,19 @@ import { usePathname, useSearchParams } from 'next/navigation';
 
 import { ExternalLink, Layers, Sparkles } from 'lucide-react';
 
-import { getTopicCounts, getTopics, getTotalCount } from '@/lib/feed/mockFeed';
+import { type FeedArticle, getFeedTopics, getTopicCounts } from '@/lib/feed/handoffFeed';
 import { cn } from '@/lib/utils';
 
-const TopicSidebar: FC = () => {
+interface TopicSidebarProps {
+  articles: FeedArticle[];
+}
+
+const TopicSidebar: FC<TopicSidebarProps> = ({ articles }) => {
   const pathname = usePathname() ?? '/feed';
   const searchParams = useSearchParams();
   const active = searchParams?.get('topic') ?? null;
-  const counts = getTopicCounts();
+  const topics = getFeedTopics(articles);
+  const counts = getTopicCounts(articles);
 
   const hrefFor = (topicId?: string) => {
     const params = new URLSearchParams();
@@ -46,13 +50,13 @@ const TopicSidebar: FC = () => {
           <Sparkles className="size-4" />
           All articles
         </span>
-        <span className="text-xs text-text-tertiary">{getTotalCount()}</span>
+        <span className="text-xs text-text-tertiary">{articles.length}</span>
       </Link>
 
       <p className="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-text-tertiary">
         Topics
       </p>
-      {getTopics().map((topic) => {
+      {topics.map((topic) => {
         const isActive = active === topic.id;
         return (
           <Link key={topic.id} href={hrefFor(topic.id)} className={rowClass(isActive)}>

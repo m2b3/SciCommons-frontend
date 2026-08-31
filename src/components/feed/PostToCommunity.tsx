@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC, useMemo, useState } from 'react';
@@ -13,7 +12,7 @@ import CommunityPicker from '@/components/communities/CommunityPicker';
 import { Button, ButtonTitle } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FIVE_MINUTES_IN_MS } from '@/constants/common.constants';
-import type { FeedArticle } from '@/lib/feed/mockFeed';
+import type { FeedArticle } from '@/lib/feed/handoffFeed';
 import type { ErrorResponse } from '@/lib/toastHelpers';
 import { showErrorToast } from '@/lib/toastHelpers';
 import { useAuthStore } from '@/stores/authStore';
@@ -68,17 +67,22 @@ const PostToCommunity: FC<PostToCommunityProps> = ({ article }) => {
       return;
     }
 
+    if (article.source !== 'pubmed' || !article.externalId || !article.url) {
+      toast.error('Posting currently supports PubMed feed items.');
+      return;
+    }
+
     setIsPosting(true);
     try {
       const resolved = await resolveArticle({
         data: {
           source: 'pubmed',
-          external_id: article.pmid,
+          external_id: article.externalId,
           title: article.title,
           abstract: article.abstract,
           authors: article.authors.map((name) => ({ value: name, label: name })),
-          article_link: `https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`,
-          pdf_link: article.pmcUrl || undefined,
+          article_link: article.url,
+          pdf_link: article.pdfUrl || article.pmcUrl || undefined,
         },
       });
 

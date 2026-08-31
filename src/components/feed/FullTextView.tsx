@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -9,7 +8,7 @@ import { AlertCircle, ExternalLink, FileText } from 'lucide-react';
 
 import type { FullTextSection } from '@/lib/feed/fullText';
 import { useFullText } from '@/lib/feed/fullText';
-import type { FeedArticle } from '@/lib/feed/mockFeed';
+import type { FeedArticle } from '@/lib/feed/handoffFeed';
 import { cn } from '@/lib/utils';
 
 interface FullTextViewProps {
@@ -81,6 +80,16 @@ const Unavailable: FC<{ article: FeedArticle; failed?: boolean }> = ({ article, 
         : 'The abstract is available on the Blog tab. The publisher’s copy may still be open to you through your institution.'}
     </p>
     <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm">
+      {article.url && (
+        <Link
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-functional-blue hover:underline"
+        >
+          <ExternalLink className="size-4" /> Open source
+        </Link>
+      )}
       {article.doi && (
         <Link
           href={`https://doi.org/${article.doi}`}
@@ -91,14 +100,16 @@ const Unavailable: FC<{ article: FeedArticle; failed?: boolean }> = ({ article, 
           <ExternalLink className="size-4" /> View at publisher
         </Link>
       )}
-      <Link
-        href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-functional-blue hover:underline"
-      >
-        <ExternalLink className="size-4" /> PubMed {article.pmid}
-      </Link>
+      {article.source === 'pubmed' && article.externalId && (
+        <Link
+          href={`https://pubmed.ncbi.nlm.nih.gov/${article.externalId}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-functional-blue hover:underline"
+        >
+          <ExternalLink className="size-4" /> PubMed {article.externalId}
+        </Link>
+      )}
     </div>
   </div>
 );

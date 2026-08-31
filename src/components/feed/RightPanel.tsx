@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC, MouseEvent } from 'react';
@@ -9,44 +8,46 @@ import { Lock, Sparkles } from 'lucide-react';
 
 import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import TabNavigation from '@/components/ui/tab-navigation';
-import { getSimilar } from '@/lib/feed/mockFeed';
+import { type FeedArticle, getSimilarArticles } from '@/lib/feed/handoffFeed';
 
 import CommentsTab from './CommentsTab';
-import { formatAuthors } from './feedFormat';
 import NotesTab from './NotesTab';
+import { formatAuthors } from './feedFormat';
 
 interface RightPanelProps {
   /** When present the panel is article-scoped (Notes/Comments/Similar tabs). */
-  pmid?: string;
+  articleKey?: string;
+  articles?: FeedArticle[];
   /** When provided, Similar entries swap the reader in place instead of navigating. */
-  onSelectArticle?: (pmid: string) => void;
+  onSelectArticle?: (articleKey: string) => void;
 }
 
-const SimilarList: FC<{ pmid: string; onSelect?: (pmid: string) => void }> = ({
-  pmid,
-  onSelect,
-}) => {
-  const similar = getSimilar(pmid);
+const SimilarList: FC<{
+  articleKey: string;
+  articles: FeedArticle[];
+  onSelect?: (articleKey: string) => void;
+}> = ({ articleKey, articles, onSelect }) => {
+  const similar = getSimilarArticles(articles, articleKey);
   if (similar.length === 0) {
     return <p className="text-center text-xs text-text-tertiary">No similar papers found.</p>;
   }
 
   // Same rule as the feed cards: keep the href, intercept only plain left-clicks, so
   // modified clicks still open the deep-link route in a new tab.
-  const handleOpen = (targetPmid: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleOpen = (targetKey: string) => (e: MouseEvent<HTMLAnchorElement>) => {
     if (!onSelect) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
-    onSelect(targetPmid);
+    onSelect(targetKey);
   };
 
   return (
     <div className="flex flex-col gap-2">
       {similar.map((article) => (
         <Link
-          key={article.pmid}
-          href={`/feed/article/${article.pmid}`}
-          onClick={handleOpen(article.pmid)}
+          key={article.key}
+          href={`/feed/article/${encodeURIComponent(article.key)}`}
+          onClick={handleOpen(article.key)}
           className="rounded-lg border border-common-contrast/40 bg-common-cardBackground p-3 transition-colors hover:border-common-contrast"
         >
           <RenderParsedHTML
@@ -73,8 +74,8 @@ const FeedInfoPanel: FC = () => (
         Your private notes
       </div>
       <p className="text-xs text-text-secondary">
-        Open any article to take private notes and leave public comments. Notes stay private to
-        you and will sync to Zotero locally.
+        Open any article to take private notes and leave public comments. Notes stay private to you
+        and will sync to Zotero locally.
       </p>
       <button
         type="button"
@@ -100,8 +101,8 @@ const FeedInfoPanel: FC = () => (
   </div>
 );
 
-const RightPanel: FC<RightPanelProps> = ({ pmid, onSelectArticle }) => {
-  if (!pmid) {
+const RightPanel: FC<RightPanelProps> = ({ articleKey, articles = [], onSelectArticle }) => {
+  if (!articleKey) {
     return <FeedInfoPanel />;
   }
 
@@ -110,14 +111,16 @@ const RightPanel: FC<RightPanelProps> = ({ pmid, onSelectArticle }) => {
       <TabNavigation
         // Reset per article, or the previous paper's tab state and mounted notes
         // carry over when the reader swaps in place.
-        resetKey={pmid}
+        resetKey={articleKey}
         tabs={[
-          { id: 'notes', title: 'My Notes', content: () => <NotesTab pmid={pmid} /> },
-          { id: 'comments', title: 'Comments', content: () => <CommentsTab pmid={pmid} /> },
+          { id: 'notes', title: 'My Notes', content: () => <NotesTab pmid={articleKey} /> },
+          { id: 'comments', title: 'Comments', content: () => <CommentsTab pmid={articleKey} /> },
           {
             id: 'similar',
             title: 'Similar',
-            content: () => <SimilarList pmid={pmid} onSelect={onSelectArticle} />,
+            content: () => (
+              <SimilarList articleKey={articleKey} articles={articles} onSelect={onSelectArticle} />
+            ),
           },
         ]}
       />

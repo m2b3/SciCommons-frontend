@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC } from 'react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 
 import { ArrowLeft } from 'lucide-react';
 
-import type { FeedArticle } from '@/lib/feed/mockFeed';
+import type { FeedArticle } from '@/lib/feed/handoffFeed';
 
 import PostToCommunity from './PostToCommunity';
 

@@ -1,14 +1,34 @@
-import { notFound } from 'next/navigation';
+'use client';
 
 import ArticleReader from '@/components/feed/ArticleReader';
 import ReaderHeader from '@/components/feed/ReaderHeader';
 import RightPanel from '@/components/feed/RightPanel';
-import { getArticle } from '@/lib/feed/mockFeed';
+import { getArticleByKey, useMainFeedPage } from '@/lib/feed/handoffFeed';
+
+const decodeArticleKey = (value: string): string => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
 
 const ArticlePage = ({ params }: { params: { pmid: string } }) => {
-  const article = getArticle(params.pmid);
+  const { data: feedPage, isError, isPending } = useMainFeedPage({ source: 'all', limit: 100 });
+  const articleKey = decodeArticleKey(params.pmid);
+  const articles = feedPage?.items ?? [];
+  const article = getArticleByKey(articles, articleKey);
+
+  if (isPending) {
+    return <div className="p-6 text-sm text-text-tertiary">Loading feed...</div>;
+  }
+
+  if (isError) {
+    return <div className="p-6 text-sm text-functional-red">Could not load the feed.</div>;
+  }
+
   if (!article) {
-    notFound();
+    return <div className="p-6 text-sm text-text-tertiary">This feed article was not found.</div>;
   }
 
   return (
@@ -19,7 +39,7 @@ const ArticlePage = ({ params }: { params: { pmid: string } }) => {
       </section>
 
       <aside className="hidden w-96 flex-none overflow-y-auto border-l border-common-contrast/40 lg:block">
-        <RightPanel pmid={article.pmid} />
+        <RightPanel articleKey={article.key} articles={articles} />
       </aside>
     </div>
   );

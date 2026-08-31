@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC } from 'react';
@@ -10,7 +9,7 @@ import { ExternalLink } from 'lucide-react';
 import AbstractText from '@/components/articles/AbstractText';
 import RenderParsedHTML from '@/components/common/RenderParsedHTML';
 import TabNavigation from '@/components/ui/tab-navigation';
-import type { FeedArticle } from '@/lib/feed/mockFeed';
+import type { FeedArticle } from '@/lib/feed/handoffFeed';
 
 import FullTextView from './FullTextView';
 import { formatAuthors, sourceBadge } from './feedFormat';
@@ -22,6 +21,10 @@ interface ArticleReaderProps {
 const BlogView: FC<{ article: FeedArticle }> = ({ article }) => {
   const badge = sourceBadge(article.source);
   const doiUrl = article.doi ? `https://doi.org/${article.doi}` : undefined;
+  const sourceLabel =
+    article.source === 'pubmed' && article.externalId
+      ? `PubMed ${article.externalId}`
+      : `Open ${badge.label}`;
   return (
     <article className="mx-auto max-w-3xl">
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-text-tertiary">
@@ -80,14 +83,16 @@ const BlogView: FC<{ article: FeedArticle }> = ({ article }) => {
             <ExternalLink className="size-4" /> DOI: {article.doi}
           </Link>
         )}
-        <Link
-          href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-functional-blue hover:underline"
-        >
-          <ExternalLink className="size-4" /> PubMed {article.pmid}
-        </Link>
+        {article.url && (
+          <Link
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-functional-blue hover:underline"
+          >
+            <ExternalLink className="size-4" /> {sourceLabel}
+          </Link>
+        )}
       </div>
     </article>
   );
@@ -99,7 +104,7 @@ const ArticleReader: FC<ArticleReaderProps> = ({ article }) => {
       <TabNavigation
         // Without a resetKey the active tab and its mounted content leak between
         // articles when the reader swaps in place.
-        resetKey={article.pmid}
+        resetKey={article.key}
         tabs={[
           { id: 'blog', title: 'Blog', content: () => <BlogView article={article} /> },
           {

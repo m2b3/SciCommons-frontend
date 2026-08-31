@@ -1,5 +1,4 @@
-
-import type { FeedArticle } from '@/lib/feed/mockFeed';
+import type { FeedArticle } from '@/lib/feed/handoffFeed';
 
 /** "A. Smith, B. Lee, C. Doe +3" style author line. */
 export const formatAuthors = (authors: string[], max = 3): string => {

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense, useCallback } from 'react';
@@ -10,21 +9,33 @@ import FeedList from '@/components/feed/FeedList';
 import ReaderHeader from '@/components/feed/ReaderHeader';
 import RightPanel from '@/components/feed/RightPanel';
 import TopicSidebar from '@/components/feed/TopicSidebar';
-import { getArticle } from '@/lib/feed/mockFeed';
+import { getArticleByKey, getFeedTopics, useMainFeedPage } from '@/lib/feed/handoffFeed';
+
+const decodeArticleKey = (value: string | null): string | null => {
+  if (!value) return null;
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
 
 const FeedPageInner = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const topic = searchParams?.get('topic') ?? null;
-  const selectedPmid = searchParams?.get('article') ?? null;
+  const selectedKey = decodeArticleKey(searchParams?.get('article') ?? null);
+  const { data: feedPage, isError, isPending } = useMainFeedPage({ source: 'all', limit: 40 });
 
-  const article = selectedPmid ? getArticle(selectedPmid) : undefined;
+  const articles = feedPage?.items ?? [];
+  const topics = getFeedTopics(articles);
+  const article = selectedKey ? getArticleByKey(articles, selectedKey) : undefined;
 
   const buildHref = useCallback(
-    (pmid: string | null) => {
+    (articleKey: string | null) => {
       const params = new URLSearchParams();
       if (topic) params.set('topic', topic);
-      if (pmid) params.set('article', pmid);
+      if (articleKey) params.set('article', articleKey);
       const qs = params.toString();
       return qs ? `/feed?${qs}` : '/feed';
     },
@@ -33,7 +44,7 @@ const FeedPageInner = () => {
 
   // push (not replace) so Back returns to the feed list, as users expect.
   const openArticle = useCallback(
-    (pmid: string) => router.push(buildHref(pmid), { scroll: false }),
+    (articleKey: string) => router.push(buildHref(articleKey), { scroll: false }),
     [router, buildHref]
   );
   const closeArticle = useCallback(
@@ -44,22 +55,28 @@ const FeedPageInner = () => {
   return (
     <div className="flex h-full min-h-0">
       <aside className="hidden w-64 flex-none overflow-y-auto border-r border-common-contrast/40 md:block">
-        <TopicSidebar />
+        <TopicSidebar articles={articles} />
       </aside>
 
       <section className="min-w-0 flex-1 overflow-y-auto">
-        {article ? (
+        {isPending ? (
+          <div className="p-6 text-sm text-text-tertiary">Loading feed...</div>
+        ) : isError ? (
+          <div className="p-6 text-sm text-functional-red">Could not load the feed.</div>
+        ) : selectedKey && !article ? (
+          <div className="p-6 text-sm text-text-tertiary">This feed article was not found.</div>
+        ) : article ? (
           <>
             <ReaderHeader article={article} onBack={closeArticle} />
             <ArticleReader article={article} />
           </>
         ) : (
-          <FeedList topicId={topic} onSelect={openArticle} />
+          <FeedList articles={articles} topics={topics} topicId={topic} onSelect={openArticle} />
         )}
       </section>
 
       <aside className="hidden w-96 flex-none overflow-y-auto border-l border-common-contrast/40 lg:block">
-        <RightPanel pmid={article?.pmid} onSelectArticle={openArticle} />
+        <RightPanel articleKey={article?.key} articles={articles} onSelectArticle={openArticle} />
       </aside>
     </div>
   );

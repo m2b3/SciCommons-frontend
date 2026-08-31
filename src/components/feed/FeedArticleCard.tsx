@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC, MouseEvent, useEffect, useState } from 'react';
@@ -9,7 +8,7 @@ import { ArrowRight, BookOpen, Bookmark, ThumbsUp } from 'lucide-react';
 
 import AbstractText from '@/components/articles/AbstractText';
 import RenderParsedHTML from '@/components/common/RenderParsedHTML';
-import type { FeedArticle } from '@/lib/feed/mockFeed';
+import type { FeedArticle } from '@/lib/feed/handoffFeed';
 import { cn } from '@/lib/utils';
 import { useDemoFeedStore } from '@/stores/demoFeedStore';
 
@@ -18,11 +17,11 @@ import { formatAuthors, sourceBadge } from './feedFormat';
 interface FeedArticleCardProps {
   article: FeedArticle;
   /** When provided, a plain left-click opens the reader in place instead of navigating. */
-  onSelect?: (pmid: string) => void;
+  onSelect?: (articleKey: string) => void;
 }
 
 const FeedArticleCard: FC<FeedArticleCardProps> = ({ article, onSelect }) => {
-  const href = `/feed/article/${article.pmid}`;
+  const href = `/feed/article/${encodeURIComponent(article.key)}`;
   const badge = sourceBadge(article.source);
 
   // Keep the real href on every link and only intercept unmodified left-clicks, so
@@ -31,14 +30,14 @@ const FeedArticleCard: FC<FeedArticleCardProps> = ({ article, onSelect }) => {
     if (!onSelect) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
-    onSelect(article.pmid);
+    onSelect(article.key);
   };
 
   // Persisted like/bookmark state. Guard with a mounted flag so the server render
   // (empty store) matches the first client render, avoiding hydration mismatch.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const state = useDemoFeedStore((s) => s.byArticle[article.pmid]);
+  const state = useDemoFeedStore((s) => s.byArticle[article.key]);
   const toggleLike = useDemoFeedStore((s) => s.toggleLike);
   const toggleBookmark = useDemoFeedStore((s) => s.toggleBookmark);
   const liked = mounted && !!state?.liked;
@@ -99,7 +98,7 @@ const FeedArticleCard: FC<FeedArticleCardProps> = ({ article, onSelect }) => {
           <div className="mt-4 flex items-center gap-4 text-xs">
             <button
               type="button"
-              onClick={() => toggleLike(article.pmid)}
+              onClick={() => toggleLike(article.key)}
               aria-pressed={liked}
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full border border-common-contrast/50 px-3 py-1 transition-colors hover:bg-common-minimal',
@@ -111,7 +110,7 @@ const FeedArticleCard: FC<FeedArticleCardProps> = ({ article, onSelect }) => {
             </button>
             <button
               type="button"
-              onClick={() => toggleBookmark(article.pmid)}
+              onClick={() => toggleBookmark(article.key)}
               aria-pressed={bookmarked}
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full border border-common-contrast/50 px-3 py-1 transition-colors hover:bg-common-minimal',
