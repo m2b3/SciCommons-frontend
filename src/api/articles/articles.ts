@@ -29,7 +29,9 @@ import type {
   CommunityArticleStatsResponse,
   Message,
   OfficialArticleStatsResponse,
-  PaginatedArticlesListResponse
+  PaginatedArticlesListResponse,
+  ResolveExternalArticleSchema,
+  ResolvedArticleOut
 } from '.././schemas'
 import { customInstance } from '.././custom-instance';
 import type { ErrorType, BodyType } from '.././custom-instance';
@@ -100,6 +102,77 @@ export const useArticlesApiCreateArticle = <TError = ErrorType<Message>,
       > => {
 
       const mutationOptions = getArticlesApiCreateArticleMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    /**
+ * Get-or-create an Article for an external record (currently a PubMed paper).
+
+The feed lists papers from PubMed, not from our DB. When a user posts one to a
+community we need its slug, but it may already have been ingested by someone else.
+`create_article` cannot serve this: it returns a bare 400 "already been submitted"
+with no slug, so the second person to post a popular paper is simply stuck.
+
+`article_link` is already `unique=True` on Article, and the canonical
+https://pubmed.ncbi.nlm.nih.gov/{pmid}/ form makes it a usable external key, so no new
+model is needed yet. When the proper (source, external_id) record table lands -- the
+one the private-notes work also needs -- this becomes a thin wrapper over it.
+
+Deliberately skips create_article's (title, abstract) duplicate check: hitting an
+existing row is the normal path here, not an error.
+ * @summary Resolve External Article
+ */
+export const articlesApiResolveExternalArticle = (
+    resolveExternalArticleSchema: BodyType<ResolveExternalArticleSchema>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ResolvedArticleOut>(
+      {url: `/api/articles/articles/resolve-external/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resolveExternalArticleSchema
+    },
+      options);
+    }
+  
+
+
+export const getArticlesApiResolveExternalArticleMutationOptions = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesApiResolveExternalArticle>>, TError,{data: BodyType<ResolveExternalArticleSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof articlesApiResolveExternalArticle>>, TError,{data: BodyType<ResolveExternalArticleSchema>}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof articlesApiResolveExternalArticle>>, {data: BodyType<ResolveExternalArticleSchema>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  articlesApiResolveExternalArticle(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArticlesApiResolveExternalArticleMutationResult = NonNullable<Awaited<ReturnType<typeof articlesApiResolveExternalArticle>>>
+    export type ArticlesApiResolveExternalArticleMutationBody = BodyType<ResolveExternalArticleSchema>
+    export type ArticlesApiResolveExternalArticleMutationError = ErrorType<Message>
+
+    /**
+ * @summary Resolve External Article
+ */
+export const useArticlesApiResolveExternalArticle = <TError = ErrorType<Message>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof articlesApiResolveExternalArticle>>, TError,{data: BodyType<ResolveExternalArticleSchema>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof articlesApiResolveExternalArticle>>,
+        TError,
+        {data: BodyType<ResolveExternalArticleSchema>},
+        TContext
+      > => {
+
+      const mutationOptions = getArticlesApiResolveExternalArticleMutationOptions(options);
 
       return useMutation(mutationOptions);
     }

@@ -15,6 +15,7 @@ import {
   MoonIcon,
   MoveLeft,
   Plus,
+  Rss,
   Settings,
   SunMediumIcon,
   User,
@@ -545,6 +546,16 @@ const ProfileDropdown: React.FC = () => {
         <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
           <Link href="/settings" className="flex items-center">
             <Settings size={16} className="mr-2" /> Settings
+          </Link>
+        </DropdownMenuItem>
+        {/* Added by Claude on 2026-08-10
+            What: Feed Preferences entry in the profile dropdown.
+            Why: Feed criteria (topics, authors, keywords, similar-to) needed a home, and the
+            profile menu is where users already look for per-account configuration.
+            How: Link to the new /feed-preferences page next to Settings. */}
+        <DropdownMenuItem onClick={() => setIsDropdownOpen(false)}>
+          <Link href="/feed-preferences" className="flex items-center">
+            <Rss size={16} className="mr-2" /> Feed Preferences
           </Link>
         </DropdownMenuItem>
         {/* Fixed by Codex on 2026-02-16

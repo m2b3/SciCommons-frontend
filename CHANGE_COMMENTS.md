@@ -107,6 +107,30 @@ Files Modified: `src/components/articles/ReviewComments.tsx`,
 `src/tests/__tests__/ReviewForm.test.tsx`, `src/tests/__tests__/RenderComments.test.tsx`,
 `CHANGE_COMMENTS.md` (commit reference: pending local commit)
 
+## 2026-08-10 - Feed Preferences page (profile dropdown -> /feed-preferences)
+
+Problem: Users had nowhere to declare what their feed should contain. The `/feed` surface is driven entirely by `src/lib/feed/mockFeed.ts`, and there was no per-user record of topics, authors, keywords, or "similar to" papers anywhere in the product.
+
+Root Cause: N/A (new feature).
+
+Solution:
+- New backend Django app `feeds` (SciCommons-backend) with a `FeedPreference` model - one row per user in table `feed_preference`, holding `topics`, `authors`, `keywords`, and `similar_to` as JSON lists. `user_id` is a plain integer rather than a ForeignKey so the table can be moved to a separate database later without a schema change.
+- Endpoints `GET`/`PUT /api/feeds/preferences` (JWT auth). GET returns empty lists with `has_saved_preferences: false` until the first save; PUT is an upsert of the full preference set, so editing one field on the form keeps the stored row in sync. Values are trimmed, de-duplicated case-insensitively, and capped (100 entries per field, 500 chars per entry).
+- Frontend: "Feed Preferences" entry added to the profile dropdown (`src/components/common/NavBar.tsx`) next to Settings, pointing at the new auth-gated page `src/app/(main)/(users)/feed-preferences/page.tsx`.
+- Four chip-style list inputs (`src/components/feed/PreferenceChipInput.tsx`) - Enter adds an entry, Backspace on an empty input removes the last one. Free text throughout, so a keyword can be a whole boolean expression.
+- Template upload: "Upload filled template" reads a CSV/JSON/TXT file and fills the form; "Download template" hands out a blank CSV. Parsing happens client-side (`src/lib/feedPreferences/template.ts`) so the parsed values land in the form for review - nothing is stored until the user hits Save, and the backend re-validates whatever is finally submitted.
+- API client regenerated with `yarn generate-api` (adds `src/api/feeds/*` and the three `feedPreference*` schemas); no generated file was hand-edited.
+
+Result: Verified end-to-end. 7 backend tests pass (`manage.py test feeds`), 7 frontend parser tests pass, and the flow was exercised in-browser against the running dev stack: chips added by hand save to a single `feed_preference` row, a second save updates that same row rather than inserting another, and uploading a filled CSV repopulated all four fields (including a quoted keyword containing a comma and a `pubmed:22878719` identifier). Unauthenticated requests get 401. Test data was removed from the dev database afterwards.
+
+Not included: nothing consumes these preferences yet - `/feed` still reads `mockFeed.ts`.
+
+Files Modified/Added:
+- Backend (new): `feeds/{__init__,models,schemas,api}.py`, `feeds/migrations/0001_initial.py`, `feeds/tests/test_feed_preferences_api.py`
+- Backend (modified): `myapp/settings.py` (INSTALLED_APPS), `myapp/api.py` (router registration)
+- Frontend (new): `src/app/(main)/(users)/feed-preferences/{page,layout}.tsx`, `src/components/feed/PreferenceChipInput.tsx`, `src/lib/feedPreferences/template.ts`, `src/tests/__tests__/feedPreferencesTemplate.test.ts`, `src/api/feeds/*` + `src/api/schemas/feedPreference*.ts` (Orval-generated)
+- Frontend (modified): `src/components/common/NavBar.tsx`, `src/api/schemas/index.ts` (Orval-generated)
+
 ## 2026-07-28 - Self-Contained Public Frontend Development
 
 Problem: Contributor setup referenced incomplete local environment
@@ -132,6 +156,28 @@ frontend repository.
 Files Modified: `.env.example`, `README.md`, `docs/LOCAL_DEVELOPMENT.md`,
 `docker-compose.dev.yml`, `Dockerfile`, `CHANGE_COMMENTS.md` (commit reference:
 pending local commit)
+## 2026-07-25 - AlphaXiv-style article feed (demo)
+
+Problem: The front page was a static marketing hero ("Personalized feeds coming soon"). We want to move to an AlphaXiv-style, feed-first front page: a scannable list of paper cards, communities as left-hand navigation that filters the feed, and per-article private notes + public comments on the right — ahead of the real feed backend (lands end of next week).
+
+Root Cause: N/A (new feature). The real article feed API is not ready yet, so a self-contained demo is needed that can later swap onto it.
+
+Solution:
+- New `(feed)` route group with its own AlphaXiv-style shell (`src/app/(feed)/layout.tsx`): slim left icon rail (Explore / classic-app / theme toggle) + top search placeholder.
+- `/feed` (`src/app/(feed)/feed/page.tsx`): 3 columns — communities sidebar, single-column paper feed, notes/comments info panel. `?community=` filters the feed.
+- `/feed/article/[pmid]` (`.../article/[pmid]/page.tsx`): reader with Blog/Paper tabs on the left, and My Notes / Comments / Similar on the right.
+- Data source: 100 real PubMed articles fetched via E-utilities, bundled as `src/data/pubmedFeed.json`, exposed through pure accessors in `src/lib/feed/mockFeed.ts` (single swap-point for the real feed API).
+- Private notes + public comments + like/bookmark persist client-side in `src/stores/demoFeedStore.ts` (Zustand + localStorage), keyed by pmid. To be swapped for a backend private-Notes model + Reviews/Discussions APIs later.
+- Components under `src/components/feed/*` (CommunitySidebar, FeedList, FeedArticleCard, ArticleReader, RightPanel, NotesTab, CommentsTab). Reuses `RenderParsedHTML` (LaTeX/markdown), `AbstractText`, `TabNavigation`, `Button`, and existing theme tokens (light + dark).
+- `src/app/(home)/page.tsx` now redirects to `/feed`; the classic app (`/articles`, `/communities`, article detail) is untouched and reachable from the feed nav.
+- Merges ideas from `notes/Possibilities.md`: feed-first front page, color-coded multi-source groundwork (source badge), preprint-viewer pattern, private notes, and a Zotero hook (disabled "Connect Zotero" stub).
+- Fixed the feed theme toggle to use next-themes `resolvedTheme` so one click always flips the visible theme even when the stored preference is `system`.
+
+Result: A runnable, self-contained AlphaXiv-style front page. Verified end-to-end in-browser: feed renders 99 PubMed cards, community filter scopes the list, article reader shows Blog/Paper, private notes render LaTeX+markdown and persist across reload, comments (General/Research/Anonymous) and Similar work, and light/dark themes both render correctly.
+
+Files Modified/Added: src/data/pubmedFeed.json (new), src/lib/feed/mockFeed.ts (new), src/stores/demoFeedStore.ts (new), src/app/(feed)/layout.tsx (new), src/app/(feed)/feed/page.tsx (new), src/app/(feed)/feed/article/[pmid]/page.tsx (new), src/components/feed/{feedFormat.ts,CommunitySidebar,FeedList,FeedArticleCard,ArticleReader,RightPanel,NotesTab,CommentsTab}.tsx (new), src/app/(home)/page.tsx (redirect). No `src/api/**` files were touched.
+
+Note: `RenderParsedHTML` logs a benign "Content sanitization failed" warning during SSR (DOMPurify has no DOM server-side); it falls back to escaped text on the server and renders fully on the client. Pre-existing shared-component behavior, not introduced here.
 
 ## 2026-05-05 - ReviewCard Lint Typing and BrowserStack Local Declaration Alignment
 
